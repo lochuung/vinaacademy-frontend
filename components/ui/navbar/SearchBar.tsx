@@ -1,4 +1,4 @@
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch } from "react-icons/fa";
 
 const SearchBar = () => {
     return (
@@ -12,5 +12,4 @@ const SearchBar = () => {
         </div>
     );
 };
-
 export default SearchBar;

@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import Carousel from "@/components/ui/Carousel";
 import Footer from "@/components/ui/Footer";
 import Banner from "@/components/ui/Banner";
+import Navbar from "@/components/ui/navbar/Navbar";
 
 const userName = "Nguyễn Văn A";
 const userAvatar = "";
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-10 py-10">
-
+      {/* <Navbar /> */}
       {/* Welcome Section */}
       <div className="flex items-center justify-start gap-4 py-4 w-full max-w-6xl px-5">
         {/* Avatar */}
@@ -40,13 +41,14 @@ export default function Home() {
         )}
 
         {/* Welcome Text */}
-        <span className="text-xl font-semibold text-black">Welcome back, {userName}! 👋</span>
+        <span className="text-xl font-semibold text-black">Chào mừng trở lại, {userName}! 👋</span>
       </div>
 
       <div className="w-full max-w-6xl px-5">
         <Banner />
       </div>
-      <div className="w-full max-w-6xl">
+
+      <div className="w-full max-w-6xl mt-4">
         {/* Tiêu đề và liên kết */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-black px-4">Tiếp tục học</h1>
