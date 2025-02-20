@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Carousel from "@/components/ui/Carousel";
-import Footer from "@/components/ui/Footer";
-import Banner from "@/components/ui/Banner";
-import Navbar from "@/components/ui/navbar/Navbar";
+import Carousel from "@/components/layout/Carousel";
+import Footer from "@/components/layout/Footer";
+import Banner from "@/components/layout/Banner";
+import Navbar from "@/components/layout/navbar/Navbar";
 
 const userName = "Nguyễn Văn A";
 const userAvatar = "";
