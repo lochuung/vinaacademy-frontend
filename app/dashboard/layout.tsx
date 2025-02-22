@@ -21,6 +21,7 @@ export default async function DashboardLayout({
 
     return (
         <AuthProvider> {/* Bọc toàn bộ ứng dụng trong AuthProvider */}
+
             <SidebarProvider defaultOpen={defaultOpen}>
                 <AppSidebar />
                 <SidebarInset>
@@ -30,6 +31,7 @@ export default async function DashboardLayout({
                     {/* page main content ends */}
                 </SidebarInset>
             </SidebarProvider>
+
         </AuthProvider>
     );
 }
