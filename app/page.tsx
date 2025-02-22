@@ -10,7 +10,7 @@ export default function Home() {
   // URL -> /shop/shoes/nike-air-max-97
   // `params` -> { tag: 'shoes', item: 'nike-air-max-97' }
 
-  const [ok, setok] = useState();
+
   
 
   return (
