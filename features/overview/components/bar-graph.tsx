@@ -1,7 +1,7 @@
-'use client';
+'use client'; // Chỉ định rằng file này sẽ được chạy trên client-side.
 
-import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import * as React from 'react'; // Import toàn bộ thư viện React.
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'; // Import các component từ thư viện recharts.
 
 import {
     Card,
@@ -9,17 +9,18 @@ import {
     CardDescription,
     CardHeader,
     CardTitle
-} from '@/components/ui/card';
+} from '@/components/ui/card'; // Import các component Card từ thư mục components/ui.
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent
-} from '@/components/ui/chart';
+} from '@/components/ui/chart'; // Import các component Chart từ thư mục components/ui.
 
-export const description = 'An interactive bar chart';
+export const description = 'An interactive bar chart'; // Mô tả biểu đồ.
 
 const chartData = [
+    // Dữ liệu biểu đồ, mỗi đối tượng đại diện cho một ngày với số liệu desktop và mobile.
     { date: '2024-04-01', desktop: 222, mobile: 150 },
     { date: '2024-04-02', desktop: 97, mobile: 180 },
     { date: '2024-04-03', desktop: 167, mobile: 120 },
@@ -133,7 +134,7 @@ const chartConfig = {
 
 export function BarGraph() {
     const [activeChart, setActiveChart] =
-        React.useState<keyof typeof chartConfig>('desktop');
+        React.useState<keyof typeof chartConfig>('desktop'); // Trạng thái biểu đồ đang hoạt động.
 
     const total = React.useMemo(
         () => ({
@@ -141,22 +142,22 @@ export function BarGraph() {
             mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
         }),
         []
-    );
+    ); // Tính tổng số liệu cho desktop và mobile.
 
-    const [isClient, setIsClient] = React.useState(false);
+    const [isClient, setIsClient] = React.useState(false); // Trạng thái kiểm tra xem có phải client-side không.
 
     React.useEffect(() => {
         setIsClient(true);
-    }, []);
+    }, []); // Thiết lập trạng thái client-side khi component được mount.
 
     React.useEffect(() => {
         if (activeChart === 'error') {
             throw new Error('Mocking Error');
         }
-    }, [activeChart]);
+    }, [activeChart]); // Ném lỗi khi biểu đồ đang hoạt động là 'error'.
 
     if (!isClient) {
-        return null;
+        return null; // Nếu không phải client-side, không render gì cả.
     }
 
     return (
