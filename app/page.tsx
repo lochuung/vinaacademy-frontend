@@ -44,9 +44,11 @@ export default function Home() {
         <span className="text-xl font-semibold text-black">Chào mừng trở lại, {userName}! 👋</span>
       </div>
 
+
       <div className="w-full max-w-6xl px-5">
         <Banner />
       </div>
+
 
       <div className="w-full max-w-6xl mt-4">
         {/* Tiêu đề và liên kết */}
