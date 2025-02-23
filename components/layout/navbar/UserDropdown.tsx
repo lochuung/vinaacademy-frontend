@@ -1,23 +1,26 @@
-import Link from "next/link";
-import { useEffect, useRef } from "react";
+import Link from "next/link"; // Import component Link từ next/link
+import { useEffect, useRef } from "react"; // Import các hook useEffect và useRef từ react
 
+// Định nghĩa interface cho các props của component UserDropdown
 interface UserDropdownProps {
-    onClose: () => void;
+    onClose: () => void; // Prop onClose là một hàm không có tham số và không trả về giá trị
 }
 
+// Định nghĩa component UserDropdown
 const UserDropdown = ({ onClose }: UserDropdownProps) => {
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null); // Khởi tạo ref cho dropdown
 
     useEffect(() => {
+        // Định nghĩa hàm handleClickOutside để xử lý khi người dùng nhấn bên ngoài dropdown
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                onClose();
+                onClose(); // Gọi hàm onClose nếu nhấn bên ngoài dropdown
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside); // Thêm sự kiện mousedown vào document
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside); // Xóa sự kiện mousedown khi component unmount
         };
     }, [onClose]);
 
@@ -25,7 +28,7 @@ const UserDropdown = ({ onClose }: UserDropdownProps) => {
         <div
             ref={dropdownRef}
             className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-300 z-50"
-            onMouseLeave={onClose} // 🛠 Thêm sự kiện đóng dropdown khi chuột rời khỏi
+            onMouseLeave={onClose} // Đóng dropdown khi chuột rời khỏi
         >
             <ul className="py-2">
                 <li>
@@ -57,4 +60,4 @@ const UserDropdown = ({ onClose }: UserDropdownProps) => {
     );
 };
 
-export default UserDropdown;
+export default UserDropdown; // Xuất component UserDropdown để sử dụng ở nơi khác

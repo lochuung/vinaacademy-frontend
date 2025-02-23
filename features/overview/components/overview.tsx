@@ -13,10 +13,14 @@ import { BarGraph } from './bar-graph';
 import { PieGraph } from './pie-graph';
 import { RecentSales } from './recent-sales';
 
+// Component OverViewPage hiển thị trang tổng quan (overview) của dashboard
 export default function OverViewPage() {
     return (
+        // PageContainer bọc toàn bộ nội dung của trang
         <PageContainer>
+            {/* Khối chứa phần tiêu đề và nút Download */}
             <div className='flex flex-1 flex-col space-y-2'>
+                {/* Header với lời chào và nút Download (chỉ hiển thị trên màn hình md trở lên) */}
                 <div className='flex items-center justify-between space-y-2'>
                     <h2 className='text-2xl font-bold tracking-tight'>
                         Hi, Welcome back 👋
@@ -25,20 +29,26 @@ export default function OverViewPage() {
                         <Button>Download</Button>
                     </div>
                 </div>
+                {/* Các tab để chuyển đổi giữa các chế độ hiển thị */}
                 <Tabs defaultValue='overview' className='space-y-4'>
+                    {/* Danh sách các tab */}
                     <TabsList>
                         <TabsTrigger value='overview'>Overview</TabsTrigger>
                         <TabsTrigger value='analytics' disabled>
                             Analytics
                         </TabsTrigger>
                     </TabsList>
+                    {/* Nội dung hiển thị cho tab "Overview" */}
                     <TabsContent value='overview' className='space-y-4'>
+                        {/* Lưới các thẻ tổng quan (cards) với thông tin Revenue, Subscriptions, Sales, Active Now */}
                         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+                            {/* Card hiển thị Total Revenue */}
                             <Card>
                                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                                     <CardTitle className='text-sm font-medium'>
                                         Total Revenue
                                     </CardTitle>
+                                    {/* Icon minh họa cho doanh thu */}
                                     <svg
                                         xmlns='http://www.w3.org/2000/svg'
                                         viewBox='0 0 24 24'
@@ -59,11 +69,13 @@ export default function OverViewPage() {
                                     </p>
                                 </CardContent>
                             </Card>
+                            {/* Card hiển thị Subscriptions */}
                             <Card>
                                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                                     <CardTitle className='text-sm font-medium'>
                                         Subscriptions
                                     </CardTitle>
+                                    {/* Icon minh họa cho Subscriptions */}
                                     <svg
                                         xmlns='http://www.w3.org/2000/svg'
                                         viewBox='0 0 24 24'
@@ -86,9 +98,13 @@ export default function OverViewPage() {
                                     </p>
                                 </CardContent>
                             </Card>
+                            {/* Card hiển thị Sales */}
                             <Card>
                                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                                    <CardTitle className='text-sm font-medium'>Sales</CardTitle>
+                                    <CardTitle className='text-sm font-medium'>
+                                        Sales
+                                    </CardTitle>
+                                    {/* Icon minh họa cho Sales */}
                                     <svg
                                         xmlns='http://www.w3.org/2000/svg'
                                         viewBox='0 0 24 24'
@@ -110,11 +126,13 @@ export default function OverViewPage() {
                                     </p>
                                 </CardContent>
                             </Card>
+                            {/* Card hiển thị Active Now */}
                             <Card>
                                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                                     <CardTitle className='text-sm font-medium'>
                                         Active Now
                                     </CardTitle>
+                                    {/* Icon minh họa cho Active Now */}
                                     <svg
                                         xmlns='http://www.w3.org/2000/svg'
                                         viewBox='0 0 24 24'
@@ -136,10 +154,13 @@ export default function OverViewPage() {
                                 </CardContent>
                             </Card>
                         </div>
+                        {/* Lưới chứa các biểu đồ tổng quan */}
                         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
+                            {/* Biểu đồ cột: BarGraph */}
                             <div className='col-span-4'>
                                 <BarGraph />
                             </div>
+                            {/* Card chứa thông tin về Recent Sales */}
                             <Card className='col-span-4 md:col-span-3'>
                                 <CardHeader>
                                     <CardTitle>Recent Sales</CardTitle>
@@ -151,9 +172,11 @@ export default function OverViewPage() {
                                     <RecentSales />
                                 </CardContent>
                             </Card>
+                            {/* Biểu đồ dạng area: AreaGraph */}
                             <div className='col-span-4'>
                                 <AreaGraph />
                             </div>
+                            {/* Biểu đồ hình tròn: PieGraph */}
                             <div className='col-span-4 md:col-span-3'>
                                 <PieGraph />
                             </div>
