@@ -29,7 +29,7 @@ const Navbar = () => {
             <nav className="bg-white text-black shadow-md border-b-2 border-black p-4"> {/* Thanh điều hướng */}
                 <div className="max-w-7xl mx-auto flex justify-between items-center"> {/* Container chính của Navbar */}
                     <Link href="/" className="text-2xl font-bold">
-                        VINA ACADEMY {/* Liên kết đến trang chủ với tên VINA ACADEMY */}
+                        ViNA ACADEMY {/* Liên kết đến trang chủ với tên VINA ACADEMY */}
                     </Link>
                     <div className="hidden md:flex space-x-6"> {/* Dropdown Khám phá, chỉ hiển thị trên màn hình md trở lên */}
                         <ExploreDropdown categories={categoriesData} /> {/* Hiển thị ExploreDropdown với dữ liệu categories */}

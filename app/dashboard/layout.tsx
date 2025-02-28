@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'; // Impo
 import type { Metadata } from 'next'; // Import kiểu dữ liệu Metadata từ next
 import { cookies } from 'next/headers'; // Import hàm cookies từ next/headers
 import AuthProvider from '@/providers/SessionProvider'; // Import AuthProvider từ thư mục providers
-import OverViewPage from '@/app/dashboard/overview/overview'; // Import OverViewPage từ thư mục features/overview/components
+import OverViewPage from '@/app/dashboard/overview/page'; // Import OverViewPage từ thư mục features/overview/components
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard', // Tiêu đề của trang
