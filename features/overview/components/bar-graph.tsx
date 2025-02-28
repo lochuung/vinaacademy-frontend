@@ -19,7 +19,6 @@ import {
 
 export const description = 'An interactive bar chart';
 
-// Dữ liệu biểu đồ: bao gồm số liệu lượt truy cập từ Desktop và Mobile theo ngày
 const chartData = [
     { date: '2024-04-01', desktop: 222, mobile: 150 },
     { date: '2024-04-02', desktop: 97, mobile: 180 },
@@ -114,8 +113,6 @@ const chartData = [
     { date: '2024-06-30', desktop: 446, mobile: 400 }
 ];
 
-// Cấu hình biểu đồ: định nghĩa nhãn và màu sắc cho từng loại dữ liệu
-// Ngoài ra còn định nghĩa trường hợp "error" để mô phỏng lỗi
 const chartConfig = {
     views: {
         label: 'Page Views'
@@ -134,13 +131,10 @@ const chartConfig = {
     }
 } satisfies ChartConfig;
 
-// Component BarGraph hiển thị biểu đồ cột tương tác (bar chart)
 export function BarGraph() {
-    // activeChart: trạng thái cho biết loại dữ liệu đang được hiển thị (desktop, mobile hoặc error)
     const [activeChart, setActiveChart] =
         React.useState<keyof typeof chartConfig>('desktop');
 
-    // Tính tổng số lượt truy cập theo từng loại (desktop, mobile)
     const total = React.useMemo(
         () => ({
             desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
@@ -149,13 +143,12 @@ export function BarGraph() {
         []
     );
 
-    // Kiểm soát việc render sau khi client mount (để tránh lỗi SSR cho thư viện mà chỉ chạy trên client)
     const [isClient, setIsClient] = React.useState(false);
+
     React.useEffect(() => {
         setIsClient(true);
     }, []);
 
-    // Hiệu ứng log activeChart, đồng thời ném lỗi giả lập khi activeChart chuyển sang 'error'
     React.useEffect(() => {
         console.log('activeChart:', activeChart);
         if (activeChart === 'error') {
@@ -163,14 +156,12 @@ export function BarGraph() {
         }
     }, [activeChart]);
 
-    // Nếu chưa render trên client, không hiển thị gì
     if (!isClient) {
         return null;
     }
 
     return (
         <Card>
-            {/* Header của card: chứa tiêu đề biểu đồ và nút chuyển đổi giữa các loại dữ liệu */}
             <CardHeader className='flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row'>
                 <div className='flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6'>
                     <CardTitle>Bar Chart - Interactive</CardTitle>
@@ -178,7 +169,6 @@ export function BarGraph() {
                         Showing total visitors for the last 3 months
                     </CardDescription>
                 </div>
-                {/* Nút chuyển đổi activeChart */}
                 <div className='flex'>
                     {['desktop', 'mobile', 'error'].map((key) => {
                         const chart = key as keyof typeof chartConfig;
@@ -201,31 +191,27 @@ export function BarGraph() {
                     })}
                 </div>
             </CardHeader>
-            {/* Nội dung của card: hiển thị biểu đồ cột sử dụng ChartContainer */}
             <CardContent className='px-2 sm:p-6'>
                 <ChartContainer
                     config={chartConfig}
                     className='aspect-auto h-[280px] w-full'
                 >
                     <BarChart
-                        accessibilityLayer        // Tăng cường khả năng truy cập cho biểu đồ
-                        data={chartData}            // Dữ liệu nguồn cho biểu đồ
+                        accessibilityLayer
+                        data={chartData}
                         margin={{
                             left: 12,
                             right: 12
-                        }}                         // Khoảng cách biên bên trái và phải của biểu đồ
+                        }}
                     >
-                        {/* CartesianGrid: hiển thị lưới ngang của biểu đồ */}
                         <CartesianGrid vertical={false} />
-                        {/* XAxis: trục x hiển thị ngày */}
                         <XAxis
                             dataKey='date'
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            minTickGap={32}         // Khoảng cách tối thiểu giữa các tick
+                            minTickGap={32}
                             tickFormatter={(value) => {
-                                // Định dạng ngày hiển thị dưới dạng: "Apr 1"
                                 const date = new Date(value);
                                 return date.toLocaleDateString('en-US', {
                                     month: 'short',
@@ -233,14 +219,12 @@ export function BarGraph() {
                                 });
                             }}
                         />
-                        {/* ChartTooltip: hiển thị tooltip khi hover vào cột */}
                         <ChartTooltip
                             content={
                                 <ChartTooltipContent
                                     className='w-[150px]'
                                     nameKey='views'
                                     labelFormatter={(value) => {
-                                        // Định dạng ngày trong tooltip: "Apr 1, 2024"
                                         return new Date(value).toLocaleDateString('en-US', {
                                             month: 'short',
                                             day: 'numeric',
@@ -250,7 +234,6 @@ export function BarGraph() {
                                 />
                             }
                         />
-                        {/* Bar: hiển thị cột dữ liệu dựa theo activeChart (desktop, mobile, hoặc error) */}
                         <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
                     </BarChart>
                 </ChartContainer>
