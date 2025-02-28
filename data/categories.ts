@@ -1,19 +1,20 @@
 // data/categories.ts
 import { Category } from "@/types/navbar";
 
+// Mảng chứa dữ liệu các danh mục với thông tin chi tiết, bao gồm các danh mục con và chủ đề thịnh hành
 export const categoriesData: Category[] = [
     {
-        name: "Lập trình",
-        link: "/categories/programming",
-        subCategories: [
+        name: "Lập trình",                      // Tên danh mục
+        link: "/categories/programming",         // Đường dẫn đến trang danh mục "Lập trình"
+        subCategories: [                         // Danh sách các danh mục con của "Lập trình"
             {
-                name: "JavaScript",
-                link: "/categories/programming/javascript",
-                trendingTopics: [
+                name: "JavaScript",              // Tên danh mục con
+                link: "/categories/programming/javascript", // Đường dẫn danh mục con JavaScript
+                trendingTopics: [                // Danh sách các chủ đề thịnh hành trong JavaScript
                     {
-                        name: "React.js",
-                        link: "/topics/reactjs",
-                        students: "50K+"
+                        name: "React.js",        // Tên chủ đề
+                        link: "/topics/reactjs", // Đường dẫn liên kết đến chủ đề
+                        students: "50K+"         // Số lượng học viên hoặc mức độ quan tâm
                     },
                     {
                         name: "Next.js",
@@ -67,7 +68,7 @@ export const categoriesData: Category[] = [
         ]
     },
     {
-        name: "Thiết kế",
+        name: "Thiết kế",                       // Danh mục: Thiết kế
         link: "/categories/design",
         subCategories: [
             {
@@ -105,7 +106,7 @@ export const categoriesData: Category[] = [
         ]
     },
     {
-        name: "Marketing",
+        name: "Marketing",                      // Danh mục: Marketing
         link: "/categories/marketing",
         subCategories: [
             {
@@ -143,7 +144,7 @@ export const categoriesData: Category[] = [
         ]
     },
     {
-        name: "Kinh doanh",
+        name: "Kinh doanh",                     // Danh mục: Kinh doanh
         link: "/categories/business",
         subCategories: [
             {
@@ -182,16 +183,21 @@ export const categoriesData: Category[] = [
     }
 ];
 
-// Utility functions for categories
+// Các hàm tiện ích xử lý danh mục
+
+// Lấy một danh mục dựa trên tên của nó
 export const getCategoryByName = (name: string): Category | undefined => {
     return categoriesData.find(category => category.name === name);
 };
 
+// Lấy một danh mục dựa trên đường dẫn của nó
 export const getCategoryByLink = (link: string): Category | undefined => {
     return categoriesData.find(category => category.link === link);
 };
 
+// Lấy danh sách tất cả các chủ đề thịnh hành từ các danh mục và danh mục con
 export const getAllTrendingTopics = () => {
+    // Tạo mảng rỗng chứa thông tin chủ đề thịnh hành, kèm theo thông tin danh mục và danh mục con liên quan
     const topics: Array<{
         name: string;
         link: string;
@@ -200,9 +206,13 @@ export const getAllTrendingTopics = () => {
         subCategory: string;
     }> = [];
 
+    // Duyệt qua từng danh mục
     categoriesData.forEach(category => {
+        // Duyệt qua từng danh mục con của danh mục
         category.subCategories.forEach(subCategory => {
+            // Duyệt qua từng chủ đề thịnh hành của danh mục con
             subCategory.trendingTopics.forEach(topic => {
+                // Thêm chủ đề vào mảng kèm theo thông tin danh mục và danh mục con
                 topics.push({
                     ...topic,
                     category: category.name,

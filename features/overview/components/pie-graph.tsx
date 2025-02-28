@@ -18,6 +18,8 @@ import {
     ChartTooltip,
     ChartTooltipContent
 } from '@/components/ui/chart';
+
+// Dữ liệu cho biểu đồ tròn: mỗi đối tượng đại diện cho 1 trình duyệt với số lượng visitors và màu sắc
 const chartData = [
     { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
     { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
@@ -26,9 +28,10 @@ const chartData = [
     { browser: 'other', visitors: 190, fill: 'var(--color-other)' }
 ];
 
+// Cấu hình biểu đồ: định nghĩa nhãn và màu cho từng trình duyệt được hiển thị
 const chartConfig = {
     visitors: {
-        label: 'Visitors'
+        label: 'Visitors' // Nhãn tổng số lượt truy cập
     },
     chrome: {
         label: 'Chrome',
@@ -52,34 +55,41 @@ const chartConfig = {
     }
 } satisfies ChartConfig;
 
+// Component PieGraph hiển thị biểu đồ tròn (donut chart) kèm thông tin lượt truy cập tổng hợp
 export function PieGraph() {
+    // Tính tổng số visitors từ tất cả trình duyệt
     const totalVisitors = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
     }, []);
 
     return (
         <Card className='flex flex-col'>
+            {/* Header của Card: tiêu đề biểu đồ và mô tả về khoảng thời gian */}
             <CardHeader className='items-center pb-0'>
                 <CardTitle>Pie Chart - Donut with Text</CardTitle>
                 <CardDescription>January - June 2024</CardDescription>
             </CardHeader>
+
+            {/* Nội dung của Card: chứa biểu đồ tròn */}
             <CardContent className='flex-1 pb-0'>
                 <ChartContainer
-                    config={chartConfig}
-                    className='mx-auto aspect-square max-h-[360px]'
+                    config={chartConfig} // Truyền cấu hình nhãn và màu cho biểu đồ
+                    className='mx-auto aspect-square max-h-[360px]' // Thiết lập kích thước container cho biểu đồ
                 >
                     <PieChart>
+                        {/* ChartTooltip: hiển thị thông tin tooltip khi hover vào phần của biểu đồ */}
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Pie
-                            data={chartData}
-                            dataKey='visitors'
-                            nameKey='browser'
-                            innerRadius={60}
-                            strokeWidth={5}
+                            data={chartData} // Dữ liệu cho biểu đồ
+                            dataKey='visitors' // Thuộc tính sử dụng để tính toán diện tích của từng phần
+                            nameKey='browser'  // Thuộc tính hiển thị tên cho từng phần
+                            innerRadius={60}   // Bán kính trong (tạo hiệu ứng donut)
+                            strokeWidth={5}    // Độ dày của đường viền giữa các phần
                         >
+                            {/* Label hiển thị nằm ở giữa biểu đồ, gồm tổng số visitors và nhãn "Visitors" */}
                             <Label
                                 content={({ viewBox }) => {
                                     if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
@@ -90,6 +100,7 @@ export function PieGraph() {
                                                 textAnchor='middle'
                                                 dominantBaseline='middle'
                                             >
+                                                {/* Hiển thị tổng số visitors */}
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
@@ -97,6 +108,7 @@ export function PieGraph() {
                                                 >
                                                     {totalVisitors.toLocaleString()}
                                                 </tspan>
+                                                {/* Hiển thị nhãn "Visitors" bên dưới số lượng */}
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={(viewBox.cy || 0) + 24}
@@ -113,6 +125,8 @@ export function PieGraph() {
                     </PieChart>
                 </ChartContainer>
             </CardContent>
+
+            {/* Footer của Card: hiển thị thông tin bổ sung và xu hướng */}
             <CardFooter className='flex-col gap-2 text-sm'>
                 <div className='flex items-center gap-2 font-medium leading-none'>
                     Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />

@@ -1,13 +1,14 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import Carousel from "@/components/layout/Carousel";
-import Footer from "@/components/layout/Footer";
-import Banner from "@/components/layout/Banner";
-import Navbar from "@/components/layout/navbar/Navbar";
+import Link from "next/link"; // Import Link từ next/link để điều hướng
+import Image from "next/image"; // Import Image từ next/image để hiển thị hình ảnh
+import { Button } from "@/components/ui/button"; // Import Button từ thư mục components/ui
+import Carousel from "@/components/layout/Carousel"; // Import Carousel từ thư mục components/layout
+import Footer from "@/components/layout/Footer"; // Import Footer từ thư mục components/layout
+import Banner from "@/components/layout/Banner"; // Import Banner từ thư mục components/layout
+import Navbar from "@/components/layout/navbar/Navbar"; // Import Navbar từ thư mục components/layout/navbar
 
-const userName = "Nguyễn Văn A";
-const userAvatar = "";
+const userName = "Nguyễn Văn A"; // Tên người dùng
+const userAvatar = ""; // Avatar người dùng (để trống nếu không có)
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-10 py-10">
@@ -44,11 +45,9 @@ export default function Home() {
         <span className="text-xl font-semibold text-black">Chào mừng trở lại, {userName}! 👋</span>
       </div>
 
-
       <div className="w-full max-w-6xl px-5">
-        <Banner />
+        <Banner /> {/* Hiển thị Banner */}
       </div>
-
 
       <div className="w-full max-w-6xl mt-4">
         {/* Tiêu đề và liên kết */}
@@ -81,12 +80,12 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-black px-4">Học gì tiếp theo?</h2>
           <h5 className="text-xl font-semibold text-gray-800 mt-1 px-4">Gợi ý cho bạn</h5>
           <div className="w-full">
-            <Carousel />
+            <Carousel /> {/* Hiển thị Carousel */}
           </div>
           {/* Được đánh giá cao */}
           <h5 className="text-xl font-semibold text-gray-800 px-4">Được đánh giá cao</h5>
           <div className="w-full">
-            <Carousel />
+            <Carousel /> {/* Hiển thị Carousel */}
           </div>
         </div>
 
@@ -94,11 +93,11 @@ export default function Home() {
         <div className="mt-4">
           <h2 className="text-3xl font-bold text-black px-4">Khám phá khóa học mới</h2>
           <div className="w-full">
-            <Carousel />
+            <Carousel /> {/* Hiển thị Carousel */}
           </div>
         </div>
       </div>
-      <Footer />
-    </div >
+      <Footer /> {/* Hiển thị Footer */}
+    </div>
   );
 }
