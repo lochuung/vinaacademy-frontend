@@ -150,6 +150,7 @@ export function BarGraph() {
     }, []);
 
     React.useEffect(() => {
+        console.log('activeChart:', activeChart);
         if (activeChart === 'error') {
             throw new Error('Mocking Error');
         }

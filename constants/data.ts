@@ -1,54 +1,59 @@
 import { NavItem } from '../types';
 
+// Định nghĩa kiểu dữ liệu cho một khóa học
 export type Course = {
-    photo_url: string;
-    name: string;
-    description: string;
-    created_at: string;
-    price: number;
-    id: number;
-    category: string;
-    updated_at: string;
+    photo_url: string;     // URL hình ảnh của khóa học
+    name: string;          // Tên khóa học
+    description: string;   // Mô tả khóa học
+    created_at: string;    // Ngày tạo khóa học
+    price: number;         // Giá của khóa học
+    id: number;            // ID duy nhất của khóa học
+    category: string;      // Danh mục khóa học
+    updated_at: string;    // Ngày cập nhật khóa học
 };
 
-//Info: The following data is used for the sidebar navigation and Cmd K bar.
+// Info: Dữ liệu dưới đây được sử dụng cho thanh điều hướng (sidebar) 
+// và Cmd K bar.
+
+// Mảng chứa các mục điều hướng cho sidebar
 export const navItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        url: '/dashboard/overview',
-        icon: 'dashboard',
-        isActive: false,
-        shortcut: ['d', 'd'],
-        items: [] // Empty array as there are no child items for Dashboard
+        title: 'Dashboard',               // Tiêu đề mục điều hướng
+        url: '/dashboard/overview',       // Đường dẫn liên kết khi click vào mục này
+        icon: 'dashboard',                // Tên icon đại diện cho mục Dashboard
+        isActive: false,                  // Trạng thái hoạt động của mục (mặc định là false)
+        shortcut: ['d', 'd'],             // Phím tắt để truy cập nhanh mục Dashboard
+        items: []                         // Không có mục con (child items)
     },
     {
-        title: 'Courses',
-        url: '/dashboard/courses',
-        icon: 'product',
-        shortcut: ['p', 'p'],
-        isActive: false,
-        items: [] // No child items
+        title: 'Courses',                 // Tiêu đề của mục "Courses"
+        url: '/dashboard/courses',        // Đường dẫn khi click vào "Courses"
+        icon: 'product',                  // Icon đại diện cho "Courses"
+        shortcut: ['p', 'p'],             // Phím tắt cho "Courses"
+        isActive: false,                  // Trạng thái hoạt động mặc định
+        items: []                         // Không có mục con
     },
-
     {
-        title: 'Users',
-        url: '/dashboard/users',
-        icon: 'kanban',
-        shortcut: ['k', 'k'],
-        isActive: false,
-        items: [] // No child items
+        title: 'Users',                   // Tiêu đề của mục "Users"
+        url: '/dashboard/users',          // Đường dẫn khi click vào "Users"
+        icon: 'kanban',                   // Icon đại diện cho "Users"
+        shortcut: ['k', 'k'],             // Phím tắt cho "Users"
+        isActive: false,                  // Trạng thái mặc định
+        items: []                         // Không có mục con
     }
 ];
 
+// Định nghĩa giao diện cho thông tin người dùng liên quan đến giao dịch bán hàng
 export interface SaleUser {
-    id: number;
-    name: string;
-    email: string;
-    amount: string;
-    image: string;
-    initials: string;
+    id: number;       // ID duy nhất của người dùng
+    name: string;     // Tên người dùng
+    email: string;    // Email của người dùng
+    amount: string;   // Số tiền giao dịch (định dạng chuỗi)
+    image: string;    // URL hình ảnh đại diện của người dùng
+    initials: string; // Chữ viết tắt của tên người dùng
 }
 
+// Dữ liệu về giao dịch bán hàng gần đây của người dùng
 export const recentSalesData: SaleUser[] = [
     {
         id: 1,
