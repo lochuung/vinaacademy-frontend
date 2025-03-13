@@ -10,12 +10,22 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     // Lấy đường dẫn hiện tại của trang web
     const pathname = usePathname();
 
-    // Kiểm tra xem có nên ẩn Navbar và ClientWrapper hay không.
-    // Nếu đang ở các trang dashboard cụ thể, thì ẩn các thành phần layout này.
-    const hideLayout = pathname === "/dashboard" ||
-        pathname === "/dashboard/overview" ||
-        pathname === "/dashboard/users" ||
-        pathname === "/dashboard/courses";
+    // Mảng các tiền tố đường dẫn cần ẩn layout
+    const hiddenLayoutPaths = [
+        "/dashboard",
+        "/dashboard/overview",
+        "/dashboard/users",
+        "/dashboard/courses"
+    ];
+
+    // Kiểm tra xem có nên ẩn layout dựa trên đường dẫn hiện tại
+    const hideLayout =
+        // Kiểm tra các đường dẫn dashboard cụ thể
+        hiddenLayoutPaths.includes(pathname) ||
+        // Kiểm tra tất cả các đường dẫn instructor - ẩn tất cả các trang instructor
+        (pathname && pathname.startsWith("/instructor")) ||
+        // Kiểm tra tất cả các đường dẫn admin - ẩn tất cả các trang admin
+        (pathname && pathname.startsWith("/admin"));
 
     return (
         <>

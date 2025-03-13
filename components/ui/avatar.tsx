@@ -14,13 +14,13 @@ interface AvatarProps {
 export function Avatar({ src, alt = "Avatar", size = "100%", className = "" }: AvatarProps) {
   const [error, setError] = useState(false);
   const defaultAvatar = "/images/default-avatar.png";
-  
+
   return (
-    <div 
+    <div
       className={`relative rounded-full overflow-hidden bg-gray-200 ${className}`}
-      style={{ 
-        width: typeof size === "number" ? `${size}px` : size, 
-        height: typeof size === "number" ? `${size}px` : size 
+      style={{
+        width: typeof size === "number" ? `${size}px` : size,
+        height: typeof size === "number" ? `${size}px` : size
       }}
     >
       {!error && src ? (
@@ -33,7 +33,7 @@ export function Avatar({ src, alt = "Avatar", size = "100%", className = "" }: A
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-gray-200">
-          <User 
+          <User
             className="text-gray-500"
             size={typeof size === "number" ? size * 0.6 : 24}
           />

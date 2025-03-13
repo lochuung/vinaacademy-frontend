@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     description: "Khóa học giúp bạn nắm vững những kiến thức cơ bản về Java.",
     image: "/test.jpg",
   };
-  
+
   return {
     title: `${course.name} | VinaAcademy`,
     description: course.description,
@@ -39,7 +39,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
   try {
     const course = {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "image": "/test.jpg",
+      "image": "/images/courses/react.jpg",
       "name": "Lập trình Java cơ bản",
       "description": "Khóa học giúp bạn nắm vững những kiến thức cơ bản về Java.",
       "slug": "lap-trinh-java-co-ban",
@@ -101,7 +101,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
           "comment": "Giảng viên dạy dễ hiểu.",
           "avatarUrl": "/images/default-avatar.png" // Added avatar URL
         }
-      ] 
+      ]
     };
 
     // Create structured data for the course
@@ -139,14 +139,14 @@ export default async function CoursePage({ params }: { params: { slug: string } 
             __html: JSON.stringify(structuredData)
           }}
         />
-        
+
         <div className="bg-white min-h-screen">
           <main>
             {/* Course Header Banner Section */}
             <section className="bg-[#1c1d1f] text-white" aria-label="Thông tin khóa học">
               <CourseHeader course={course} />
             </section>
-            
+
             {/* Main Content with Sidebar */}
             <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 relative">
               <div className="flex flex-col lg:flex-row gap-8">
@@ -155,7 +155,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                   <CourseDetails course={course} />
                   <CourseReviews reviews={course.courseReviews} rating={course.rating} totalRating={course.totalRating} />
                 </article>
-                
+
                 {/* Purchase Sidebar - 1/3 width, sticky on desktop, hidden on mobile */}
                 <aside className="lg:w-1/3 hidden lg:block">
                   <div className="sticky top-24">
@@ -165,7 +165,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
               </div>
             </div>
           </main>
-          
+
           {/* Mobile Purchase Bar - Fixed at bottom on mobile only */}
           <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50">
             <div className="flex items-center justify-between">
