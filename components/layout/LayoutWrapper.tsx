@@ -25,7 +25,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
         // Kiểm tra tất cả các đường dẫn instructor - ẩn tất cả các trang instructor
         (pathname && pathname.startsWith("/instructor")) ||
         // Kiểm tra tất cả các đường dẫn admin - ẩn tất cả các trang admin
-        (pathname && pathname.startsWith("/admin"));
+        (pathname && pathname.startsWith("/admin")) ||
+        // Kiểm tra tất cả các đường dẫn student - ẩn tất cả các trang student
+        (pathname && pathname.startsWith("/learning"));
 
     return (
         <>
