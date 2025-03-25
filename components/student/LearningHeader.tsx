@@ -38,7 +38,7 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
-                        <span className="text-xs text-gray-400">{progress}% complete</span>
+                        <span className="text-xs text-gray-400">{progress}% hoàn thành</span>
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                 </button>
 
                 <button className="bg-white text-black hover:bg-gray-200 px-4 py-1.5 rounded text-sm font-medium transition">
-                    Share
+                    Chia sẻ
                 </button>
 
                 <button className="text-white hover:text-gray-300 transition">

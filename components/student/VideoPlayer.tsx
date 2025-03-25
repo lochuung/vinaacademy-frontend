@@ -1,179 +1,233 @@
 // components/student/VideoPlayer.tsx
-"use client";
-
 import { FC, useState, useRef, useEffect } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize, Settings } from 'lucide-react';
 
 interface VideoPlayerProps {
     videoUrl: string;
     title: string;
+    onTimeUpdate?: (currentTime: number) => void;
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title }) => {
+const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
-    const [playbackRate, setPlaybackRate] = useState(1);
+    const [isMuted, setIsMuted] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [showControls, setShowControls] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const playerRef = useRef<HTMLDivElement>(null);
 
-    // Handle play/pause
-    const togglePlay = () => {
+    // Ẩn điều khiển sau thời gian không hoạt động
+    useEffect(() => {
+        let timeout: NodeJS.Timeout;
+
+        const handleMouseMove = () => {
+            setShowControls(true);
+            clearTimeout(timeout);
+
+            timeout = setTimeout(() => {
+                if (isPlaying) setShowControls(false);
+            }, 3000);
+        };
+
+        const playerElement = playerRef.current;
+        playerElement?.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            clearTimeout(timeout);
+            playerElement?.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [isPlaying]);
+
+    // Cập nhật thời gian hiện tại và tổng thời gian
+    useEffect(() => {
+        const videoElement = videoRef.current;
+        if (!videoElement) return;
+
+        const handleTimeUpdate = () => {
+            setCurrentTime(videoElement.currentTime);
+            if (onTimeUpdate) onTimeUpdate(videoElement.currentTime);
+        };
+
+        const handleDurationChange = () => {
+            setDuration(videoElement.duration);
+        };
+
+        const handleEnded = () => {
+            setIsPlaying(false);
+        };
+
+        videoElement.addEventListener('timeupdate', handleTimeUpdate);
+        videoElement.addEventListener('durationchange', handleDurationChange);
+        videoElement.addEventListener('ended', handleEnded);
+
+        return () => {
+            videoElement.removeEventListener('timeupdate', handleTimeUpdate);
+            videoElement.removeEventListener('durationchange', handleDurationChange);
+            videoElement.removeEventListener('ended', handleEnded);
+        };
+    }, [onTimeUpdate]);
+
+    // Phát/Tạm dừng
+    useEffect(() => {
         if (videoRef.current) {
             if (isPlaying) {
-                videoRef.current.pause();
+                videoRef.current.play().catch((error) => {
+                    console.error('Lỗi khi phát video:', error);
+                    setIsPlaying(false);
+                });
             } else {
-                videoRef.current.play();
+                videoRef.current.pause();
             }
-            setIsPlaying(!isPlaying);
         }
-    };
+    }, [isPlaying]);
 
-    // Update time display
-    const handleTimeUpdate = () => {
+    // Điều khiển âm lượng
+    useEffect(() => {
         if (videoRef.current) {
-            setCurrentTime(videoRef.current.currentTime);
+            videoRef.current.volume = isMuted ? 0 : volume;
         }
+    }, [volume, isMuted]);
+
+    const togglePlay = () => {
+        setIsPlaying(!isPlaying);
     };
 
-    // Handle seeking
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTime = parseFloat(e.target.value);
-        if (videoRef.current) {
-            videoRef.current.currentTime = newTime;
-            setCurrentTime(newTime);
-        }
+    const toggleMute = () => {
+        setIsMuted(!isMuted);
     };
 
-    // Handle volume change
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
-        if (videoRef.current) {
-            videoRef.current.volume = newVolume;
-            setVolume(newVolume);
+        setVolume(newVolume);
+        if (newVolume === 0) {
+            setIsMuted(true);
+        } else if (isMuted) {
+            setIsMuted(false);
         }
     };
 
-    // Handle playback rate change
-    const handlePlaybackRateChange = (rate: number) => {
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newTime = parseFloat(e.target.value);
+        setCurrentTime(newTime);
         if (videoRef.current) {
-            videoRef.current.playbackRate = rate;
-            setPlaybackRate(rate);
+            videoRef.current.currentTime = newTime;
         }
     };
 
-    // Format time (seconds to MM:SS)
-    const formatTime = (timeInSeconds: number): string => {
-        const minutes = Math.floor(timeInSeconds / 60);
-        const seconds = Math.floor(timeInSeconds % 60);
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const toggleFullscreen = () => {
+        if (!playerRef.current) return;
+
+        if (!document.fullscreenElement) {
+            playerRef.current.requestFullscreen().then(() => {
+                setIsFullscreen(true);
+            }).catch(err => {
+                console.error(`Lỗi khi bật chế độ toàn màn hình: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen().then(() => {
+                setIsFullscreen(false);
+            }).catch(err => {
+                console.error(`Lỗi khi thoát chế độ toàn màn hình: ${err.message}`);
+            });
+        }
     };
 
-    // Set video duration once metadata is loaded
-    const handleLoadedMetadata = () => {
-        if (videoRef.current) {
-            setDuration(videoRef.current.duration);
-        }
+    const formatTime = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
     return (
-        <div className="relative bg-black w-full">
-            {/* Video element */}
+        <div
+            ref={playerRef}
+            className="relative bg-black"
+            onMouseEnter={() => setShowControls(true)}
+            onMouseLeave={() => isPlaying && setShowControls(false)}
+        >
+            {/* Video */}
             <video
                 ref={videoRef}
-                className="w-full aspect-video"
-                onTimeUpdate={handleTimeUpdate}
-                onLoadedMetadata={handleLoadedMetadata}
-                onEnded={() => setIsPlaying(false)}
-                src={videoUrl}
-                poster="/images/video-placeholder.jpg"
-            />
+                className="w-full h-auto max-h-[70vh]"
+                onClick={togglePlay}
+                poster="/api/thumbnail/lesson-1"
+                playsInline
+            >
+                <source src={videoUrl} type="video/mp4" />
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
 
-            {/* Controls overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
-                {/* Progress bar */}
-                <div className="flex items-center mb-2">
+            {/* Lớp điều khiển */}
+            <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+                {/* Thanh tiến trình */}
+                <div className="mb-2 flex items-center">
                     <input
                         type="range"
                         min="0"
                         max={duration || 100}
                         value={currentTime}
                         onChange={handleSeek}
-                        className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-1 bg-gray-400 rounded-full appearance-none cursor-pointer"
+                        style={{
+                            background: `linear-gradient(to right, #3b82f6 ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.3) ${(currentTime / (duration || 1)) * 100}%)`,
+                        }}
                     />
                 </div>
 
-                {/* Controls */}
+                {/* Nút điều khiển */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        {/* Play/Pause button */}
+                        {/* Nút Phát/Tạm dừng */}
                         <button
                             onClick={togglePlay}
-                            className="text-white focus:outline-none"
-                            aria-label={isPlaying ? 'Pause' : 'Play'}
+                            className="text-white hover:text-blue-500 transition"
                         >
-                            {isPlaying ? (
-                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                                </svg>
-                            ) : (
-                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                            )}
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                         </button>
 
-                        {/* Time display */}
-                        <div className="text-sm">
-                            {formatTime(currentTime)} / {formatTime(duration)}
-                        </div>
-
-                        {/* Volume control */}
-                        <div className="flex items-center space-x-1">
-                            <button className="text-white focus:outline-none">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                                </svg>
+                        {/* Điều khiển âm lượng */}
+                        <div className="flex items-center">
+                            <button
+                                onClick={toggleMute}
+                                className="text-white hover:text-blue-500 transition mr-2"
+                            >
+                                {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
                             </button>
                             <input
                                 type="range"
                                 min="0"
                                 max="1"
-                                step="0.05"
+                                step="0.01"
                                 value={volume}
                                 onChange={handleVolumeChange}
-                                className="w-16 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                className="w-16 h-1 bg-gray-400 rounded-full appearance-none cursor-pointer"
+                                style={{
+                                    background: `linear-gradient(to right, white ${volume * 100}%, rgba(255,255,255,0.3) ${volume * 100}%)`,
+                                }}
                             />
+                        </div>
+
+                        {/* Hiển thị thời gian */}
+                        <div className="text-white text-sm">
+                            {formatTime(currentTime)} / {formatTime(duration || 0)}
                         </div>
                     </div>
 
                     <div className="flex items-center space-x-4">
-                        {/* Playback speed */}
-                        <div className="relative group">
-                            <button className="text-white text-sm font-medium focus:outline-none">
-                                {playbackRate}x
-                            </button>
-                            <div className="absolute bottom-full right-0 bg-black/90 rounded invisible group-hover:visible">
-                                {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
-                                    <button
-                                        key={rate}
-                                        onClick={() => handlePlaybackRateChange(rate)}
-                                        className={`block w-full text-left px-3 py-1 text-sm whitespace-nowrap ${playbackRate === rate ? 'text-blue-400' : 'text-white'
-                                            }`}
-                                    >
-                                        {rate}x
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        {/* Nút Cài đặt */}
+                        <button className="text-white hover:text-blue-500 transition">
+                            <Settings size={20} />
+                        </button>
 
-                        {/* Fullscreen button */}
+                        {/* Nút Toàn màn hình */}
                         <button
-                            className="text-white focus:outline-none"
-                            aria-label="Fullscreen"
+                            onClick={toggleFullscreen}
+                            className="text-white hover:text-blue-500 transition"
                         >
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-                            </svg>
+                            <Maximize size={20} />
                         </button>
                     </div>
                 </div>

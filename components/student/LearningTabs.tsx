@@ -1,12 +1,11 @@
 // components/student/LearningTabs.tsx
-"use client";
-
 import { FC, useState } from 'react';
+import { BookOpen, PenSquare, MessageSquare, FileText, Search, Users } from 'lucide-react';
 import NotesArea from './NotesArea';
-import ReadingContent from './ReadingContent';
 import QuestionsArea from './QuestionsArea';
+import DiscussionArea from './DiscussionArea';
 
-interface LessonType {
+interface Lesson {
     id: string;
     title: string;
     videoUrl: string;
@@ -15,92 +14,146 @@ interface LessonType {
 }
 
 interface LearningTabsProps {
-    lesson: LessonType;
+    lesson: Lesson;
     courseId: string;
+    currentTimestamp?: number;
 }
 
-const LearningTabs: FC<LearningTabsProps> = ({ lesson, courseId }) => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'questions' | 'readings'>('overview');
+const LearningTabs: FC<LearningTabsProps> = ({ lesson, courseId, currentTimestamp = 0 }) => {
+    const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'q&a' | 'discussion' | 'announcements' | 'reviews' | 'tools'>('overview');
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden bg-white">
-            {/* Tabs */}
-            <div className="border-b border-gray-200">
-                <nav className="flex px-6 -mb-px">
+        <div className="flex flex-col flex-1 overflow-hidden">
+            {/* Tab điều hướng phía trên */}
+            <div className="bg-white border-b border-gray-200">
+                <div className="flex overflow-x-auto hide-scrollbar">
                     <button
                         onClick={() => setActiveTab('overview')}
-                        className={`py-4 px-1 mr-8 font-medium text-sm border-b-2 ${activeTab === 'overview'
-                            ? 'border-black text-black'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'overview'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
                             }`}
                     >
-                        Overview
+                        <Search size={16} className="mr-2" />
+                        Tổng quan
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('q&a')}
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'q&a'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
+                            }`}
+                    >
+                        <MessageSquare size={16} className="mr-2" />
+                        Hỏi đáp
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('discussion')}
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'discussion'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
+                            }`}
+                    >
+                        <Users size={16} className="mr-2" />
+                        Thảo luận
                     </button>
                     <button
                         onClick={() => setActiveTab('notes')}
-                        className={`py-4 px-1 mr-8 font-medium text-sm border-b-2 ${activeTab === 'notes'
-                            ? 'border-black text-black'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'notes'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
                             }`}
                     >
-                        Notes
+                        <PenSquare size={16} className="mr-2" />
+                        Ghi chú
                     </button>
                     <button
-                        onClick={() => setActiveTab('questions')}
-                        className={`py-4 px-1 mr-8 font-medium text-sm border-b-2 ${activeTab === 'questions'
-                            ? 'border-black text-black'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                        onClick={() => setActiveTab('announcements')}
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'announcements'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
                             }`}
                     >
-                        Q&A
+                        <BookOpen size={16} className="mr-2" />
+                        Thông báo
                     </button>
                     <button
-                        onClick={() => setActiveTab('readings')}
-                        className={`py-4 px-1 mr-8 font-medium text-sm border-b-2 ${activeTab === 'readings'
-                            ? 'border-black text-black'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                        onClick={() => setActiveTab('reviews')}
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'reviews'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
                             }`}
                     >
-                        Readings
+                        <PenSquare size={16} className="mr-2" />
+                        Đánh giá
                     </button>
-                </nav>
+                    <button
+                        onClick={() => setActiveTab('tools')}
+                        className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'tools'
+                            ? 'border-b-2 border-indigo-600 text-indigo-600'
+                            : 'text-gray-700 hover:text-gray-900'
+                            }`}
+                    >
+                        <FileText size={16} className="mr-2" />
+                        Công cụ học tập
+                    </button>
+                </div>
             </div>
 
-            {/* Tab content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            {/* Nội dung tab - đã loại bỏ overflow để cho phép cuộn từ parent */}
+            <div className="flex-1">
                 {activeTab === 'overview' && (
-                    <div>
-                        <h1 className="text-3xl font-bold mb-4">{lesson.title}</h1>
-                        <p className="text-gray-700 mb-6">{lesson.description}</p>
-
-                        {/* Lesson navigation */}
-                        <div className="flex justify-between mt-8 pt-4 border-t border-gray-200">
-                            <button className="flex items-center text-blue-600 hover:text-blue-800">
-                                <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                Previous Lesson
-                            </button>
-                            <button className="flex items-center text-blue-600 hover:text-blue-800">
-                                Next Lesson
-                                <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">{lesson.title}</h2>
+                        <p className="text-gray-700">{lesson.description}</p>
+                        <div className="mt-4 text-sm text-gray-500">Thời lượng: {lesson.duration}</div>
                     </div>
                 )}
 
                 {activeTab === 'notes' && (
-                    <NotesArea lessonId={lesson.id} courseId={courseId} />
+                    <NotesArea
+                        courseId={courseId}
+                        lessonId={lesson.id}
+                        currentTimestamp={currentTimestamp}
+                    />
                 )}
 
-                {activeTab === 'questions' && (
-                    <QuestionsArea lessonId={lesson.id} courseId={courseId} />
+                {activeTab === 'q&a' && (
+                    <QuestionsArea
+                        courseId={courseId}
+                        lessonId={lesson.id}
+                    />
                 )}
 
-                {activeTab === 'readings' && (
-                    <ReadingContent lessonId={lesson.id} courseId={courseId} />
+                {activeTab === 'discussion' && (
+                    <DiscussionArea
+                        courseId={courseId}
+                        lessonId={lesson.id}
+                    />
+                )}
+
+                {activeTab === 'announcements' && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Thông Báo</h2>
+                        <p className="text-gray-700">Xem các thông báo quan trọng từ giảng viên của bạn.</p>
+                        {/* Component Thông báo sẽ được đặt ở đây */}
+                    </div>
+                )}
+
+                {activeTab === 'reviews' && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Đánh Giá</h2>
+                        <p className="text-gray-700">Xem những gì học viên khác đang nói về khóa học này.</p>
+                        {/* Component Đánh giá sẽ được đặt ở đây */}
+                    </div>
+                )}
+
+                {activeTab === 'tools' && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Công Cụ Học Tập</h2>
+                        <p className="text-gray-700">Truy cập các tài nguyên và công cụ học tập bổ sung.</p>
+                        {/* Component Công cụ học tập sẽ được đặt ở đây */}
+                    </div>
                 )}
             </div>
         </div>
