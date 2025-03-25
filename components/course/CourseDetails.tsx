@@ -46,7 +46,7 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
             <Users className="h-4 w-4 mr-2" aria-hidden="true" /> Giảng viên
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="curriculum" className="space-y-4" role="tabpanel" aria-labelledby="curriculum">
           <div className="mb-4">
             <h2 className="text-xl font-bold mb-2">Nội dung khóa học</h2>
@@ -56,15 +56,15 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
               <span>{course.totalLesson} bài học</span>
             </div>
           </div>
-          
+
           <CourseCurriculum sections={course.sections} />
         </TabsContent>
-        
+
         <TabsContent value="overview" role="tabpanel" aria-labelledby="overview">
           <div className="prose max-w-none">
             <h2 className="text-xl font-bold mb-4">Mô tả khóa học</h2>
             <div className="whitespace-pre-wrap">{course.description}</div>
-            
+
             <h2 className="text-xl font-bold mt-8 mb-4">Bạn sẽ học được gì</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li>Hiểu và áp dụng các khái niệm cơ bản của Java</li>
@@ -74,14 +74,14 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
             </ul>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="instructors" role="tabpanel" aria-labelledby="instructors">
           <h2 className="text-xl font-bold mb-6">Giảng viên</h2>
-          
+
           <div className="space-y-8">
             {course.instructors.map((instructor) => (
               <div key={instructor.id} className="flex flex-col md:flex-row gap-4">
-                <Avatar 
+                <Avatar
                   src={instructor.avatarUrl || '/images/default-avatar.png'}
                   alt={`Ảnh giảng viên ${instructor.name}`}
                   size={96}
@@ -105,15 +105,15 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
 
 function CourseCurriculum({ sections }: { sections: Section[] }) {
   const [expandedSections, setExpandedSections] = useState<number[]>([sections[0]?.id]);
-  
+
   const toggleSection = (sectionId: number) => {
-    setExpandedSections(prev => 
+    setExpandedSections(prev =>
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
         : [...prev, sectionId]
     );
   };
-  
+
   return (
     <div className="space-y-3">
       {sections.map((section) => (
@@ -131,7 +131,7 @@ function CourseCurriculum({ sections }: { sections: Section[] }) {
               <ChevronDown className="h-5 w-5" />
             )}
           </button>
-          
+
           {expandedSections.includes(section.id) && (
             <div className="p-4 border-t">
               {/* Sample lessons - in a real app, these would come from the API */}
