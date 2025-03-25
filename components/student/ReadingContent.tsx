@@ -11,194 +11,194 @@ interface ReadingContentProps {
 const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
     const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
 
-    // Mock reading content - would come from API in a real app
+    // Nội dung đọc mẫu - sẽ được lấy từ API trong ứng dụng thực
     const readingContent = {
-        title: 'Understanding Python Operators: A Comprehensive Guide',
+        title: 'Tìm hiểu về Toán tử trong Python: Hướng dẫn toàn diện',
         sections: [
             {
-                heading: 'Introduction to Python Operators',
+                heading: 'Giới thiệu về Toán tử trong Python',
                 content: `
-        Operators are special symbols in Python that carry out arithmetic or logical computation. The value that the operator operates on is called the operand.
+        Toán tử là các ký hiệu đặc biệt trong Python thực hiện các phép tính toán số học hoặc logic. Giá trị mà toán tử thực hiện trên được gọi là toán hạng.
 
-        For example: In the expression 5 + 3, + is the operator and 5 and 3 are the operands. Python divides operators into several groups based on what they operate on and their functionality.
+        Ví dụ: Trong biểu thức 5 + 3, + là toán tử và 5 và 3 là các toán hạng. Python chia toán tử thành nhiều nhóm dựa trên chức năng và đối tượng mà chúng thao tác.
         `
             },
             {
-                heading: 'Arithmetic Operators',
+                heading: 'Toán tử Số học',
                 content: `
-        Arithmetic operators are used to perform mathematical operations.
+        Toán tử số học được sử dụng để thực hiện các phép tính toán số học.
 
-        - Addition (+): Adds two operands
-        - Subtraction (-): Subtracts the right operand from the left operand
-        - Multiplication (*): Multiplies two operands
-        - Division (/): Divides the left operand by the right operand (always results in a float)
-        - Floor Division (//): Division that results in whole number adjusted to the left in the number line
-        - Modulus (%): Returns the remainder when the left operand is divided by the right operand
-        - Exponentiation (**): Raises the left operand to the power of the right operand
+        - Cộng (+): Cộng hai toán hạng
+        - Trừ (-): Trừ toán hạng bên phải khỏi toán hạng bên trái
+        - Nhân (*): Nhân hai toán hạng
+        - Chia (/): Chia toán hạng bên trái cho toán hạng bên phải (luôn trả về kiểu float)
+        - Chia lấy phần nguyên (//): Phép chia trả về số nguyên được điều chỉnh sang trái trên trục số
+        - Lấy phần dư (%): Trả về phần dư khi toán hạng bên trái được chia cho toán hạng bên phải
+        - Lũy thừa (**): Nâng toán hạng bên trái lên lũy thừa của toán hạng bên phải
 
         \`\`\`python
         a = 10
         b = 3
 
-        # Addition
-        print(a + b)  # Output: 13
+        # Cộng
+        print(a + b)  # Kết quả: 13
 
-        # Subtraction
-        print(a - b)  # Output: 7
+        # Trừ
+        print(a - b)  # Kết quả: 7
 
-        # Multiplication
-        print(a * b)  # Output: 30
+        # Nhân
+        print(a * b)  # Kết quả: 30
 
-        # Division
-        print(a / b)  # Output: 3.3333333333333335
+        # Chia
+        print(a / b)  # Kết quả: 3.3333333333333335
 
-        # Floor Division
-        print(a // b)  # Output: 3
+        # Chia lấy phần nguyên
+        print(a // b)  # Kết quả: 3
 
-        # Modulus
-        print(a % b)  # Output: 1
+        # Lấy phần dư
+        print(a % b)  # Kết quả: 1
 
-        # Exponentiation
-        print(a ** b)  # Output: 1000
+        # Lũy thừa
+        print(a ** b)  # Kết quả: 1000
         \`\`\`
         `
             },
             {
-                heading: 'Comparison Operators',
+                heading: 'Toán tử So sánh',
                 content: `
-        Comparison operators are used to compare values. They return either True or False.
+        Toán tử so sánh được sử dụng để so sánh các giá trị. Chúng trả về True hoặc False.
 
-        - Equal to (==): If the values of two operands are equal, then the condition becomes true
-        - Not equal to (!=): If values of two operands are not equal, then condition becomes true
-        - Greater than (>): If the value of the left operand is greater than the value of the right operand, then condition becomes true
-        - Less than (<): If the value of the left operand is less than the value of the right operand, then condition becomes true
-        - Greater than or equal to (>=): If the value of the left operand is greater than or equal to the value of the right operand, then condition becomes true
-        - Less than or equal to (<=): If the value of the left operand is less than or equal to the value of the right operand, then condition becomes true
+        - Bằng (==): Nếu giá trị của hai toán hạng bằng nhau, thì điều kiện trở thành đúng
+        - Không bằng (!=): Nếu giá trị của hai toán hạng không bằng nhau, thì điều kiện trở thành đúng
+        - Lớn hơn (>): Nếu giá trị của toán hạng bên trái lớn hơn giá trị của toán hạng bên phải, thì điều kiện trở thành đúng
+        - Nhỏ hơn (<): Nếu giá trị của toán hạng bên trái nhỏ hơn giá trị của toán hạng bên phải, thì điều kiện trở thành đúng
+        - Lớn hơn hoặc bằng (>=): Nếu giá trị của toán hạng bên trái lớn hơn hoặc bằng giá trị của toán hạng bên phải, thì điều kiện trở thành đúng
+        - Nhỏ hơn hoặc bằng (<=): Nếu giá trị của toán hạng bên trái nhỏ hơn hoặc bằng giá trị của toán hạng bên phải, thì điều kiện trở thành đúng
 
         \`\`\`python
         a = 10
         b = 3
         c = 10
 
-        # Equal to
-        print(a == b)  # Output: False
-        print(a == c)  # Output: True
+        # Bằng
+        print(a == b)  # Kết quả: False
+        print(a == c)  # Kết quả: True
 
-        # Not equal to
-        print(a != b)  # Output: True
+        # Không bằng
+        print(a != b)  # Kết quả: True
 
-        # Greater than
-        print(a > b)  # Output: True
+        # Lớn hơn
+        print(a > b)  # Kết quả: True
 
-        # Less than
-        print(a < b)  # Output: False
+        # Nhỏ hơn
+        print(a < b)  # Kết quả: False
 
-        # Greater than or equal to
-        print(a >= c)  # Output: True
+        # Lớn hơn hoặc bằng
+        print(a >= c)  # Kết quả: True
 
-        # Less than or equal to
-        print(a <= b)  # Output: False
+        # Nhỏ hơn hoặc bằng
+        print(a <= b)  # Kết quả: False
         \`\`\`
         `
             },
             {
-                heading: 'Logical Operators',
+                heading: 'Toán tử Logic',
                 content: `
-        Logical operators are used to combine conditional statements.
+        Toán tử logic được sử dụng để kết hợp các câu lệnh điều kiện.
 
-        - AND (and): Returns True if both statements are true
-        - OR (or): Returns True if one of the statements is true
-        - NOT (not): Returns True if the statement is false
+        - AND (and): Trả về True nếu cả hai câu lệnh đều đúng
+        - OR (or): Trả về True nếu một trong các câu lệnh đúng
+        - NOT (not): Trả về True nếu câu lệnh sai
 
         \`\`\`python
         a = True
         b = False
 
         # AND
-        print(a and b)  # Output: False
+        print(a and b)  # Kết quả: False
 
         # OR
-        print(a or b)  # Output: True
+        print(a or b)  # Kết quả: True
 
         # NOT
-        print(not a)  # Output: False
-        print(not b)  # Output: True
+        print(not a)  # Kết quả: False
+        print(not b)  # Kết quả: True
         \`\`\`
         `
             },
             {
-                heading: 'Assignment Operators',
+                heading: 'Toán tử Gán',
                 content: `
-        Assignment operators are used to assign values to variables.
+        Toán tử gán được sử dụng để gán giá trị cho biến.
 
-        - Assign (=): a = 5
-        - Add and assign (+=): a += 5 is equivalent to a = a + 5
-        - Subtract and assign (-=): a -= 5 is equivalent to a = a - 5
-        - Multiply and assign (*=): a *= 5 is equivalent to a = a * 5
-        - Divide and assign (/=): a /= 5 is equivalent to a = a / 5
-        - Modulus and assign (%=): a %= 5 is equivalent to a = a % 5
-        - Floor divide and assign (//=): a //= 5 is equivalent to a = a // 5
-        - Exponent and assign (**=): a **= 5 is equivalent to a = a ** 5
+        - Gán (=): a = 5
+        - Cộng và gán (+=): a += 5 tương đương với a = a + 5
+        - Trừ và gán (-=): a -= 5 tương đương với a = a - 5
+        - Nhân và gán (*=): a *= 5 tương đương với a = a * 5
+        - Chia và gán (/=): a /= 5 tương đương với a = a / 5
+        - Lấy phần dư và gán (%=): a %= 5 tương đương với a = a % 5
+        - Chia lấy phần nguyên và gán (//=): a //= 5 tương đương với a = a // 5
+        - Lũy thừa và gán (**=): a **= 5 tương đương với a = a ** 5
 
         \`\`\`python
         a = 10
 
-        # Add and assign
+        # Cộng và gán
         a += 5
-        print(a)  # Output: 15
+        print(a)  # Kết quả: 15
 
-        # Subtract and assign
+        # Trừ và gán
         a -= 3
-        print(a)  # Output: 12
+        print(a)  # Kết quả: 12
 
-        # Multiply and assign
+        # Nhân và gán
         a *= 2
-        print(a)  # Output: 24
+        print(a)  # Kết quả: 24
         \`\`\`
         `
             },
             {
-                heading: 'Identity Operators',
+                heading: 'Toán tử Định danh',
                 content: `
-        Identity operators are used to compare the objects, not if they are equal, but if they are actually the same object, with the same memory location.
+        Toán tử định danh được sử dụng để so sánh các đối tượng, không phải để kiểm tra xem chúng có bằng nhau hay không, mà để kiểm tra xem chúng có thực sự là cùng một đối tượng, với cùng vị trí bộ nhớ hay không.
 
-        - is: Returns True if both variables are the same object
-        - is not: Returns True if both variables are not the same object
+        - is: Trả về True nếu cả hai biến là cùng một đối tượng
+        - is not: Trả về True nếu cả hai biến không phải là cùng một đối tượng
 
         \`\`\`python
         a = [1, 2, 3]
         b = [1, 2, 3]
         c = a
 
-        print(a is b)  # Output: False
-        print(a is c)  # Output: True
-        print(a is not b)  # Output: True
+        print(a is b)  # Kết quả: False
+        print(a is c)  # Kết quả: True
+        print(a is not b)  # Kết quả: True
         \`\`\`
         `
             },
             {
-                heading: 'Membership Operators',
+                heading: 'Toán tử Thành viên',
                 content: `
-        Membership operators are used to test if a sequence is present in an object.
+        Toán tử thành viên được sử dụng để kiểm tra xem một chuỗi có hiện diện trong một đối tượng hay không.
 
-        - in: Returns True if a sequence with the specified value is present in the object
-        - not in: Returns True if a sequence with the specified value is not present in the object
+        - in: Trả về True nếu một chuỗi với giá trị được chỉ định có hiện diện trong đối tượng
+        - not in: Trả về True nếu một chuỗi với giá trị được chỉ định không hiện diện trong đối tượng
 
         \`\`\`python
         a = [1, 2, 3, 4, 5]
 
-        print(1 in a)  # Output: True
-        print(10 in a)  # Output: False
-        print(10 not in a)  # Output: True
+        print(1 in a)  # Kết quả: True
+        print(10 in a)  # Kết quả: False
+        print(10 not in a)  # Kết quả: True
         \`\`\`
         `
             },
             {
-                heading: 'Conclusion',
+                heading: 'Kết luận',
                 content: `
-        Understanding Python operators is fundamental to mastering Python programming. They form the backbone of any operation, calculation, or conditional logic in your code. By using them effectively, you can write more concise and efficient code.
+        Hiểu về toán tử trong Python là nền tảng để thành thạo lập trình Python. Chúng tạo nên xương sống của bất kỳ hoạt động, tính toán hoặc logic điều kiện nào trong mã của bạn. Bằng cách sử dụng chúng một cách hiệu quả, bạn có thể viết mã ngắn gọn và hiệu quả hơn.
 
-        In the next lesson, we'll look at how to use these operators in practical examples and explore some more advanced use cases.
+        Trong bài học tiếp theo, chúng ta sẽ xem xét cách sử dụng các toán tử này trong các ví dụ thực tế và khám phá một số trường hợp sử dụng nâng cao hơn.
         `
             }
         ]
@@ -216,14 +216,14 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
 
     return (
         <div className="max-w-3xl mx-auto">
-            {/* Reading controls */}
+            {/* Điều khiển đọc */}
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold">{readingContent.title}</h1>
                 <div className="flex space-x-2">
                     <button
                         onClick={() => setFontSize('sm')}
                         className={`p-1 ${fontSize === 'sm' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Small text"
+                        title="Cỡ chữ nhỏ"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
@@ -232,7 +232,7 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                     <button
                         onClick={() => setFontSize('md')}
                         className={`p-1 ${fontSize === 'md' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Medium text"
+                        title="Cỡ chữ vừa"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
@@ -241,7 +241,7 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                     <button
                         onClick={() => setFontSize('lg')}
                         className={`p-1 ${fontSize === 'lg' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Large text"
+                        title="Cỡ chữ lớn"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
@@ -250,7 +250,7 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                     <button
                         onClick={() => setFontSize('xl')}
                         className={`p-1 ${fontSize === 'xl' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Extra large text"
+                        title="Cỡ chữ rất lớn"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
@@ -259,7 +259,7 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                 </div>
             </div>
 
-            {/* Reading content */}
+            {/* Nội dung đọc */}
             <div className={`space-y-8 ${getFontSizeClass()}`}>
                 {readingContent.sections.map((section, index) => (
                     <div key={index} className="reading-section">
@@ -267,14 +267,14 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                         <div className="prose prose-slate max-w-none">
                             {section.content.split('```').map((part, i) => {
                                 if (i % 2 === 0) {
-                                    // Text content
+                                    // Nội dung văn bản
                                     return (
                                         <div key={i} className="mb-4 whitespace-pre-line">
                                             {part}
                                         </div>
                                     );
                                 } else {
-                                    // Code block
+                                    // Khối mã
                                     const [language, ...codeLines] = part.split('\n');
                                     const code = codeLines.join('\n');
 
@@ -294,16 +294,16 @@ const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
                 ))}
             </div>
 
-            {/* Navigation */}
+            {/* Điều hướng */}
             <div className="mt-12 pt-4 border-t border-gray-200 flex justify-between">
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
                     <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Previous Lesson
+                    Bài học trước
                 </button>
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
-                    Next Lesson
+                    Bài học tiếp theo
                     <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                     </svg>
