@@ -199,7 +199,7 @@ export default function LectureEditorPage() {
                         <h1 className="text-2xl font-semibold text-gray-900">Chỉnh sửa bài giảng</h1>
                     </div>
                     <div>
-                        <Button
+                        <button
                             type="button"
                             onClick={handleSave}
                             disabled={isSaving}
@@ -218,7 +218,7 @@ export default function LectureEditorPage() {
                                     <Save className="h-4 w-4 mr-2" /> Lưu bài giảng
                                 </>
                             )}
-                        </Button>
+                        </button>
                     </div>
                 </div>
 
@@ -237,7 +237,7 @@ export default function LectureEditorPage() {
                     {/* Tabs */}
                     <div className="border-b border-gray-200">
                         <nav className="flex -mb-px">
-                            <Button
+                            <button
                                 type="button"
                                 className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'content'
                                     ? 'border-black text-black'
@@ -246,8 +246,8 @@ export default function LectureEditorPage() {
                                 onClick={() => setActiveTab('content')}
                             >
                                 <Video className="h-4 w-4 inline mr-2" /> Nội dung bài giảng
-                            </Button>
-                            <Button
+                            </button>
+                            <button
                                 type="button"
                                 className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'resources'
                                     ? 'border-black text-black'
@@ -256,8 +256,8 @@ export default function LectureEditorPage() {
                                 onClick={() => setActiveTab('resources')}
                             >
                                 <FileText className="h-4 w-4 inline mr-2" /> Tài liệu bổ sung
-                            </Button>
-                            <Button
+                            </button>
+                            <button
                                 type="button"
                                 className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'settings'
                                     ? 'border-black text-black'
@@ -266,7 +266,7 @@ export default function LectureEditorPage() {
                                 onClick={() => setActiveTab('settings')}
                             >
                                 <Settings className="h-4 w-4 inline mr-2" /> Cài đặt bài giảng
-                            </Button>
+                            </button>
                         </nav>
                     </div>
 
@@ -430,7 +430,7 @@ export default function LectureEditorPage() {
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center space-x-3">
-                                                            <Button
+                                                            <button
                                                                 type="button"
                                                                 className="text-sm font-medium text-blue-600 hover:text-blue-800"
                                                                 onClick={() => {
@@ -440,13 +440,13 @@ export default function LectureEditorPage() {
                                                             >
                                                                 <Play className="h-4 w-4 inline mr-1" />
                                                                 Xem
-                                                            </Button>
-                                                            <Button
+                                                            </button>
+                                                            <button
                                                                 type="button"
                                                                 className="text-sm font-medium text-black hover:text-gray-700"
                                                             >
                                                                 Thay thế
-                                                            </Button>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -515,19 +515,19 @@ export default function LectureEditorPage() {
                                         <div className="mt-1 border border-gray-300 rounded-md">
                                             <div className="bg-gray-50 px-3 py-2 border-b border-gray-300">
                                                 <div className="flex space-x-2">
-                                                    <Button className="p-1 hover:bg-gray-200 rounded">
+                                                    <button className="p-1 hover:bg-gray-200 rounded">
                                                         <strong className="font-bold">B</strong>
-                                                    </Button>
-                                                    <Button className="p-1 hover:bg-gray-200 rounded italic">
+                                                    </button>
+                                                    <button className="p-1 hover:bg-gray-200 rounded italic">
                                                         <em>I</em>
-                                                    </Button>
-                                                    <Button className="p-1 hover:bg-gray-200 rounded underline">
+                                                    </button>
+                                                    <button className="p-1 hover:bg-gray-200 rounded underline">
                                                         <u>U</u>
-                                                    </Button>
+                                                    </button>
                                                     <span className="border-r border-gray-300 mx-1"></span>
-                                                    <Button className="p-1 hover:bg-gray-200 rounded">
+                                                    <button className="p-1 hover:bg-gray-200 rounded">
                                                         <List className="h-4 w-4" />
-                                                    </Button>
+                                                    </button>
                                                 </div>
                                             </div>
                                             <textarea
@@ -648,13 +648,13 @@ export default function LectureEditorPage() {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <Button
+                                                    <button
                                                         type="button"
                                                         onClick={() => removeResource(resource.id)}
                                                         className="text-gray-400 hover:text-red-500"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))
@@ -666,13 +666,13 @@ export default function LectureEditorPage() {
                                 </div>
 
                                 <div className="mt-4">
-                                    <Button
+                                    <button
                                         type="button"
                                         onClick={addResource}
                                         className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                                     >
                                         <Plus className="h-4 w-4 mr-2" /> Thêm tài liệu
-                                    </Button>
+                                    </button>
                                 </div>
 
                                 <div className="mt-6 pt-6 border-t border-gray-200">
@@ -776,7 +776,7 @@ export default function LectureEditorPage() {
                                                 <div className="flex items-center">
                                                     <Video className="h-4 w-4 text-gray-500 mr-2" />
                                                     <span className="text-sm text-gray-700">{formatDuration(lecture.duration)}</span>
-                                                    <Button
+                                                    <button
                                                         type="button"
                                                         className="ml-3 text-sm text-blue-600 hover:text-blue-800"
                                                         onClick={() => {
@@ -793,7 +793,7 @@ export default function LectureEditorPage() {
                                                         }}
                                                     >
                                                         Chỉnh sửa
-                                                    </Button>
+                                                    </button>
                                                 </div>
                                             ) : (
                                                 <p className="text-sm text-gray-500">
@@ -811,28 +811,28 @@ export default function LectureEditorPage() {
 
                     <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
                         <Link href={`/instructor/courses/${courseId}/content`}>
-                            <Button
+                            <button
                                 type="button"
                                 className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                             >
                                 Quay lại
-                            </Button>
+                            </button>
                         </Link>
                         <div>
-                            <Button
+                            <button
                                 type="button"
                                 className="mr-3 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                             >
                                 Xem trước
-                            </Button>
-                            <Button
+                            </button>
+                            <button
                                 type="button"
                                 onClick={handleSave}
                                 disabled={isSaving}
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSaving ? 'Đang lưu...' : 'Lưu bài giảng'}
-                            </Button>
+                            </button>
                         </div>
                     </div>
                 </div>

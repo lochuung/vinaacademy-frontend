@@ -152,7 +152,7 @@ export default function InstructorCoursesPage() {
                                         </div>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-                                        <Link href={`/instructor/courses/${course.id}/edit`}>
+                                        <Link href={`/instructor/courses/${course.id}/content`}>
                                             <div className="text-sm font-medium text-black hover:text-gray-700">
                                                 Chỉnh sửa khóa học
                                             </div>

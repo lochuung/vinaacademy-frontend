@@ -1,3 +1,8 @@
+export interface Notification {
+    id: number;
+    message: string;
+}
+
 // Định nghĩa interface TrendingTopic cho các chủ đề thịnh hành trong một danh mục con
 export interface TrendingTopic {
     name: string;
@@ -18,6 +23,8 @@ export interface SubCategory {
 export interface Category {
     name: string;                   // Tên danh mục (ví dụ: "Lập trình", "Thiết kế")
     link: string;                   // Đường dẫn đến trang danh mục
+    description: string;            // Mô tả danh mục
+    coursesCount: number;           // Số lượng khoá học trong danh mục
     subCategories: SubCategory[];   // Danh sách các danh mục con bên trong danh mục
 }
 

@@ -23,7 +23,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 42,
         totalHours: 35.5,
-        lastUpdated: "2024-02-15"
+        lastUpdated: "2024-02-15",
+        createdAt: "2023-11-15"
     },
     {
         id: 2,
@@ -47,7 +48,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 38,
         totalHours: 28.5,
-        lastUpdated: "2024-01-20"
+        lastUpdated: "2024-01-20",
+        createdAt: "2023-10-20"
     },
     {
         id: 3,
@@ -71,7 +73,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 45,
         totalHours: 32,
-        lastUpdated: "2024-01-10"
+        lastUpdated: "2024-01-10",
+        createdAt: "2023-10-10"
     },
 
     // DANH MỤC: Lập trình - Python
@@ -97,7 +100,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 52,
         totalHours: 45,
-        lastUpdated: "2024-02-05"
+        lastUpdated: "2024-02-05",
+        createdAt: "2023-11-05"
     },
     {
         id: 5,
@@ -121,7 +125,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 40,
         totalHours: 30,
-        lastUpdated: "2024-01-15"
+        lastUpdated: "2024-01-15",
+        createdAt: "2023-10-15"
     },
     {
         id: 6,
@@ -145,7 +150,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 38,
         totalHours: 28,
-        lastUpdated: "2024-02-10"
+        lastUpdated: "2024-02-10",
+        createdAt: "2023-11-10"
     },
 
     // DANH MỤC: Lập trình - Java
@@ -171,7 +177,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 48,
         totalHours: 40,
-        lastUpdated: "2024-01-25"
+        lastUpdated: "2024-01-25",
+        createdAt: "2023-10-25"
     },
     {
         id: 8,
@@ -195,7 +202,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 45,
         totalHours: 35,
-        lastUpdated: "2024-02-01"
+        lastUpdated: "2024-02-01",
+        createdAt: "2023-11-01"
     },
 
     // DANH MỤC: Thiết kế - UI/UX Design
@@ -221,7 +229,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 35,
         totalHours: 25,
-        lastUpdated: "2024-01-30"
+        lastUpdated: "2024-01-30",
+        createdAt: "2023-10-30"
     },
     {
         id: 10,
@@ -245,7 +254,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 40,
         totalHours: 32,
-        lastUpdated: "2024-02-05"
+        lastUpdated: "2024-02-05",
+        createdAt: "2023-11-05"
     },
 
     // DANH MỤC: Thiết kế - Graphic Design
@@ -271,7 +281,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 38,
         totalHours: 28,
-        lastUpdated: "2024-01-20"
+        lastUpdated: "2024-01-20",
+        createdAt: "2023-10-20"
     },
     {
         id: 12,
@@ -295,7 +306,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 42,
         totalHours: 32,
-        lastUpdated: "2024-02-10"
+        lastUpdated: "2024-02-10",
+        createdAt: "2023-11-10"
     },
 
     // DANH MỤC: Marketing - Digital Marketing
@@ -321,7 +333,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 45,
         totalHours: 38,
-        lastUpdated: "2024-01-25"
+        lastUpdated: "2024-01-25",
+        createdAt: "2023-10-25"
     },
     {
         id: 14,
@@ -345,7 +358,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 40,
         totalHours: 30,
-        lastUpdated: "2024-02-05"
+        lastUpdated: "2024-02-05",
+        createdAt: "2023-11-05"
     },
 
     // DANH MỤC: Marketing - Content Marketing
@@ -371,7 +385,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 35,
         totalHours: 25,
-        lastUpdated: "2024-01-15"
+        lastUpdated: "2024-01-15",
+        createdAt: "2023-10-15"
     },
     {
         id: 16,
@@ -395,7 +410,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 48,
         totalHours: 40,
-        lastUpdated: "2024-02-10"
+        lastUpdated: "2024-02-10",
+        createdAt: "2023-11-10"
     },
 
     // DANH MỤC: Kinh doanh - Khởi nghiệp
@@ -421,7 +437,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 35,
         totalHours: 28,
-        lastUpdated: "2024-01-20"
+        lastUpdated: "2024-01-20",
+        createdAt: "2023-10-20"
     },
     {
         id: 18,
@@ -445,7 +462,8 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 40,
         totalHours: 35,
-        lastUpdated: "2024-01-25"
+        lastUpdated: "2024-01-25",
+        createdAt: "2023-10-25"
     },
 
     // DANH MỤC: Kinh doanh - Quản lý
@@ -471,7 +489,8 @@ export const mockCourses = [
         bestSeller: false,
         totalLessons: 42,
         totalHours: 36,
-        lastUpdated: "2024-02-05"
+        lastUpdated: "2024-02-05",
+        createdAt: "2023-11-05"
     },
     {
         id: 20,
@@ -495,6 +514,7 @@ export const mockCourses = [
         bestSeller: true,
         totalLessons: 50,
         totalHours: 45,
-        lastUpdated: "2024-01-15"
+        lastUpdated: "2024-01-15",
+        createdAt: "2023-10-15"
     }
 ];

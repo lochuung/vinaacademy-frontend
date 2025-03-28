@@ -2,11 +2,11 @@
 'use client';
 
 import { FC, useState } from 'react';
-import VideoPlayer from '@/components/student/VideoPlayer';
-import ReadingContent from '@/components/student/ReadingContent';
-import CourseContent from '@/components/student/CourseContent';
-import LearningHeader from '@/components/student/LearningHeader';
-import LearningTabs from '@/components/student/LearningTabs';
+import VideoPlayer from '@/components/student/learning/VideoPlayer';
+import ReadingContent from '@/components/student/learning/ReadingContent';
+import CourseContent from '@/components/student/learning/CourseContent';
+import LearningHeader from '@/components/student/learning/LearningHeader';
+import LearningTabs from '@/components/student/learning/LearningTabs';
 
 interface LearningPageProps {
     params: {

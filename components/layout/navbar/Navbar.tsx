@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { CartItem } from '@/types/navbar';
 import { initialCartItems } from '@/data/mockCartData';
-import ExploreDropdown from "./ExploreDropdown";
-import SearchBar from "./SearchBar";
-import UserLearning from "./UserLearning";
-import UserMenu from "./UserMenu";
-import ShoppingCart from "./ShoppingCart";
-import NavigationLinks from "./NavigationLinks";
-import SubNavbar from "./SubNavbar";
+import ExploreDropdown from "./explore-dropdown/ExploreDropdown";
+import SearchBar from "./search-bar/SearchBar";
+import UserLearning from "./user-learning/UserLearning";
+import UserMenu from "./user-dropdown/UserMenu";
+import ShoppingCart from "./shopping-cart/ShoppingCart";
+import NavigationLinks from "./other-link/NavigationLinks";
+import SubNavbar from "./sub-navbar/SubNavbar";
 import { categoriesData } from "@/data/categories";
-import NotificationDropdown from "./NotificationDropdown";
+import NotificationDropdown from "./notification-badge/NotificationDropdown";
 import HomeLink from "../HomeLink";
 
 interface NavbarProps {
@@ -42,7 +42,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
                         {isLoggedIn && (
                             <>
                                 <UserLearning />
-                                <NotificationDropdown />
+                                <NotificationDropdown notifications={[]} />
                             </>
                         )}
                         <ShoppingCart items={cartItems} onRemoveItem={handleRemoveFromCart} />
