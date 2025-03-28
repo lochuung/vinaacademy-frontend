@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Navbar from "./navbar/Navbar";
-import ClientWrapper from "../layout/announcementbar/ClientWrapper";
+import ClientWrapper from "./announcement-bar/ClientWrapper";
 import Footer from "./Footer";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {

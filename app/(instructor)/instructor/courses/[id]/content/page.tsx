@@ -207,7 +207,7 @@ export default function CourseContentPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center">
-                        <Link href={`/instructor/courses/${courseId}`}>
+                        <Link href={`/instructor/courses`}>
                             <div className="mr-2 text-gray-500 hover:text-gray-700">
                                 <ArrowLeft className="h-5 w-5" />
                             </div>
