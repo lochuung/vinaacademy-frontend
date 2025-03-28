@@ -1,18 +1,27 @@
-import { ChevronRight } from "lucide-react"; // Import icon ChevronRight từ thư viện lucide-react
-import { SubCategory } from "@/types/navbar"; // Import kiểu dữ liệu SubCategory từ thư mục types/navbar
-import TrendingTopics from "./TrendingTopics"; // Import component TrendingTopics
+import { ChevronRight } from "lucide-react";
+import { SubCategory } from "@/types/navbar";
+import TrendingTopics from "./TrendingTopics";
 
-// Định nghĩa component SubCategoryItem với prop subCategory là một đối tượng SubCategory
-const SubCategoryItem = ({ subCategory }: { subCategory: SubCategory }) => {
+interface SubCategoryItemProps {
+    subCategory: SubCategory;
+    isActive: boolean;
+    onHover: () => void;
+}
+
+const SubCategoryItem = ({ subCategory, isActive, onHover }: SubCategoryItemProps) => {
     return (
-        <div className="relative group/subitem"> {/* Container chính của SubCategoryItem */}
-            <a href={subCategory.link} className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"> {/* Liên kết đến subcategory */}
-                {subCategory.name} {/* Tên của subcategory */}
-                <ChevronRight className="w-4 h-4" /> {/* Icon ChevronRight */}
+        <div
+            className="relative"
+            onMouseEnter={onHover}
+        >
+            <a href={subCategory.link} className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                {subCategory.name}
+                <ChevronRight className="w-4 h-4" />
             </a>
-            <TrendingTopics topics={subCategory.trendingTopics} /> {/* Hiển thị TrendingTopics với dữ liệu trendingTopics */}
+
+            <TrendingTopics topics={subCategory.trendingTopics} isVisible={isActive} />
         </div>
     );
 };
 
-export default SubCategoryItem; // Xuất component SubCategoryItem để sử dụng ở nơi khác
+export default SubCategoryItem;

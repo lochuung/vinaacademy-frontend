@@ -9,7 +9,7 @@ interface ViewAllButtonProps {
 
 // Định nghĩa component ViewAllButton
 export const ViewAllButton = ({
-    href = "/my-learning", // Đặt giá trị mặc định cho href là "/my-learning"
+    href = "/my-courses",
     className = "" // Đặt giá trị mặc định cho className là chuỗi rỗng
 }: ViewAllButtonProps) => {
     return (

@@ -1,8 +1,10 @@
 // Định nghĩa interface TrendingTopic cho các chủ đề thịnh hành trong một danh mục con
 export interface TrendingTopic {
-    name: string;      // Tên chủ đề thịnh hành
-    link: string;      // Đường dẫn đến chủ đề
-    students: string;  // Số lượng học viên hoặc mức độ quan tâm (ví dụ: "50K+")
+    name: string;
+    link: string;
+    students: string;
+    category?: string;     // Tên danh mục chính
+    subCategory?: string;  // Tên danh mục con
 }
 
 // Định nghĩa interface SubCategory cho danh mục con, chứa thông tin và các chủ đề thịnh hành
@@ -36,6 +38,7 @@ export interface LearningCourse {
     name: string;              // Tên khoá học
     progress: number;          // Tiến độ hoàn thành (%)
     image: string;             // Đường dẫn hình ảnh của khoá học
+    category?: string;         // Danh mục của khoá học
     instructor?: string;       // Tên giảng viên (tùy chọn)
     lastAccessed?: string;     // Ngày truy cập cuối cùng (tùy chọn)
     totalLessons?: number;     // Tổng số bài học trong khoá học (tùy chọn)

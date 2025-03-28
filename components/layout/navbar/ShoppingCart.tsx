@@ -1,39 +1,97 @@
-import { CartItem } from "@/types/navbar"; // Import kiểu dữ liệu CartItem từ thư mục types/navbar
-import { CartButton } from "./CartButton"; // Import component CartButton
-import { CartItemList } from "./CartItemList"; // Import component CartItemList
-import { ViewCartButton } from "./ViewCartButton"; // Import component ViewCartButton
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { CartItem } from "@/types/navbar";
+import { CartButton } from "./CartButton";
+import { CartItemList } from "./CartItemList";
+import { ViewCartButton } from "./ViewCartButton";
 
-// Định nghĩa interface cho các props của component ShoppingCart
 interface ShoppingCartProps {
-    items: CartItem[]; // Prop items là một mảng các đối tượng CartItem
-    onRemoveItem: (id: number) => void; // Prop onRemoveItem là một hàm nhận vào id và không trả về giá trị
+    items: CartItem[];
+    onRemoveItem: (id: number) => void;
 }
 
-// Định nghĩa component ShoppingCart
-const ShoppingCart = ({ items }: ShoppingCartProps) => {
-    // Tính tổng giá trị của các mục trong giỏ hàng
+const ShoppingCart = ({ items, onRemoveItem }: ShoppingCartProps) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const cartRef = useRef<HTMLDivElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Tính tổng giá trị
     const total = items.reduce((sum, item) => sum + Number(item.price.replace(/\D/g, '')), 0);
 
-    return (
-        <div className="relative group">
-            <CartButton itemCount={items.length} /> {/* Hiển thị CartButton với số lượng mục trong giỏ hàng */}
+    // Mở dropdown với độ trễ nhỏ để tránh hiệu ứng flicker
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setIsOpen(true);
+    };
 
-            <div className="absolute right-0 top-10 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+    // Đóng dropdown với độ trễ để tránh đóng ngay khi di chuyển chuột
+    const handleMouseLeave = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 300); // Độ trễ 300ms
+    };
+
+    // Dọn dẹp khi component unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Toggle dropdown khi click vào button
+    const toggleDropdown = () => {
+        setIsOpen(prevState => !prevState);
+    };
+
+    return (
+        <div
+            className="relative"
+            ref={cartRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <CartButton
+                itemCount={items.length}
+                isActive={isOpen}
+                onClick={toggleDropdown}
+            />
+
+            <div
+                className={`absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isOpen
+                        ? "transform-none opacity-100 visible"
+                        : "transform translate-y-2 opacity-0 invisible pointer-events-none"
+                    }`}
+                aria-hidden={!isOpen}
+            >
+                {/* Mũi tên chỉ hướng */}
+                <div className="absolute -top-2 right-3 h-4 w-4 rotate-45 bg-white border-t border-l border-gray-200"></div>
+
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-lg">Giỏ hàng</h3>
-                        <span className="text-sm text-gray-500">{items.length} khóa học</span> {/* Hiển thị số lượng khóa học */}
+                        <span className="text-sm text-gray-500">{items.length} khóa học</span>
                     </div>
 
-                    <CartItemList items={items} /> {/* Hiển thị danh sách các mục trong giỏ hàng */}
+                    <CartItemList
+                        items={items}
+                        onRemove={onRemoveItem}
+                    />
 
                     {items.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-gray-200">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="font-medium">Tổng cộng:</span>
-                                <span className="font-bold text-lg">{total}K VND</span> {/* Hiển thị tổng giá trị */}
+                                <span className="font-bold text-lg">{total}K VND</span>
                             </div>
-                            <ViewCartButton /> {/* Hiển thị nút ViewCartButton */}
+                            <ViewCartButton />
                         </div>
                     )}
                 </div>
@@ -42,4 +100,4 @@ const ShoppingCart = ({ items }: ShoppingCartProps) => {
     );
 };
 
-export default ShoppingCart; // Xuất component ShoppingCart để sử dụng ở nơi khác
+export default ShoppingCart;

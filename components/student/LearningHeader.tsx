@@ -13,7 +13,7 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
     return (
         <header className="bg-black text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
             <div className="flex items-center">
-                <Link href="/dashboard" className="mr-4">
+                <Link href="/" className="mr-4">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-8 w-8 text-white hover:text-gray-300 transition"
@@ -32,15 +32,28 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                 <div className="flex flex-col mr-8">
                     <h1 className="text-lg font-medium truncate max-w-sm">{courseTitle}</h1>
                     <div className="flex items-center">
-                        <div className="w-32 bg-gray-700 rounded-full h-1.5 mr-2">
+                        <div className="w-32 bg-gray-300 rounded-full h-1.5 mr-2">
                             <div
-                                className="bg-blue-500 h-1.5 rounded-full"
+                                className={`h-1.5 rounded-full transition-all duration-300 ${progress === 100
+                                    ? "bg-black"
+                                    : progress >= 80
+                                        ? "bg-gray-900"
+                                        : progress >= 60
+                                            ? "bg-gray-700"
+                                            : progress >= 40
+                                                ? "bg-gray-500"
+                                                : progress >= 20
+                                                    ? "bg-gray-400"
+                                                    : "bg-gray-300"
+                                    }`}
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
                         <span className="text-xs text-gray-400">{progress}% hoàn thành</span>
                     </div>
                 </div>
+
+
             </div>
 
             <div className="flex items-center space-x-4">
