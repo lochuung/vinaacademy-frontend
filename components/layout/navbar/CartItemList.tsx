@@ -1,14 +1,12 @@
-import { CartItem } from "@/types/navbar"; // Import kiểu dữ liệu CartItem từ thư mục types/navbar
-import Image from "next/image"; // Import component Image từ next/image
-import { X } from "lucide-react"; // Import icon X từ thư viện lucide-react
+import { CartItem } from "@/types/navbar";
+import Image from "next/image";
+import { X } from "lucide-react";
 
-// Định nghĩa interface cho các props của component CartItemList
 interface CartItemListProps {
-    items: CartItem[]; // Prop items là một mảng các đối tượng CartItem
-    onRemove?: (id: number) => void; // Prop onRemove là một hàm tùy chọn nhận vào id và không trả về giá trị
+    items: CartItem[];
+    onRemove?: (id: number) => void;
 }
 
-// Định nghĩa component CartItemList
 export const CartItemList = ({ items, onRemove }: CartItemListProps) => {
     if (items.length === 0) {
         return (
@@ -20,7 +18,7 @@ export const CartItemList = ({ items, onRemove }: CartItemListProps) => {
     }
 
     return (
-        <ul className="space-y-3 max-h-[300px] overflow-y-auto"> {/* Danh sách các mục trong giỏ hàng */}
+        <ul className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
             {items.map((item) => (
                 <CartItemRow
                     key={item.id}
@@ -32,36 +30,43 @@ export const CartItemList = ({ items, onRemove }: CartItemListProps) => {
     );
 };
 
-// Định nghĩa interface cho các props của component CartItemRow
 interface CartItemRowProps {
-    item: CartItem; // Prop item là một đối tượng CartItem
-    onRemove?: (id: number) => void; // Prop onRemove là một hàm tùy chọn nhận vào id và không trả về giá trị
+    item: CartItem;
+    onRemove?: (id: number) => void;
 }
 
-// Định nghĩa component CartItemRow
 const CartItemRow = ({ item, onRemove }: CartItemRowProps) => {
+    const handleRemove = () => {
+        if (onRemove) {
+            onRemove(item.id);
+        }
+    };
+
     return (
-        <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"> {/* Một mục trong giỏ hàng */}
-            <div className="relative w-16 h-16 flex-shrink-0"> {/* Hình ảnh của mục */}
+        <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+            <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                 <Image
                     src={item.image}
                     alt={item.name}
                     fill
-                    className="rounded-md object-cover"
+                    sizes="64px"
+                    className="object-cover"
+                    loading="lazy"
                 />
             </div>
-            <div className="flex-1 min-w-0"> {/* Thông tin của mục */}
-                <h4 className="text-sm font-medium text-gray-900 truncate">
+            <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-gray-900 line-clamp-2">
                     {item.name}
                 </h4>
                 <p className="text-sm text-gray-500 mt-1">{item.price}</p>
             </div>
             {onRemove && (
                 <button
-                    onClick={() => onRemove(item.id)} // Gọi hàm onRemove khi nhấn nút
+                    onClick={handleRemove}
                     className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                    aria-label="Xóa khỏi giỏ hàng"
                 >
-                    <X className="w-4 h-4 text-gray-400" /> {/* Icon X */}
+                    <X className="w-4 h-4 text-gray-400" />
                 </button>
             )}
         </li>

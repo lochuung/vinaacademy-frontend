@@ -128,12 +128,29 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
             </div>
 
             <div className="p-4 border-b border-gray-200">
-                <p className="text-sm text-gray-500">{totalLessons} bài học • {formatTotalDuration()} tổng thời lượng</p>
+                <p className="text-sm text-gray-500">
+                    {totalLessons} bài học • {formatTotalDuration()} tổng thời lượng
+                </p>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
+                    <div
+                        className={`h-2.5 rounded-full transition-all duration-300 ${progressPercentage === 100
+                            ? "bg-black"
+                            : progressPercentage >= 80
+                                ? "bg-gray-900"
+                                : progressPercentage >= 60
+                                    ? "bg-gray-700"
+                                    : progressPercentage >= 40
+                                        ? "bg-gray-500"
+                                        : progressPercentage >= 20
+                                            ? "bg-gray-400"
+                                            : "bg-gray-300"
+                            }`}
+                        style={{ width: `${progressPercentage}%` }}
+                    ></div>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">{progressPercentage}% hoàn thành</p>
             </div>
+
 
             <div className="overflow-y-auto flex-1">
                 {sections.map((section) => (

@@ -1,19 +1,45 @@
-import { ChevronRight, Flame } from "lucide-react"; // Import các icon ChevronRight và Flame từ thư viện lucide-react
-import { Category } from "@/types/navbar"; // Import kiểu dữ liệu Category từ thư mục types/navbar
-import SubCategoryItem from "./SubCategoryItem"; // Import component SubCategoryItem
+import { useState, useRef } from "react";
+import { ChevronRight } from "lucide-react";
+import { Category } from "@/types/navbar";
+import SubCategoryItem from "./SubCategoryItem";
 
-// Định nghĩa component CategoryItem với prop category là một đối tượng Category
-const CategoryItem = ({ category }: { category: Category }) => {
+interface CategoryItemProps {
+    category: Category;
+    isActive: boolean;
+    onHover: () => void;
+}
+
+const CategoryItem = ({ category, isActive, onHover }: CategoryItemProps) => {
+    const [activeSubCategory, setActiveSubCategory] = useState<number | null>(null);
+
+    const handleSubCategoryHover = (index: number) => {
+        setActiveSubCategory(index);
+    };
+
     return (
-        <div className="relative group/item"> {/* Container chính của CategoryItem */}
-            <a href={category.link} className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"> {/* Liên kết đến category */}
-                {category.name} {/* Tên của category */}
-                <ChevronRight className="w-4 h-4" /> {/* Icon ChevronRight */}
+        <div
+            className="relative"
+            onMouseEnter={onHover}
+        >
+            <a href={category.link} className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                {category.name}
+                <ChevronRight className="w-4 h-4" />
             </a>
-            <div className="absolute left-full top-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible transition-all duration-300 -ml-2 z-50"> {/* Container của subcategories */}
-                <div className="py-2"> {/* Padding cho subcategories */}
+
+            <div
+                className={`absolute left-full top-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg transition-all duration-200 -ml-2 z-50 ${isActive
+                    ? "transform-none opacity-100 visible"
+                    : "transform translate-x-2 opacity-0 invisible pointer-events-none"
+                    }`}
+            >
+                <div className="py-2">
                     {category.subCategories.map((subCategory, index) => (
-                        <SubCategoryItem key={index} subCategory={subCategory} /> // Hiển thị từng subcategory
+                        <SubCategoryItem
+                            key={index}
+                            subCategory={subCategory}
+                            isActive={activeSubCategory === index}
+                            onHover={() => handleSubCategoryHover(index)}
+                        />
                     ))}
                 </div>
             </div>
@@ -21,4 +47,4 @@ const CategoryItem = ({ category }: { category: Category }) => {
     );
 };
 
-export default CategoryItem; // Xuất component CategoryItem để sử dụng ở nơi khác
+export default CategoryItem;
