@@ -1,57 +1,88 @@
-"use client"; // Chỉ định rằng file này sẽ được render phía client
-import { useState, useRef } from "react"; // Import các hook useState và useRef từ react
-import Link from "next/link"; // Import component Link từ next/link
-import { FaUserCircle } from "react-icons/fa"; // Import icon FaUserCircle từ thư viện react-icons
-import UserDropdown from "./UserDropdown"; // Import component UserDropdown
+"use client";
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { FaUserCircle } from "react-icons/fa";
+import UserDropdown from "./UserDropdown";
 
-// Định nghĩa interface cho các props của component UserMenu
 interface UserMenuProps {
-    isLoggedIn: boolean; // Prop isLoggedIn là một boolean, đại diện cho trạng thái đăng nhập của người dùng
+    isLoggedIn: boolean;
 }
 
-// Định nghĩa component UserMenu
 const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
-    const [isOpen, setIsOpen] = useState(false); // Khởi tạo state isOpen với giá trị mặc định là false
-    const menuRef = useRef<HTMLDivElement>(null); // Khởi tạo ref cho menu
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Định nghĩa hàm handleToggle để xử lý khi người dùng nhấn vào menu
-    const handleToggle = () => {
-        setIsOpen((prev) => !prev); // Đảo ngược giá trị của isOpen
+    // Mở dropdown với độ trễ nhỏ để tránh hiệu ứng flicker
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setIsOpen(true);
+    };
+
+    // Đóng dropdown với độ trễ để tránh đóng ngay khi di chuyển chuột
+    const handleMouseLeave = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 300); // Độ trễ 300ms - giống ShoppingCart
+    };
+
+    // Dọn dẹp khi component unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Toggle dropdown khi click vào button
+    const toggleDropdown = () => {
+        setIsOpen(prevState => !prevState);
     };
 
     return (
-        <div className="relative" ref={menuRef}>
+        <div
+            className="relative"
+            ref={menuRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             {isLoggedIn ? (
                 <div
-                    className="flex items-center space-x-2 cursor-pointer"
-                    onMouseEnter={() => setIsOpen(true)} // Mở dropdown khi hover vào icon
-                    onClick={handleToggle} // Click để giữ dropdown mở
+                    className={`flex items-center space-x-2 cursor-pointer p-2 rounded-full transition-colors duration-200 ${isOpen ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                    onClick={toggleDropdown}
+                    aria-expanded={isOpen}
+                    aria-haspopup="true"
                 >
-                    <FaUserCircle size={24} className="text-black" /> {/* Hiển thị icon FaUserCircle */}
+                    <FaUserCircle size={24} className="text-black" />
                 </div>
             ) : (
-                <>
-                    <div className="flex space-x-3"> {/* Tạo khoảng cách giữa các nút */}
-                        <Link
-                            href="/login"
-                            className="px-4 py-2 border border-black text-black rounded hover:bg-gray-200"
-                        >
-                            Đăng nhập
-                        </Link>
-                        <Link
-                            href="/register"
-                            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-                        >
-                            Đăng ký
-                        </Link>
-                    </div>
-                </>
+                <div className="flex space-x-3">
+                    <Link
+                        href="/login"
+                        className="px-4 py-2 border border-black text-black rounded hover:bg-gray-200"
+                    >
+                        Đăng nhập
+                    </Link>
+                    <Link
+                        href="/register"
+                        className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+                    >
+                        Đăng ký
+                    </Link>
+                </div>
             )}
 
-            {/* Dropdown hiển thị khi hover hoặc click */}
-            {isOpen && <UserDropdown onClose={() => setIsOpen(false)} />}
+            <UserDropdown isVisible={isOpen} />
         </div>
     );
 };
 
-export default UserMenu; // Xuất component UserMenu để sử dụng ở nơi khác
+export default UserMenu;

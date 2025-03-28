@@ -27,7 +27,7 @@ const UserLearning = () => {
 
     return (
         <div className="relative group">
-            <Link href="/my-courses" className="flex items-center space-x-2 hover:text-gray-600">
+            <Link href="/my-courses" className="flex items-center space-x-2 hover:text-gray-500">
                 <span>Khóa học của tôi</span>
             </Link>
             <div className="absolute right-0 top-10 w-72 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">

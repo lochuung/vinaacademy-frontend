@@ -66,7 +66,7 @@ const ExploreDropdown = ({ categories = categoriesData }: ExploreDropdownProps) 
             onMouseLeave={handleMouseLeave}
         >
             <button
-                className="flex items-center gap-1 hover:text-blue-600 py-2 font-medium"
+                className="flex items-center gap-1 hover:text-gray-500 py-2 font-medium"
                 aria-expanded={isOpen}
                 aria-haspopup="true"
             >

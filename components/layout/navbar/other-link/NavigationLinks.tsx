@@ -13,7 +13,7 @@ export const NavigationLinks = () => {
                 <li key={link.href}> {/* Mỗi liên kết là một mục trong danh sách */}
                     <Link
                         href={link.href}
-                        className="text-gray-700 hover:text-black transition-colors duration-200"
+                        className="hover:text-gray-500 transition-colors duration-200"
                     >
                         {link.label} {/* Hiển thị nhãn của liên kết */}
                     </Link>

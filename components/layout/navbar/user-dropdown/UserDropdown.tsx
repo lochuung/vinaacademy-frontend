@@ -1,35 +1,22 @@
-import Link from "next/link"; // Import component Link từ next/link
-import { useEffect, useRef } from "react"; // Import các hook useEffect và useRef từ react
+import Link from "next/link";
 
-// Định nghĩa interface cho các props của component UserDropdown
 interface UserDropdownProps {
-    onClose: () => void; // Prop onClose là một hàm không có tham số và không trả về giá trị
+    onClose?: () => void;
+    isVisible: boolean;
 }
 
-// Định nghĩa component UserDropdown
-const UserDropdown = ({ onClose }: UserDropdownProps) => {
-    const dropdownRef = useRef<HTMLDivElement>(null); // Khởi tạo ref cho dropdown
-
-    useEffect(() => {
-        // Định nghĩa hàm handleClickOutside để xử lý khi người dùng nhấn bên ngoài dropdown
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                onClose(); // Gọi hàm onClose nếu nhấn bên ngoài dropdown
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside); // Thêm sự kiện mousedown vào document
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside); // Xóa sự kiện mousedown khi component unmount
-        };
-    }, [onClose]);
-
+const UserDropdown = ({ isVisible }: UserDropdownProps) => {
     return (
         <div
-            ref={dropdownRef}
-            className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-300 z-50"
-            onMouseLeave={onClose} // Đóng dropdown khi chuột rời khỏi
+            className={`absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isVisible
+                ? "transform-none opacity-100 visible"
+                : "transform translate-y-2 opacity-0 invisible pointer-events-none"
+                }`}
+            aria-hidden={!isVisible}
         >
+            {/* Mũi tên chỉ hướng */}
+            <div className="absolute -top-2 right-3 h-4 w-4 rotate-45 bg-white border-t border-l border-gray-200"></div>
+
             <ul className="py-2">
                 <li>
                     <Link
@@ -60,4 +47,4 @@ const UserDropdown = ({ onClose }: UserDropdownProps) => {
     );
 };
 
-export default UserDropdown; // Xuất component UserDropdown để sử dụng ở nơi khác
+export default UserDropdown;

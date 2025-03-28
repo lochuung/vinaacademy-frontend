@@ -47,7 +47,7 @@ export default function SubNavbar() {
                     >
                         <a
                             href={category.link}
-                            className="text-gray-700 hover:text-blue-600 font-medium transition duration-200"
+                            className="text-black hover:text-gray-500 font-medium transition duration-200"
                             onClick={(e) => handleCategoryClick(e, category)}
                         >
                             {category.name}
