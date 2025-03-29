@@ -1,4 +1,3 @@
-// components/ExploreDropdown/CategoriesList.tsx
 import { useRouter } from "next/navigation";
 import { Category } from "@/types/navbar";
 import { ChevronRight } from "lucide-react";
@@ -60,7 +59,7 @@ const CategoriesList = ({
 
             <a
                 href="/categories"
-                className="block px-4 py-2 hover:bg-gray-100 text-blue-600"
+                className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
             >
                 Xem tất cả danh mục
             </a>

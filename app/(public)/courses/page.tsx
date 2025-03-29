@@ -5,12 +5,12 @@ import { mockCourses } from "@/data/mockCourses";
 import { categoriesData } from "@/data/categories";
 
 // Import components
-import { HeroSection } from "@/components/course/all-courses/HeroSection";
-import { SortingControl } from "@/components/course/all-courses/SortingControl";
-import { CourseFilterTags } from "@/components/course/all-courses/CourseFilterTags";
-import { CourseFilterSidebar } from "@/components/course/all-courses/CourseFilterSidebar";
-import { MobileFilterDrawer } from "@/components/course/all-courses/MobileFilterDrawer";
-import { CoursesGrid } from "@/components/course/all-courses/CoursesGrid";
+import { HeroSection } from "@/components/courses/all-courses/HeroSection";
+import { SortingControl } from "@/components/courses/all-courses/SortingControl";
+import { CourseFilterTags } from "@/components/courses/all-courses/CourseFilterTags";
+import { CourseFilterSidebar } from "@/components/courses/all-courses/CourseFilterSidebar";
+import { MobileFilterDrawer } from "@/components/courses/all-courses/MobileFilterDrawer";
+import { CoursesGrid } from "@/components/courses/all-courses/CoursesGrid";
 
 export default function AllCoursesPage() {
     // State cho các khóa học và bộ lọc

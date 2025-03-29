@@ -1,4 +1,3 @@
-// components/ExploreDropdown/TopicsList.tsx
 import { useRouter } from "next/navigation";
 import { SubCategory } from "@/types/navbar";
 

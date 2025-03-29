@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { categoriesData } from "@/data/categories";
-
-// Import components
 import { HeroSection } from "@/components/categories/HeroSection";
 import { FeaturedCategories } from "@/components/categories/FeaturedCategories";
 import { CategoriesGrid } from "@/components/categories/CategoriesGrid";
