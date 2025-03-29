@@ -12,9 +12,11 @@ interface CategoryFilterProps {
     categories: string[];
     expandedCategories: string[];
     handleCategoryToggle: (category: string) => void;
+    handleCategoryExpand: (category: string) => void;
     subCategories: string[];
     expandedSubCategories: string[];
     handleSubCategoryToggle: (subCategory: string) => void;
+    handleSubCategoryExpand: (subCategory: string) => void;
     selectedTopics: string[];
     handleTopicToggle: (topic: string) => void;
 }
@@ -25,9 +27,11 @@ export default function CategoryFilter({
     categories,
     expandedCategories,
     handleCategoryToggle,
+    handleCategoryExpand,
     subCategories,
     expandedSubCategories,
     handleSubCategoryToggle,
+    handleSubCategoryExpand,
     selectedTopics,
     handleTopicToggle
 }: CategoryFilterProps) {
@@ -48,20 +52,26 @@ export default function CategoryFilter({
                                 checked={categories.includes(category.name)}
                                 onCheckedChange={() => handleCategoryToggle(category.name)}
                             />
-                            <div
-                                className="flex items-center justify-between w-full ml-2 cursor-pointer"
-                                onClick={() => handleCategoryToggle(category.name)}
-                            >
+                            <div className="flex items-center justify-between w-full ml-2">
                                 <Label
                                     htmlFor={`category-${category.name}`}
                                     className="text-sm cursor-pointer font-medium"
+                                    onClick={() => handleCategoryToggle(category.name)}
                                 >
                                     {category.name}
                                 </Label>
-                                {expandedCategories.includes(category.name) ?
-                                    <ChevronUp size={14} /> :
-                                    <ChevronDown size={14} />
-                                }
+                                <button
+                                    className="focus:outline-none"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCategoryExpand(category.name);
+                                    }}
+                                >
+                                    {expandedCategories.includes(category.name) ?
+                                        <ChevronUp size={14} /> :
+                                        <ChevronDown size={14} />
+                                    }
+                                </button>
                             </div>
                         </div>
 
@@ -76,20 +86,26 @@ export default function CategoryFilter({
                                                 checked={subCategories.includes(subCat.name)}
                                                 onCheckedChange={() => handleSubCategoryToggle(subCat.name)}
                                             />
-                                            <div
-                                                className="flex items-center justify-between w-full ml-2 cursor-pointer"
-                                                onClick={() => handleSubCategoryToggle(subCat.name)}
-                                            >
+                                            <div className="flex items-center justify-between w-full ml-2">
                                                 <Label
                                                     htmlFor={`subcat-${subCat.name}`}
                                                     className="text-sm cursor-pointer"
+                                                    onClick={() => handleSubCategoryToggle(subCat.name)}
                                                 >
                                                     {subCat.name}
                                                 </Label>
-                                                {expandedSubCategories.includes(subCat.name) ?
-                                                    <ChevronUp size={14} /> :
-                                                    <ChevronDown size={14} />
-                                                }
+                                                <button
+                                                    className="focus:outline-none"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleSubCategoryExpand(subCat.name);
+                                                    }}
+                                                >
+                                                    {expandedSubCategories.includes(subCat.name) ?
+                                                        <ChevronUp size={14} /> :
+                                                        <ChevronDown size={14} />
+                                                    }
+                                                </button>
                                             </div>
                                         </div>
 

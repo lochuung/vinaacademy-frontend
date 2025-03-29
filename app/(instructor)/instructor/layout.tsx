@@ -118,9 +118,9 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
                             </div>
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <Link href="/instructor/courses/new">
+                                    <Link href="/">
                                         <button className="bg-black hover:bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium">
-                                            Tạo khóa học mới
+                                            Về trang chủ
                                         </button>
                                     </Link>
                                 </div>

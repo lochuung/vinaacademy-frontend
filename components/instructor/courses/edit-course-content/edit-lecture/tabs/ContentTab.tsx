@@ -1,9 +1,9 @@
+// components/lecture/tabs/ContentTab.tsx
 import { useState } from 'react';
-import { Video, FileText, MessageSquare, Monitor, HelpCircle, List, Play } from 'lucide-react';
 import VideoUploader from '../content/VideoUploader';
 import TextEditor from '../content/TextEditor';
 import ContentTypeSelector from '../content/ContentTypeSelector';
-import QuizEditor from '../content/QuizEditor';
+import QuizEditor from '../content/quiz/QuizEditor';
 import AssignmentEditor from '../content/AssignmentEditor';
 import { Lecture } from '@/types/lecture';
 
@@ -18,10 +18,50 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setLecture({
-            ...lecture,
-            [name]: value
-        });
+
+        // For type changes, we need to handle differently
+        if (name === 'type' && value !== lecture.type) {
+            // Reset specific content fields when changing type
+            if (value === 'video') {
+                setLecture({
+                    ...lecture,
+                    type: value as Lecture['type'],
+                    textContent: '',
+                    quiz: undefined
+                });
+            } else if (value === 'text') {
+                setLecture({
+                    ...lecture,
+                    type: value as Lecture['type'],
+                    videoUrl: '',
+                    duration: undefined,
+                    quiz: undefined
+                });
+            } else if (value === 'quiz') {
+                setLecture({
+                    ...lecture,
+                    type: value as Lecture['type'],
+                    videoUrl: '',
+                    textContent: '',
+                    duration: undefined
+                });
+            } else if (value === 'assignment') {
+                setLecture({
+                    ...lecture,
+                    type: value as Lecture['type'],
+                    videoUrl: '',
+                    textContent: '',
+                    duration: undefined,
+                    quiz: undefined
+                });
+            }
+        } else {
+            // For other fields, simply update the value
+            setLecture({
+                ...lecture,
+                [name]: value
+            });
+        }
     };
 
     const handleTextContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -106,7 +146,7 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
             {/* Loại nội dung */}
             <ContentTypeSelector lecture={lecture} handleInputChange={handleInputChange} />
 
-            {/* Upload video */}
+            {/* Content based on type */}
             {lecture.type === 'video' && (
                 <VideoUploader
                     lecture={lecture}
@@ -117,7 +157,6 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
                 />
             )}
 
-            {/* Editor cho text content */}
             {lecture.type === 'text' && (
                 <TextEditor
                     textContent={lecture.textContent || ''}
@@ -125,10 +164,10 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
                 />
             )}
 
-            {/* Quiz editor */}
-            {lecture.type === 'quiz' && <QuizEditor />}
+            {lecture.type === 'quiz' && (
+                <QuizEditor lecture={lecture} setLecture={setLecture} />
+            )}
 
-            {/* Assignment editor */}
             {lecture.type === 'assignment' && <AssignmentEditor />}
         </div>
     );

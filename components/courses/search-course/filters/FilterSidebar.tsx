@@ -38,7 +38,7 @@ export default function FilterSidebar({
     applyFilters,
     clearAllFilters
 }: FilterSidebarProps) {
-    // State for expanded filter sections
+    // Trạng thái cho các phần bộ lọc mở rộng
     const [expandedSections, setExpandedSections] = useState({
         categories: true,
         price: true,
@@ -46,11 +46,11 @@ export default function FilterSidebar({
         rating: true,
     });
 
-    // State for expanded categories
+    // Trạng thái cho danh mục mở rộng
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [expandedSubCategories, setExpandedSubCategories] = useState<string[]>([]);
 
-    // Toggle filter section visibility
+    // Chuyển đổi hiển thị phần bộ lọc
     const toggleSection = (section: 'categories' | 'price' | 'level' | 'rating') => {
         setExpandedSections(prev => ({
             ...prev,
@@ -58,16 +58,9 @@ export default function FilterSidebar({
         }));
     };
 
-    // Handle category toggle
+    // Xử lý chuyển đổi danh mục - CHỈ cho checkbox
     const handleCategoryToggle = (categoryName: string) => {
-        // Toggle expanded state
-        if (expandedCategories.includes(categoryName)) {
-            setExpandedCategories(expandedCategories.filter(cat => cat !== categoryName));
-        } else {
-            setExpandedCategories([...expandedCategories, categoryName]);
-        }
-
-        // Update filter selection
+        // Cập nhật lựa chọn bộ lọc
         let newCategories;
         if (categories.includes(categoryName)) {
             newCategories = categories.filter(c => c !== categoryName);
@@ -80,16 +73,19 @@ export default function FilterSidebar({
         });
     };
 
-    // Handle subcategory toggle
-    const handleSubCategoryToggle = (subCategoryId: string) => {
-        // Toggle expanded state
-        if (expandedSubCategories.includes(subCategoryId)) {
-            setExpandedSubCategories(expandedSubCategories.filter(id => id !== subCategoryId));
+    // Xử lý mở rộng danh mục - CHỈ cho trạng thái mở rộng
+    const handleCategoryExpand = (categoryName: string) => {
+        // Chuyển đổi trạng thái mở rộng
+        if (expandedCategories.includes(categoryName)) {
+            setExpandedCategories(expandedCategories.filter(cat => cat !== categoryName));
         } else {
-            setExpandedSubCategories([...expandedSubCategories, subCategoryId]);
+            setExpandedCategories([...expandedCategories, categoryName]);
         }
+    };
 
-        // Update filter selection
+    // Xử lý chuyển đổi danh mục con - CHỈ cho checkbox
+    const handleSubCategoryToggle = (subCategoryId: string) => {
+        // Cập nhật lựa chọn bộ lọc
         let newSubCategories;
         if (subCategories.includes(subCategoryId)) {
             newSubCategories = subCategories.filter(id => id !== subCategoryId);
@@ -102,7 +98,17 @@ export default function FilterSidebar({
         });
     };
 
-    // Handle topic toggle
+    // Xử lý mở rộng danh mục con - CHỈ cho trạng thái mở rộng
+    const handleSubCategoryExpand = (subCategoryId: string) => {
+        // Chuyển đổi trạng thái mở rộng
+        if (expandedSubCategories.includes(subCategoryId)) {
+            setExpandedSubCategories(expandedSubCategories.filter(id => id !== subCategoryId));
+        } else {
+            setExpandedSubCategories([...expandedSubCategories, subCategoryId]);
+        }
+    };
+
+    // Xử lý chuyển đổi chủ đề
     const handleTopicToggle = (topicName: string) => {
         let newTopics;
         if (topics.includes(topicName)) {
@@ -111,7 +117,7 @@ export default function FilterSidebar({
             newTopics = [...topics, topicName];
         }
 
-        // Update local state immediately for responsive UI
+        // Cập nhật trạng thái cục bộ ngay lập tức để giao diện phản hồi
         setSelectedTopics(newTopics);
 
         applyFilters({
@@ -119,7 +125,7 @@ export default function FilterSidebar({
         });
     };
 
-    // Handle level toggle
+    // Xử lý chuyển đổi cấp độ
     const handleLevelToggle = (levelName: string) => {
         let newLevels;
         if (levels.includes(levelName)) {
@@ -136,7 +142,7 @@ export default function FilterSidebar({
     return (
         <div className={`${showMobileFilters ? 'block' : 'hidden'} lg:block lg:w-1/4`}>
             <div className="bg-white rounded-lg shadow-sm p-4 sticky top-24" style={{ position: "sticky", top: "24px" }}>
-                {/* Mobile header */}
+                {/* Tiêu đề trên thiết bị di động */}
                 <div className="lg:hidden flex justify-between items-center mb-4">
                     <h3 className="font-bold">Bộ lọc</h3>
                     <Button variant="ghost" size="sm" onClick={toggleMobileFilters}>
@@ -144,21 +150,23 @@ export default function FilterSidebar({
                     </Button>
                 </div>
 
-                {/* Category filter */}
+                {/* Bộ lọc danh mục */}
                 <CategoryFilter
                     expanded={expandedSections.categories}
                     toggleSection={() => toggleSection('categories')}
                     categories={categories}
                     expandedCategories={expandedCategories}
                     handleCategoryToggle={handleCategoryToggle}
+                    handleCategoryExpand={handleCategoryExpand}
                     subCategories={subCategories}
                     expandedSubCategories={expandedSubCategories}
                     handleSubCategoryToggle={handleSubCategoryToggle}
+                    handleSubCategoryExpand={handleSubCategoryExpand}
                     selectedTopics={selectedTopics}
                     handleTopicToggle={handleTopicToggle}
                 />
 
-                {/* Price range filter */}
+                {/* Bộ lọc khoảng giá */}
                 <PriceRangeFilter
                     expanded={expandedSections.price}
                     toggleSection={() => toggleSection('price')}
@@ -167,7 +175,7 @@ export default function FilterSidebar({
                     applyFilters={applyFilters}
                 />
 
-                {/* Level filter */}
+                {/* Bộ lọc cấp độ */}
                 <LevelFilter
                     expanded={expandedSections.level}
                     toggleSection={() => toggleSection('level')}
@@ -175,13 +183,13 @@ export default function FilterSidebar({
                     handleLevelToggle={handleLevelToggle}
                 />
 
-                {/* Rating filter */}
+                {/* Bộ lọc đánh giá */}
                 <RatingFilter
                     expanded={expandedSections.rating}
                     toggleSection={() => toggleSection('rating')}
                 />
 
-                {/* Clear all filters button */}
+                {/* Nút xóa tất cả bộ lọc */}
                 {(categories.length > 0 || subCategories.length > 0 || topics.length > 0 || minPrice || maxPrice || levels.length > 0) && (
                     <Button
                         variant="outline"
