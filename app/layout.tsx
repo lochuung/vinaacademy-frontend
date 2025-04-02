@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,9 +23,9 @@ export default function RootLayout({
           {children}
         </LayoutWrapper>
 
-        {/* Script để khắc phục vấn đề điều hướng */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        {/* Use Next.js Script component for client-side scripts */}
+        <Script id="navigation-fix">
+          {`
             // Xử lý việc quay về trang chủ từ Logo
             document.addEventListener('DOMContentLoaded', function() {
               const logo = document.querySelector('a.text-2xl.font-bold');
@@ -37,8 +38,8 @@ export default function RootLayout({
                 });
               }
             });
-          `
-        }} />
+          `}
+        </Script>
       </body>
     </html>
   );

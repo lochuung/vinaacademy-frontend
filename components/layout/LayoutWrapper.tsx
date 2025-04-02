@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "./navbar/Navbar";
 import ClientWrapper from "./announcement-bar/ClientWrapper";
 import Footer from "./Footer";
+import LogoClickHandler from "./LogoClickHandler"; // Import the new component
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
         <>
             {!shouldHideLayout && <ClientWrapper />}
             {!shouldHideLayout && <Navbar />}
+            {!shouldHideLayout && <LogoClickHandler />} {/* Add the new component */}
             {children}
             {!shouldHideLayout && <Footer />}
         </>
