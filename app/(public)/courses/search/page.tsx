@@ -3,11 +3,11 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { mockCourses } from "@/data/mockCourses";
-import SearchResults from "@/components/course/search-course/search/SearchResults";
-import FilterSidebar from "@/components/course/search-course/filters/FilterSidebar";
-import MobileFilterToggle from "@/components/course/search-course/filters/MobileFilterToggle";
-import NoResultsFound from "@/components/course/search-course/ui/NoResultsFound";
-import SearchHeader from "@/components/course/search-course/search/SearchHeader";
+import SearchResults from "@/components/courses/search-course/search/SearchResults";
+import FilterSidebar from "@/components/courses/search-course/filters/FilterSidebar";
+import MobileFilterToggle from "@/components/courses/search-course/filters/MobileFilterToggle";
+import NoResultsFound from "@/components/courses/search-course/ui/NoResultsFound";
+import SearchHeader from "@/components/courses/search-course/search/SearchHeader";
 // Types
 export type FilterUpdates = {
     [key: string]: string | null;

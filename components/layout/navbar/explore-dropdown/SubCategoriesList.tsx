@@ -1,4 +1,3 @@
-// components/ExploreDropdown/SubCategoriesList.tsx
 import { useRouter } from "next/navigation";
 import { Category } from "@/types/navbar";
 import { ChevronRight } from "lucide-react";

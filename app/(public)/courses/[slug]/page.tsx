@@ -1,7 +1,7 @@
-import CourseHeader from '@/components/course/course-detail/CourseHeader';
-import CourseDetails from '@/components/course/course-detail/CourseDetails';
-import CourseReviews from '@/components/course/course-detail/CourseReviews';
-import PurchaseCard from '@/components/course/course-detail/PurchaseCard';
+import CourseHeader from '@/components/courses/course-detail/CourseHeader';
+import CourseDetails from '@/components/courses/course-detail/CourseDetails';
+import CourseReviews from '@/components/courses/course-detail/CourseReviews';
+import PurchaseCard from '@/components/courses/course-detail/PurchaseCard';
 import { Metadata } from 'next';
 import Script from 'next/script';
 

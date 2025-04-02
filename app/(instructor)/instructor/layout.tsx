@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,12 +19,16 @@ interface InstructorLayoutProps {
 }
 
 export default function InstructorLayout({ children }: InstructorLayoutProps) {
-    // Trong client component thực tế, bạn sẽ dùng usePathname() từ 'next/navigation'
-    // Tại đây chúng ta sẽ hardcode một giá trị mẫu cho layout
-    // const pathname = usePathname();
-    const pathname = "/instructor/courses";
+    const pathname = usePathname();
 
     const isActive = (path: string) => {
+        if (path === '/instructor/courses' && pathname === path) {
+            return 'bg-gray-900 text-white';
+        }
+        // Special case for new course path to not highlight courses
+        if (pathname === '/instructor/courses/new') {
+            return path === '/instructor/courses/new' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white';
+        }
         return pathname.includes(path) ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white';
     };
 
@@ -112,9 +118,9 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
                             </div>
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <Link href="/instructor/courses/new">
+                                    <Link href="/">
                                         <button className="bg-black hover:bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium">
-                                            Tạo khóa học mới
+                                            Về trang chủ
                                         </button>
                                     </Link>
                                 </div>
