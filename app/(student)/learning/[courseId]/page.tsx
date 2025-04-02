@@ -1,150 +1,262 @@
-// app/(student)/learning/page.tsx
 'use client';
 
-import { FC, useState } from 'react';
-import VideoPlayer from '@/components/student/learning/VideoPlayer';
-import ReadingContent from '@/components/student/learning/ReadingContent';
-import CourseContent from '@/components/student/learning/CourseContent';
+import { FC, useState, useEffect } from 'react';
+import { use } from 'react';
+import Link from 'next/link';
+import { BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle } from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
-import LearningTabs from '@/components/student/learning/LearningTabs';
+import { Course } from '@/types/lecture';
+import { mockCourseData } from '@/data/mockLearningData';
+import StatusToast from '@/components/student/learning/shared/StatusToast';
 
-interface LearningPageProps {
-    params: {
+interface CoursePageProps {
+    params: Promise<{
         courseId: string;
-        lessonId: string;
-    };
+    }>;
 }
 
-const LearningPage: FC<LearningPageProps> = ({ params }) => {
-    const [currentTimestamp, setCurrentTimestamp] = useState<number>(0);
-    const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+const CoursePage: FC<CoursePageProps> = ({ params }) => {
+    // Unwrap the params Promise
+    const unwrappedParams = use(params);
+    const courseId = unwrappedParams.courseId;
 
-    // Trong ứng dụng thực tế, bạn sẽ lấy dữ liệu này từ API của bạn
-    // dựa trên courseId và lessonId
-    const mockCourseData = {
-        id: params.courseId,
-        title: 'Python cho Người Mới Bắt Đầu',
-        currentLesson: {
-            id: params.lessonId,
-            title: 'Sử dụng toán tử',
-            type: 'video', // Thêm trường type để xác định loại bài học: 'video' hoặc 'reading'
-            videoUrl: '/api/video/lesson-1',
-            description: 'Học cách sử dụng các toán tử cơ bản trong Python',
-            duration: '10 phút',
-        },
-        sections: [
-            {
-                id: '1',
-                title: 'Bắt Đầu',
-                lessons: [
-                    { id: '1', title: 'Giới thiệu', duration: '4 phút', isCompleted: true },
-                    { id: '2', title: 'Thiết lập môi trường của bạn', duration: '8 phút', isCompleted: true },
-                ],
-            },
-            {
-                id: '2',
-                title: 'Cơ Bản về Python',
-                lessons: [
-                    { id: '3', title: 'Sử dụng toán tử', duration: '10 phút', isCompleted: false, isCurrent: true },
-                    {
-                        id: '4',
-                        title: 'Tìm hiểu toán tử Python: Hướng dẫn toàn diện',
-                        duration: '15 phút đọc',
-                        isCompleted: false,
-                        type: 'reading'
-                    },
-                    { id: '5', title: 'Hướng dẫn AI tạo mã (Ví dụ 1)', duration: '10 phút', isCompleted: false },
-                    { id: '6', title: 'Hướng dẫn AI tạo mã (Ví dụ 2)', duration: '7 phút', isCompleted: false },
-                    { id: '7', title: 'Bài kiểm tra 2: Kiểm tra Phần 2', duration: '5 phút', isCompleted: false },
-                ],
-            },
-            {
-                id: '3',
-                title: 'Rẽ Nhánh và Vòng Lặp',
-                lessons: [
-                    { id: '8', title: 'Câu lệnh if', duration: '15 phút', isCompleted: false },
-                    { id: '9', title: 'Vòng lặp for', duration: '12 phút', isCompleted: false },
-                    { id: '10', title: 'Vòng lặp while', duration: '10 phút', isCompleted: false },
-                ],
-            },
-        ],
-        progress: 25, // phần trăm
+    const [course, setCourse] = useState<Course>(mockCourseData as unknown as Course);
+    const [loading, setLoading] = useState(true);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
+    // Lấy thông tin khóa học từ API hoặc dữ liệu mẫu
+    useEffect(() => {
+        // Trong thực tế, bạn sẽ gọi API để lấy thông tin khóa học
+        // const fetchCourse = async () => {
+        //   const response = await fetch(`/api/courses/${courseId}`);
+        //   const data = await response.json();
+        //   setCourse(data);
+        //   setLoading(false);
+        // };
+        // fetchCourse();
+
+        // Mô phỏng việc tải dữ liệu
+        setLoading(true);
+        setTimeout(() => {
+            setCourse(mockCourseData as unknown as Course);
+            setLoading(false);
+        }, 500);
+    }, [courseId]);
+
+    const handleContinueLearning = () => {
+        setToastMessage('Tiếp tục học tập từ bài học cuối cùng');
+        setShowToast(true);
     };
 
-    const handleTimeUpdate = (time: number) => {
-        setCurrentTimestamp(time);
+    if (loading) {
+        return (
+            <div className="flex flex-col h-screen bg-white text-black">
+                <LearningHeader
+                    courseTitle={mockCourseData.title}
+                    progress={mockCourseData.progress}
+                    courseId={courseId}
+                />
+                <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        );
+    }
+
+    // Tính tổng số bài học
+    const totalLectures = course.sections.reduce(
+        (acc, section) => acc + section.lectures.length,
+        0
+    );
+
+    // Đếm số bài học theo loại
+    const countLecturesByType = (type: string) => {
+        return course.sections
+            .flatMap(section => section.lectures)
+            .filter(lecture => lecture.type === type)
+            .length;
     };
 
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
+    // Icon cho loại bài học
+    const getLectureTypeIcon = (type: string) => {
+        switch (type) {
+            case 'video':
+                return <Video className="w-4 h-4 text-blue-500" />;
+            case 'reading':
+                return <BookOpen className="w-4 h-4 text-green-500" />;
+            case 'quiz':
+                return <FileText className="w-4 h-4 text-orange-500" />;
+            case 'assignment':
+                return <PenSquare className="w-4 h-4 text-purple-500" />;
+            default:
+                return <Video className="w-4 h-4 text-gray-500" />;
+        }
     };
-
-    // Kiểm tra xem bài học hiện tại có phải là dạng đọc hay không
-    const isReadingLesson = mockCourseData.currentLesson.type === 'reading';
 
     return (
-        <div className="flex flex-col h-screen bg-white text-black">
+        <div className="flex flex-col min-h-screen bg-gray-50">
             <LearningHeader
-                courseTitle={mockCourseData.title}
-                progress={mockCourseData.progress}
+                courseTitle={course.title}
+                progress={course.progress}
+                courseId={courseId}
             />
 
-            <div className="flex flex-1 overflow-hidden">
-                {/* Khu vực nội dung chính - bố cục theo chiều dọc */}
-                <div className="flex-1 overflow-y-auto">
-                    <div className="flex flex-col">
-                        {/* Hiển thị nội dung học tập dựa theo loại bài học */}
-                        {isReadingLesson ? (
-                            <div className="w-full p-4 bg-white">
-                                <ReadingContent
-                                    lessonId={mockCourseData.currentLesson.id}
-                                    courseId={mockCourseData.id}
-                                />
+            <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-1">
+                <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+                    {/* Header của khóa học */}
+                    <div className="p-6 md:p-8 border-b border-gray-200">
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{course.title}</h1>
+                        <div className="mt-4 flex flex-wrap items-center gap-6">
+                            <div className="flex items-center text-gray-600">
+                                <Clock className="w-5 h-5 mr-2" />
+                                <span>20 giờ tổng thời lượng</span>
                             </div>
-                        ) : (
-                            <div className="w-full bg-black">
-                                <VideoPlayer
-                                    videoUrl={mockCourseData.currentLesson.videoUrl}
-                                    title={mockCourseData.currentLesson.title}
-                                    onTimeUpdate={handleTimeUpdate}
-                                />
+                            <div className="flex items-center text-gray-600">
+                                <FileText className="w-5 h-5 mr-2" />
+                                <span>{totalLectures} bài học</span>
+                            </div>
+                            <div className="flex items-center text-gray-600">
+                                <Users className="w-5 h-5 mr-2" />
+                                <span>1,234 học viên</span>
+                            </div>
+                            <div className="flex items-center text-gray-600">
+                                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                <span>Cập nhật lần cuối: T3/2025</span>
+                            </div>
+                        </div>
+
+                        {/* Thanh tiến độ */}
+                        <div className="mt-6">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-medium text-gray-700">Tiến độ học tập</span>
+                                <span className="text-sm font-medium text-blue-600">{course.progress}% hoàn thành</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                    className="bg-blue-600 h-2 rounded-full"
+                                    style={{ width: `${course.progress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+
+                        {/* Tiếp tục học */}
+                        {course.currentLecture && (
+                            <div className="mt-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-2">Tiếp tục học</h2>
+                                <Link
+                                    href={`/learning/${courseId}/lecture/${course.currentLecture.id}`}
+                                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                                    onClick={handleContinueLearning}
+                                >
+                                    <div className="flex items-center">
+                                        {getLectureTypeIcon(course.currentLecture.type)}
+                                        <div className="ml-3">
+                                            <p className="font-medium text-gray-800">{course.currentLecture.title}</p>
+                                            <p className="text-sm text-gray-500">{course.currentLecture.duration}</p>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                                </Link>
                             </div>
                         )}
+                    </div>
 
-                        {/* Các tab học tập dưới nội dung - không có overflow riêng */}
-                        <div>
-                            <LearningTabs
-                                lesson={mockCourseData.currentLesson}
-                                courseId={mockCourseData.id}
-                                currentTimestamp={currentTimestamp}
-                            />
+                    {/* Nội dung khóa học */}
+                    <div className="p-6 md:p-8">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4">Nội dung khóa học</h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div className="p-4 bg-blue-50 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-blue-700">Video</p>
+                                    <p className="text-xl font-bold text-blue-900">{countLecturesByType('video')}</p>
+                                </div>
+                                <Video className="w-8 h-8 text-blue-500" />
+                            </div>
+                            <div className="p-4 bg-green-50 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-green-700">Bài đọc</p>
+                                    <p className="text-xl font-bold text-green-900">{countLecturesByType('reading')}</p>
+                                </div>
+                                <BookOpen className="w-8 h-8 text-green-500" />
+                            </div>
+                            <div className="p-4 bg-orange-50 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-orange-700">Bài kiểm tra</p>
+                                    <p className="text-xl font-bold text-orange-900">{countLecturesByType('quiz')}</p>
+                                </div>
+                                <FileText className="w-8 h-8 text-orange-500" />
+                            </div>
+                            <div className="p-4 bg-purple-50 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-purple-700">Bài tập</p>
+                                    <p className="text-xl font-bold text-purple-900">{countLecturesByType('assignment')}</p>
+                                </div>
+                                <PenSquare className="w-8 h-8 text-purple-500" />
+                            </div>
+                        </div>
+
+                        {/* Danh sách các phần */}
+                        <div className="space-y-4">
+                            {course.sections.map((section, sectionIndex) => (
+                                <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div className="p-4 bg-gray-50 border-b border-gray-200">
+                                        <h3 className="font-medium text-gray-800">
+                                            Phần {sectionIndex + 1}: {section.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-500 mt-1">{section.lectures.length} bài học</p>
+                                    </div>
+                                    <div className="divide-y divide-gray-200">
+                                        {section.lectures.map((lecture, lectureIndex) => (
+                                            <Link
+                                                key={lecture.id}
+                                                href={`/learning/${courseId}/lecture/${lecture.id}`}
+                                                className="flex items-center p-4 hover:bg-gray-50 transition"
+                                            >
+                                                <div className="w-8 text-center text-gray-500 mr-2">
+                                                    {lecture.isCompleted ? (
+                                                        <CheckCircle className="w-5 h-5 text-green-500 mx-auto" />
+                                                    ) : (
+                                                        <span>{sectionIndex + 1}.{lectureIndex + 1}</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center">
+                                                        {getLectureTypeIcon(lecture.type || 'video')}
+                                                        <span className="ml-2 font-medium text-gray-800">{lecture.title}</span>
+                                                        {lecture.isCurrent && (
+                                                            <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                                Đang học
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-500 mt-1">
+                                                        {lecture.duration}
+                                                    </p>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-gray-400" />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
-
-                {/* Thanh bên nội dung khóa học - có thể ẩn hiện */}
-                <div className={`border-l border-gray-200 bg-white overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-96' : 'w-0'} hidden md:block`}>
-                    {sidebarOpen && (
-                        <CourseContent
-                            title={mockCourseData.title}
-                            sections={mockCourseData.sections}
-                            courseId={mockCourseData.id}
-                        />
-                    )}
-                </div>
             </div>
 
-            {/* Nút chuyển đổi thanh bên trên di động */}
-            <button
-                onClick={toggleSidebar}
-                className="fixed bottom-4 right-4 p-3 bg-blue-600 text-white rounded-full shadow-lg md:hidden z-50"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
+            {/* Thông báo trạng thái */}
+            {showToast && (
+                <StatusToast
+                    message={toastMessage}
+                    type="success"
+                    show={showToast}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 };
 
-export default LearningPage;
+export default CoursePage;

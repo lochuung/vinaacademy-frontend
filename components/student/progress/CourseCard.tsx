@@ -65,7 +65,8 @@ const CourseCard = ({ course }: CourseCardProps) => {
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
                     <Link
-                        href={`/learning/${course.id}`}
+                        // href={`/learning/${course.id}/lectures/${course.currentLecture.id}`}
+                        href={`/learning`}
                         className="text-center py-2 px-3 bg-black hover:bg-gray-900 text-white font-medium rounded-md transition-colors duration-300"
                     >
                         {isCompleted ? "Xem lại" : "Tiếp tục học"}

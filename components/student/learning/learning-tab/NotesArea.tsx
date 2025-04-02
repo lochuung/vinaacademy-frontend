@@ -1,4 +1,3 @@
-// components/student/NotesArea.tsx
 import { FC, useState, useEffect } from 'react';
 import { Plus, ChevronDown } from 'lucide-react';
 
@@ -8,16 +7,16 @@ interface Note {
     timestamp: number; // Video timestamp in seconds
     createdAt: Date;
     updatedAt: Date;
-    lessonId: string;
+    lectureId: string;
 }
 
 interface NotesAreaProps {
     courseId: string;
-    lessonId: string;
+    lectureId: string;
     currentTimestamp?: number; // Current video timestamp
 }
 
-const NotesArea: FC<NotesAreaProps> = ({ courseId, lessonId, currentTimestamp = 0 }) => {
+const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, currentTimestamp = 0 }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [currentNote, setCurrentNote] = useState<string>('');
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -35,7 +34,7 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lessonId, currentTimestamp = 
         ];
 
         setNotes(mockNotes);
-    }, [courseId, lessonId]);
+    }, [courseId, lectureId]);
 
     const formatTimestamp = (seconds: number): string => {
         const minutes = Math.floor(seconds / 60);
@@ -70,7 +69,7 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lessonId, currentTimestamp = 
                 timestamp: currentTimestamp,
                 createdAt: now,
                 updatedAt: now,
-                lessonId: lessonId
+                lectureId: lectureId
             };
             setNotes([newNote, ...notes]);
         }
@@ -95,7 +94,7 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lessonId, currentTimestamp = 
     const processedNotes = [...notes]
         .filter(note => {
             if (filterOption === 'Tất cả bài giảng') return true;
-            if (filterOption === 'Bài giảng hiện tại') return note.lessonId === lessonId;
+            if (filterOption === 'Bài giảng hiện tại') return note.lectureId === lectureId;
             return true;
         })
         .sort((a, b) => {

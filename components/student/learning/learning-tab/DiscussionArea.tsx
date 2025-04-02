@@ -1,7 +1,6 @@
-// components/student/DiscussionArea.tsx
 "use client";
 
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import { MessageSquare, ThumbsUp, Reply, MoreHorizontal } from 'lucide-react';
 
 interface UserType {
@@ -31,10 +30,10 @@ interface ReplyType {
 
 interface DiscussionAreaProps {
     courseId: string;
-    lessonId: string;
+    lectureId: string;
 }
 
-const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lessonId }) => {
+const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureId }) => {
     const [comments, setComments] = useState<CommentType[]>([
         {
             id: '1',

@@ -1,4 +1,3 @@
-// components/student/LearningHeader.tsx
 "use client";
 
 import { FC } from 'react';
@@ -7,9 +6,10 @@ import Link from 'next/link';
 interface LearningHeaderProps {
     courseTitle: string;
     progress: number;
+    courseId?: string;
 }
 
-const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
+const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress, courseId = 'default-course' }) => {
     return (
         <header className="bg-black text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
             <div className="flex items-center">
@@ -30,18 +30,20 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                 </Link>
 
                 <div className="flex flex-col mr-8">
-                    <h1 className="text-lg font-medium truncate max-w-sm">{courseTitle}</h1>
+                    <Link href={`/learning/${courseId}`} className="hover:text-gray-300">
+                        <h1 className="text-lg font-medium truncate max-w-sm">{courseTitle}</h1>
+                    </Link>
                     <div className="flex items-center">
                         <div className="w-32 bg-gray-300 rounded-full h-1.5 mr-2">
                             <div
                                 className={`h-1.5 rounded-full transition-all duration-300 ${progress === 100
-                                    ? "bg-black"
+                                    ? "bg-green-500"
                                     : progress >= 80
-                                        ? "bg-gray-900"
+                                        ? "bg-blue-500"
                                         : progress >= 60
-                                            ? "bg-gray-700"
+                                            ? "bg-blue-400"
                                             : progress >= 40
-                                                ? "bg-gray-500"
+                                                ? "bg-blue-300"
                                                 : progress >= 20
                                                     ? "bg-gray-400"
                                                     : "bg-gray-300"
@@ -52,12 +54,10 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                         <span className="text-xs text-gray-400">{progress}% hoàn thành</span>
                     </div>
                 </div>
-
-
             </div>
 
             <div className="flex items-center space-x-4">
-                <button className="text-white hover:text-gray-300 transition">
+                <button className="text-white hover:text-gray-300 transition" title="Help">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-6 w-6"
@@ -73,7 +73,7 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                     Chia sẻ
                 </button>
 
-                <button className="text-white hover:text-gray-300 transition">
+                <button className="text-white hover:text-gray-300 transition" title="More options">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-6 w-6"
@@ -81,12 +81,12 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress }) => {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M19 12a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </button>
             </div>
         </header>
     );
-};
+}
 
 export default LearningHeader;

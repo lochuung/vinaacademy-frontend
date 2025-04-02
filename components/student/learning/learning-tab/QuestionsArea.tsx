@@ -1,4 +1,3 @@
-// components/student/QuestionsArea.tsx
 "use client";
 
 import { FC, useState } from 'react';
@@ -33,11 +32,11 @@ interface AnswerType {
 }
 
 interface QuestionsAreaProps {
-    lessonId: string;
+    lectureId: string;
     courseId: string;
 }
 
-const QuestionsArea: FC<QuestionsAreaProps> = ({ lessonId, courseId }) => {
+const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId }) => {
     const [questions, setQuestions] = useState<QuestionType[]>([
         {
             id: '1',

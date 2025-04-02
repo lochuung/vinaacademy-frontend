@@ -1,14 +1,13 @@
-// components/student/ReadingContent.tsx
 "use client";
 
 import { FC, useState } from 'react';
 
 interface ReadingContentProps {
-    lessonId: string;
+    lectureId: string;
     courseId: string;
 }
 
-const ReadingContent: FC<ReadingContentProps> = ({ lessonId, courseId }) => {
+const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseId }) => {
     const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
 
     // Nội dung đọc mẫu - sẽ được lấy từ API trong ứng dụng thực
