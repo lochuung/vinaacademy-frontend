@@ -1,18 +1,20 @@
 import CourseHeader from '@/components/course/CourseHeader';
 import CourseDetails from '@/components/course/CourseDetails';
-import CourseReviews from '@/components/course/CourseReviews';
+import ReviewsArea from '@/components/student/ReviewArea';
 import PurchaseCard from '@/components/course/PurchaseCard';
 import { Metadata } from 'next';
 import Script from 'next/script';
 
 // Generate metadata for the page
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug?: string } }): Promise<Metadata> {
   // In a real app, fetch data here based on slug
+  const slug = (await params)?.slug;
   const course = {
     name: "Lập trình Java cơ bản",
     description: "Khóa học giúp bạn nắm vững những kiến thức cơ bản về Java.",
     image: "/test.jpg",
-  };
+  };  
+ 
 
   return {
     title: `${course.name} | VinaAcademy`,
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       images: [course.image],
     },
     alternates: {
-      canonical: `https://vinaacademy.edu.vn/courses/${params.slug}`,
+      canonical: slug ? `https://vinaacademy.edu.vn/courses/${slug}` : 'https://vinaacademy.edu.vn/courses',
     }
   };
 }
@@ -128,6 +130,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
       },
       inLanguage: course.language === 'Tiếng Việt' ? 'vi' : 'en'
     };
+    
 
     return (
       <>
@@ -153,7 +156,12 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                 {/* Main Content - 2/3 width on desktop */}
                 <article className="lg:w-2/3">
                   <CourseDetails course={course} />
-                  <CourseReviews reviews={course.courseReviews} rating={course.rating} totalRating={course.totalRating} />
+                  <section className="bg-white border rounded-lg p-6 mb-8">
+                    <ReviewsArea 
+                      courseId={course.id}
+                      mainPage={true}
+                    />
+                  </section>
                 </article>
 
                 {/* Purchase Sidebar - 1/3 width, sticky on desktop, hidden on mobile */}

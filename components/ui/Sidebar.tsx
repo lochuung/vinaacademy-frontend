@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
+    TooltipProvider, 
     TooltipTrigger
 } from '@/components/ui/tooltip';
 

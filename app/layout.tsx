@@ -34,8 +34,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Sử dụng các biến font và bật tính năng antialiased
       >
-        <LayoutWrapper>{children}</LayoutWrapper> {/* Bọc nội dung con trong LayoutWrapper */}
-        <Toaster /> {/* Hiển thị Toaster */}
+        <LayoutWrapper>{children }</LayoutWrapper> {/* Bọc nội dung con trong LayoutWrapper */}
+        <Toaster />{/* Hiển thị Toaster */}
       </body>
     </html>
   );

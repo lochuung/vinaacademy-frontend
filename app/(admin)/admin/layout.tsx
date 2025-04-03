@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/admin/sidebar';
 import Header from '@/components/admin/header';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function AdminLayout({
     children,
@@ -65,6 +66,7 @@ export default function AdminLayout({
                 <Header onMenuButtonClick={() => setSidebarOpen(true)} />
 
                 <main className="flex-1 relative overflow-y-auto focus:outline-none">
+                
                     <div className="py-6">
                         {/* Page heading and actions */}
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
@@ -76,6 +78,7 @@ export default function AdminLayout({
                             <div className="py-4">{children}</div>
                         </div>
                     </div>
+                    <Toaster />
                 </main>
             </div>
         </div>

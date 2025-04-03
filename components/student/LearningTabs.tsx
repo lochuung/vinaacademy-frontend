@@ -4,6 +4,7 @@ import { BookOpen, PenSquare, MessageSquare, FileText, Search, Users } from 'luc
 import NotesArea from './NotesArea';
 import QuestionsArea from './QuestionsArea';
 import DiscussionArea from './DiscussionArea';
+import ReviewsArea from './ReviewArea';
 
 interface Lesson {
     id: string;
@@ -141,11 +142,14 @@ const LearningTabs: FC<LearningTabsProps> = ({ lesson, courseId, currentTimestam
                 )}
 
                 {activeTab === 'reviews' && (
-                    <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-4">Đánh Giá</h2>
-                        <p className="text-gray-700">Xem những gì học viên khác đang nói về khóa học này.</p>
-                        {/* Component Đánh giá sẽ được đặt ở đây */}
-                    </div>
+                    // <div className="p-6">
+                    //     <h2 className="text-2xl font-bold mb-4">Đánh Giá</h2>
+                    //     <p className="text-gray-700">Xem những gì học viên khác đang nói về khóa học này.</p>
+                    //     {/* Component Đánh giá sẽ được đặt ở đây */}
+                    // </div>
+                    <ReviewsArea 
+                        courseId={courseId}
+                    />
                 )}
 
                 {activeTab === 'tools' && (

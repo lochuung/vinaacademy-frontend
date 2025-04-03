@@ -29,14 +29,21 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
         // Kiểm tra tất cả các đường dẫn student - ẩn tất cả các trang student
         (pathname && pathname.startsWith("/learning"));
 
-    return (
-        <>
-            {/* Nếu không ẩn layout, hiển thị ClientWrapper */}
-            {!hideLayout && <ClientWrapper />}
-            {/* Nếu không ẩn layout, hiển thị Navbar */}
-            {!hideLayout && <Navbar />}
-            {/* Hiển thị các thành phần con (children) */}
-            {children}
-        </>
-    );
+        return (
+            <div className="relative">
+                 {/* Nếu không ẩn layout, hiển thị ClientWrapper/Navbar */}
+                {!hideLayout && (
+                    <div className="fixed top-0 left-0 right-0 z-50 w-full">
+                        <ClientWrapper />
+                        <Navbar />
+                    </div>
+                )}
+                {/* Nếu ẩn thì giữ nguyên top, còn không thì lùi top xuông */}
+                <div className={`pt-${!hideLayout ? "36" : "0"}`}>
+                    {children}
+
+                </div>
+            </div>
+           
+        );
 }

@@ -1,5 +1,5 @@
 'use client'; // Chỉ định rằng file này sẽ được render phía client
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Import các component Avatar từ thư mục components/ui/avatar
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar-shadcn'; // Import các component Avatar từ thư mục components/ui/avatar
 import {
     Collapsible,
     CollapsibleContent,
