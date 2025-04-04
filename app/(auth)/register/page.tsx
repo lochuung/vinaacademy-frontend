@@ -13,11 +13,11 @@ export default function RegisterPage() {
     const router = useRouter();
 
     // Redirect if already authenticated
-    if (isAuthenticated) {
-        router.push('/');
-        return null;
-    }
-
+    React.useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/');
+        }
+    }, [isAuthenticated, router]);
     const handleSubmit = async (data: RegisterRequest) => {
         setError(null);
         setIsLoading(true);
