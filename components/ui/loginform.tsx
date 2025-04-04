@@ -20,12 +20,12 @@ import DialogOTP from "./otp-dialog";
 const formSchema = z.object({
     email: z
         .string()
-        .nonempty("Email is required")
-        .email("Invalid email format"),
+        .nonempty("Email là bắt buộc")
+        .email("Định dạng email không hợp lệ"),
     password: z
         .string()
-        .nonempty("Password is required")
-        .min(6, "Password must be at least 6 characters"),
+        .nonempty("Mật khẩu là bắt buộc")
+        .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
     remember: z
         .boolean()
         .optional(),
@@ -125,7 +125,7 @@ export default function LoginForm({
                                     name="password"
                                     render={({field}) => (
                                         <FormItem>
-                                            <Label>Password</Label>
+                                            <Label>Mật khẩu</Label>
                                             <FormControl>
                                                 <Input
                                                     type="password" 

@@ -18,19 +18,19 @@ import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
 import { RegisterRequest } from "@/types/auth";
 
 // Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 const formSchema = z.object({
-  username: z.string().nonempty("Username is required").min(3, "Username must be at least 3 characters"),
-  fullname: z.string().nonempty("Fullname is required").min(5, "Full name must be at least 5 characters").max(50, "Full name cannot exceed 50 characters"),
-  email: z.string().nonempty("Email is required").email("Invalid email format"),
+  username: z.string().nonempty("Tên đăng nhập là bắt buộc").min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
+  fullname: z.string().nonempty("Họ và tên là bắt buộc").min(5, "Họ và tên phải có ít nhất 5 ký tự").max(50, "Họ và tên không được vượt quá 50 ký tự"),
+  email: z.string().nonempty("Email là bắt buộc").email("Định dạng email không hợp lệ"),
   password: z.string()
-    .nonempty("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .regex(PASSWORD_REGEX, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
-  confirmPassword: z.string().nonempty("Please confirm your password"),
+    .nonempty("Mật khẩu là bắt buộc")
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .regex(PASSWORD_REGEX, "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số"),
+  confirmPassword: z.string().nonempty("Vui lòng xác nhận mật khẩu"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: "Mật khẩu không khớp",
   path: ["confirmPassword"],
 });
 
@@ -123,9 +123,9 @@ export default function RegisterForm({
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Username</Label>
+                    <Label>Tên đăng nhập</Label>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập username của bạn" iconLeft={<FaUserShield />} {...field} />
+                      <Input type="text" placeholder="Nhập tên đăng nhập của bạn" iconLeft={<FaUserShield />} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,7 +136,7 @@ export default function RegisterForm({
                 name="fullname"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Fullname</Label>
+                    <Label>Họ và tên</Label>
                     <FormControl>
                       <Input type="text" placeholder="Nhập tên đầy đủ của bạn" iconLeft={<MdOutlineDriveFileRenameOutline />} {...field} />
                     </FormControl>
@@ -162,7 +162,7 @@ export default function RegisterForm({
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Password</Label>
+                    <Label>Mật khẩu</Label>
                     <FormControl>
                       <Input type="password" placeholder="Nhập mật khẩu của bạn" iconLeft={<IoMdLock />} passwordEye={true} {...field} />
                     </FormControl>
@@ -175,7 +175,7 @@ export default function RegisterForm({
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Confirm Password</Label>
+                    <Label>Xác nhận mật khẩu</Label>
                     <FormControl>
                       <Input type="password" placeholder="Xác nhận mật khẩu" iconLeft={<IoMdLock />} passwordEye={true} {...field} />
                     </FormControl>
