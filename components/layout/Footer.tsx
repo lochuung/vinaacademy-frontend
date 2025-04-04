@@ -1,7 +1,7 @@
 export default function Footer() {
     return (
         // Container chính của footer với style căn giữa và nền màu cơ bản
-        <footer className="footer footer-center bg-base-200 text-base-content rounded p-10">
+        <footer className="footer footer-center bg-base-200 text-base-content rounded p-10 z-0">
             {/* Navigation chứa các liên kết thông tin */}
             <nav className="grid grid-flow-col gap-4">
                 <a className="link link-hover">About us</a>

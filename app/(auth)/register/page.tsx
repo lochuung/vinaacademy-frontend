@@ -43,7 +43,9 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className='flex items-center justify-center min-h-screen bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300 py-10'>
+
+        <main className='flex items-center justify-center min-h-screen bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
+
             <div className='w-full max-w-4xl'>
                 <RegisterForm 
                     onSubmit={handleSubmit}
