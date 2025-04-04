@@ -23,7 +23,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
                 {!shouldHideLayout && <Navbar />}
             </div>
             {!shouldHideLayout && <LogoClickHandler />} {/* Add the new component */}
-            <div className={`pt-${!shouldHideLayout ? "28" : "0"}`}>
+            <div className={`${!shouldHideLayout ? "pt-28" : "pt-0"}`}>
                 {children}
             </div>
             {!shouldHideLayout && <Footer />}
