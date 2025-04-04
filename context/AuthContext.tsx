@@ -1,7 +1,7 @@
 'use client';
 
 import React, {createContext, useContext, useEffect, useState} from "react";
-import {AuthContextType, LoginCredentials, User} from "@/types/auth";
+import {AuthContextType, LoginCredentials, RegisterRequest, User} from "@/types/auth";
 import {useRouter} from "next/navigation";
 import * as authService from "@/services/authService";
 
@@ -10,9 +10,9 @@ const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     isLoading: true,
     login: async () => false,
-    logout: async () => {
-    },
+    logout: async () => {},
     refreshAuth: async () => false,
+    register: async () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -61,6 +61,19 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         }
     };
 
+    // Register function
+    const register = async (data: RegisterRequest): Promise<boolean> => {
+        setIsLoading(true);
+        try {
+            return await authService.register(data);
+        } catch (error) {
+            console.error('Registration failed:', error);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Logout function
     const logout = async () => {
         await authService.logout();
@@ -95,7 +108,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             isLoading,
             login,
             logout,
-            refreshAuth
+            refreshAuth,
+            register
         }}>
             {children}
         </AuthContext.Provider>

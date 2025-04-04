@@ -1,6 +1,6 @@
 'use client';
 
-import {LoginCredentials, User} from "@/types/auth";
+import {LoginCredentials, RegisterRequest, User} from "@/types/auth";
 import apiClient, {getRefreshToken, removeTokens, setTokens} from "@/lib/apiClient";
 import {AxiosResponse} from "axios";
 
@@ -18,6 +18,16 @@ export async function login(credentials: LoginCredentials): Promise<User | null>
     }
 }
 
+export async function register(registerData: RegisterRequest): Promise<boolean> {
+    try {
+        const response: AxiosResponse = await apiClient.post('/auth/register', registerData);
+        return response.status === 201;
+    } catch (error) {
+        console.error('Registration error:', error);
+        return false;
+    }
+}
+
 export async function getCurrentUser(): Promise<User | null> {
     try {
         const response: AxiosResponse = await apiClient.get('/users/me');
@@ -30,7 +40,11 @@ export async function getCurrentUser(): Promise<User | null> {
 
 export async function logout(): Promise<void> {
     try {
-        await apiClient.post('/auth/logout');
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+            return;
+        }
+        await apiClient.post('/auth/logout', {refreshToken});
     } catch (error) {
         console.error('Logout error:', error);
     } finally {
