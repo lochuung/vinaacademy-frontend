@@ -14,8 +14,10 @@ export default function SubNavbar() {
     if (pathname.includes("categories") || pathname.includes("search")
         || pathname.includes("my-courses") || pathname.includes("courses")
         || pathname.includes("my-profile") || pathname.includes("cart")
+
         || pathname.includes("payment") || pathname.includes("profile")
         || pathname.includes("login") || pathname.includes("register") 
+
     ) return null;
 
     // Xử lý khi nhấp vào danh mục

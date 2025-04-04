@@ -65,7 +65,9 @@ export default function CourseHeader({ course }: CourseProps) {
             
             <div className="flex items-center">
               <Users size={16} className="mr-1" aria-hidden="true" />
+
               <span>{course.totalStudent} học viên</span>
+
             </div>
           </div>
           

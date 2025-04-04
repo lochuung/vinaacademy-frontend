@@ -4,7 +4,9 @@ import NotesArea from './learning-tab/NotesArea';
 import QuestionsArea from './learning-tab/QuestionsArea';
 import DiscussionArea from './learning-tab/DiscussionArea';
 import { Lecture } from '@/types/lecture';
+
 import ReviewsArea from './learning-tab/ReviewArea';
+
 
 interface LearningTabsProps {
     lecture: Lecture;
@@ -227,6 +229,7 @@ const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseId, curre
                     <ReviewsArea
                         courseId={courseId}
                     />
+
                 )}
 
                 {activeTab === 'tools' && (

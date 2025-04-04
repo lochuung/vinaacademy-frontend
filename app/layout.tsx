@@ -4,7 +4,9 @@ import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import Script from 'next/script';
 import {AuthProvider} from "@/context/AuthContext";
+
 import { Toaster } from "@/components/ui/sonner";
+
 
 const inter = Inter({subsets: ['latin']});
 
@@ -22,10 +24,12 @@ export default function RootLayout({
         <html lang="vi">
         <body className={inter.className}>
         <AuthProvider>
+
           <LayoutWrapper>
                 {children}
             </LayoutWrapper>
           <Toaster />{/* Hiển thị Toaster */}
+
         </AuthProvider>
 
         {/* Use Next.js Script component for client-side scripts */}

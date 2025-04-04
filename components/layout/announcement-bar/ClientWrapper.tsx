@@ -9,7 +9,9 @@ const ClientWrapper = () => {
     const pathname = usePathname();
 
     // Định nghĩa mảng các đường dẫn mà announcement bar sẽ bị ẩn
+
     const hiddenPaths = ['/categories', '/courses', "/profile", "/payment/checkout", "/login", "/register"];
+
 
     // Sử dụng useEffect để cập nhật state isClient khi component được mount
     useEffect(() => {
