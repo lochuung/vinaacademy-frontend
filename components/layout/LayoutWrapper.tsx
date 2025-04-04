@@ -5,6 +5,7 @@ import Navbar from "./navbar/Navbar";
 import ClientWrapper from "./announcement-bar/ClientWrapper";
 import Footer from "./Footer";
 import LogoClickHandler from "./LogoClickHandler"; // Import the new component
+import { useAuth } from "@/context/AuthContext";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -14,7 +15,6 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     // Kiểm tra nếu pathname chứa một trong các từ khóa trên
     const shouldHideLayout = hiddenKeywords.some(keyword => pathname.includes(keyword));
-
     return (
         <>
             {!shouldHideLayout && <ClientWrapper />}

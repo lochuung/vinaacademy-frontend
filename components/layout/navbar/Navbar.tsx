@@ -13,18 +13,20 @@ import SubNavbar from "./sub-navbar/SubNavbar";
 import { categoriesData } from "@/data/categories";
 import NotificationDropdown from "./notification-badge/NotificationDropdown";
 import HomeLink from "../HomeLink";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
     onNavigateHome?: () => void;
 }
 
 const Navbar = ({ onNavigateHome }: NavbarProps) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
 
     const handleRemoveFromCart = (id: number) => {
         setCartItems(prev => prev.filter(item => item.id !== id));
     };
+
+    const {isAuthenticated} = useAuth(); // Assuming you have a useAuth hook to check authentication status
 
     return (
         <div>
@@ -39,14 +41,14 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
                     <SearchBar />
                     <NavigationLinks />
                     <div className="flex items-center space-x-4">
-                        {isLoggedIn && (
+                        {isAuthenticated && (
                             <>
                                 <UserLearning />
                                 <NotificationDropdown notifications={[]} />
                             </>
                         )}
                         <ShoppingCart items={cartItems} onRemoveItem={handleRemoveFromCart} />
-                        <UserMenu isLoggedIn={isLoggedIn} />
+                        <UserMenu isLoggedIn={isAuthenticated} />
                     </div>
                 </div>
             </nav>
