@@ -19,7 +19,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
         <>
             {!shouldHideLayout && <ClientWrapper />}
             {!shouldHideLayout && <Navbar />}
-            {!shouldHideLayout && <LogoClickHandler />} {/* Add the new component */}
+            {!shouldHideLayout && <LogoClickHandler />}
             {children}
             {!shouldHideLayout && <Footer />}
         </>

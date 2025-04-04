@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import WelcomeSection from "@/components/layout/home/WelcomeSection";
 import BannerSection from "@/components/layout/home/BannerSection";
 import RecentCoursesSection from "@/components/layout/home/RecentCoursesSection";
