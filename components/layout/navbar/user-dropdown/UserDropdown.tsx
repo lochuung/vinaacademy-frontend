@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
 interface UserDropdownProps {
@@ -6,6 +7,7 @@ interface UserDropdownProps {
 }
 
 const UserDropdown = ({ isVisible }: UserDropdownProps) => {
+    const { logout } = useAuth();
     return (
         <div
             className={`absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isVisible
@@ -36,7 +38,8 @@ const UserDropdown = ({ isVisible }: UserDropdownProps) => {
                 </li>
                 <li>
                     <Link
-                        href="/logout"
+                        onClick={logout}
+                        href="#"
                         className="block px-4 py-2 text-red-600 hover:bg-gray-100"
                     >
                         Đăng xuất

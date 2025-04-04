@@ -1,31 +1,34 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import type {Metadata} from 'next';
+import {Inter} from 'next/font/google';
 import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import Script from 'next/script';
+import {AuthProvider} from "@/context/AuthContext";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({subsets: ['latin']});
 
 export const metadata: Metadata = {
-  title: 'ViNA ACADEMY - Nền tảng học trực tuyến',
-  description: 'Học mọi lúc, mọi nơi với ViNA ACADEMY',
+    title: 'ViNA ACADEMY - Nền tảng học trực tuyến',
+    description: 'Học mọi lúc, mọi nơi với ViNA ACADEMY',
 }
 
 export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
+                                       children,
+                                   }: {
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="vi">
-      <body className={inter.className}>
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+    return (
+        <html lang="vi">
+        <body className={inter.className}>
+        <AuthProvider>
+            <LayoutWrapper>
+                {children}
+            </LayoutWrapper>
+        </AuthProvider>
 
         {/* Use Next.js Script component for client-side scripts */}
         <Script id="navigation-fix">
-          {`
+            {`
             // Xử lý việc quay về trang chủ từ Logo
             document.addEventListener('DOMContentLoaded', function() {
               const logo = document.querySelector('a.text-2xl.font-bold');
@@ -40,7 +43,7 @@ export default function RootLayout({
             });
           `}
         </Script>
-      </body>
-    </html>
-  );
+        </body>
+        </html>
+    );
 }
