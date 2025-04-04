@@ -15,12 +15,23 @@ import { FcGoogle } from "react-icons/fc";
 import { FaUserShield } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
+import { RegisterRequest } from "@/types/auth";
+
+// Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
 const formSchema = z.object({
   username: z.string().nonempty("Username is required").min(3, "Username must be at least 3 characters"),
-  fullname: z.string().nonempty("Fullname is required"),
-  email: z.string().nonempty("Email is required").email("Định dạng email không chính xác"),
-  password: z.string().nonempty("Password is required").min(8, "Mật khẩu phải ít nhất 8 ký tự"),
+  fullname: z.string().nonempty("Fullname is required").min(5, "Full name must be at least 5 characters").max(50, "Full name cannot exceed 50 characters"),
+  email: z.string().nonempty("Email is required").email("Invalid email format"),
+  password: z.string()
+    .nonempty("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .regex(PASSWORD_REGEX, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
+  confirmPassword: z.string().nonempty("Please confirm your password"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 export type RegisterFormValues = z.infer<typeof formSchema>;
@@ -33,7 +44,9 @@ interface RegisterFormProps {
   googleText?: string;
   signinText?: string;
   signinUrl?: string;
-  formAction: (formData: FormData) => Promise<void>;
+  onSubmit?: (data: RegisterRequest) => Promise<boolean>;
+  isSubmitting?: boolean;
+  error?: string | null;
 }
 
 export default function RegisterForm({
@@ -43,10 +56,13 @@ export default function RegisterForm({
   registerText = "Đăng ký",
   googleText = "Đăng nhập bằng Google",
   signinText = "Đã có tài khoản?",
-  signinUrl = "#",
-  formAction,
+  signinUrl = "/login",
+  onSubmit,
+  isSubmitting = false,
+  error = null,
 }: RegisterFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(error);
+  
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,22 +70,34 @@ export default function RegisterForm({
       fullname: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  async function onSubmit(data: RegisterFormValues) {
+  async function handleSubmit(data: RegisterFormValues) {
+    if (!onSubmit) return;
+    
     try {
-      setIsSubmitting(true);
-      const formData = new FormData();
-      formData.append("username", data.username);
-      formData.append("password", data.password);
-      console.log("Form data:", data);
-
-      //await formAction(formData);
+      setSubmitError(null);
+      
+      const registerData: RegisterRequest = {
+        fullName: data.fullname,
+        email: data.email,
+        password: data.password,
+        retypedPassword: data.confirmPassword,
+      };
+      
+      const success = await onSubmit(registerData);
+      
+      if (success) {
+        toast.success("Registration successful", {
+          description: "Your account has been created. You can now log in.",
+        });
+        // Optionally redirect to login page
+      }
     } catch (error) {
       console.error("Form submission error:", error);
-    } finally {
-      setIsSubmitting(false);
+      setSubmitError("Registration failed. Please try again later.");
     }
   }
 
@@ -83,7 +111,13 @@ export default function RegisterForm({
             <p className="text-muted-foreground">{subheading}</p>
           </div>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                  <span className="block sm:inline">{submitError}</span>
+                </div>
+              )}
+              
               <FormField
                 control={form.control}
                 name="username"
@@ -136,6 +170,19 @@ export default function RegisterForm({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Confirm Password</Label>
+                    <FormControl>
+                      <Input type="password" placeholder="Xác nhận mật khẩu" iconLeft={<IoMdLock />} passwordEye={true} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <Button type="submit" className="mt-2 w-full bg-black text-white" disabled={isSubmitting}>
                 {isSubmitting ? "Đang đăng ký..." : registerText}
@@ -145,18 +192,7 @@ export default function RegisterForm({
                 <span className="relative z-10 bg-white px-2 text-muted-foreground">Hoặc sử dụng tài khoản liên kết</span>
               </div>
 
-              <Button type="button" variant="outline" className="w-full border-gray-400" disabled={isSubmitting} onClick={() =>
-                toast("Event has been created", {
-                  description: "Sunday, December 03, 2023 at 9:00 AM",
-                  action: {
-                    label: "Hello",
-                    onClick: () => console.log("Undo"),
-                    type: "success",
-                  
-                  }
-                  
-                  
-                })}>
+              <Button type="button" variant="outline" className="w-full border-gray-400" disabled={isSubmitting}>
                 <FcGoogle className="mr-2 size-5" />
                 {googleText}
               </Button>

@@ -5,6 +5,13 @@ export interface LoginCredentials {
     password: string;
 }
 
+export interface RegisterRequest {
+    fullName: string;
+    email: string;
+    password: string;
+    retypedPassword: string;
+}
+
 export interface RefreshTokenRequest {
     refreshToken: string;
 }
@@ -51,4 +58,5 @@ export interface AuthContextType {
     login: (credentials: LoginCredentials) => Promise<boolean>;
     logout: () => void;
     refreshAuth: () => Promise<boolean>;
+    register: (data: RegisterRequest) => Promise<boolean>;
 }
