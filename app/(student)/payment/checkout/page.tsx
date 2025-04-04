@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import PaymentSelection, {SavedCard, PaymentMethod} from '@/components/student/PaymentSelection';
-import OrderSummary, {CartItem} from '@/components/student/OrderSummary';
-import { Coupon } from '@/components/student/CouponSelection';
+import PaymentSelection, {SavedCard, PaymentMethod} from '@/components/student/payment/PaymentSelection';
+import OrderSummary, {CartItem} from '@/components/student/payment/OrderSummary';
+import { Coupon } from '@/components/student/payment/CouponSelection';
 
 
 
@@ -88,8 +88,8 @@ const CheckoutPage = () => {
         // Add your payment processing logic here
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50 py-8 pt-44">
+    return (    
+        <div className="min-h-screen bg-gray-50 pb-8 -mt-8 pt-4">
             <div className="max-w-6xl mx-auto px-4">
                 <h1 className="text-3xl font-bold mb-8">Thanh toán</h1>
 

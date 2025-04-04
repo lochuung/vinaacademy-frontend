@@ -15,12 +15,23 @@ import { FcGoogle } from "react-icons/fc";
 import { FaUserShield } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
+import { RegisterRequest } from "@/types/auth";
+
+// Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 const formSchema = z.object({
-  username: z.string().nonempty("Username is required").min(3, "Username must be at least 3 characters"),
-  fullname: z.string().nonempty("Fullname is required"),
-  email: z.string().nonempty("Email is required").email("Định dạng email không chính xác"),
-  password: z.string().nonempty("Password is required").min(8, "Mật khẩu phải ít nhất 8 ký tự"),
+  username: z.string().nonempty("Tên đăng nhập là bắt buộc").min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
+  fullname: z.string().nonempty("Họ và tên là bắt buộc").min(5, "Họ và tên phải có ít nhất 5 ký tự").max(50, "Họ và tên không được vượt quá 50 ký tự"),
+  email: z.string().nonempty("Email là bắt buộc").email("Định dạng email không hợp lệ"),
+  password: z.string()
+    .nonempty("Mật khẩu là bắt buộc")
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .regex(PASSWORD_REGEX, "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số"),
+  confirmPassword: z.string().nonempty("Vui lòng xác nhận mật khẩu"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Mật khẩu không khớp",
+  path: ["confirmPassword"],
 });
 
 export type RegisterFormValues = z.infer<typeof formSchema>;
@@ -33,7 +44,9 @@ interface RegisterFormProps {
   googleText?: string;
   signinText?: string;
   signinUrl?: string;
-  formAction: (formData: FormData) => Promise<void>;
+  onSubmit?: (data: RegisterRequest) => Promise<boolean>;
+  isSubmitting?: boolean;
+  error?: string | null;
 }
 
 export default function RegisterForm({
@@ -43,10 +56,13 @@ export default function RegisterForm({
   registerText = "Đăng ký",
   googleText = "Đăng nhập bằng Google",
   signinText = "Đã có tài khoản?",
-  signinUrl = "#",
-  formAction,
+  signinUrl = "/login",
+  onSubmit,
+  isSubmitting = false,
+  error = null,
 }: RegisterFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(error);
+  
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,22 +70,34 @@ export default function RegisterForm({
       fullname: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  async function onSubmit(data: RegisterFormValues) {
+  async function handleSubmit(data: RegisterFormValues) {
+    if (!onSubmit) return;
+    
     try {
-      setIsSubmitting(true);
-      const formData = new FormData();
-      formData.append("username", data.username);
-      formData.append("password", data.password);
-      console.log("Form data:", data);
-
-      //await formAction(formData);
+      setSubmitError(null);
+      
+      const registerData: RegisterRequest = {
+        fullName: data.fullname,
+        email: data.email,
+        password: data.password,
+        retypedPassword: data.confirmPassword,
+      };
+      
+      const success = await onSubmit(registerData);
+      
+      if (success) {
+        toast.success("Registration successful", {
+          description: "Your account has been created. You can now log in.",
+        });
+        // Optionally redirect to login page
+      }
     } catch (error) {
       console.error("Form submission error:", error);
-    } finally {
-      setIsSubmitting(false);
+      setSubmitError("Registration failed. Please try again later.");
     }
   }
 
@@ -83,15 +111,21 @@ export default function RegisterForm({
             <p className="text-muted-foreground">{subheading}</p>
           </div>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                  <span className="block sm:inline">{submitError}</span>
+                </div>
+              )}
+              
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Username</Label>
+                    <Label>Tên đăng nhập</Label>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập username của bạn" iconLeft={<FaUserShield />} {...field} />
+                      <Input type="text" placeholder="Nhập tên đăng nhập của bạn" iconLeft={<FaUserShield />} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -102,7 +136,7 @@ export default function RegisterForm({
                 name="fullname"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Fullname</Label>
+                    <Label>Họ và tên</Label>
                     <FormControl>
                       <Input type="text" placeholder="Nhập tên đầy đủ của bạn" iconLeft={<MdOutlineDriveFileRenameOutline />} {...field} />
                     </FormControl>
@@ -128,9 +162,22 @@ export default function RegisterForm({
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Password</Label>
+                    <Label>Mật khẩu</Label>
                     <FormControl>
                       <Input type="password" placeholder="Nhập mật khẩu của bạn" iconLeft={<IoMdLock />} passwordEye={true} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Xác nhận mật khẩu</Label>
+                    <FormControl>
+                      <Input type="password" placeholder="Xác nhận mật khẩu" iconLeft={<IoMdLock />} passwordEye={true} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -145,18 +192,7 @@ export default function RegisterForm({
                 <span className="relative z-10 bg-white px-2 text-muted-foreground">Hoặc sử dụng tài khoản liên kết</span>
               </div>
 
-              <Button type="button" variant="outline" className="w-full border-gray-400" disabled={isSubmitting} onClick={() =>
-                toast("Event has been created", {
-                  description: "Sunday, December 03, 2023 at 9:00 AM",
-                  action: {
-                    label: "Hello",
-                    onClick: () => console.log("Undo"),
-                    type: "success",
-                  
-                  }
-                  
-                  
-                })}>
+              <Button type="button" variant="outline" className="w-full border-gray-400" disabled={isSubmitting}>
                 <FcGoogle className="mr-2 size-5" />
                 {googleText}
               </Button>

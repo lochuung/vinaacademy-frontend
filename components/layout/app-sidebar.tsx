@@ -29,7 +29,7 @@ import {
     SidebarMenuSubItem,
     SidebarRail,
     useSidebar
-} from '@/components/ui/sidebar'; // Import các component Sidebar từ thư mục components/ui/sidebar
+} from '@/components/ui/sidebar-shadcn'; // Import các component Sidebar từ thư mục components/ui/sidebar
 import { navItems } from '@/constants/data'; // Import dữ liệu navItems từ thư mục constants/data
 import {
     BadgeCheck,

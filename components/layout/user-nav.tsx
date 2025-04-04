@@ -25,15 +25,17 @@ export function UserNav() {
                 {/* Button trigger cho dropdown, sử dụng avatar của người dùng */}
                 <DropdownMenuTrigger asChild>
                     <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
-                        <Avatar className='h-8 w-8'>
-                            {/* Hiển thị hình ảnh avatar; nếu không có image, dùng fallback */}
-                            <AvatarImage
-                                src={session.user?.image ?? ''}
-                                alt={session.user?.name ?? ''}
-                            />
-                            {/* Hiển thị ký tự đầu tiên của tên nếu không có hình ảnh */}
-                            <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
-                        </Avatar>
+                        <div className='h-8 w-8'>
+                            <Avatar className='h-8 w-8'>
+                                {/* Hiển thị hình ảnh avatar; nếu không có image, dùng fallback */}
+                                <AvatarImage
+                                    src={session.user?.image ?? ''}
+                                    alt={session.user?.name ?? ''}
+                                />
+                                {/* Hiển thị ký tự đầu tiên của tên nếu không có hình ảnh */}
+                                <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
+                            </Avatar>
+                        </div>
                     </Button>
                 </DropdownMenuTrigger>
                 {/* Nội dung của dropdown */}

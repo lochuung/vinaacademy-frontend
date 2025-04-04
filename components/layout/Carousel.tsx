@@ -1,48 +1,38 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { mockCourses } from '@/data/mockCourses';
+import Link from 'next/link';
+import Image from 'next/image';
 
-const CourseCarousel = () => {
-    // Dữ liệu mẫu của các khóa học
-    const courses = [
-        {
-            id: 1,
-            title: "Web Development Fundamentals",
-            description: "Learn HTML, CSS, and JavaScript basics",
-            duration: "8 weeks",
-            level: "Beginner"
-        },
-        {
-            id: 2,
-            title: "React Mastery",
-            description: "Advanced React patterns and best practices",
-            duration: "10 weeks",
-            level: "Advanced"
-        },
-        {
-            id: 3,
-            title: "Python Programming",
-            description: "Comprehensive Python from basics to advanced",
-            duration: "12 weeks",
-            level: "Intermediate"
-        },
-        {
-            id: 4,
-            title: "Data Science Essentials",
-            description: "Introduction to data analysis and visualization",
-            duration: "6 weeks",
-            level: "Beginner"
-        },
-        {
-            id: 5,
-            title: "Mobile App Development",
-            description: "Build iOS and Android apps",
-            duration: "14 weeks",
-            level: "Intermediate"
-        }
-    ];
+interface CarouselProps {
+    title?: string;
+    category?: string;
+    subCategory?: string;
+    featured?: boolean;
+    bestSeller?: boolean;
+    limit?: number;
+}
+
+const Carousel = ({
+    title,
+    category,
+    subCategory,
+    featured,
+    bestSeller,
+    limit = 8
+}: CarouselProps) => {
+
+    // Lọc khóa học theo các điều kiện
+    const filteredCourses = mockCourses.filter(course => {
+        if (category && course.category !== category) return false;
+        if (subCategory && course.subCategory !== subCategory) return false;
+        if (featured === true && !course.featured) return false;
+        if (bestSeller === true && !course.bestSeller) return false;
+        return true;
+    }).slice(0, limit);
 
     // State để theo dõi vị trí hiện tại của carousel
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,67 +42,109 @@ const CourseCarousel = () => {
     // Hàm xử lý chuyển đến slide tiếp theo
     const nextSlide = () => {
         setCurrentIndex((prevIndex) =>
-            prevIndex + itemsToShow >= courses.length ? 0 : prevIndex + 1
+            prevIndex + itemsToShow >= filteredCourses.length ? 0 : prevIndex + 1
         );
     };
 
     // Hàm xử lý chuyển đến slide trước đó
     const prevSlide = () => {
         setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? courses.length - itemsToShow : prevIndex - 1
+            prevIndex === 0 ? Math.max(0, filteredCourses.length - itemsToShow) : prevIndex - 1
         );
     };
 
     return (
-        // Container chính của carousel
-        <div className="relative w-full max-w-6xl mx-auto px-4">
-            <div className="flex items-center justify-between">
+        <div className="w-full max-w-[1200px] mx-auto px-4 py-6">
+            {title && (
+                <h3 className="text-xl font-semibold mb-4">{title}</h3>
+            )}
+
+            <div className="relative flex items-center">
                 {/* Nút điều hướng trái */}
                 <button
                     onClick={prevSlide}
-                    className="absolute left-0 z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+                    className="absolute left-[-45px] z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+                    disabled={currentIndex === 0}
                 >
                     <ChevronLeft className="w-6 h-6" />
                 </button>
 
                 {/* Vùng hiển thị các card khóa học */}
-                <div className="flex gap-4 overflow-hidden py-8">
-                    {courses
+                <div className="flex gap-4 overflow-hidden py-4 w-full">
+                    {filteredCourses
                         .slice(currentIndex, currentIndex + itemsToShow)
                         .map((course) => (
-                            // Card khóa học
-                            <Card key={course.id} className="w-[300px] flex-shrink-0">
-                                {/* Phần header của card chứa hình ảnh */}
-                                <CardHeader>
-                                    <img
-                                        src="/images/courses/react.jpg"  // Đã thay placeholder bằng hình ảnh cục bộ
-                                        alt={course.title}
-                                        className="w-full h-40 object-cover rounded-t-lg"
-                                    />
-                                </CardHeader>
-                                {/* Phần nội dung của card */}
-                                <CardContent className="p-4">
-                                    <CardTitle className="text-lg mb-2">{course.title}</CardTitle>
-                                    <p className="text-gray-600 text-sm mb-2">{course.description}</p>
-                                    <div className="flex justify-between text-sm text-gray-500">
-                                        <span>{course.duration}</span>
-                                        <span>{course.level}</span>
-                                    </div>
-                                </CardContent>
-                                {/* Phần footer của card chứa nút thêm vào giỏ hàng */}
-                                <CardFooter className="p-4 pt-0">
-                                    <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition-colors">
-                                        Thêm vào giỏ hàng
-                                    </button>
-                                </CardFooter>
-                            </Card>
+                            <Link
+                                href={`/course/${course.id}`}
+                                key={course.id}
+                                className="flex-1 w-[280px]"
+                            >
+                                <Card className="flex flex-col h-full w-[280px] hover:shadow-md transition-shadow">
+                                    {/* Phần header của card chứa hình ảnh */}
+                                    <CardHeader className="p-0 relative">
+                                        <div className="relative w-full h-40">
+                                            <Image
+                                                src={course.image}
+                                                alt={course.title}
+                                                fill
+                                                className="object-cover rounded-t-lg"
+                                            />
+                                            {course.discount > 0 && (
+                                                <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                    -{course.discount}%
+                                                </div>
+                                            )}
+                                            {course.bestSeller && (
+                                                <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                    Bán chạy
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardHeader>
+
+                                    {/* Phần nội dung của card */}
+                                    <CardContent className="p-4 flex-grow">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                {course.category}
+                                            </span>
+                                            <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                                                {course.level}
+                                            </span>
+                                        </div>
+                                        <CardTitle className="text-lg mb-2 line-clamp-2 h-16">{course.title}</CardTitle>
+                                        <p className="text-gray-600 text-sm mb-2">{course.instructor}</p>
+                                        <div className="flex items-center gap-1 mb-2">
+                                            <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                                            <span className="text-sm font-medium">{course.rating}</span>
+                                            <span className="text-xs text-gray-500">({course.students})</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-bold">{parseInt(course.price).toLocaleString()}đ</span>
+                                            {course.originalPrice && (
+                                                <span className="text-sm text-gray-500 line-through">
+                                                    {parseInt(course.originalPrice).toLocaleString()}đ
+                                                </span>
+                                            )}
+                                        </div>
+                                    </CardContent>
+
+                                    {/* Phần footer của card */}
+                                    <CardFooter className="p-4 pt-0 mt-auto">
+                                        <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </CardFooter>
+                                </Card>
+                            </Link>
                         ))}
                 </div>
 
                 {/* Nút điều hướng phải */}
                 <button
                     onClick={nextSlide}
-                    className="absolute right-0 z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+                    className="absolute right-[-45px] z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+                    disabled={currentIndex + itemsToShow >= filteredCourses.length}
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
@@ -121,4 +153,4 @@ const CourseCarousel = () => {
     );
 };
 
-export default CourseCarousel;
+export default Carousel;

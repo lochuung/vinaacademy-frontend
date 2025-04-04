@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CategoryForm } from "@/components/admin/category/CategoryForm";
 import { CategoryList } from "@/components/admin/category/CategoryList";
-import { Category, CategoryFormData } from "@/types/category-type";
+import { Category, CategoryFormData } from "@/types/category-type"; 
 import { useToast } from "@/hooks/use-toast";
 
 export default function CategoryManagementPage() {

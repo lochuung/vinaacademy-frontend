@@ -6,6 +6,8 @@ export const categoriesData: Category[] = [
     {
         name: "Lập trình",                      // Tên danh mục
         link: "/categories/programming",         // Đường dẫn đến trang danh mục "Lập trình"
+        description: "Khám phá thế giới lập trình với các khóa học từ cơ bản đến nâng cao", // Mô tả danh mục
+        coursesCount: 150,                       // Số lượng khóa học trong danh mục
         subCategories: [                         // Danh sách các danh mục con của "Lập trình"
             {
                 name: "JavaScript",              // Tên danh mục con
@@ -70,6 +72,8 @@ export const categoriesData: Category[] = [
     {
         name: "Thiết kế",                       // Danh mục: Thiết kế
         link: "/categories/design",
+        description: "Học thiết kế chuyên nghiệp với các công cụ và xu hướng mới nhất", // Mô tả danh mục
+        coursesCount: 80,                        // Số lượng khóa học trong danh mục
         subCategories: [
             {
                 name: "UI/UX Design",
@@ -108,6 +112,8 @@ export const categoriesData: Category[] = [
     {
         name: "Marketing",                      // Danh mục: Marketing
         link: "/categories/marketing",
+        description: "Phát triển kỹ năng marketing trong thời đại số", // Mô tả danh mục
+        coursesCount: 95,                        // Số lượng khóa học trong danh mục
         subCategories: [
             {
                 name: "Digital Marketing",
@@ -146,6 +152,8 @@ export const categoriesData: Category[] = [
     {
         name: "Kinh doanh",                     // Danh mục: Kinh doanh
         link: "/categories/business",
+        description: "Kiến thức và kỹ năng thiết yếu cho người làm kinh doanh", // Mô tả danh mục
+        coursesCount: 120,                       // Số lượng khóa học trong danh mục
         subCategories: [
             {
                 name: "Khởi nghiệp",
