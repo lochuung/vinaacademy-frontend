@@ -1,20 +1,22 @@
 // loginForm.tsx
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+import {useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Form, FormField, FormItem, FormControl, FormMessage} from "@/components/ui/form";
 
 //icon
+
 import { FcGoogle } from "react-icons/fc";
 import { FaUserShield } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
+
 import DialogOTP from "./otp-dialog";
 
 const formSchema = z.object({
@@ -52,6 +54,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({
+
     heading = "VN Academy",
     subheading = "Đăng nhập ngay để trải nghiệm",
     logo = {
@@ -67,6 +70,7 @@ export default function LoginForm({
     isSubmitting = false,
     error = null,
 }: LoginFormProps) {
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(formSchema),
@@ -90,7 +94,9 @@ export default function LoginForm({
                     <div className="mx-auto w-full rounded-[10px] p-6 shadow-2xl bg-white">
                         <div className="mb-6 flex flex-col items-center">
                             <a href={logo.url}>
+
                                 <img src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto" />
+
                             </a>
                             <p className="mb-2 text-2xl font-bold">{heading}</p>
                             <p className="text-muted-foreground">{subheading}</p>
@@ -105,6 +111,7 @@ export default function LoginForm({
                                 <FormField
                                     control={form.control}
                                     name="email"
+
                                     render={({ field }) => (
                                         <FormItem>
                                             <Label>Email</Label>
@@ -117,17 +124,21 @@ export default function LoginForm({
                                                 />
                                             </FormControl>
                                             <FormMessage />
+
                                         </FormItem>
                                     )}
                                 />
                                 <FormField
                                     control={form.control}
                                     name="password"
+
                                     render={({ field }) => (
+
                                         <FormItem>
                                             <Label>Mật khẩu</Label>
                                             <FormControl>
                                                 <Input
+
                                                     type="password"
                                                     placeholder="Nhập mật khẩu của bạn"
                                                     iconLeft={<IoMdLock />}
@@ -136,6 +147,7 @@ export default function LoginForm({
                                                 />
                                             </FormControl>
                                             <FormMessage />
+
                                         </FormItem>
                                     )}
                                 />
@@ -143,11 +155,13 @@ export default function LoginForm({
                                     <FormField
                                         control={form.control}
                                         name="remember"
+
                                         render={({ field }) => (
                                             <FormItem className="flex items-center space-x-2">
                                                 <FormControl>
                                                     <Checkbox
                                                         id="remember"
+
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
                                                     />
@@ -157,10 +171,12 @@ export default function LoginForm({
                                         )}
                                     />
                                     <a className="text-sm text-primary hover:underline hover:cursor-pointer"
+
                                         onClick={() => setDialogOpen(true)}>
                                         Quên mật khẩu
                                     </a>
                                     <DialogOTP open={dialogOpen} onClose={() => setDialogOpen(false)} />
+
                                 </div>
                                 <Button type="submit" className="mt-2 w-full" disabled={isSubmitting}>
                                     {isSubmitting ? "Đang đăng nhập..." : loginText}
@@ -172,8 +188,10 @@ export default function LoginForm({
                                     </span>
                                 </div>
                                 <Button type="button" variant="outline" className="w-full border-gray-400"
+
                                     disabled={isSubmitting}>
                                     <FcGoogle className="mr-2 size-5" />
+
                                     {googleText}
                                 </Button>
                             </form>
