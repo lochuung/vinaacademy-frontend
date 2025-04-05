@@ -15,6 +15,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     // Kiểm tra nếu pathname chứa một trong các từ khóa trên
     const shouldHideLayout = hiddenKeywords.some(keyword => pathname.includes(keyword));
+
     return (
         <>
             {!shouldHideLayout && <ClientWrapper />}
@@ -22,7 +23,6 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             {!shouldHideLayout && <LogoClickHandler />}
             {children}
             {!shouldHideLayout && <Footer />}
-        </div >
-
+        </>
     );
 }
