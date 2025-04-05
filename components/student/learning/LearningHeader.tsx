@@ -6,10 +6,10 @@ import Link from 'next/link';
 interface LearningHeaderProps {
     courseTitle: string;
     progress: number;
-    courseId?: string;
+    courseSlug?: string;
 }
 
-const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress, courseId = 'default-course' }) => {
+const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress, courseSlug = 'default-course' }) => {
     return (
         <header className="bg-black text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
             <div className="flex items-center">
@@ -30,7 +30,7 @@ const LearningHeader: FC<LearningHeaderProps> = ({ courseTitle, progress, course
                 </Link>
 
                 <div className="flex flex-col mr-8">
-                    <Link href={`/learning/${courseId}`} className="hover:text-gray-300">
+                    <Link href={`/learning/${courseSlug}`} className="hover:text-gray-300">
                         <h1 className="text-lg font-medium truncate max-w-sm">{courseTitle}</h1>
                     </Link>
                     <div className="flex items-center">

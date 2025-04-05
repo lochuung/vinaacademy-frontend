@@ -27,7 +27,7 @@ export async function loginAction(formData: FormData) {
 
     console.log('Login successful');
 
-    redirect('/dashboard');
+    redirect('/');
   } catch (error) {
     console.error('Login failed:', error);
     throw error;

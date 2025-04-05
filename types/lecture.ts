@@ -87,6 +87,7 @@ export interface Section {
 // Course structure
 export interface Course {
     id: string;
+    slug: string; // Thêm thuộc tính slug
     title: string;
     currentLecture: Lecture;
     sections: Section[];

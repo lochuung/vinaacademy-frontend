@@ -7,11 +7,11 @@ import { Lecture } from '@/types/lecture';
 
 interface LearningTabsProps {
     lecture: Lecture;
-    courseId: string;
+    courseSlug: string;
     currentTimestamp?: number;
 }
 
-const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseId, currentTimestamp = 0 }) => {
+const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseSlug, currentTimestamp = 0 }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'q&a' | 'discussion' | 'announcements' | 'reviews' | 'tools'>('overview');
 
     // Xử lý mở tab transcript khi nó được yêu cầu
@@ -191,7 +191,7 @@ const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseId, curre
 
                 {activeTab === 'notes' && (
                     <NotesArea
-                        courseId={courseId}
+                        courseId={courseSlug}
                         lectureId={lecture.id}
                         currentTimestamp={currentTimestamp}
                     />
@@ -199,14 +199,14 @@ const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseId, curre
 
                 {activeTab === 'q&a' && (
                     <QuestionsArea
-                        courseId={courseId}
+                        courseId={courseSlug}
                         lectureId={lecture.id}
                     />
                 )}
 
                 {activeTab === 'discussion' && (
                     <DiscussionArea
-                        courseId={courseId}
+                        courseId={courseSlug}
                         lectureId={lecture.id}
                     />
                 )}

@@ -11,14 +11,14 @@ import StatusToast from '@/components/student/learning/shared/StatusToast';
 
 interface CoursePageProps {
     params: Promise<{
-        courseId: string;
+        slug: string;
     }>;
 }
 
 const CoursePage: FC<CoursePageProps> = ({ params }) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
-    const courseId = unwrappedParams.courseId;
+    const slug = unwrappedParams.slug;
 
     const [course, setCourse] = useState<Course>(mockCourseData as unknown as Course);
     const [loading, setLoading] = useState(true);
@@ -27,9 +27,9 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
 
     // Lấy thông tin khóa học từ API hoặc dữ liệu mẫu
     useEffect(() => {
-        // Trong thực tế, bạn sẽ gọi API để lấy thông tin khóa học
+        // Trong thực tế, bạn sẽ gọi API để lấy thông tin khóa học dựa trên slug
         // const fetchCourse = async () => {
-        //   const response = await fetch(`/api/courses/${courseId}`);
+        //   const response = await fetch(`/api/courses/by-slug/${slug}`);
         //   const data = await response.json();
         //   setCourse(data);
         //   setLoading(false);
@@ -42,7 +42,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
             setCourse(mockCourseData as unknown as Course);
             setLoading(false);
         }, 500);
-    }, [courseId]);
+    }, [slug]);
 
     const handleContinueLearning = () => {
         setToastMessage('Tiếp tục học tập từ bài học cuối cùng');
@@ -55,7 +55,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                 <LearningHeader
                     courseTitle={mockCourseData.title}
                     progress={mockCourseData.progress}
-                    courseId={courseId}
+                    courseSlug={slug}
                 />
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -99,7 +99,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
             <LearningHeader
                 courseTitle={course.title}
                 progress={course.progress}
-                courseId={courseId}
+                courseSlug={slug}
             />
 
             <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-1">
@@ -145,7 +145,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                             <div className="mt-6">
                                 <h2 className="text-lg font-semibold text-gray-800 mb-2">Tiếp tục học</h2>
                                 <Link
-                                    href={`/learning/${courseId}/lecture/${course.currentLecture.id}`}
+                                    href={`/learning/${slug}/lecture/${course.currentLecture.id}`}
                                     className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                                     onClick={handleContinueLearning}
                                 >
@@ -211,7 +211,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                         {section.lectures.map((lecture, lectureIndex) => (
                                             <Link
                                                 key={lecture.id}
-                                                href={`/learning/${courseId}/lecture/${lecture.id}`}
+                                                href={`/learning/${slug}/lecture/${lecture.id}`}
                                                 className="flex items-center p-4 hover:bg-gray-50 transition"
                                             >
                                                 <div className="w-8 text-center text-gray-500 mr-2">

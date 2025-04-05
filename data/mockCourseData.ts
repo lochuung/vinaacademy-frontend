@@ -18,6 +18,7 @@ export interface CourseLesson {
 
 export interface CourseDetailData {
     id: number;
+    slug?: string; // Thêm slug
     name: string;
     instructor: string;
     totalModules: number;
@@ -27,11 +28,25 @@ export interface CourseDetailData {
     modules: CourseModule[];
 }
 
-// Dữ liệu mẫu cho khóa học
+// Định nghĩa LearningCourse interface để bao gồm cả slug
+export interface LearningCourse {
+    id: number;
+    slug?: string; // Thêm slug
+    name?: string;
+    instructor?: string;
+    category?: string;
+    image?: string;
+    progress: number;
+    lastAccessed?: string;
+    completedLessons?: number;
+    totalLessons?: number;
+}
+
 // Dữ liệu mẫu cho trang "Khóa học của tôi"
 export const mockEnrolledCourses = [
     {
         id: 1,
+        slug: "lap-trinh-reactjs-cho-nguoi-moi-bat-dau", // Thêm slug
         name: "Lập trình React.js cho người mới bắt đầu",
         instructor: "Nguyễn Văn A",
         category: "Lập trình Frontend",
@@ -43,6 +58,7 @@ export const mockEnrolledCourses = [
     },
     {
         id: 2,
+        slug: "nodejs-va-express-xay-dung-rest-api", // Thêm slug
         name: "Node.js và Express: Xây dựng REST API",
         instructor: "Trần Văn B",
         category: "Lập trình Backend",
@@ -54,6 +70,7 @@ export const mockEnrolledCourses = [
     },
     {
         id: 3,
+        slug: "machine-learning-co-ban-voi-python", // Thêm slug
         name: "Machine Learning cơ bản với Python",
         instructor: "Lê Thị C",
         category: "Trí tuệ nhân tạo",
@@ -65,6 +82,7 @@ export const mockEnrolledCourses = [
     },
     {
         id: 4,
+        slug: "ui-ux-design-tu-co-ban-den-nang-cao", // Thêm slug
         name: "UI/UX Design: Từ cơ bản đến nâng cao",
         instructor: "Phạm Thị D",
         category: "UI/UX Design",
@@ -76,6 +94,7 @@ export const mockEnrolledCourses = [
     },
     {
         id: 5,
+        slug: "lap-trinh-mobile-voi-flutter", // Thêm slug
         name: "Lập trình Mobile với Flutter",
         instructor: "Hoàng Văn E",
         category: "Lập trình Mobile",
@@ -87,6 +106,7 @@ export const mockEnrolledCourses = [
     },
     {
         id: 6,
+        slug: "seo-va-digital-marketing-co-ban", // Thêm slug
         name: "SEO và Digital Marketing cơ bản",
         instructor: "Võ Thị F",
         category: "Digital Marketing",
@@ -101,6 +121,7 @@ export const mockEnrolledCourses = [
 // Dữ liệu mẫu chi tiết của khóa học
 export const mockCourseDetail: CourseDetailData = {
     id: 1,
+    slug: "lap-trinh-reactjs-cho-nguoi-moi-bat-dau", // Thêm slug
     name: "Lập trình React.js cho người mới bắt đầu",
     instructor: "Nguyễn Văn A",
     totalModules: 5,

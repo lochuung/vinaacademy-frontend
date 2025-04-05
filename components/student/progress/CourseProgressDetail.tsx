@@ -22,6 +22,7 @@ interface CourseLesson {
 
 interface CourseProgressDetailProps {
     courseId: number;
+    courseSlug?: string;
     courseName: string;
     instructor: string;
     totalModules: number;
@@ -33,6 +34,7 @@ interface CourseProgressDetailProps {
 
 const CourseProgressDetail = ({
     courseId,
+    courseSlug,
     courseName: courseTitle,
     instructor,
     totalModules,
@@ -42,6 +44,7 @@ const CourseProgressDetail = ({
     modules,
 }: CourseProgressDetailProps) => {
     const [expandedModules, setExpandedModules] = useState<number[]>([]);
+    const courseIdentifier = courseSlug || courseId.toString();
 
     const toggleModule = (moduleId: number) => {
         if (expandedModules.includes(moduleId)) {
@@ -134,7 +137,7 @@ const CourseProgressDetail = ({
                                         {module.lessons.map((lesson) => (
                                             <li key={lesson.id} className="py-3">
                                                 <Link
-                                                    href={`/course/${courseId}/lesson/${lesson.id}`}
+                                                    href={`/learning/${courseIdentifier}/lecture/${lesson.id}`}
                                                     className="flex items-center group"
                                                 >
                                                     <div
@@ -212,7 +215,7 @@ const CourseProgressDetail = ({
                     Trở về danh sách khóa học
                 </Link>
                 <Link
-                    href={`/learning/${courseId}`}
+                    href={`/learning/${courseIdentifier}`}
                     className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors"
                 >
                     Tiếp tục học
