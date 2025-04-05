@@ -9,6 +9,7 @@ interface CourseCardProps {
 const CourseCard = ({ course }: CourseCardProps) => {
     const isCompleted = course.progress === 100;
     const title = course.name;
+    const courseSlug = course.slug || course.id.toString();
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
@@ -61,24 +62,20 @@ const CourseCard = ({ course }: CourseCardProps) => {
                     </div>
                 )}
 
-
-
                 <div className="mt-4 grid grid-cols-2 gap-2">
                     <Link
-                        // href={`/learning/${course.id}/lectures/${course.currentLecture.id}`}
-                        href={`/learning`}
+                        href={`/learning/${courseSlug}`}
                         className="text-center py-2 px-3 bg-black hover:bg-gray-900 text-white font-medium rounded-md transition-colors duration-300"
                     >
                         {isCompleted ? "Xem lại" : "Tiếp tục học"}
                     </Link>
 
                     <Link
-                        href={`/my-courses/${course.id}`}
+                        href={`/my-courses/${courseSlug}`}
                         className="text-center py-2 px-3 bg-white border border-gray-900 text-gray-900 font-medium rounded-md hover:bg-gray-100 transition-colors duration-300"
                     >
                         Chi tiết tiến độ
                     </Link>
-
                 </div>
             </div>
         </div>

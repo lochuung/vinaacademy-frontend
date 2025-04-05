@@ -31,6 +31,7 @@ export interface Category {
 // Định nghĩa interface CartItem cho các sản phẩm trong giỏ hàng
 export interface CartItem {
     id: number;              // ID duy nhất của khoá học
+    slug?: string;           // Slug của khóa học để sử dụng trong URL
     name: string;            // Tên khoá học
     price: string;           // Giá bán hiện tại (ví dụ: "599K")
     image: string;           // Đường dẫn hình ảnh của khoá học
@@ -42,6 +43,7 @@ export interface CartItem {
 // Định nghĩa interface LearningCourse cho khoá học đang học, chứa thông tin tiến độ cũng như các chi tiết khác
 export interface LearningCourse {
     id: number;                // ID khoá học
+    slug?: string;             // Slug của khóa học sử dụng trong URL
     name: string;              // Tên khoá học
     progress: number;          // Tiến độ hoàn thành (%)
     image: string;             // Đường dẫn hình ảnh của khoá học

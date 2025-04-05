@@ -8,10 +8,10 @@ import { Lecture, Section } from '@/types/lecture';
 interface CourseContentProps {
     title: string;
     sections: Section[];
-    courseId: string;
+    courseSlug: string;
 }
 
-const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSections, courseId }) => {
+const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSections, courseSlug }) => {
     const router = useRouter();
     const [sections, setSections] = useState<Section[]>(initialSections);
     const [expandedSections, setExpandedSections] = useState<string[]>(
@@ -22,12 +22,12 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
     // Xử lý khi người dùng chọn một bài học
     const handleLectureSelect = (lectureId: string) => {
         // Điều hướng đến bài học đã chọn
-        router.push(`/learning/${courseId}/lecture/${lectureId}`);
+        router.push(`/learning/${courseSlug}/lecture/${lectureId}`);
     };
 
     // Tải trạng thái hoàn thành từ localStorage khi khởi tạo
     useEffect(() => {
-        const savedCompletionStatus = localStorage.getItem(`course-${courseId}-completion`);
+        const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`);
 
         if (savedCompletionStatus) {
             try {
@@ -47,7 +47,7 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
                 console.error("Lỗi khi tải trạng thái hoàn thành:", error);
             }
         }
-    }, [courseId, initialSections]);
+    }, [courseSlug, initialSections]);
 
     const toggleSection = (sectionId: string) => {
         setExpandedSections(prevExpanded =>
@@ -74,17 +74,17 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
         setSections(updatedSections);
 
         // Lưu vào localStorage
-        const savedCompletionStatus = localStorage.getItem(`course-${courseId}-completion`) || '{}';
+        const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`) || '{}';
         try {
             const completionData = JSON.parse(savedCompletionStatus);
             completionData[lectureId] = isCompleted;
-            localStorage.setItem(`course-${courseId}-completion`, JSON.stringify(completionData));
+            localStorage.setItem(`course-${courseSlug}-completion`, JSON.stringify(completionData));
         } catch (error) {
             console.error("Lỗi khi lưu trạng thái hoàn thành:", error);
         }
 
         // Ở đây bạn cũng sẽ gọi API để cập nhật server
-        // Ví dụ: api.updateLectureCompletion(courseId, lecturenId, isCompleted);
+        // Ví dụ: api.updateLectureCompletion(courseSlug, lecturenId, isCompleted);
     };
 
     // Tính tổng thời lượng và số bài học

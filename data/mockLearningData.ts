@@ -448,6 +448,7 @@ fruits = {"apple", "banana", "cherry"}
 // Khởi tạo đối tượng Course với kiểu dữ liệu phù hợp
 export const mockCourseData: Course = {
     id: 'course-python-01',
+    slug: 'python-cho-nguoi-moi-bat-dau',
     title: 'Python cho Người Mới Bắt Đầu',
     currentLecture: currentLecture,
     sections: [section1, section2, section3],

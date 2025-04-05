@@ -8,7 +8,7 @@ import { mockCourseDetail, CourseDetailData } from "@/data/mockCourseData";
 
 export default function LearningCoursePage() {
     const params = useParams();
-    const courseId = Number(params.courseId);
+    const courseSlug = params.slug as string;
     const [isLoading, setIsLoading] = useState(true);
     const [courseData, setCourseData] = useState<CourseDetailData | null>(null);
 
@@ -21,11 +21,14 @@ export default function LearningCoursePage() {
                 await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Trong thực tế, đây sẽ là lệnh gọi API thực sự
-                // const response = await fetch(`/api/courses/${courseId}/progress`);
+                // const response = await fetch(`/api/courses/by-slug/${courseSlug}/progress`);
                 // const data = await response.json();
 
                 // Sử dụng dữ liệu mẫu từ mockCourseData.ts
-                setCourseData(mockCourseDetail);
+                setCourseData({
+                    ...mockCourseDetail,
+                    slug: courseSlug, // Thêm slug vào dữ liệu
+                });
             } catch (error) {
                 console.error("Lỗi khi tải dữ liệu khóa học:", error);
             } finally {
@@ -33,10 +36,10 @@ export default function LearningCoursePage() {
             }
         };
 
-        if (courseId) {
+        if (courseSlug) {
             fetchData();
         }
-    }, [courseId]);
+    }, [courseSlug]);
 
     if (isLoading) {
         return (
@@ -53,7 +56,7 @@ export default function LearningCoursePage() {
                     <h1 className="text-2xl font-bold text-gray-700">Không tìm thấy khóa học</h1>
                     <p className="mt-2 text-gray-500">Khóa học bạn đang tìm kiếm không tồn tại hoặc đã bị xóa</p>
                     <Link
-                        href="/mycourses"
+                        href="/my-courses"
                         className="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                     >
                         Quay lại danh sách khóa học
@@ -67,6 +70,7 @@ export default function LearningCoursePage() {
         <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <CourseProgressDetail
                 courseId={courseData.id}
+                courseSlug={courseSlug}
                 courseName={courseData.name}
                 instructor={courseData.instructor}
                 totalModules={courseData.totalModules}

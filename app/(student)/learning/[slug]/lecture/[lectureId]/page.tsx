@@ -16,7 +16,7 @@ import {
 
 interface LecturePageProps {
     params: Promise<{
-        courseId: string;
+        slug: string;
         lectureId: string;
     }>;
 }
@@ -24,7 +24,7 @@ interface LecturePageProps {
 const LecturePage: FC<LecturePageProps> = ({ params }) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
-    const courseId = unwrappedParams.courseId;
+    const slug = unwrappedParams.slug;
     const lectureId = unwrappedParams.lectureId;
 
     const [currentTimestamp, setCurrentTimestamp] = useState<number>(0);
@@ -36,7 +36,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
     useEffect(() => {
         // Trong thực tế, bạn sẽ gọi API để lấy thông tin bài học
         // const fetchLecture = async () => {
-        //   const response = await fetch(`/api/courses/${courseId}/lectures/${lectureId}`);
+        //   const response = await fetch(`/api/courses/by-slug/${slug}/lectures/${lectureId}`);
         //   const data = await response.json();
         //   setCurrentLecture(data);
         //   setLoading(false);
@@ -82,7 +82,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
             setCurrentLecture(foundLecture);
             setLoading(false);
         }, 500);
-    }, [courseId, lectureId]);
+    }, [slug, lectureId]);
 
     const handleTimeUpdate = (time: number) => {
         setCurrentTimestamp(time);
@@ -98,7 +98,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                 <LearningHeader
                     courseTitle={mockCourseData.title}
                     progress={mockCourseData.progress}
-                    courseId={courseId}
+                    courseSlug={slug}
                 />
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -197,7 +197,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
             <LearningHeader
                 courseTitle={mockCourseData.title}
                 progress={mockCourseData.progress}
-                courseId={courseId}
+                courseSlug={slug}
             />
 
             <div className="flex flex-1 overflow-hidden">
@@ -209,14 +209,14 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                             <div className="w-full flex-1 bg-gray-50">
                                 <QuizContent
                                     lectureId={currentLecture.id}
-                                    courseId={courseId}
+                                    courseId={slug}
                                 />
                             </div>
                         ) : isReadingLecture ? (
                             <div className="w-full p-4 bg-white">
                                 <ReadingContent
                                     lectureId={currentLecture.id}
-                                    courseId={courseId}
+                                    courseId={slug}
                                 />
                             </div>
                         ) : isAssignmentLecture ? (
@@ -240,7 +240,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                             <div>
                                 <LearningTabs
                                     lecture={currentLecture}
-                                    courseId={courseId}
+                                    courseSlug={slug}
                                     currentTimestamp={currentTimestamp}
                                 />
                             </div>
@@ -254,7 +254,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                         <CourseContent
                             title={mockCourseData.title}
                             sections={mockCourseData.sections}
-                            courseId={courseId}
+                            courseSlug={slug}
                         />
                     )}
                 </div>

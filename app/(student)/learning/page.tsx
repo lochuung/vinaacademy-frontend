@@ -15,10 +15,10 @@ export default function DefaultLearningPage({ params }: LearningPageParams) {
     const router = useRouter();
 
     useEffect(() => {
-        // Chuyển hướng đến trang khóa học mặc định
+        // Chuyển hướng đến trang khóa học mặc định sử dụng slug
         // Trong thực tế, bạn có thể muốn lấy khóa học gần đây nhất từ API
-        const defaultCourseId = mockCourseData.id;
-        router.push(`/learning/${defaultCourseId}`);
+        const defaultCourseSlug = mockCourseData.slug;
+        router.push(`/learning/${defaultCourseSlug}`);
     }, [router]);
 
     return (
