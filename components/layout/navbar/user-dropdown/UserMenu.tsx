@@ -80,7 +80,12 @@ const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
                 </div>
             )}
 
-            <UserDropdown isVisible={isOpen} />
+            {isLoggedIn && (
+                <UserDropdown
+                    isVisible={isOpen}
+                    onClose={() => setIsOpen(false)}
+                />
+            )}
         </div>
     );
 };

@@ -1,5 +1,5 @@
 'use client'; // Chỉ định rằng file này sẽ được render phía client
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Import các component Avatar từ thư mục components/ui/avatar
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar-shadcn'; // Import các component Avatar từ thư mục components/ui/avatar
 import {
     Collapsible,
     CollapsibleContent,
@@ -29,7 +29,7 @@ import {
     SidebarMenuSubItem,
     SidebarRail,
     useSidebar
-} from '@/components/ui/sidebar'; // Import các component Sidebar từ thư mục components/ui/sidebar
+} from '@/components/ui/sidebar-shadcn'; // Import các component Sidebar từ thư mục components/ui/sidebar
 import { navItems } from '@/constants/data'; // Import dữ liệu navItems từ thư mục constants/data
 import {
     BadgeCheck,

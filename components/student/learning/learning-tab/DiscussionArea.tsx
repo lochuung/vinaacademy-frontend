@@ -234,7 +234,9 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                 <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-white"
+
                     placeholder="Chia sẻ suy nghĩ của bạn với các học viên khác..."
                     rows={4}
                 ></textarea>
@@ -305,7 +307,9 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                                             <textarea
                                                 value={newReply}
                                                 onChange={(e) => setNewReply(e.target.value)}
-                                                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+
+                                                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-white"
+
                                                 placeholder="Trả lời bình luận này..."
                                                 rows={3}
                                             ></textarea>
