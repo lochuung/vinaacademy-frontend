@@ -5,9 +5,6 @@ import QuestionsArea from './learning-tab/QuestionsArea';
 import DiscussionArea from './learning-tab/DiscussionArea';
 import { Lecture } from '@/types/lecture';
 
-import ReviewsArea from './learning-tab/ReviewArea';
-
-
 interface LearningTabsProps {
     lecture: Lecture;
     courseSlug: string;
@@ -226,10 +223,60 @@ const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseSlug, cur
                 )}
 
                 {activeTab === 'reviews' && (
-                    <ReviewsArea
-                        courseId={courseId}
-                    />
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Đánh Giá Khóa Học</h2>
+                        <div className="mb-6 bg-gray-50 p-6 rounded-lg">
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <div className="flex items-center">
+                                        {Array(5).fill(0).map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`w-5 h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                            />
+                                        ))}
+                                        <span className="ml-2 text-gray-700 font-medium">4.2/5</span>
+                                    </div>
+                                    <p className="text-gray-500 mt-1">Dựa trên 256 lượt đánh giá</p>
+                                </div>
+                                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                    Viết đánh giá
+                                </button>
+                            </div>
 
+                            <div className="space-y-2">
+                                {['5', '4', '3', '2', '1'].map((rating) => (
+                                    <div key={rating} className="flex items-center">
+                                        <span className="w-4">{rating}</span>
+                                        <Star className="w-4 h-4 text-yellow-400 mx-1" />
+                                        <div className="flex-1 h-2 mx-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-yellow-400"
+                                                style={{
+                                                    width: rating === '5' ? '65%' :
+                                                        rating === '4' ? '25%' :
+                                                            rating === '3' ? '8%' :
+                                                                rating === '2' ? '2%' : '0%'
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-xs text-gray-500">
+                                            {
+                                                rating === '5' ? '65%' :
+                                                    rating === '4' ? '25%' :
+                                                        rating === '3' ? '8%' :
+                                                            rating === '2' ? '2%' : '0%'
+                                            }
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="border-t border-gray-200 pt-6">
+                            <p className="text-center text-gray-500">Đánh giá của người học khác sẽ xuất hiện ở đây.</p>
+                        </div>
+                    </div>
                 )}
 
                 {activeTab === 'tools' && (
