@@ -1,13 +1,13 @@
 "use client";
 
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import Navbar from "./navbar/Navbar";
 import ClientWrapper from "./announcement-bar/ClientWrapper";
 import Footer from "./Footer";
 import LogoClickHandler from "./LogoClickHandler"; // Import the new component
-import {useAuth} from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
-export default function LayoutWrapper({children}: { children: React.ReactNode }) {
+export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     // Danh sách từ khóa để ẩn layout nếu đường dẫn chứa bất kỳ từ nào trong đây
@@ -17,12 +17,17 @@ export default function LayoutWrapper({children}: { children: React.ReactNode })
     const shouldHideLayout = hiddenKeywords.some(keyword => pathname.includes(keyword));
 
     return (
-        <>
-            {!shouldHideLayout && <ClientWrapper/>}
-            {!shouldHideLayout && <Navbar/>}
-            {!shouldHideLayout && <LogoClickHandler/>}
-            {children}
-            {!shouldHideLayout && <Footer/>}
-        </>
+        <div className="relative">
+            <div className="fixed top-0 left-0 right-0 z-50 w-full">
+                {!shouldHideLayout && <ClientWrapper />}
+                {!shouldHideLayout && <Navbar />}
+            </div>
+            {!shouldHideLayout && <LogoClickHandler />}
+            <div className={`bg-gray-100 ${!shouldHideLayout ? "pt-24" : "pt-0"}`}>
+                {children}
+            </div>
+            {!shouldHideLayout && <Footer />}
+
+        </div>
     );
 }

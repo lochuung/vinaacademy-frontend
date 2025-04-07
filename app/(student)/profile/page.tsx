@@ -118,7 +118,7 @@ export default function Home() {
 
 
     return (
-        <div className="w-full p-6 bg-white flex justify-center items-center overflow-hidden">
+        <div className="w-full p-6 bg-gray-100 flex justify-center items-center overflow-hidden">
 
             <Card className="w-full max-w-4xl">
                 <CardHeader>
