@@ -1,10 +1,10 @@
 import { useRouter } from "next/navigation";
-import { Category } from "@/types/navbar";
+import { CategoryDto } from "@/types/category";
 import { ChevronRight } from "lucide-react";
 import TopicsList from "./TopicsList";
 
 interface SubCategoriesListProps {
-    category: Category;
+    category: CategoryDto;
     activeCategory: number | null;
     activeSubCategory: number | null;
     categoryIndex: number;
@@ -21,9 +21,9 @@ const SubCategoriesList = ({
     const router = useRouter();
 
     // Chuyển hướng đến trang danh mục con
-    const handleSubCategoryClick = (subCategoryLink: string, e: React.MouseEvent) => {
+    const handleSubCategoryClick = (parentCategory: CategoryDto, childCategory: CategoryDto, e: React.MouseEvent) => {
         e.preventDefault();
-        router.push(subCategoryLink);
+        router.push(`/categories/${parentCategory.slug}/${childCategory.slug}`);
     };
 
     return (
@@ -34,27 +34,27 @@ const SubCategoriesList = ({
                 }`}
         >
             <div className="py-2">
-                {category.subCategories.map((subCategory, subIndex) => (
+                {category.children.map((child, subIndex) => (
                     <div
-                        key={subIndex}
+                        key={child.id}
                         className="relative"
                         onMouseEnter={() => onSubCategoryHover(subIndex)}
                     >
                         <a
-                            href={subCategory.link}
+                            href={`/categories/${category.slug}/${child.slug}`}
                             className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"
-                            onClick={(e) => handleSubCategoryClick(subCategory.link, e)}
+                            onClick={(e) => handleSubCategoryClick(category, child, e)}
                         >
-                            <span>{subCategory.name}</span>
-                            <ChevronRight className="w-4 h-4" />
+                            <span>{child.name}</span>
+                            {/* <ChevronRight className="w-4 h-4" /> */}
                         </a>
 
-                        {activeCategory === categoryIndex && activeSubCategory === subIndex && (
+                        {/* {activeCategory === categoryIndex && activeSubCategory === subIndex && (
                             <TopicsList
-                                subCategory={subCategory}
-                                categoryLink={category.link}
+                                parentCategory={category}
+                                subCategory={child}
                             />
-                        )}
+                        )} */}
                     </div>
                 ))}
             </div>
