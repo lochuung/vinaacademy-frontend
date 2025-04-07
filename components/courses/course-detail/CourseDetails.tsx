@@ -1,150 +1,158 @@
-"use client";
+'use client';
 
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {Book, Users, FileText, PlayCircle, ChevronDown, ChevronUp} from "lucide-react";
-import {useState} from "react";
-import {Avatar} from "@/components/ui/avatar";
-
-interface Section {
-    id: number;
-    name: string;
-    order: number;
-}
-
-interface Instructor {
-    id: number;
-    name: string;
-    email: string;
-    isOwner: boolean;
-    avatarUrl?: string;
-}
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Disclosure } from '@headlessui/react';
+import { ChevronDown, Play, FileText, Clock } from 'lucide-react';
+import { CourseDetailsResponse, LessonType } from '@/types/course';
+import Image from 'next/image';
 
 interface CourseDetailsProps {
-    course: {
-        name: string;
-        sections: Section[];
-        totalSection: number;
-        totalLesson: number;
-        instructors: Instructor[];
-        description: string;
-    };
+    course: CourseDetailsResponse;
 }
 
-export default function CourseDetails({course}: CourseDetailsProps) {
-    return (
-        <section className="bg-white border rounded-lg p-6 mb-8">
-            <Tabs defaultValue="curriculum" className="w-full">
-                <TabsList className="grid grid-cols-4 mb-6" role="tablist" aria-label="Thông tin khóa học">
-                    <TabsTrigger value="curriculum">
-                        <Book className="h-4 w-4 mr-2" aria-hidden="true"/> Nội dung
-                    </TabsTrigger>
-                    <TabsTrigger value="overview">
-                        <FileText className="h-4 w-4 mr-2" aria-hidden="true"/> Tổng quan
-                    </TabsTrigger>
-                    <TabsTrigger value="instructors">
-                        <Users className="h-4 w-4 mr-2" aria-hidden="true"/> Giảng viên
-                    </TabsTrigger>
-                </TabsList>
+export default function CourseDetails({ course }: CourseDetailsProps) {
+    const [tab, setTab] = useState('content');
 
-                <TabsContent value="curriculum" className="space-y-4" role="tabpanel" aria-labelledby="curriculum">
-                    <div className="mb-4">
+    // Calculate total content - number of lessons and total duration
+    const totalLessons = course.totalLesson;
+    const totalSections = course.totalSection;
+    
+    // Calculate total duration in seconds
+    const totalDuration = course.sections.reduce((total, section) => {
+        return total + (section.lessons?.reduce((sectionTotal, lesson) => {
+            return sectionTotal + (lesson.videoDuration || 0);
+        }, 0) ?? 0);
+    }, 0);
+    
+    // Format duration to hours and minutes
+    const formatDuration = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        return `${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`;
+    };
+
+    // Format lesson type to Vietnamese
+    const formatLessonType = (type?: LessonType) => {
+        switch(type) {
+            case 'VIDEO': return 'Video';
+            case 'READING': return 'Bài đọc';
+            case 'QUIZ': return 'Bài kiểm tra';
+            default: return 'Bài học';
+        }
+    };
+
+    // Format lesson duration
+    const formatLessonDuration = (seconds?: number) => {
+        if (!seconds) return '';
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    return (
+        <div className="bg-white border rounded-lg overflow-hidden mb-8">
+            <Tabs defaultValue={tab} onValueChange={setTab} className="w-full">
+                <div className="border-b">
+                    <TabsList className="bg-transparent h-auto p-0">
+                        <TabsTrigger 
+                            value="content" 
+                            className={`px-6 py-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#a435f0] data-[state=active]:shadow-none transition-none`}
+                        >
+                            Nội dung khóa học
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="instructor" 
+                            className={`px-6 py-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#a435f0] data-[state=active]:shadow-none transition-none`}
+                        >
+                            Giảng viên
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
+
+                <TabsContent value="content" className="p-6">
+                    <div className="mb-6">
                         <h2 className="text-xl font-bold mb-2">Nội dung khóa học</h2>
-                        <div className="flex items-center text-sm text-gray-600">
-                            <span>{course.totalSection} chương</span>
-                            <span className="mx-2">•</span>
-                            <span>{course.totalLesson} bài học</span>
+                        <div className="text-sm text-gray-500 flex flex-wrap gap-4">
+                            <span>{totalSections} phần •</span>
+                            <span>{totalLessons} bài học •</span>
+                            <span>Thời lượng {formatDuration(totalDuration)}</span>
                         </div>
                     </div>
 
-                    <CourseCurriculum sections={course.sections}/>
-                </TabsContent>
-
-                <TabsContent value="overview" role="tabpanel" aria-labelledby="overview">
-                    <div className="prose max-w-none">
-                        <h2 className="text-xl font-bold mb-4">Mô tả khóa học</h2>
-                        <div className="whitespace-pre-wrap">{course.description}</div>
-
-                        <h2 className="text-xl font-bold mt-8 mb-4">Bạn sẽ học được gì</h2>
-                        <ul className="list-disc pl-5 space-y-2">
-                            <li>Hiểu và áp dụng các khái niệm cơ bản của Java</li>
-                            <li>Xây dựng các ứng dụng Java đơn giản</li>
-                            <li>Làm việc với dữ liệu và cấu trúc điều khiển</li>
-                            <li>Hiểu về lập trình hướng đối tượng trong Java</li>
-                        </ul>
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="instructors" role="tabpanel" aria-labelledby="instructors">
-                    <h2 className="text-xl font-bold mb-6">Giảng viên</h2>
-
-                    <div className="space-y-8">
-                        {course.instructors.map((instructor) => (
-                            <div key={instructor.id} className="flex flex-col md:flex-row gap-4">
-                                <Avatar
-                                    src={instructor.avatarUrl || '/images/default-avatar.png'}
-                                    alt={`Ảnh giảng viên ${instructor.name}`}
-                                    size={96}
-                                    className="w-24 h-24"
-                                />
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold">{instructor.name}</h3>
-                                    <p className="text-gray-600 mb-2">{instructor.isOwner ? 'Giảng viên chính' : 'Trợ giảng'}</p>
-                                    <p className="text-sm text-gray-700 mb-3">
-                                        Giảng viên với hơn 5 năm kinh nghiệm trong lĩnh vực lập trình Java và phát triển
-                                        phần mềm.
-                                    </p>
-                                </div>
-                            </div>
+                    <div className="space-y-2">
+                        {course.sections.map((section) => (
+                            <Disclosure key={section.id}>
+                                {({ open }) => (
+                                    <div>
+                                        <Disclosure.Button className="flex justify-between items-center w-full p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-left">
+                                            <div>
+                                                <div className="font-medium">{section.title}</div>
+                                                <div className="text-sm text-gray-500">
+                                                    {section.lessons?.length || 0} bài học
+                                                </div>
+                                            </div>
+                                            <ChevronDown className={`${open ? 'transform rotate-180' : ''} w-5 h-5 text-gray-500`} />
+                                        </Disclosure.Button>
+                                        <Disclosure.Panel className="px-4 pt-2 pb-4">
+                                            <div className="space-y-2">
+                                                {section.lessons?.map((lesson) => (
+                                                    <div key={lesson.id} className="flex justify-between items-center p-3 border-b">
+                                                        <div className="flex items-center gap-3">
+                                                            {lesson.type === 'VIDEO' ? (
+                                                                <Play className="w-4 h-4 text-gray-500" />
+                                                            ) : lesson.type === 'READING' ? (
+                                                                <FileText className="w-4 h-4 text-gray-500" />
+                                                            ) : (
+                                                                <Clock className="w-4 h-4 text-gray-500" />
+                                                            )}
+                                                            <span>
+                                                                <div className="text-sm">{lesson.title}</div>
+                                                                <div className="text-xs text-gray-500">{formatLessonType(lesson.type)}</div>
+                                                            </span>
+                                                        </div>
+                                                        {lesson.videoDuration && (
+                                                            <div className="text-xs text-gray-500">{formatLessonDuration(lesson.videoDuration)}</div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Disclosure.Panel>
+                                    </div>
+                                )}
+                            </Disclosure>
                         ))}
                     </div>
                 </TabsContent>
-            </Tabs>
-        </section>
-    );
-}
 
-function CourseCurriculum({sections}: { sections: Section[] }) {
-    const [expandedSections, setExpandedSections] = useState<number[]>([sections[0]?.id]);
-
-    const toggleSection = (sectionId: number) => {
-        setExpandedSections(prev =>
-            prev.includes(sectionId)
-                ? prev.filter(id => id !== sectionId)
-                : [...prev, sectionId]
-        );
-    };
-
-    return (
-        <div className="space-y-3">
-            {sections.map((section) => (
-                <div key={section.id} className="border rounded-lg overflow-hidden">
-                    <button
-                        className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                        onClick={() => toggleSection(section.id)}
-                    >
-                        <div className="flex items-center">
-                            <span className="font-medium">{section.order}. {section.name}</span>
-                        </div>
-                        {expandedSections.includes(section.id) ? (
-                            <ChevronUp className="h-5 w-5"/>
-                        ) : (
-                            <ChevronDown className="h-5 w-5"/>
-                        )}
-                    </button>
-
-                    {expandedSections.includes(section.id) && (
-                        <div className="p-4 border-t">
-                            {/* Sample lessons - in a real app, these would come from the API */}
-                            {[1, 2, 3].map((num) => (
-                                <div key={num} className="flex items-center py-3 border-b last:border-b-0">
-                                    <PlayCircle className="h-5 w-5 mr-3 text-gray-600"/>
-                                    <span>Bài {num}: Nội dung bài học</span>
+                <TabsContent value="instructor" className="p-6">
+                    {course.instructors.map((instructor) => (
+                        <div key={instructor.id} className="mb-8">
+                            <div className="flex items-start gap-4 mb-4">
+                                <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                                    <Image 
+                                        src={instructor.avatarUrl || "/images/default-avatar.png"}
+                                        alt={instructor.fullName}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
-                            ))}
+                                <div>
+                                    <h3 className="text-lg font-bold">{instructor.fullName}</h3>
+                                    {instructor.id === course.ownerInstructor?.id && (
+                                        <span className="text-sm text-blue-600">Giảng viên chính</span>
+                                    )}
+                                </div>
+                            </div>
+                            {instructor.description && (
+                                <div className="text-gray-700 text-sm">
+                                    <p>{instructor.description}</p>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-            ))}
+                    ))}
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

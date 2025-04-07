@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/apiClient";
 import {PaginatedResponse} from "@/types/api-response";
-import {CourseDto, CourseRequest, CourseSearchRequest} from "@/types/course";
+import {CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest} from "@/types/course";
 import {AxiosResponse} from "axios";
 
 // 📌 GET /courses/pagination
@@ -32,6 +32,17 @@ export async function getCoursesPaginated(
     }
 }
 
+// 🔍 GET /courses/{slug} - Get course by slug
+export async function getCourseBySlug(slug: string): Promise<CourseDetailsResponse | null> {
+    try {
+        const response: AxiosResponse = await apiClient.get(`/courses/${slug}`);
+        return response.data.data;
+    } catch (error) {
+        console.error(`getCourseBySlug error for slug ${slug}:`, error);
+        return null;
+    }
+}
+
 // 🔍 GET /courses/search
 export async function searchCourses(
     search: CourseSearchRequest,
@@ -56,7 +67,6 @@ export async function searchCourses(
         return null;
     }
 }
-
 
 // ➕ POST /courses
 export async function createCourse(course: CourseRequest): Promise<CourseDto | null> {
