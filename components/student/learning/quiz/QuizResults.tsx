@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
-import { Quiz, QuizQuestion as QuizQuestionType } from '@/types/lecture';
-import { CheckCircle, XCircle, ArrowRight, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import {FC, useState} from 'react';
+import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
+import {CheckCircle, XCircle, ArrowRight, RefreshCw, ChevronDown, ChevronUp} from 'lucide-react';
 import QuizQuestion from './QuizQuestion';
 
 interface QuizResultsProps {
@@ -23,12 +23,12 @@ interface QuizResultsProps {
 }
 
 const QuizResults: FC<QuizResultsProps> = ({
-    quiz,
-    quizResults,
-    selectedAnswers,
-    textAnswers,
-    onRetake
-}) => {
+                                               quiz,
+                                               quizResults,
+                                               selectedAnswers,
+                                               textAnswers,
+                                               onRetake
+                                           }) => {
     const [expandedQuestions, setExpandedQuestions] = useState<string[]>([]);
 
     // Toggle mở rộng câu hỏi
@@ -69,10 +69,11 @@ const QuizResults: FC<QuizResultsProps> = ({
                             <div className={`py-2 px-4 rounded-full font-medium ${quizResults.passed
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
-                                }`}>
+                            }`}>
                                 {quizResults.passed
-                                    ? <span className="flex items-center"><CheckCircle size={18} className="mr-1" /> Bạn đã đạt điểm tối thiểu {quiz.settings.passingScore}%</span>
-                                    : <span className="flex items-center"><XCircle size={18} className="mr-1" /> Bạn chưa đạt điểm tối thiểu {quiz.settings.passingScore}%</span>
+                                    ?
+                                    <span className="flex items-center"><CheckCircle size={18} className="mr-1"/> Bạn đã đạt điểm tối thiểu {quiz.settings.passingScore}%</span>
+                                    : <span className="flex items-center"><XCircle size={18} className="mr-1"/> Bạn chưa đạt điểm tối thiểu {quiz.settings.passingScore}%</span>
                                 }
                             </div>
                         )}
@@ -115,13 +116,13 @@ const QuizResults: FC<QuizResultsProps> = ({
                             onClick={expandAllQuestions}
                             className="text-blue-600 text-sm flex items-center hover:text-blue-800"
                         >
-                            <ChevronDown size={16} className="mr-1" /> Mở tất cả
+                            <ChevronDown size={16} className="mr-1"/> Mở tất cả
                         </button>
                         <button
                             onClick={collapseAllQuestions}
                             className="text-blue-600 text-sm flex items-center hover:text-blue-800"
                         >
-                            <ChevronUp size={16} className="mr-1" /> Thu gọn tất cả
+                            <ChevronUp size={16} className="mr-1"/> Thu gọn tất cả
                         </button>
                     </div>
                 </div>
@@ -139,11 +140,12 @@ const QuizResults: FC<QuizResultsProps> = ({
                                     className="w-full flex items-center justify-between text-left"
                                 >
                                     <div className="flex items-start">
-                                        <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-3 ${result?.correct === true
-                                            ? 'bg-green-100 text-green-700'
-                                            : result?.correct === false
-                                                ? 'bg-red-100 text-red-700'
-                                                : 'bg-gray-100 text-gray-700'
+                                        <div
+                                            className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-3 ${result?.correct === true
+                                                ? 'bg-green-100 text-green-700'
+                                                : result?.correct === false
+                                                    ? 'bg-red-100 text-red-700'
+                                                    : 'bg-gray-100 text-gray-700'
                                             }`}>
                                             {index + 1}
                                         </div>
@@ -151,14 +153,19 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             <div className="font-medium">{question.text}</div>
                                             <div className="text-sm text-gray-500 mt-1">
                                                 {question.points} điểm
-                                                {result?.correct === true && <span className="text-green-600 ml-2 inline-flex items-center"><CheckCircle size={14} className="mr-1" /> Đúng</span>}
-                                                {result?.correct === false && <span className="text-red-600 ml-2 inline-flex items-center"><XCircle size={14} className="mr-1" /> Sai</span>}
-                                                {result?.correct === null && <span className="text-gray-600 ml-2">Tự luận</span>}
+                                                {result?.correct === true && <span
+                                                    className="text-green-600 ml-2 inline-flex items-center"><CheckCircle
+                                                    size={14} className="mr-1"/> Đúng</span>}
+                                                {result?.correct === false && <span
+                                                    className="text-red-600 ml-2 inline-flex items-center"><XCircle
+                                                    size={14} className="mr-1"/> Sai</span>}
+                                                {result?.correct === null &&
+                                                    <span className="text-gray-600 ml-2">Tự luận</span>}
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                        {isExpanded ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
                                     </div>
                                 </button>
 
@@ -168,8 +175,10 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             question={question}
                                             selectedAnswers={selectedAnswers[question.id] || []}
                                             textAnswer={textAnswers[question.id] || ''}
-                                            onSelectOption={() => { }} // Không cần xử lý vì đã nộp bài
-                                            onTextChange={() => { }} // Không cần xử lý vì đã nộp bài
+                                            onSelectOption={() => {
+                                            }} // Không cần xử lý vì đã nộp bài
+                                            onTextChange={() => {
+                                            }} // Không cần xử lý vì đã nộp bài
                                             showCorrectAnswers={quiz.settings.showCorrectAnswers}
                                             isSubmitted={true}
                                         />
@@ -194,7 +203,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                             onClick={onRetake}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                         >
-                            <RefreshCw size={16} className="mr-2" /> Làm lại bài kiểm tra
+                            <RefreshCw size={16} className="mr-2"/> Làm lại bài kiểm tra
                         </button>
                     )}
 
@@ -205,7 +214,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                         }}
                         className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
                     >
-                        Bài tiếp theo <ArrowRight size={16} className="ml-2" />
+                        Bài tiếp theo <ArrowRight size={16} className="ml-2"/>
                     </button>
                 </div>
             </div>

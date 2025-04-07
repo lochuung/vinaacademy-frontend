@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import {Button} from '@/components/ui/button';
+import {useState} from 'react';
 
 interface PromoCodeInputProps {
     onApply: (code: string) => void;
 }
 
-export default function PromoCodeInput({ onApply }: PromoCodeInputProps) {
+export default function PromoCodeInput({onApply}: PromoCodeInputProps) {
     const [promoCode, setPromoCode] = useState('');
 
     const handleApply = () => {

@@ -14,7 +14,7 @@ interface TrendingTopicsProps {
     categoryData: any;
 }
 
-export function TrendingTopics({ topics, category, subcategory, categoryData }: TrendingTopicsProps) {
+export function TrendingTopics({topics, category, subcategory, categoryData}: TrendingTopicsProps) {
     if (topics.length === 0) {
         return null;
     }
@@ -40,7 +40,9 @@ export function TrendingTopics({ topics, category, subcategory, categoryData }: 
                         if (categoryData && categoryData.subCategories) {
                             for (const subCat of categoryData.subCategories) {
                                 if (subCat.trendingTopics) {
-                                    const foundTopic = subCat.trendingTopics.find((t: { name: string }) => t.name === topic.name);
+                                    const foundTopic = subCat.trendingTopics.find((t: {
+                                        name: string
+                                    }) => t.name === topic.name);
                                     if (foundTopic) {
                                         const subCategorySlug = subCat.link.split('/').pop();
                                         targetSubCategory = subCategorySlug;

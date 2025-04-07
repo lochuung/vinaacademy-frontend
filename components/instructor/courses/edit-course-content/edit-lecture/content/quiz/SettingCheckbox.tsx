@@ -5,7 +5,7 @@ interface SettingCheckboxProps {
     onChange: (checked: boolean) => void;
 }
 
-export default function SettingCheckbox({ id, label, checked, onChange }: SettingCheckboxProps) {
+export default function SettingCheckbox({id, label, checked, onChange}: SettingCheckboxProps) {
     return (
         <div className="flex items-center">
             <input

@@ -1,4 +1,4 @@
-import { Section } from '@/types/instructor-course-edit';
+import {Section} from '@/types/instructor-course-edit';
 
 // Giả lập dữ liệu nội dung khóa học
 export const mockSections: Section[] = [

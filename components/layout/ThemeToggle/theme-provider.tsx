@@ -7,8 +7,8 @@ import {
 
 // Định nghĩa component ThemeProvider
 export default function ThemeProvider({
-    children,
-    ...props
-}: ThemeProviderProps) {
+                                          children,
+                                          ...props
+                                      }: ThemeProviderProps) {
     return <NextThemesProvider {...props}>{children}</NextThemesProvider>; // Sử dụng NextThemesProvider để bọc các component con
 }

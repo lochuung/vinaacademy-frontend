@@ -1,8 +1,9 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import { CourseDto, CourseRequest, CourseSearchRequest } from "@/types/course";
-import { AxiosResponse } from "axios";
+import {PaginatedResponse} from "@/types/api-response";
+import {CourseDto, CourseRequest, CourseSearchRequest} from "@/types/course";
+import {AxiosResponse} from "axios";
 
 // 📌 GET /courses/pagination
 export async function getCoursesPaginated(
@@ -12,7 +13,7 @@ export async function getCoursesPaginated(
     sortDirection: 'asc' | 'desc' = 'asc',
     categorySlug?: string,
     minRating = 0
-): Promise<CourseDto[]> {
+): Promise<PaginatedResponse<CourseDto> | null> {
     try {
         const response: AxiosResponse = await apiClient.get('/courses/pagination', {
             params: {
@@ -27,7 +28,7 @@ export async function getCoursesPaginated(
         return response.data.data;
     } catch (error) {
         console.error("getCoursesPaginated error:", error);
-        return [];
+        return null;
     }
 }
 
@@ -38,7 +39,7 @@ export async function searchCourses(
     size = 10,
     sortBy = 'name',
     sortDirection: 'asc' | 'desc' = 'asc'
-): Promise<CourseDto[]> {
+): Promise<PaginatedResponse<CourseDto> | null> {
     try {
         const response: AxiosResponse = await apiClient.get('/courses/search', {
             params: {
@@ -52,9 +53,10 @@ export async function searchCourses(
         return response.data.data;
     } catch (error) {
         console.error("searchCourses error:", error);
-        return [];
+        return null;
     }
 }
+
 
 // ➕ POST /courses
 export async function createCourse(course: CourseRequest): Promise<CourseDto | null> {

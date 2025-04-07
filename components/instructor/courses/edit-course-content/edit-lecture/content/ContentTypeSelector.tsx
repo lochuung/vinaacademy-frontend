@@ -1,12 +1,12 @@
-import { Video, FileText, MessageSquare, Monitor } from 'lucide-react';
-import { Lecture } from '@/types/lecture';
+import {Video, FileText, MessageSquare, Monitor} from 'lucide-react';
+import {Lecture} from '@/types/lecture';
 
 interface ContentTypeSelectorProps {
     lecture: Lecture;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
-export default function ContentTypeSelector({ lecture, handleInputChange }: ContentTypeSelectorProps) {
+export default function ContentTypeSelector({lecture, handleInputChange}: ContentTypeSelectorProps) {
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -18,7 +18,7 @@ export default function ContentTypeSelector({ lecture, handleInputChange }: Cont
                     type="video"
                     label="Video"
                     description="Tải lên video bài giảng"
-                    icon={<Video className="h-4 w-4 inline mr-1" />}
+                    icon={<Video className="h-4 w-4 inline mr-1"/>}
                     isSelected={lecture.type === 'video'}
                     onChange={handleInputChange}
                 />
@@ -28,7 +28,7 @@ export default function ContentTypeSelector({ lecture, handleInputChange }: Cont
                     type="text"
                     label="Bài đọc"
                     description="Tạo bài giảng dạng văn bản"
-                    icon={<FileText className="h-4 w-4 inline mr-1" />}
+                    icon={<FileText className="h-4 w-4 inline mr-1"/>}
                     isSelected={lecture.type === 'text'}
                     onChange={handleInputChange}
                 />
@@ -38,7 +38,7 @@ export default function ContentTypeSelector({ lecture, handleInputChange }: Cont
                     type="quiz"
                     label="Bài kiểm tra"
                     description="Tạo bài kiểm tra, câu hỏi"
-                    icon={<Monitor className="h-4 w-4 inline mr-1" />}
+                    icon={<Monitor className="h-4 w-4 inline mr-1"/>}
                     isSelected={lecture.type === 'quiz'}
                     onChange={handleInputChange}
                 />
@@ -48,7 +48,7 @@ export default function ContentTypeSelector({ lecture, handleInputChange }: Cont
                     type="assignment"
                     label="Bài tập"
                     description="Giao bài tập thực hành"
-                    icon={<MessageSquare className="h-4 w-4 inline mr-1" />}
+                    icon={<MessageSquare className="h-4 w-4 inline mr-1"/>}
                     isSelected={lecture.type === 'assignment'}
                     onChange={handleInputChange}
                 />
@@ -56,6 +56,7 @@ export default function ContentTypeSelector({ lecture, handleInputChange }: Cont
         </div>
     );
 }
+
 interface TypeOptionProps {
     id: string;
     type: string;
@@ -66,9 +67,10 @@ interface TypeOptionProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-function TypeOption({ id, type, label, description, icon, isSelected, onChange }: TypeOptionProps) {
+function TypeOption({id, type, label, description, icon, isSelected, onChange}: TypeOptionProps) {
     return (
-        <div className={`relative rounded-lg border p-4 flex flex-col ${isSelected ? 'border-black bg-gray-50' : 'border-gray-300'}`}>
+        <div
+            className={`relative rounded-lg border p-4 flex flex-col ${isSelected ? 'border-black bg-gray-50' : 'border-gray-300'}`}>
             <div className="flex items-center">
                 <input
                     id={id}

@@ -1,6 +1,11 @@
 // components/SubCategoryFilterSidebar.tsx
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import { useCategories } from "@/context/CategoryContext";
+import { CategoryBreadcrumb } from "../ui/CategoryBreadcrumb";
+import { CategoryDto } from "@/types/category";
 
 interface SubCategory {
     name: string;
@@ -36,6 +41,35 @@ export function SubCategoryFilterSidebar({
     topicParam,
     router,
 }: SubCategoryFilterSidebarProps) {
+    const { getCategoryBySlug, getCategoryPath } = useCategories();
+    const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+    const [parentCategory, setParentCategory] = useState<CategoryDto | null>(null);
+    const [siblingCategories, setSiblingCategories] = useState<CategoryDto[]>([]);
+    const [activeBreadcrumb, setActiveBreadcrumb] = useState<string[]>([]);
+    
+    // Set initial component state
+    useEffect(() => {
+        const parent = getCategoryBySlug(category);
+        setParentCategory(parent || null);
+        
+        if (parent && parent.children) {
+            setSiblingCategories(parent.children);
+            // Auto-expand current subcategory
+            const currentSubCat = parent.children.find(
+                child => child.slug === subcategory
+            );
+            if (currentSubCat) {
+                setExpandedCategories([parent.slug, currentSubCat.slug]);
+            } else {
+                setExpandedCategories([parent.slug]);
+            }
+        }
+        
+        // Build breadcrumb path
+        const path = getCategoryPath(subcategory);
+        setActiveBreadcrumb(path.map(cat => cat.slug));
+    }, [category, subcategory, getCategoryBySlug, getCategoryPath]);
+
     const clearAllFilters = () => {
         setSelectedLevel(undefined);
         setPriceRange(undefined);
@@ -44,44 +78,96 @@ export function SubCategoryFilterSidebar({
             router.replace(`/categories/${category}/${subcategory}`, { scroll: false });
         }
     };
+    
+    // Toggle category expansion
+    const toggleCategory = (slug: string) => {
+        setExpandedCategories(prev => 
+            prev.includes(slug)
+                ? prev.filter(id => id !== slug)
+                : [...prev, slug]
+        );
+    };
+
+    // Navigate to category or subcategory
+    const navigateToCategory = (cat: CategoryDto) => {
+        router.push(`/categories/${cat.slug}`);
+    };
+
+    const navigateToSubcategory = (subCat: CategoryDto) => {
+        if (parentCategory) {
+            router.push(`/categories/${parentCategory.slug}/${subCat.slug}`);
+        }
+    };
 
     return (
         <div className="w-full md:w-64 flex-shrink-0">
             <div className="md:sticky md:top-4 bg-white border rounded-md p-4">
                 <div className="mb-6">
-                    <h3 className="font-medium text-lg border-b pb-2 mb-4">Bộ lọc</h3>
+                    <h3 className="font-medium text-lg border-b pb-2 mb-2">Bộ lọc</h3>
+                    
+                    {/* Breadcrumb navigation */}
+                    <div className="mb-4">
+                        <CategoryBreadcrumb slug={subcategory} className="text-xs" />
+                    </div>
 
                     {/* Sibling Subcategories */}
                     <div className="mb-6">
-                        <h4 className="font-medium mb-3">Các danh mục con khác</h4>
-                        <div className="space-y-2">
-                            {categoryData && categoryData.subCategories && categoryData.subCategories
-                                .filter((sub: any) => {
-                                    // Only show other subcategories (siblings), not the current one
-                                    const subSlug = sub.link.split('/').pop();
-                                    return subSlug !== subcategory;
-                                })
-                                .map((sub: any) => {
-                                    const subSlug = sub.link.split('/').pop();
+                        <h4 className="font-medium mb-2 flex justify-between items-center">
+                            <span>Danh mục con</span>
+                            {parentCategory && (
+                                <button 
+                                    className="text-xs text-blue-600 hover:underline"
+                                    onClick={() => router.push(`/categories/${parentCategory.slug}`)}
+                                >
+                                    Xem tất cả
+                                </button>
+                            )}
+                        </h4>
+                        
+                        <div className="space-y-1 max-h-[180px] overflow-y-auto pr-1">
+                            {/* Parent category link */}
+                            {parentCategory && (
+                                <div className="flex items-center py-1.5">
+                                    <input
+                                        type="radio"
+                                        id={`category-parent`}
+                                        name="subcategory"
+                                        onChange={() => navigateToCategory(parentCategory)}
+                                        className="mr-2"
+                                    />
+                                    <label 
+                                        htmlFor={`category-parent`} 
+                                        className="text-sm cursor-pointer font-medium"
+                                    >
+                                        Tất cả {parentCategory.name}
+                                    </label>
+                                </div>
+                            )}
+                            
+                            {/* Subcategories */}
+                            <div className="pl-3 border-l border-gray-200 ml-1 mt-1 space-y-1">
+                                {siblingCategories.map(subCat => {
+                                    const isActive = subCat.slug === subcategory;
                                     return (
-                                        <div key={sub.name} className="flex items-center">
+                                        <div key={subCat.id} className="flex items-center py-1">
                                             <input
                                                 type="radio"
-                                                id={`subcategory-${subSlug}`}
+                                                id={`subcategory-${subCat.slug}`}
                                                 name="subcategory"
-                                                // Compare using slugs for consistency
-                                                checked={subcategory === subSlug}
-                                                onChange={() => {
-                                                    router.push(`/categories/${category}/${subSlug}`);
-                                                }}
+                                                checked={isActive}
+                                                onChange={() => navigateToSubcategory(subCat)}
                                                 className="mr-2"
                                             />
-                                            <label htmlFor={`subcategory-${subSlug}`} className="text-sm">
-                                                {sub.name}
+                                            <label 
+                                                htmlFor={`subcategory-${subCat.slug}`} 
+                                                className={`text-sm cursor-pointer ${isActive ? 'font-medium' : ''}`}
+                                            >
+                                                {subCat.name}
                                             </label>
                                         </div>
                                     );
                                 })}
+                            </div>
                         </div>
                     </div>
 
@@ -103,8 +189,8 @@ export function SubCategoryFilterSidebar({
                                         Tất cả
                                     </label>
                                 </div>
-                                {topics.map((topic) => (
-                                    <div key={topic} className="flex items-center">
+                                {topics.map((topic, index) => (
+                                    <div key={index} className="flex items-center">
                                         <input
                                             type="radio"
                                             id={`topic-${topic}`}

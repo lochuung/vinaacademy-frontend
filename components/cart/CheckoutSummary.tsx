@@ -1,12 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { CartItem } from '@/types/cart-courses';
+import {Button} from '@/components/ui/button';
+import {CartItem} from '@/types/cart-courses';
 import PromoCodeInput from './PromoCodeInput';
 
 interface CheckoutSummaryProps {
     cartItems: CartItem[];
 }
 
-export default function CheckoutSummary({ cartItems }: CheckoutSummaryProps) {
+export default function CheckoutSummary({cartItems}: CheckoutSummaryProps) {
     // Tính toán tổng giá gốc
     const totalOriginalPrice = cartItems.reduce(
         (total, item) => total + item.originalPrice,
@@ -56,7 +56,7 @@ export default function CheckoutSummary({ cartItems }: CheckoutSummaryProps) {
                 </div>
 
                 {/* Promotions Section */}
-                <PromoCodeInput onApply={handleApplyPromoCode} />
+                <PromoCodeInput onApply={handleApplyPromoCode}/>
             </div>
         </div>
     );

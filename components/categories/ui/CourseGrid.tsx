@@ -1,13 +1,13 @@
 // components/CourseGrid.tsx
-import { CourseCard } from "../category/CourseCard";
-import { Button } from "@/components/ui/button";
+import {CourseCard} from "../category/CourseCard";
+import {Button} from "@/components/ui/button";
 
 interface CourseGridProps {
     courses: any[];
     resetFilters: () => void;
 }
 
-export function CourseGrid({ courses, resetFilters }: CourseGridProps) {
+export function CourseGrid({courses, resetFilters}: CourseGridProps) {
     if (courses.length === 0) {
         return (
             <div className="bg-white p-8 text-center border rounded-md">
@@ -25,7 +25,7 @@ export function CourseGrid({ courses, resetFilters }: CourseGridProps) {
             <p className="text-gray-600 text-sm mb-6">Hiển thị {courses.length} khóa học</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses.map(course => (
-                    <CourseCard key={course.id} course={course} />
+                    <CourseCard key={course.id} course={course}/>
                 ))}
             </div>
         </div>

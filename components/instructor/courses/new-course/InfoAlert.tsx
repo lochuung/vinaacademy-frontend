@@ -1,6 +1,6 @@
 // components/course-creator/InfoAlert.tsx
-import { ReactNode } from 'react';
-import { Info } from 'lucide-react';
+import {ReactNode} from 'react';
+import {Info} from 'lucide-react';
 
 interface InfoAlertProps {
     title?: string;
@@ -10,11 +10,11 @@ interface InfoAlertProps {
 }
 
 export default function InfoAlert({
-    title,
-    children,
-    icon,
-    variant = 'blue'
-}: InfoAlertProps) {
+                                      title,
+                                      children,
+                                      icon,
+                                      variant = 'blue'
+                                  }: InfoAlertProps) {
     const colors = {
         blue: {
             bg: 'bg-blue-50',
@@ -37,7 +37,7 @@ export default function InfoAlert({
             {icon ? (
                 <div className={`mr-3 mt-0.5 flex-shrink-0 ${style.icon}`}>{icon}</div>
             ) : (
-                <Info className={`h-5 w-5 ${style.icon} mr-3 mt-0.5 flex-shrink-0`} />
+                <Info className={`h-5 w-5 ${style.icon} mr-3 mt-0.5 flex-shrink-0`}/>
             )}
             <div className={`text-sm ${style.text}`}>
                 {title && <p className="font-medium mb-1">{title}</p>}

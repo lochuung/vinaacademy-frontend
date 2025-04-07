@@ -1,5 +1,5 @@
 // mockData/mockLearningData.ts
-import { Quiz, LectureType, Lecture, Course, Section } from '@/types/lecture';
+import {Quiz, LectureType, Lecture, Course, Section} from '@/types/lecture';
 
 // Mẫu quiz hoàn chỉnh
 export const sampleQuiz: Quiz = {
@@ -9,10 +9,10 @@ export const sampleQuiz: Quiz = {
             text: 'Toán tử nào được sử dụng để kiểm tra xem hai đối tượng có cùng giá trị không?',
             type: 'single_choice',
             options: [
-                { id: 'q1_a', text: '==', isCorrect: true },
-                { id: 'q1_b', text: 'is', isCorrect: false },
-                { id: 'q1_c', text: '===', isCorrect: false },
-                { id: 'q1_d', text: 'equals()', isCorrect: false }
+                {id: 'q1_a', text: '==', isCorrect: true},
+                {id: 'q1_b', text: 'is', isCorrect: false},
+                {id: 'q1_c', text: '===', isCorrect: false},
+                {id: 'q1_d', text: 'equals()', isCorrect: false}
             ],
             explanation: 'Toán tử == kiểm tra giá trị bằng nhau, trong khi "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không.',
             points: 1,
@@ -23,11 +23,11 @@ export const sampleQuiz: Quiz = {
             text: 'Trong Python, các toán tử nào thực hiện phép tính số học?',
             type: 'multiple_choice',
             options: [
-                { id: 'q2_a', text: '+', isCorrect: true },
-                { id: 'q2_b', text: '**', isCorrect: true },
-                { id: 'q2_c', text: 'and', isCorrect: false },
-                { id: 'q2_d', text: '%', isCorrect: true },
-                { id: 'q2_e', text: 'in', isCorrect: false }
+                {id: 'q2_a', text: '+', isCorrect: true},
+                {id: 'q2_b', text: '**', isCorrect: true},
+                {id: 'q2_c', text: 'and', isCorrect: false},
+                {id: 'q2_d', text: '%', isCorrect: true},
+                {id: 'q2_e', text: 'in', isCorrect: false}
             ],
             explanation: 'Các toán tử số học trong Python bao gồm +, -, *, /, %, // và **.',
             points: 2,
@@ -38,8 +38,8 @@ export const sampleQuiz: Quiz = {
             text: 'True or False: Toán tử "is" trong Python kiểm tra xem hai biến có cùng một giá trị hay không.',
             type: 'true_false',
             options: [
-                { id: 'q3_a', text: 'Đúng', isCorrect: false },
-                { id: 'q3_b', text: 'Sai', isCorrect: true }
+                {id: 'q3_a', text: 'Đúng', isCorrect: false},
+                {id: 'q3_b', text: 'Sai', isCorrect: true}
             ],
             explanation: 'Sai. Toán tử "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không, không phải kiểm tra giá trị bằng nhau.',
             points: 1,
@@ -59,10 +59,10 @@ export const sampleQuiz: Quiz = {
             text: 'Đâu là kết quả của biểu thức: 3 ** 2 % 5 trong Python?',
             type: 'single_choice',
             options: [
-                { id: 'q5_a', text: '9', isCorrect: false },
-                { id: 'q5_b', text: '4', isCorrect: true },
-                { id: 'q5_c', text: '1', isCorrect: false },
-                { id: 'q5_d', text: '0', isCorrect: false }
+                {id: 'q5_a', text: '9', isCorrect: false},
+                {id: 'q5_b', text: '4', isCorrect: true},
+                {id: 'q5_c', text: '1', isCorrect: false},
+                {id: 'q5_d', text: '0', isCorrect: false}
             ],
             explanation: '3 ** 2 = 9, sau đó 9 % 5 = 4 (phần dư khi chia 9 cho 5)',
             points: 1,

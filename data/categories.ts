@@ -1,5 +1,5 @@
 // data/categories.ts
-import { Category } from "@/types/navbar";
+import {Category} from "@/types/navbar";
 
 // Mảng chứa dữ liệu các danh mục với thông tin chi tiết, bao gồm các danh mục con và chủ đề thịnh hành
 export const categoriesData: Category[] = [

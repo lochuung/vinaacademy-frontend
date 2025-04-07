@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import {useState} from "react";
+import {usePathname} from "next/navigation";
 import Link from "next/link";
 import {
     LayoutDashboard,
@@ -23,15 +23,15 @@ interface SidebarProps {
 }
 
 const navigation = [
-    { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    {name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard},
     {
         name: 'Khóa học',
         href: '/admin/courses',
         icon: BookOpen,
         children: [
-            { name: 'Tất cả khóa học', href: '/admin/courses' },
-            { name: 'Chờ phê duyệt', href: '/admin/courses/pending', badge: 5 },
-            { name: 'Danh mục', href: '/admin/courses/categories' },
+            {name: 'Tất cả khóa học', href: '/admin/courses'},
+            {name: 'Chờ phê duyệt', href: '/admin/courses/pending', badge: 5},
+            {name: 'Danh mục', href: '/admin/courses/categories'},
         ]
     },
     {
@@ -39,9 +39,9 @@ const navigation = [
         href: '/admin/users',
         icon: Users,
         children: [
-            { name: 'Tất cả người dùng', href: '/admin/users' },
-            { name: 'Giảng viên', href: '/admin/users/instructors' },
-            { name: 'Học viên', href: '/admin/users/students' },
+            {name: 'Tất cả người dùng', href: '/admin/users'},
+            {name: 'Giảng viên', href: '/admin/users/instructors'},
+            {name: 'Học viên', href: '/admin/users/students'},
         ]
     },
     {
@@ -49,27 +49,27 @@ const navigation = [
         href: '/admin/payments',
         icon: CreditCard,
         children: [
-            { name: 'Tất cả thanh toán', href: '/admin/payments' },
-            { name: 'Giao dịch', href: '/admin/payments/transactions' },
-            { name: 'Hoàn tiền', href: '/admin/payments/refunds' },
-            { name: 'Báo cáo thu nhập', href: '/admin/payments/reports' },
+            {name: 'Tất cả thanh toán', href: '/admin/payments'},
+            {name: 'Giao dịch', href: '/admin/payments/transactions'},
+            {name: 'Hoàn tiền', href: '/admin/payments/refunds'},
+            {name: 'Báo cáo thu nhập', href: '/admin/payments/reports'},
         ]
     },
-    { name: 'Báo cáo', href: '/admin/reports', icon: BarChart3 },
-    { name: 'Danh mục', href: '/admin/category', icon: ChartBarStacked },
+    {name: 'Báo cáo', href: '/admin/reports', icon: BarChart3},
+    {name: 'Danh mục', href: '/admin/category', icon: ChartBarStacked},
     {
         name: 'Cài đặt',
         href: '/admin/settings',
         icon: Settings,
         children: [
-            { name: 'Cài đặt nền tảng', href: '/admin/settings/platform' },
-            { name: 'Cài đặt thanh toán', href: '/admin/settings/payment' },
-            { name: 'Email', href: '/admin/settings/email' },
+            {name: 'Cài đặt nền tảng', href: '/admin/settings/platform'},
+            {name: 'Cài đặt thanh toán', href: '/admin/settings/payment'},
+            {name: 'Email', href: '/admin/settings/email'},
         ]
     },
 ];
 
-export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) {
+export default function Sidebar({mobile = false, closeSidebar}: SidebarProps) {
     const pathname = usePathname();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -91,7 +91,7 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
     };
 
     return (
-        <div 
+        <div
             className={`
                 flex flex-col flex-shrink-0 bg-white pt-5 pb-4 
                 transition-all duration-300 ease-in-out h-full
@@ -100,7 +100,7 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
             `}
         >
             {/* Collapse/Expand Button */}
-            <button 
+            <button
                 onClick={toggleSidebar}
                 className="
                     absolute top-5 right-0 transform translate-x-1/2 
@@ -110,7 +110,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                     mr-9
                 "
             >
-                {isCollapsed ? <ChevronsRight className="w-5 h-5 text-gray-600" /> : <ChevronsLeft className="w-5 h-5 text-gray-600" />}
+                {isCollapsed ? <ChevronsRight className="w-5 h-5 text-gray-600"/> :
+                    <ChevronsLeft className="w-5 h-5 text-gray-600"/>}
             </button>
 
             {/* Logo */}
@@ -136,8 +137,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                                 className={`
                                     group flex items-center px-2 py-2 text-sm font-medium rounded-md text-center
                                     ${isActive(item.href)
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                                 `}
                                 title={isCollapsed ? item.name : undefined}
                             >
@@ -157,8 +158,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                                     className={`
                                         w-full group flex items-center px-2 py-2 text-sm font-medium rounded-md
                                         ${(expandedItems.includes(item.name) || item.children.some(child => isActive(child.href)))
-                                            ? 'bg-gray-100 text-gray-900'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                        ? 'bg-gray-100 text-gray-900'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                                     `}
                                     title={isCollapsed ? item.name : undefined}
                                 >
@@ -166,8 +167,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                                         className={`
                                             flex-shrink-0 h-5 w-5
                                             ${(expandedItems.includes(item.name) || item.children.some(child => isActive(child.href)))
-                                                ? 'text-gray-500'
-                                                : 'text-gray-400 group-hover:text-gray-500'}
+                                            ? 'text-gray-500'
+                                            : 'text-gray-400 group-hover:text-gray-500'}
                                             ${!isCollapsed ? 'mr-3' : ''}
                                         `}
                                     />
@@ -204,8 +205,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                                                 className={`
                                                     group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-md
                                                     ${isActive(child.href)
-                                                        ? 'bg-gray-100 text-gray-900'
-                                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}
+                                                    ? 'bg-gray-100 text-gray-900'
+                                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}
                                                 `}
                                             >
                                                 <Dot
@@ -215,7 +216,8 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                                                 />
                                                 <span className="truncate">{child.name}</span>
                                                 {child.badge && (
-                                                    <span className="ml-auto inline-block py-0.5 px-2 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                                    <span
+                                                        className="ml-auto inline-block py-0.5 px-2 text-xs font-medium rounded-full bg-red-100 text-red-800">
                                                         {child.badge}
                                                     </span>
                                                 )}
@@ -237,16 +239,17 @@ export default function Sidebar({ mobile = false, closeSidebar }: SidebarProps) 
                         className="group flex items-center pl-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                         title={isCollapsed ? "Thông báo" : undefined}
                     >
-                        <Bell 
+                        <Bell
                             className={`
                                 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500
                                 ${!isCollapsed ? 'mr-3' : ''}
-                            `} 
+                            `}
                         />
                         {!isCollapsed && (
                             <>
                                 Thông báo
-                                <span className="ml-auto mr-3 inline-block py-0.5 px-3 text-xs rounded-full bg-red-100 text-red-800">3</span>
+                                <span
+                                    className="ml-auto mr-3 inline-block py-0.5 px-3 text-xs rounded-full bg-red-100 text-red-800">3</span>
                             </>
                         )}
                     </Link>

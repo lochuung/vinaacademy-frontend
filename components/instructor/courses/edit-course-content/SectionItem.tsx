@@ -1,7 +1,7 @@
 // components/SectionItem.tsx
-import { Grip, ChevronUp, ChevronDown, Edit, Trash2, Plus } from 'lucide-react';
-import { Section } from '@/types/instructor-course-edit';
-import { LectureItem } from './LectureItem';
+import {Grip, ChevronUp, ChevronDown, Edit, Trash2, Plus} from 'lucide-react';
+import {Section} from '@/types/instructor-course-edit';
+import {LectureItem} from './LectureItem';
 
 interface SectionItemProps {
     section: Section;
@@ -16,16 +16,16 @@ interface SectionItemProps {
 }
 
 export const SectionItem = ({
-    section,
-    courseId,
-    isExpanded,
-    onToggle,
-    onDragStart,
-    onDragEnd,
-    onDelete,
-    onAddLecture,
-    onDeleteLecture
-}: SectionItemProps) => {
+                                section,
+                                courseId,
+                                isExpanded,
+                                onToggle,
+                                onDragStart,
+                                onDragEnd,
+                                onDelete,
+                                onAddLecture,
+                                onDeleteLecture
+                            }: SectionItemProps) => {
     return (
         <div className="border border-gray-200 rounded-md overflow-hidden">
             {/* Section header */}
@@ -37,7 +37,7 @@ export const SectionItem = ({
                         onMouseDown={onDragStart}
                         onMouseUp={onDragEnd}
                     >
-                        <Grip className="h-5 w-5" />
+                        <Grip className="h-5 w-5"/>
                     </button>
                     <div>
                         <div className="flex items-center">
@@ -57,23 +57,23 @@ export const SectionItem = ({
                         onClick={() => onToggle(section.id)}
                     >
                         {isExpanded ? (
-                            <ChevronUp className="h-5 w-5" />
+                            <ChevronUp className="h-5 w-5"/>
                         ) : (
-                            <ChevronDown className="h-5 w-5" />
+                            <ChevronDown className="h-5 w-5"/>
                         )}
                     </button>
                     <button
                         type="button"
                         className="text-gray-400 hover:text-blue-500 p-1"
                     >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4"/>
                     </button>
                     <button
                         type="button"
                         className="text-gray-400 hover:text-red-500 p-1"
                         onClick={() => onDelete(section.id)}
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4"/>
                     </button>
                 </div>
             </div>
@@ -100,7 +100,7 @@ export const SectionItem = ({
                             onClick={() => onAddLecture(section.id)}
                             className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                         >
-                            <Plus className="h-3 w-3 mr-1" /> Thêm bài giảng
+                            <Plus className="h-3 w-3 mr-1"/> Thêm bài giảng
                         </button>
                     </div>
                 </div>

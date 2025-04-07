@@ -5,7 +5,7 @@ interface CourseTabsProps {
     onTabChange: (tab: string) => void;
 }
 
-export function CourseTabs({ activeTab, onTabChange }: CourseTabsProps) {
+export function CourseTabs({activeTab, onTabChange}: CourseTabsProps) {
     return (
         <div className="mb-8 border-b">
             <div className="flex space-x-8">

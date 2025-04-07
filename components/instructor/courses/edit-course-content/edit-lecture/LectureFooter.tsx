@@ -6,7 +6,7 @@ interface FooterProps {
     handleSave: () => Promise<void>;
 }
 
-export default function Footer({ courseId, isSaving, handleSave }: FooterProps) {
+export default function Footer({courseId, isSaving, handleSave}: FooterProps) {
     return (
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
             <Link href={`/instructor/courses/${courseId}/content`}>

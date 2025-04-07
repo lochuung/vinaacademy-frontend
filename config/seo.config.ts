@@ -1,5 +1,5 @@
-import { Metadata } from "next";
-import { siteConfig } from "./site.config";
+import {Metadata} from "next";
+import {siteConfig} from "./site.config";
 
 export const seoConfig: Metadata = {
     metadataBase: new URL(siteConfig.url),
@@ -9,7 +9,7 @@ export const seoConfig: Metadata = {
     },
     description: siteConfig.description,
     keywords: siteConfig.keywords,
-    authors: [{ name: siteConfig.author }],
+    authors: [{name: siteConfig.author}],
     creator: siteConfig.author,
     openGraph: {
         type: 'website',

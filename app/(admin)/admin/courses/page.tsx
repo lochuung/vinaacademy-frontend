@@ -1,21 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import {
-    Search,
-    Filter,
-    Plus,
-    MoreHorizontal,
-    Download,
-    Edit,
-    Check,
-    X,
-    EyeIcon,
-    Trash2
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import {useState} from 'react';
+import {Download, Filter, Plus, Search} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent} from '@/components/ui/card';
 import CourseList from '@/components/admin/courses/course-list';
 import Filters from '@/components/admin/courses/filters';
 
@@ -49,11 +37,11 @@ export default function AdminCoursesPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                     <Button variant="outline">
-                        <Download className="mr-2 h-4 w-4" />
+                        <Download className="mr-2 h-4 w-4"/>
                         Xuất
                     </Button>
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 h-4 w-4"/>
                         Thêm khóa học
                     </Button>
                 </div>
@@ -61,7 +49,7 @@ export default function AdminCoursesPage() {
 
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-4">
                 <div className="relative w-full md:w-auto md:flex-1">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500"/>
                     <input
                         type="text"
                         placeholder="Tìm kiếm khóa học..."
@@ -75,7 +63,7 @@ export default function AdminCoursesPage() {
                     className="md:w-auto"
                     onClick={() => setShowFilters(!showFilters)}
                 >
-                    <Filter className="mr-2 h-4 w-4" />
+                    <Filter className="mr-2 h-4 w-4"/>
                     Bộ lọc
                 </Button>
             </div>
@@ -83,7 +71,7 @@ export default function AdminCoursesPage() {
             {showFilters && (
                 <Card>
                     <CardContent className="p-4">
-                        <Filters />
+                        <Filters/>
                     </CardContent>
                 </Card>
             )}
@@ -93,7 +81,7 @@ export default function AdminCoursesPage() {
                     className={`px-4 py-2 text-sm font-medium ${view === 'all'
                         ? 'border-b-2 border-black text-black'
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
+                    }`}
                     onClick={() => setView('all')}
                 >
                     Tất cả ({courseCounts.all})
@@ -102,7 +90,7 @@ export default function AdminCoursesPage() {
                     className={`px-4 py-2 text-sm font-medium ${view === 'published'
                         ? 'border-b-2 border-black text-black'
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
+                    }`}
                     onClick={() => setView('published')}
                 >
                     Đã xuất bản ({courseCounts.published})
@@ -111,7 +99,7 @@ export default function AdminCoursesPage() {
                     className={`px-4 py-2 text-sm font-medium ${view === 'draft'
                         ? 'border-b-2 border-black text-black'
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
+                    }`}
                     onClick={() => setView('draft')}
                 >
                     Bản nháp ({courseCounts.draft})
@@ -120,7 +108,7 @@ export default function AdminCoursesPage() {
                     className={`px-4 py-2 text-sm font-medium ${view === 'pending'
                         ? 'border-b-2 border-black text-black'
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
+                    }`}
                     onClick={() => setView('pending')}
                 >
                     Chờ duyệt ({courseCounts.pending})
@@ -129,14 +117,14 @@ export default function AdminCoursesPage() {
                     className={`px-4 py-2 text-sm font-medium ${view === 'rejected'
                         ? 'border-b-2 border-black text-black'
                         : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
+                    }`}
                     onClick={() => setView('rejected')}
                 >
                     Từ chối ({courseCounts.rejected})
                 </button>
             </div>
 
-            <CourseList view={view} searchQuery={searchQuery} />
+            <CourseList view={view} searchQuery={searchQuery}/>
 
             <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">

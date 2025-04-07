@@ -1,6 +1,6 @@
 "use client"; // Chỉ định rằng file này sẽ được render phía client
-import { useState, useEffect } from "react"; // Import các hook useState và useEffect từ react
-import { usePathname } from "next/navigation"; // Import hook usePathname từ next/navigation
+import {useState, useEffect} from "react"; // Import các hook useState và useEffect từ react
+import {usePathname} from "next/navigation"; // Import hook usePathname từ next/navigation
 import AnnouncementBar from "@/components/layout/announcement-bar/AnnouncementBar"; // Import component AnnouncementBar
 
 // Định nghĩa component ClientWrapper
@@ -24,7 +24,8 @@ const ClientWrapper = () => {
     }
 
     // Nếu isClient là true, hiển thị AnnouncementBar, ngược lại trả về null
-    return isClient ? <AnnouncementBar onClose={() => { }} /> : null;
+    return isClient ? <AnnouncementBar onClose={() => {
+    }}/> : null;
 };
 
 export default ClientWrapper;

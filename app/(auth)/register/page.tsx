@@ -1,15 +1,15 @@
 'use client';
 
-import RegisterForm, { RegisterFormValues } from '@/components/ui/registerform';
-import React, { useState } from "react";
-import { RegisterRequest } from "@/types/auth";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import RegisterForm from '@/components/ui/registerform';
+import React, {useState} from "react";
+import {RegisterRequest} from "@/types/auth";
+import {useAuth} from "@/context/AuthContext";
+import {useRouter} from "next/navigation";
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const { register, isAuthenticated } = useAuth();
+    const {register, isAuthenticated} = useAuth();
     const router = useRouter();
 
     // Redirect if already authenticated
@@ -44,10 +44,11 @@ export default function RegisterPage() {
 
     return (
 
-        <main className='flex items-center justify-center min-h-screen bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
+        <main
+            className='flex items-center justify-center min-h-screen bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
 
             <div className='w-full max-w-4xl'>
-                <RegisterForm 
+                <RegisterForm
                     onSubmit={handleSubmit}
                     isSubmitting={isLoading}
                     error={error}

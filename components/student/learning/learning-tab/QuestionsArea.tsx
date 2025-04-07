@@ -1,7 +1,7 @@
 "use client";
 
-import { FC, useState } from 'react';
-import { User, BookOpen } from 'lucide-react';
+import {FC, useState} from 'react';
+import {User, BookOpen} from 'lucide-react';
 
 interface UserType {
     id: string;
@@ -36,7 +36,7 @@ interface QuestionsAreaProps {
     courseId: string;
 }
 
-const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId }) => {
+const QuestionsArea: FC<QuestionsAreaProps> = ({lectureId: lectureId, courseId}) => {
     const [questions, setQuestions] = useState<QuestionType[]>([
         {
             id: '1',
@@ -229,7 +229,7 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
             {/* Banner hiển thị thông tin về khu vực hỏi đáp */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mx-6 mt-6 mb-4 flex items-start">
                 <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                    <BookOpen className="w-5 h-5 text-blue-600" />
+                    <BookOpen className="w-5 h-5 text-blue-600"/>
                 </div>
                 <div>
                     <h3 className="font-bold text-blue-800 mb-1">Hỏi đáp với giảng viên</h3>
@@ -255,7 +255,8 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                         </div>
 
                         {/* Tìm kiếm và bộ lọc */}
-                        <div className="flex flex-col md:flex-row md:items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+                        <div
+                            className="flex flex-col md:flex-row md:items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
                             <div className="relative flex-1">
                                 <input
                                     type="search"
@@ -265,8 +266,10 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                     </svg>
                                 </div>
                             </div>
@@ -277,7 +280,7 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                     className={`px-3 py-2 rounded ${filter === 'newest'
                                         ? 'bg-gray-200 text-gray-800'
                                         : 'bg-white text-gray-600 hover:bg-gray-100'
-                                        }`}
+                                    }`}
                                 >
                                     Mới nhất
                                 </button>
@@ -286,7 +289,7 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                     className={`px-3 py-2 rounded ${filter === 'popular'
                                         ? 'bg-gray-200 text-gray-800'
                                         : 'bg-white text-gray-600 hover:bg-gray-100'
-                                        }`}
+                                    }`}
                                 >
                                     Nhiều vote nhất
                                 </button>
@@ -295,7 +298,7 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                     className={`px-3 py-2 rounded ${filter === 'unanswered'
                                         ? 'bg-gray-200 text-gray-800'
                                         : 'bg-white text-gray-600 hover:bg-gray-100'
-                                        }`}
+                                    }`}
                                 >
                                     Chưa trả lời
                                 </button>
@@ -306,7 +309,7 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                         {showAskForm && (
                             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
                                 <div className="flex items-center mb-3">
-                                    <User className="text-blue-600 mr-2" size={18} />
+                                    <User className="text-blue-600 mr-2" size={18}/>
                                     <h3 className="text-lg font-medium">Đặt câu hỏi cho giảng viên</h3>
                                 </div>
                                 <div className="mb-4">
@@ -347,8 +350,10 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                         {/* Danh sách câu hỏi */}
                         {filteredQuestions.length === 0 ? (
                             <div className="text-center py-12 bg-gray-50 rounded-lg">
-                                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                                 </svg>
                                 <h3 className="mt-2 text-lg font-medium text-gray-900">Không tìm thấy câu hỏi nào</h3>
                                 <p className="mt-1 text-gray-500">
@@ -385,10 +390,13 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                                             toggleQuestionUpvote(question.id);
                                                         }}
                                                         className={`flex flex-col items-center p-1 ${question.isUpvoted ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                                                            }`}
+                                                        }`}
                                                     >
-                                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
+                                                        <svg className="w-6 h-6" fill="currentColor"
+                                                             viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd"
+                                                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                                                                  clipRule="evenodd"/>
                                                         </svg>
                                                         <span className="text-sm font-medium">{question.upvotes}</span>
                                                     </button>
@@ -403,13 +411,15 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                                     <p className="text-gray-700 line-clamp-2 mb-2">{question.content}</p>
 
                                                     <div className="flex items-center text-xs text-gray-500">
-                                                        <span className="font-medium text-gray-900">{question.user.name}</span>
+                                                        <span
+                                                            className="font-medium text-gray-900">{question.user.name}</span>
                                                         <span className="mx-1">•</span>
                                                         <span>{formatRelativeTime(question.createdAt)}</span>
                                                         {question.user.role === 'instructor' && (
                                                             <>
                                                                 <span className="mx-1">•</span>
-                                                                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
+                                                                <span
+                                                                    className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
                                                             </>
                                                         )}
                                                     </div>
@@ -432,7 +442,9 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                         className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-4"
                     >
                         <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                            <path fillRule="evenodd"
+                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                  clipRule="evenodd"/>
                         </svg>
                         Quay lại tất cả câu hỏi
                     </button>
@@ -445,10 +457,12 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                 <button
                                     onClick={() => toggleQuestionUpvote(activeQuestion.id)}
                                     className={`flex flex-col items-center p-1 ${activeQuestion.isUpvoted ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                                        }`}
+                                    }`}
                                 >
                                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
+                                        <path fillRule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                                              clipRule="evenodd"/>
                                     </svg>
                                     <span className="text-sm font-medium">{activeQuestion.upvotes}</span>
                                 </button>
@@ -501,10 +515,13 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                                     <button
                                                         onClick={() => toggleAnswerUpvote(activeQuestion.id, answer.id)}
                                                         className={`flex flex-col items-center p-1 ${answer.isUpvoted ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
-                                                            }`}
+                                                        }`}
                                                     >
-                                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
+                                                        <svg className="w-6 h-6" fill="currentColor"
+                                                             viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd"
+                                                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                                                                  clipRule="evenodd"/>
                                                         </svg>
                                                         <span className="text-sm font-medium">{answer.upvotes}</span>
                                                     </button>
@@ -520,21 +537,26 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
 
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center text-sm text-gray-500">
-                                                            <span className="font-medium text-gray-900">{answer.user.name}</span>
+                                                            <span
+                                                                className="font-medium text-gray-900">{answer.user.name}</span>
                                                             <span className="mx-1">•</span>
                                                             <span>{formatRelativeTime(answer.createdAt)}</span>
                                                             {answer.user.role === 'instructor' && (
                                                                 <>
                                                                     <span className="mx-1">•</span>
-                                                                    <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
+                                                                    <span
+                                                                        className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
                                                                 </>
                                                             )}
                                                         </div>
 
                                                         {answer.isAccepted ? (
                                                             <div className="flex items-center text-green-600">
-                                                                <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                <svg className="w-5 h-5 mr-1" fill="currentColor"
+                                                                     viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd"
+                                                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                                          clipRule="evenodd"/>
                                                                 </svg>
                                                                 <span className="text-sm font-medium">Câu trả lời được chấp nhận</span>
                                                             </div>
@@ -544,8 +566,11 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                                                                     onClick={() => acceptAnswer(activeQuestion.id, answer.id)}
                                                                     className="text-gray-600 hover:text-green-600 text-sm flex items-center"
                                                                 >
-                                                                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                                    <svg className="w-5 h-5 mr-1" fill="none"
+                                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round"
+                                                                              strokeLinejoin="round" strokeWidth="2"
+                                                                              d="M5 13l4 4L19 7"/>
                                                                     </svg>
                                                                     Chấp nhận câu trả lời
                                                                 </button>
@@ -559,7 +584,8 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                             </ul>
                         ) : (
                             <div className="text-center py-8 bg-gray-50 rounded-lg">
-                                <p className="text-gray-500">Chưa có câu trả lời. Câu hỏi của bạn sẽ được giảng viên trả lời sớm.</p>
+                                <p className="text-gray-500">Chưa có câu trả lời. Câu hỏi của bạn sẽ được giảng viên trả
+                                    lời sớm.</p>
                             </div>
                         )}
                     </div>
@@ -567,11 +593,15 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({ lectureId: lectureId, courseId 
                     {/* Thông báo về cách thức trả lời */}
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8 mt-2">
                         <div className="flex items-start">
-                            <svg className="w-5 h-5 text-yellow-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            <svg className="w-5 h-5 text-yellow-400 mt-0.5 mr-3" fill="currentColor"
+                                 viewBox="0 0 20 20">
+                                <path fillRule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                      clipRule="evenodd"/>
                             </svg>
                             <p className="text-sm text-yellow-700">
-                                Chỉ giảng viên có thể trả lời câu hỏi trong phần Hỏi & Đáp. Nếu bạn muốn thảo luận với các học viên khác, hãy sử dụng tab "Thảo luận".
+                                Chỉ giảng viên có thể trả lời câu hỏi trong phần Hỏi & Đáp. Nếu bạn muốn thảo luận với
+                                các học viên khác, hãy sử dụng tab "Thảo luận".
                             </p>
                         </div>
                     </div>

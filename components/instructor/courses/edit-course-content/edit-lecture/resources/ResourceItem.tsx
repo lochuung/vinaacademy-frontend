@@ -1,5 +1,5 @@
-import { FileText, Trash2 } from 'lucide-react';
-import { Resource } from '@/types/lecture';
+import {FileText, Trash2} from 'lucide-react';
+import {Resource} from '@/types/lecture';
 
 interface ResourceItemProps {
     resource: Resource;
@@ -9,15 +9,15 @@ interface ResourceItemProps {
 }
 
 export default function ResourceItem({
-    resource,
-    index,
-    handleResourceChange,
-    removeResource
-}: ResourceItemProps) {
+                                         resource,
+                                         index,
+                                         handleResourceChange,
+                                         removeResource
+                                     }: ResourceItemProps) {
     return (
         <div className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
             <div className="flex items-center flex-grow">
-                <FileText className="h-5 w-5 text-gray-400 mr-3" />
+                <FileText className="h-5 w-5 text-gray-400 mr-3"/>
                 <div className="flex-grow pr-4">
                     <input
                         type="text"
@@ -56,7 +56,7 @@ export default function ResourceItem({
                     onClick={() => removeResource(resource.id)}
                     className="text-gray-400 hover:text-red-500"
                 >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4"/>
                 </button>
             </div>
         </div>

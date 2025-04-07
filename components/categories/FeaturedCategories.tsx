@@ -1,10 +1,10 @@
-import { CategoryCard } from "./CategoryCard";
+import {CategoryCard} from "./CategoryCard";
 
 interface FeaturedCategoriesProps {
     categories: any[];
 }
 
-export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
+export function FeaturedCategories({categories}: FeaturedCategoriesProps) {
     if (categories.length === 0) {
         return null;
     }
@@ -15,7 +15,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
                 <h2 className="text-3xl font-bold mb-10 text-center text-gray-900">Danh mục phổ biến nhất</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {categories.map((category) => (
-                        <CategoryCard key={category.id} category={category} featured={true} />
+                        <CategoryCard key={category.id} category={category} featured={true}/>
                     ))}
                 </div>
             </div>

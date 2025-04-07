@@ -4,7 +4,7 @@ import {
     Copy,
     Trash2
 } from 'lucide-react';
-import { QuizQuestion } from '@/types/lecture';
+import {QuizQuestion} from '@/types/lecture';
 import QuestionForm from './QuestionForm';
 import QuestionOptions from './QuestionOptions';
 import QuestionActions from './QuestionActions';
@@ -29,23 +29,23 @@ interface QuestionContentProps {
 }
 
 export default function QuestionContent({
-    question,
-    index,
-    totalQuestions,
-    onUpdateText,
-    onUpdateType,
-    onAddOption,
-    onRemoveOption,
-    onUpdateOptionText,
-    onToggleOptionCorrect,
-    onUpdateExplanation,
-    onUpdatePoints,
-    onToggleRequired,
-    onDuplicate,
-    onRemove,
-    onMoveUp,
-    onMoveDown
-}: QuestionContentProps) {
+                                            question,
+                                            index,
+                                            totalQuestions,
+                                            onUpdateText,
+                                            onUpdateType,
+                                            onAddOption,
+                                            onRemoveOption,
+                                            onUpdateOptionText,
+                                            onToggleOptionCorrect,
+                                            onUpdateExplanation,
+                                            onUpdatePoints,
+                                            onToggleRequired,
+                                            onDuplicate,
+                                            onRemove,
+                                            onMoveUp,
+                                            onMoveDown
+                                        }: QuestionContentProps) {
     return (
         <div className="p-4 space-y-4">
             {/* Question Form - Text & Type & Points */}

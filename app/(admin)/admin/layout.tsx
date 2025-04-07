@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import {useState} from 'react';
+import {usePathname} from 'next/navigation';
 import Sidebar from '@/components/admin/sidebar';
 import Header from '@/components/admin/header';
-import { Toaster } from '@/components/ui/toaster';
+import {Toaster} from '@/components/ui/toaster';
 
 export default function AdminLayout({
-    children,
-}: {
+                                        children,
+                                    }: {
     children: React.ReactNode;
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,7 +18,7 @@ export default function AdminLayout({
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar cho desktop */}
             <div className="hidden md:flex md:w-64 md:flex-col">
-                <Sidebar />
+                <Sidebar/>
             </div>
 
             {/* Sidebar cho mobile - overlay */}
@@ -52,7 +52,7 @@ export default function AdminLayout({
                                 </button>
                             </div>
 
-                            <Sidebar mobile={true} closeSidebar={() => setSidebarOpen(false)} />
+                            <Sidebar mobile={true} closeSidebar={() => setSidebarOpen(false)}/>
                         </div>
                         <div className="flex-shrink-0 w-14">
                             {/* Force sidebar to shrink to fit close icon */}
@@ -63,10 +63,10 @@ export default function AdminLayout({
 
             {/* Main content area */}
             <div className="flex flex-col flex-1 overflow-hidden">
-                <Header onMenuButtonClick={() => setSidebarOpen(true)} />
+                <Header onMenuButtonClick={() => setSidebarOpen(true)}/>
 
                 <main className="flex-1 relative overflow-y-auto focus:outline-none">
-                
+
                     <div className="py-6">
                         {/* Page heading and actions */}
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
@@ -78,7 +78,7 @@ export default function AdminLayout({
                             <div className="py-4">{children}</div>
                         </div>
                     </div>
-                    <Toaster />
+                    <Toaster/>
                 </main>
             </div>
         </div>

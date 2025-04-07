@@ -1,13 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, BookOpen, GraduationCap, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Users, BookOpen, GraduationCap, DollarSign, ArrowUpRight, ArrowDownRight} from 'lucide-react';
 
 interface PlatformStatsProps {
     timeRange: 'week' | 'month' | 'year';
 }
 
-export default function PlatformStats({ timeRange }: PlatformStatsProps) {
+export default function PlatformStats({timeRange}: PlatformStatsProps) {
     // Giả lập dữ liệu thống kê dựa trên khoảng thời gian
     const getStats = () => {
         switch (timeRange) {
@@ -79,15 +79,15 @@ export default function PlatformStats({ timeRange }: PlatformStatsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Tổng người dùng</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatNumber(stats.totalUsers)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.userChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.userChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.userChange}%
@@ -100,15 +100,15 @@ export default function PlatformStats({ timeRange }: PlatformStatsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Tổng khóa học</CardTitle>
-                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                    <BookOpen className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatNumber(stats.totalCourses)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.courseChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.courseChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.courseChange}%
@@ -121,15 +121,15 @@ export default function PlatformStats({ timeRange }: PlatformStatsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Tổng giảng viên</CardTitle>
-                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                    <GraduationCap className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatNumber(stats.totalInstructors)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.instructorChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.instructorChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.instructorChange}%
@@ -142,15 +142,15 @@ export default function PlatformStats({ timeRange }: PlatformStatsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Tổng doanh thu</CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <DollarSign className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.revenueChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.revenueChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.revenueChange}%

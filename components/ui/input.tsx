@@ -1,18 +1,17 @@
-
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 
-import { IoIosEye } from "react-icons/io";
-import { IoIosEyeOff } from "react-icons/io";
+import {IoIosEye} from "react-icons/io";
+import {IoIosEyeOff} from "react-icons/io";
 
 interface InputProps extends React.ComponentProps<"input"> {
     iconLeft?: React.ReactNode;
-    passwordEye?: Boolean;
+    passwordEye?: boolean;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-    ({ iconLeft, passwordEye, className, type, ...props }, ref) => {
+    ({iconLeft, passwordEye, className, type, ...props}, ref) => {
         const [passwordEyeToggle, setPasswordEyeToggle] = React.useState(passwordEye);
         return (
             <div className="relative flex items-center">
@@ -35,8 +34,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 {passwordEyeToggle != null && (
                     <div className="absolute right-3 flex items-center text-muted-foreground hover:cursor-pointer">
                         {passwordEyeToggle ?
-                            <IoIosEyeOff size={21} onClick={() => setPasswordEyeToggle(false)} /> :
-                            <IoIosEye size={21} onClick={() => setPasswordEyeToggle(true)} />
+                            <IoIosEyeOff size={21} onClick={() => setPasswordEyeToggle(false)}/> :
+                            <IoIosEye size={21} onClick={() => setPasswordEyeToggle(true)}/>
                         }
                     </div>
                 )}
@@ -47,5 +46,5 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input.displayName = "Input"
 
-export { Input }
+export {Input}
 

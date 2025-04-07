@@ -1,14 +1,14 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import {useState, useRef, useEffect} from "react";
 import Link from "next/link";
-import { FaUserCircle } from "react-icons/fa";
+import {FaUserCircle} from "react-icons/fa";
 import UserDropdown from "./UserDropdown";
 
 interface UserMenuProps {
     isLoggedIn: boolean;
 }
 
-const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
+const UserMenu = ({isLoggedIn}: UserMenuProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,12 +56,12 @@ const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
             {isLoggedIn ? (
                 <div
                     className={`flex items-center space-x-2 cursor-pointer p-2 rounded-full transition-colors duration-200 ${isOpen ? "bg-gray-100" : "hover:bg-gray-50"
-                        }`}
+                    }`}
                     onClick={toggleDropdown}
                     aria-expanded={isOpen}
                     aria-haspopup="true"
                 >
-                    <FaUserCircle size={24} className="text-black" />
+                    <FaUserCircle size={24} className="text-black"/>
                 </div>
             ) : (
                 <div className="flex space-x-3">

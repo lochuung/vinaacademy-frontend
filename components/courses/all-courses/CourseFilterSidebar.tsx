@@ -1,5 +1,5 @@
 // components/CourseFilterSidebar.tsx
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -26,16 +26,16 @@ interface CourseFilterSidebarProps {
 }
 
 export function CourseFilterSidebar({
-    categories,
-    selectedCategory,
-    setSelectedCategory,
-    selectedLevel,
-    setSelectedLevel,
-    priceRange,
-    setPriceRange,
-    clearAllFilters,
-    levels
-}: CourseFilterSidebarProps) {
+                                        categories,
+                                        selectedCategory,
+                                        setSelectedCategory,
+                                        selectedLevel,
+                                        setSelectedLevel,
+                                        priceRange,
+                                        setPriceRange,
+                                        clearAllFilters,
+                                        levels
+                                    }: CourseFilterSidebarProps) {
     return (
         <div className="hidden md:block w-64 flex-shrink-0">
             <div className="bg-white border rounded-md p-4 sticky top-4">
@@ -46,7 +46,7 @@ export function CourseFilterSidebar({
                     <h4 className="font-medium mb-2">Danh mục</h4>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Tất cả danh mục" />
+                            <SelectValue placeholder="Tất cả danh mục"/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Tất cả danh mục</SelectItem>

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import CourseGridView from '@/components/instructor/courses/CourseGridView';
 import CourseListView from '@/components/instructor/courses/CourseListView';
 import SearchAndFilterBar from '@/components/instructor/courses/SearchAndFilterBar';
-import { mockCourses } from '@/data/mockInstructorCourse';
+import {mockCourses} from '@/data/mockInstructorCourse';
 
 export default function InstructorCoursesPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -32,9 +32,9 @@ export default function InstructorCoursesPage() {
                     />
 
                     {viewMode === 'grid' ? (
-                        <CourseGridView courses={filteredCourses} />
+                        <CourseGridView courses={filteredCourses}/>
                     ) : (
-                        <CourseListView courses={filteredCourses} />
+                        <CourseListView courses={filteredCourses}/>
                     )}
                 </div>
             </div>

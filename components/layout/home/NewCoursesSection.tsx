@@ -9,7 +9,7 @@ const NewCoursesSection = () => {
                 <h2 className="text-3xl font-bold text-black">Khám phá khóa học mới</h2>
             </div>
             <div className="mt-[-20px] w-full">
-                <Carousel />
+                <Carousel/>
             </div>
         </div>
     );

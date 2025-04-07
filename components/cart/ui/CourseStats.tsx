@@ -7,12 +7,12 @@ interface CourseStatsProps {
 }
 
 export default function CourseStats({
-    totalStudents,
-    totalHours,
-    lectures,
-    level,
-    className = ''
-}: CourseStatsProps) {
+                                        totalStudents,
+                                        totalHours,
+                                        lectures,
+                                        level,
+                                        className = ''
+                                    }: CourseStatsProps) {
     return (
         <div className={className}>
             {/* Students Count */}

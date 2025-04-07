@@ -1,13 +1,13 @@
 "use client";
 
-import { DollarSign, Users, TrendingUp, Star, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {DollarSign, Users, TrendingUp, Star, ArrowUpRight, ArrowDownRight} from 'lucide-react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 
 interface StatsCardsProps {
     timeRange: 'week' | 'month' | 'year';
 }
 
-export default function StatsCards({ timeRange }: StatsCardsProps) {
+export default function StatsCards({timeRange}: StatsCardsProps) {
     // Simulate different stats based on time range
     const getStats = () => {
         switch (timeRange) {
@@ -79,15 +79,15 @@ export default function StatsCards({ timeRange }: StatsCardsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Doanh thu</CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <DollarSign className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(stats.revenue)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.revenueChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.revenueChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.revenueChange}%
@@ -100,15 +100,15 @@ export default function StatsCards({ timeRange }: StatsCardsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Học viên mới</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatNumber(stats.students)}</div>
                     <div className="flex items-center pt-1 text-sm">
                         {stats.studentsChange > 0 ? (
-                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="h-4 w-4 text-green-500 mr-1"/>
                         ) : (
-                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                            <ArrowDownRight className="h-4 w-4 text-red-500 mr-1"/>
                         )}
                         <span className={stats.studentsChange > 0 ? "text-green-500" : "text-red-500"}>
                             {stats.studentsChange}%
@@ -121,7 +121,7 @@ export default function StatsCards({ timeRange }: StatsCardsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Số lượt xem</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    <TrendingUp className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatNumber(stats.viewCount)}</div>
@@ -134,7 +134,7 @@ export default function StatsCards({ timeRange }: StatsCardsProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Đánh giá trung bình</CardTitle>
-                    <Star className="h-4 w-4 text-muted-foreground" />
+                    <Star className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.avgRating}</div>

@@ -2,12 +2,16 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { mockCourses } from "@/data/mockCourses";
+import { CourseDto, CourseSearchRequest, CourseLevel } from "@/types/course";
+import { searchCourses } from "@/services/courseService";
+import { useCategories } from "@/context/CategoryContext";
 import SearchResults from "@/components/courses/search-course/search/SearchResults";
 import FilterSidebar from "@/components/courses/search-course/filters/FilterSidebar";
 import MobileFilterToggle from "@/components/courses/search-course/filters/MobileFilterToggle";
 import NoResultsFound from "@/components/courses/search-course/ui/NoResultsFound";
 import SearchHeader from "@/components/courses/search-course/search/SearchHeader";
+import { PaginatedResponse } from "@/types/api-response";
+
 // Types
 export type FilterUpdates = {
     [key: string]: string | null;
@@ -16,20 +20,34 @@ export type FilterUpdates = {
 export default function SearchPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { categories: allCategories, getCategoryPath } = useCategories();
 
     // State for search and filter params
     const [query, setQuery] = useState("");
     const [categories, setCategories] = useState<string[]>([]);
-    const [subCategories, setSubCategories] = useState<string[]>([]);
-    const [topics, setTopics] = useState<string[]>([]);
-    const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+    const [subCategories, setSubCategories] = useState<string[]>([]); // Added for FilterSidebar
+    const [topics, setTopics] = useState<string[]>([]); // Added for FilterSidebar
+    const [selectedTopics, setSelectedTopics] = useState<string[]>([]); // Added for FilterSidebar
+    const [levels, setLevels] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
-    const [levels, setLevels] = useState<string[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [minRating, setMinRating] = useState("");
+    const [currentPage, setCurrentPage] = useState(0); // API is 0-based
+    const [pageSize, setPageSize] = useState(10);
+    const [sortBy, setSortBy] = useState("name");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     // UI state
-    const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
+    const [coursesData, setCoursesData] = useState<PaginatedResponse<CourseDto>>({
+        content: [],
+        totalPages: 0,
+        totalElements: 0,
+        size: 0,
+        number: 0,
+        first: true,
+        last: true
+    });
+    const [isLoading, setIsLoading] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     // Initialize state from URL params
@@ -46,79 +64,144 @@ export default function SearchPage() {
         setTopics(topicsParam ? topicsParam.split(",") : []);
         setSelectedTopics(topicsParam ? topicsParam.split(",") : []);
 
-        setMinPrice(searchParams.get("minPrice") || "");
-        setMaxPrice(searchParams.get("maxPrice") || "");
-
         const levelsParam = searchParams.get("level") || "";
         setLevels(levelsParam ? levelsParam.split(",") : []);
+        
+        setMinPrice(searchParams.get("minPrice") || "");
+        setMaxPrice(searchParams.get("maxPrice") || "");
+        setMinRating(searchParams.get("minRating") || "");
 
         const pageParam = searchParams.get("page") || "1";
-        setCurrentPage(parseInt(pageParam));
+        setCurrentPage(parseInt(pageParam) - 1); // Convert to 0-based for API
+
+        const sortByParam = searchParams.get("sortBy") || "name";
+        setSortBy(sortByParam);
+
+        const sortDirParam = searchParams.get("sortDirection") || "asc";
+        setSortDirection(sortDirParam as "asc" | "desc");
     }, [searchParams]);
 
-    // Initialize courses data
+    // Fetch courses when filters change
     useEffect(() => {
-        setFilteredCourses(mockCourses);
-    }, []);
+        const fetchCourses = async () => {
+            setIsLoading(true);
+            
+            try {
+                // Convert UI filters to CourseSearchRequest
+                const searchRequest: CourseSearchRequest = {
+                    keyword: query || undefined,
+                    categorySlug: categories.length > 0 ? categories[0] : undefined,
+                    level: mapLevelToApiFormat(levels[0]),
+                    minPrice: minPrice ? parseInt(minPrice) * 1000 : undefined,
+                    maxPrice: maxPrice ? parseInt(maxPrice) * 1000 : undefined,
+                    minRating: minRating ? parseFloat(minRating) : 0
+                };
+                
+                // Call the API
+                const data = await searchCourses(
+                    searchRequest,
+                    currentPage,
+                    pageSize,
+                    sortBy,
+                    sortDirection
+                );
+                
+                if (data) {
+                    setCoursesData(data);
+                } else {
+                    // Handle API error with empty state
+                    setCoursesData({
+                        content: [],
+                        totalPages: 0,
+                        totalElements: 0,
+                        size: pageSize,
+                        number: currentPage,
+                        first: true,
+                        last: true
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+                // Set empty state on error
+                setCoursesData({
+                    content: [],
+                    totalPages: 0,
+                    totalElements: 0,
+                    size: pageSize,
+                    number: currentPage,
+                    first: true,
+                    last: true
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    // Filter courses when params change
-    useEffect(() => {
-        if (categories.length === 0 && subCategories.length === 0 && topics.length === 0 &&
-            !query && !minPrice && !maxPrice && levels.length === 0) {
-            return;
+        fetchCourses();
+    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection]);
+
+    // Map UI level strings to API CourseLevel enum
+    const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
+        if (!level) return undefined;
+        
+        const levelMap: Record<string, CourseLevel> = {
+            "Cơ bản": "BEGINNER",
+            "Trung cấp": "INTERMEDIATE",
+            "Nâng cao": "ADVANCED"
+        };
+        
+        return levelMap[level] as CourseLevel || undefined;
+    };
+
+    // Handle category change - used by CategoryFilterTree
+    const handleCategoryToggle = (slug: string) => {
+        const updatedCategories = categories.includes(slug)
+            ? categories.filter(cat => cat !== slug)
+            : [...categories, slug];
+        
+        const params = new URLSearchParams(searchParams.toString());
+        
+        if (updatedCategories.length > 0) {
+            params.set('categories', updatedCategories.join(','));
+        } else {
+            params.delete('categories');
         }
+        
+        // Reset to page 1 when changing filters
+        params.set('page', '1');
+        
+        router.push(`/courses/search?${params.toString()}`);
+    };
 
-        let results = [...mockCourses];
-
-        if (query) {
-            const searchQuery = query.toLowerCase();
-            results = results.filter(course =>
-                course.title.toLowerCase().includes(searchQuery) ||
-                course.instructor.toLowerCase().includes(searchQuery) ||
-                course.description.toLowerCase().includes(searchQuery)
-            );
+    // Handle sort change
+    const handleSortChange = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        
+        switch(value) {
+            case "relevance":
+                params.set("sortBy", "name");
+                params.set("sortDirection", "asc");
+                break;
+            case "newest":
+                params.set("sortBy", "createdDate");
+                params.set("sortDirection", "desc");
+                break;
+            case "highest-rated":
+                params.set("sortBy", "rating");
+                params.set("sortDirection", "desc");
+                break;
+            case "lowest-price":
+                params.set("sortBy", "price");
+                params.set("sortDirection", "asc");
+                break;
+            case "highest-price":
+                params.set("sortBy", "price");
+                params.set("sortDirection", "desc");
+                break;
         }
-
-        // Filter by category
-        if (categories.length > 0) {
-            results = results.filter(course => categories.includes(course.category));
-        }
-
-        // Filter by subcategory
-        if (subCategories.length > 0) {
-            results = results.filter(course =>
-                subCategories.some(sub => course.subCategory.includes(sub))
-            );
-        }
-
-        // Filter by topic
-        if (topics.length > 0) {
-            results = results.filter(course =>
-                topics.some(topic => course.topic === topic)
-            );
-        }
-
-        // Filter by price range
-        if (minPrice) {
-            results = results.filter(course => parseInt(course.price) >= parseInt(minPrice) * 1000);
-        }
-
-        if (maxPrice) {
-            results = results.filter(course => parseInt(course.price) <= parseInt(maxPrice) * 1000);
-        }
-
-        // Filter by level
-        if (levels.length > 0) {
-            results = results.filter(course => levels.includes(course.level));
-        }
-
-        setFilteredCourses(results);
-
-        // Reset to page 1 when filters change (except when page param itself changes)
-        if (!searchParams.toString().includes("page=")) {
-            setCurrentPage(1);
-        }
-    }, [query, categories, subCategories, topics, minPrice, maxPrice, levels, searchParams]);
+        
+        router.push(`/courses/search?${params.toString()}`);
+    };
 
     // Toggle mobile filters visibility
     const toggleMobileFilters = () => {
@@ -156,7 +239,7 @@ export default function SearchPage() {
 
                 {/* Search header with query and result count */}
                 {query && (
-                    <SearchHeader query={query} resultCount={filteredCourses.length} />
+                    <SearchHeader query={query} resultCount={coursesData.totalElements} />
                 )}
 
                 {/* Main content with sidebar layout */}
@@ -166,7 +249,7 @@ export default function SearchPage() {
                         toggleMobileFilters={toggleMobileFilters}
                     />
 
-                    {/* Filter sidebar */}
+                    {/* Filter sidebar - updated props to match component interface */}
                     <FilterSidebar
                         showMobileFilters={showMobileFilters}
                         toggleMobileFilters={toggleMobileFilters}
@@ -178,15 +261,20 @@ export default function SearchPage() {
                         minPrice={minPrice}
                         maxPrice={maxPrice}
                         levels={levels}
+                        selectedRating={minRating}
                         applyFilters={applyFilters}
                         clearAllFilters={clearAllFilters}
                     />
 
                     {/* Course results */}
                     <div className="lg:w-3/4">
-                        {filteredCourses.length > 0 ? (
+                        {isLoading ? (
+                            <div className="flex justify-center items-center py-20">
+                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+                            </div>
+                        ) : coursesData.content.length > 0 ? (
                             <SearchResults
-                                courses={filteredCourses}
+                                coursesData={coursesData}
                             />
                         ) : (
                             <NoResultsFound />

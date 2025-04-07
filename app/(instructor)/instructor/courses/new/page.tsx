@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { CourseData, CourseSection } from '@/types/new-course';
+import {useState} from 'react';
+import {Card, CardContent} from '@/components/ui/card';
+import {CourseData, CourseSection} from '@/types/new-course';
 
 // Import custom components
 import CourseFormHeader from '@/components/instructor/courses/new-course/CourseFormHeader';
@@ -34,7 +34,7 @@ export default function CreateCoursePage() {
     const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setCourseData({
             ...courseData,
             [name]: value
@@ -42,7 +42,7 @@ export default function CreateCoursePage() {
     };
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
+        const {name, checked} = e.target;
         setCourseData({
             ...courseData,
             [name]: checked
@@ -50,7 +50,7 @@ export default function CreateCoursePage() {
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, files } = e.target;
+        const {name, files} = e.target;
         if (files && files.length > 0) {
             setCourseData({
                 ...courseData,
@@ -107,18 +107,18 @@ export default function CreateCoursePage() {
 
     const handleThumbnailRemove = () => {
         setPreviewThumbnail(null);
-        setCourseData({ ...courseData, thumbnail: null });
+        setCourseData({...courseData, thumbnail: null});
     };
 
     const handleVideoRemove = () => {
         setPreviewVideo(null);
-        setCourseData({ ...courseData, promo_video: null });
+        setCourseData({...courseData, promo_video: null});
     };
 
     return (
         <div className="py-6 bg-gray-50 min-h-screen">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <CourseFormHeader progress={progress} />
+                <CourseFormHeader progress={progress}/>
 
                 <Card className="overflow-hidden mb-6 border-0 shadow-md">
                     <CourseFormNavigation
@@ -169,7 +169,8 @@ export default function CreateCoursePage() {
                 <div className="flex justify-center">
                     <div className="text-center text-sm text-gray-500 mt-4">
                         <p>
-                            Bạn cần trợ giúp? <a href="#" className="text-black font-medium">Truy cập trung tâm hỗ trợ</a> hoặc{" "}
+                            Bạn cần trợ giúp? <a href="#" className="text-black font-medium">Truy cập trung tâm hỗ
+                            trợ</a> hoặc{" "}
                             <a href="#" className="text-black font-medium">liên hệ với chúng tôi</a>.
                         </p>
                     </div>

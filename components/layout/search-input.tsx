@@ -1,8 +1,8 @@
 'use client';
 
-import { Search } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useState } from 'react';
+import {Search} from 'lucide-react';
+import {Button} from '../ui/button';
+import {useState} from 'react';
 
 export default function SearchInput() {
     // Tạo state 'query' để lưu trữ từ khóa tìm kiếm, khởi tạo ban đầu là chuỗi rỗng
@@ -18,10 +18,11 @@ export default function SearchInput() {
                 onClick={() => setQuery('')}
             >
                 {/* Biểu tượng tìm kiếm */}
-                <Search className='mr-2 h-4 w-4' />
+                <Search className='mr-2 h-4 w-4'/>
                 Search...
                 {/* Hiển thị phím tắt, ẩn trên thiết bị nhỏ và hiển thị khi screen đủ lớn */}
-                <kbd className='pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
+                <kbd
+                    className='pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
                     <span className='text-xs'>⌘</span>K
                 </kbd>
             </Button>

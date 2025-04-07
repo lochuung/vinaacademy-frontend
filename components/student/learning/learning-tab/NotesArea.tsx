@@ -1,5 +1,5 @@
-import { FC, useState, useEffect } from 'react';
-import { Plus, ChevronDown } from 'lucide-react';
+import {FC, useState, useEffect} from 'react';
+import {Plus, ChevronDown} from 'lucide-react';
 
 interface Note {
     id: string;
@@ -16,7 +16,7 @@ interface NotesAreaProps {
     currentTimestamp?: number; // Current video timestamp
 }
 
-const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, currentTimestamp = 0 }) => {
+const NotesArea: FC<NotesAreaProps> = ({courseId, lectureId: lectureId, currentTimestamp = 0}) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [currentNote, setCurrentNote] = useState<string>('');
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -58,7 +58,7 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, current
             // Cập nhật ghi chú hiện có
             setNotes(notes.map(note =>
                 note.id === selectedNoteId
-                    ? { ...note, content: currentNote, updatedAt: now }
+                    ? {...note, content: currentNote, updatedAt: now}
                     : note
             ));
         } else {
@@ -117,7 +117,7 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, current
                     className="w-full text-left p-3 rounded border border-gray-300 hover:border-gray-400 flex justify-between items-center bg-white"
                 >
                     <span className="text-gray-500">Tạo ghi chú mới tại {formatTimestamp(currentTimestamp)}</span>
-                    <Plus className="text-gray-700" size={20} />
+                    <Plus className="text-gray-700" size={20}/>
                 </button>
             </div>
 
@@ -129,10 +129,12 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, current
                         onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                         className="px-4 py-2 border border-gray-300 rounded flex items-center space-x-2 bg-white"
                     >
-                        <span className={filterOption === 'Tất cả bài giảng' ? 'text-indigo-600 font-medium' : 'text-gray-800'}>
+                        <span
+                            className={filterOption === 'Tất cả bài giảng' ? 'text-indigo-600 font-medium' : 'text-gray-800'}>
                             {filterOption}
                         </span>
-                        <ChevronDown size={16} className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16}
+                                     className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`}/>
                     </button>
 
                     {showFilterDropdown && (
@@ -162,7 +164,8 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, current
                         className="px-4 py-2 border border-gray-300 rounded flex items-center space-x-2 bg-white"
                     >
                         <span className="text-gray-800">Sắp xếp theo {sortOption}</span>
-                        <ChevronDown size={16} className={`transition-transform ${showSortDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16}
+                                     className={`transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}/>
                     </button>
 
                     {showSortDropdown && (
@@ -196,7 +199,8 @@ const NotesArea: FC<NotesAreaProps> = ({ courseId, lectureId: lectureId, current
             <div className="flex-1 overflow-y-auto p-4">
                 {processedNotes.length === 0 ? (
                     <div className="text-center py-12">
-                        <p className="text-lg text-gray-600 mb-2">Nhấp vào ô "Tạo ghi chú mới", nút "+", hoặc nhấn "B" để tạo ghi chú đầu tiên của bạn.</p>
+                        <p className="text-lg text-gray-600 mb-2">Nhấp vào ô "Tạo ghi chú mới", nút "+", hoặc nhấn "B"
+                            để tạo ghi chú đầu tiên của bạn.</p>
                     </div>
                 ) : (
                     <div className="space-y-4">

@@ -32,4 +32,4 @@ function useCallbackRef<T extends (...args: never[]) => unknown>(
     );
 }
 
-export { useCallbackRef };
+export {useCallbackRef};

@@ -1,6 +1,6 @@
 // components/SubCategoryNavigation.tsx
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import {ChevronRight} from "lucide-react";
 
 interface SubCategoryNavigationProps {
     categoryData: any;
@@ -15,11 +15,11 @@ interface SubCategoryNavigationProps {
 }
 
 export function SubCategoryNavigation({
-    categoryData,
-    categoryInfo,
-    category,
-    subcategory
-}: SubCategoryNavigationProps) {
+                                          categoryData,
+                                          categoryInfo,
+                                          category,
+                                          subcategory
+                                      }: SubCategoryNavigationProps) {
     if (!categoryData || !categoryInfo.category) {
         return (
             <div className="border-b">
@@ -46,20 +46,23 @@ export function SubCategoryNavigation({
 
                     {/* Mũi tên phân cách lớn giữa danh mục cha và con */}
                     <div className="flex items-center self-stretch mx-1 py-2">
-                        <ChevronRight className="text-gray-400" size={24} strokeWidth={1.5} />
+                        <ChevronRight className="text-gray-400" size={24} strokeWidth={1.5}/>
                     </div>
 
                     {/* Danh mục con container */}
                     <div className="flex space-x-6">
                         {/* Hiển thị tất cả danh mục con của cùng danh mục cha */}
-                        {categoryData.subCategories && categoryData.subCategories.map((subCat: { name: string; link: string }, index: number) => {
+                        {categoryData.subCategories && categoryData.subCategories.map((subCat: {
+                            name: string;
+                            link: string
+                        }, index: number) => {
                             const subCatSlug = subCat.link.split('/').pop();
                             return (
                                 <Link
                                     key={index}
                                     href={subCat.link}
                                     className={`whitespace-nowrap px-4 py-2 text-gray-700 hover:text-purple-700 ${subcategory && subcategory === subCatSlug ? 'font-medium border-b-2 border-black' : ''
-                                        }`}
+                                    }`}
                                 >
                                     {subCat.name}
                                 </Link>

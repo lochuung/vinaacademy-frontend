@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockCourses } from '@/data/mockCourses';
+import React, {useState} from 'react';
+import {ChevronLeft, ChevronRight, Star} from 'lucide-react';
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card';
+import {mockCourses} from '@/data/mockCourses';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -17,13 +17,13 @@ interface CarouselProps {
 }
 
 const Carousel = ({
-    title,
-    category,
-    subCategory,
-    featured,
-    bestSeller,
-    limit = 8
-}: CarouselProps) => {
+                      title,
+                      category,
+                      subCategory,
+                      featured,
+                      bestSeller,
+                      limit = 8
+                  }: CarouselProps) => {
 
     // Lọc khóa học theo các điều kiện
     const filteredCourses = mockCourses.filter(course => {
@@ -66,7 +66,7 @@ const Carousel = ({
                     className="absolute left-[-45px] z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
                     disabled={currentIndex === 0}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-6 h-6"/>
                 </button>
 
                 {/* Vùng hiển thị các card khóa học */}
@@ -90,12 +90,14 @@ const Carousel = ({
                                                 className="object-cover rounded-t-lg"
                                             />
                                             {course.discount > 0 && (
-                                                <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                <div
+                                                    className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                                                     -{course.discount}%
                                                 </div>
                                             )}
                                             {course.bestSeller && (
-                                                <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                <div
+                                                    className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
                                                     Bán chạy
                                                 </div>
                                             )}
@@ -115,12 +117,13 @@ const Carousel = ({
                                         <CardTitle className="text-lg mb-2 line-clamp-2 h-16">{course.title}</CardTitle>
                                         <p className="text-gray-600 text-sm mb-2">{course.instructor}</p>
                                         <div className="flex items-center gap-1 mb-2">
-                                            <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                                            <Star size={16} className="text-yellow-500 fill-yellow-500"/>
                                             <span className="text-sm font-medium">{course.rating}</span>
                                             <span className="text-xs text-gray-500">({course.students})</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="font-bold">{parseInt(course.price).toLocaleString()}đ</span>
+                                            <span
+                                                className="font-bold">{parseInt(course.price).toLocaleString()}đ</span>
                                             {course.originalPrice && (
                                                 <span className="text-sm text-gray-500 line-through">
                                                     {parseInt(course.originalPrice).toLocaleString()}đ
@@ -131,7 +134,8 @@ const Carousel = ({
 
                                     {/* Phần footer của card */}
                                     <CardFooter className="p-4 pt-0 mt-auto">
-                                        <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                                        <button
+                                            className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition-colors">
                                             Thêm vào giỏ hàng
                                         </button>
                                     </CardFooter>
@@ -146,7 +150,7 @@ const Carousel = ({
                     className="absolute right-[-45px] z-10 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
                     disabled={currentIndex + itemsToShow >= filteredCourses.length}
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-6 h-6"/>
                 </button>
             </div>
         </div>

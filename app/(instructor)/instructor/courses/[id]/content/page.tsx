@@ -1,10 +1,10 @@
 "use client";
 
-import { useParams } from 'next/navigation';
-import { CourseContentHeader } from '@/components/instructor/courses/edit-course-content/CourseContentHeader';
-import { CourseContentBody } from '@/components/instructor/courses/edit-course-content/CourseContentBody';
-import { CourseContentFooter } from '@/components/instructor/courses/edit-course-content/CourseContentFooter';
-import { useCourseContent } from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
+import {useParams} from 'next/navigation';
+import {CourseContentHeader} from '@/components/instructor/courses/edit-course-content/CourseContentHeader';
+import {CourseContentBody} from '@/components/instructor/courses/edit-course-content/CourseContentBody';
+import {CourseContentFooter} from '@/components/instructor/courses/edit-course-content/CourseContentFooter';
+import {useCourseContent} from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
 
 export default function CourseContentPage() {
     const params = useParams();

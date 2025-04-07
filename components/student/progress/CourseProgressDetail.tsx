@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Link from "next/link";
 
 interface CourseModule {
@@ -33,16 +33,16 @@ interface CourseProgressDetailProps {
 }
 
 const CourseProgressDetail = ({
-    courseId,
-    courseSlug,
-    courseName: courseTitle,
-    instructor,
-    totalModules,
-    completedModules,
-    overallProgress,
-    lastAccessed,
-    modules,
-}: CourseProgressDetailProps) => {
+                                  courseId,
+                                  courseSlug,
+                                  courseName: courseTitle,
+                                  instructor,
+                                  totalModules,
+                                  completedModules,
+                                  overallProgress,
+                                  lastAccessed,
+                                  modules,
+                              }: CourseProgressDetailProps) => {
     const [expandedModules, setExpandedModules] = useState<number[]>([]);
     const courseIdentifier = courseSlug || courseId.toString();
 
@@ -68,7 +68,7 @@ const CourseProgressDetail = ({
                         <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
                             <div
                                 className="h-2.5 rounded-full bg-black"
-                                style={{ width: `${overallProgress}%` }}
+                                style={{width: `${overallProgress}%`}}
                             ></div>
                         </div>
                         <span className="text-gray-800 font-bold">{overallProgress}%</span>
@@ -115,7 +115,7 @@ const CourseProgressDetail = ({
                                     </div>
                                     <svg
                                         className={`w-5 h-5 text-gray-500 transform transition-transform ${expandedModules.includes(module.id) ? "rotate-180" : ""
-                                            }`}
+                                        }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -144,7 +144,7 @@ const CourseProgressDetail = ({
                                                         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-3 ${lesson.isCompleted
                                                             ? "bg-gray-200 text-gray-700"
                                                             : "bg-gray-100 text-gray-400"
-                                                            }`}
+                                                        }`}
                                                     >
                                                         {lesson.isCompleted ? (
                                                             <svg
@@ -167,7 +167,7 @@ const CourseProgressDetail = ({
                                                         <div className="flex items-center justify-between">
                                                             <span
                                                                 className={`font-medium ${lesson.isCompleted ? "text-gray-600" : "text-gray-900"
-                                                                    } group-hover:text-black`}
+                                                                } group-hover:text-black`}
                                                             >
                                                                 {lesson.title}
                                                             </span>
@@ -176,7 +176,7 @@ const CourseProgressDetail = ({
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center mt-1">
-                                                            <LessonTypeIcon type={lesson.type} />
+                                                            <LessonTypeIcon type={lesson.type}/>
                                                             <span className="text-xs text-gray-500 ml-1 capitalize">
                                                                 {lesson.type}
                                                             </span>
@@ -226,7 +226,7 @@ const CourseProgressDetail = ({
 };
 
 // Component hiển thị biểu tượng tương ứng với loại bài học
-const LessonTypeIcon = ({ type }: { type: CourseLesson["type"] }) => {
+const LessonTypeIcon = ({type}: { type: CourseLesson["type"] }) => {
     switch (type) {
         case "video":
             return (

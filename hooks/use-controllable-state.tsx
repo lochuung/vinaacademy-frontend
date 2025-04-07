@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { useCallbackRef } from './use-callback-ref';
+import {useCallbackRef} from './use-callback-ref';
 
 /**
  * @see https://github.com/radix-ui/primitives/blob/main/packages/react/use-controllable-state/src/useControllableState.tsx
  *
  * Loại tham số cho hook useControllableState: bao gồm giá trị được kiểm soát (prop),
-// giá trị mặc định (defaultProp) và hàm onChange để thông báo khi state thay đổi.
+ // giá trị mặc định (defaultProp) và hàm onChange để thông báo khi state thay đổi.
  */
 type UseControllableStateParams<T> = {
     prop?: T | undefined;
@@ -25,10 +25,11 @@ type SetStateFn<T> = (prevState?: T) => T;
  * @returns Một tuple gồm giá trị hiện tại và hàm setValue để cập nhật state.
  */
 function useControllableState<T>({
-    prop,
-    defaultProp,
-    onChange = () => { }
-}: UseControllableStateParams<T>) {
+                                     prop,
+                                     defaultProp,
+                                     onChange = () => {
+                                     }
+                                 }: UseControllableStateParams<T>) {
     // Sử dụng hook useUncontrolledState để khởi tạo state nội bộ từ defaultProp và onChange
     const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({
         defaultProp,
@@ -74,9 +75,9 @@ function useControllableState<T>({
  * @returns Một tuple chứa state nội bộ và hàm setter của state.
  */
 function useUncontrolledState<T>({
-    defaultProp,
-    onChange
-}: Omit<UseControllableStateParams<T>, 'prop'>) {
+                                     defaultProp,
+                                     onChange
+                                 }: Omit<UseControllableStateParams<T>, 'prop'>) {
     // Khởi tạo state nội bộ với defaultProp
     const uncontrolledState = React.useState<T | undefined>(defaultProp);
     const [value] = uncontrolledState;
@@ -96,4 +97,4 @@ function useUncontrolledState<T>({
     return uncontrolledState;
 }
 
-export { useControllableState };
+export {useControllableState};

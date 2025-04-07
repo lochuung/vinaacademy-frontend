@@ -1,6 +1,6 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Button} from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,12 +11,12 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { signOut, useSession } from 'next-auth/react';
+import {signOut, useSession} from 'next-auth/react';
 
 // Component UserNav hiển thị thông tin người dùng và menu dropdown khi đã đăng nhập
 export function UserNav() {
     // Sử dụng hook useSession để lấy thông tin phiên đăng nhập hiện tại
-    const { data: session } = useSession();
+    const {data: session} = useSession();
 
     // Nếu có thông tin phiên (người dùng đã đăng nhập)
     if (session) {
@@ -51,7 +51,7 @@ export function UserNav() {
                             </p>
                         </div>
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator/>
                     {/* Nhóm các mục trong menu dropdown */}
                     <DropdownMenuGroup>
                         <DropdownMenuItem>
@@ -71,7 +71,7 @@ export function UserNav() {
                             New Team
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator/>
                     {/* Mục đăng xuất, khi click gọi hàm signOut */}
                     <DropdownMenuItem onClick={() => signOut()}>
                         Log out

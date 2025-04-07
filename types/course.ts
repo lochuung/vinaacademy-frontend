@@ -1,4 +1,4 @@
-import { BaseDto } from "./api-response";
+import {BaseDto} from "./api-response";
 
 export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED';

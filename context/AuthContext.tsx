@@ -10,7 +10,8 @@ const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     isLoading: true,
     login: async () => false,
-    logout: async () => {},
+    logout: async () => {
+    },
     refreshAuth: async () => false,
     register: async () => false,
 });

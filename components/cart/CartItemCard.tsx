@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Tag } from 'lucide-react';
-import { CartItem } from '@/types/cart-courses';
+import {Tag} from 'lucide-react';
+import {CartItem} from '@/types/cart-courses';
 import CourseRating from '@/components/cart/ui/CourseRating';
 import CourseStats from '@/components/cart/ui/CourseStats';
 
@@ -14,11 +14,11 @@ interface CartItemCardProps {
 }
 
 export default function CartItemCard({
-    item,
-    onRemove,
-    onSaveForLater,
-    onAddToFavorites
-}: CartItemCardProps) {
+                                         item,
+                                         onRemove,
+                                         onSaveForLater,
+                                         onAddToFavorites
+                                     }: CartItemCardProps) {
     return (
         <div className="flex gap-4 bg-white p-4 rounded-lg shadow-sm">
             {/* Course Image */}
@@ -82,7 +82,7 @@ export default function CartItemCard({
             <div className="text-right min-w-[120px]">
                 <div className="font-bold text-lg flex items-center justify-end gap-1">
                     <span>{item.price.toLocaleString()}đ</span>
-                    <Tag className="w-4 h-4" />
+                    <Tag className="w-4 h-4"/>
                 </div>
                 <div className="text-sm text-gray-500 line-through">
                     {item.originalPrice.toLocaleString()}đ

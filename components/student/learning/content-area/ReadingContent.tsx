@@ -1,13 +1,13 @@
 "use client";
 
-import { FC, useState } from 'react';
+import {FC, useState} from 'react';
 
 interface ReadingContentProps {
     lectureId: string;
     courseId: string;
 }
 
-const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseId }) => {
+const ReadingContent: FC<ReadingContentProps> = ({lectureId: lectureId, courseId}) => {
     const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
 
     // Nội dung đọc mẫu - sẽ được lấy từ API trong ứng dụng thực
@@ -205,11 +205,16 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
 
     const getFontSizeClass = () => {
         switch (fontSize) {
-            case 'sm': return 'text-sm';
-            case 'md': return 'text-base';
-            case 'lg': return 'text-lg';
-            case 'xl': return 'text-xl';
-            default: return 'text-base';
+            case 'sm':
+                return 'text-sm';
+            case 'md':
+                return 'text-base';
+            case 'lg':
+                return 'text-lg';
+            case 'xl':
+                return 'text-xl';
+            default:
+                return 'text-base';
         }
     };
 
@@ -224,8 +229,11 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
                         className={`p-1 ${fontSize === 'sm' ? 'text-blue-600' : 'text-gray-500'}`}
                         title="Cỡ chữ nhỏ"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20"
+                             fill="currentColor">
+                            <path fillRule="evenodd"
+                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                  clipRule="evenodd"/>
                         </svg>
                     </button>
                     <button
@@ -233,8 +241,11 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
                         className={`p-1 ${fontSize === 'md' ? 'text-blue-600' : 'text-gray-500'}`}
                         title="Cỡ chữ vừa"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20"
+                             fill="currentColor">
+                            <path fillRule="evenodd"
+                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                  clipRule="evenodd"/>
                         </svg>
                     </button>
                     <button
@@ -242,8 +253,11 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
                         className={`p-1 ${fontSize === 'lg' ? 'text-blue-600' : 'text-gray-500'}`}
                         title="Cỡ chữ lớn"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20"
+                             fill="currentColor">
+                            <path fillRule="evenodd"
+                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                  clipRule="evenodd"/>
                         </svg>
                     </button>
                     <button
@@ -251,8 +265,11 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
                         className={`p-1 ${fontSize === 'xl' ? 'text-blue-600' : 'text-gray-500'}`}
                         title="Cỡ chữ rất lớn"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z" clipRule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20"
+                             fill="currentColor">
+                            <path fillRule="evenodd"
+                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                  clipRule="evenodd"/>
                         </svg>
                     </button>
                 </div>
@@ -297,14 +314,18 @@ const ReadingContent: FC<ReadingContentProps> = ({ lectureId: lectureId, courseI
             <div className="mt-12 pt-4 border-t border-gray-200 flex justify-between">
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
                     <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <path fillRule="evenodd"
+                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                              clipRule="evenodd"/>
                     </svg>
                     Bài học trước
                 </button>
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
                     Bài học tiếp theo
                     <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        <path fillRule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clipRule="evenodd"/>
                     </svg>
                 </button>
             </div>

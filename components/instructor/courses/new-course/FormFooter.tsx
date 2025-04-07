@@ -1,7 +1,7 @@
 // components/course-creator/FormFooter.tsx
-import { ArrowLeft, ChevronRight, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CourseSection } from '@/types/new-course';
+import {ArrowLeft, ChevronRight, Save} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {CourseSection} from '@/types/new-course';
 
 interface FormFooterProps {
     activeSection: CourseSection;
@@ -11,11 +11,11 @@ interface FormFooterProps {
 }
 
 export default function FormFooter({
-    activeSection,
-    onBack,
-    onContinue,
-    onSubmit
-}: FormFooterProps) {
+                                       activeSection,
+                                       onBack,
+                                       onContinue,
+                                       onSubmit
+                                   }: FormFooterProps) {
     return (
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
             {activeSection !== 'basic' ? (
@@ -25,7 +25,7 @@ export default function FormFooter({
                     onClick={onBack}
                     className="flex items-center"
                 >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    <ArrowLeft className="h-4 w-4 mr-2"/>
                     Quay lại
                 </Button>
             ) : (
@@ -39,7 +39,7 @@ export default function FormFooter({
                     className="bg-black text-white hover:bg-gray-800 flex items-center"
                 >
                     Tiếp tục
-                    <ChevronRight className="h-4 w-4 ml-2" />
+                    <ChevronRight className="h-4 w-4 ml-2"/>
                 </Button>
             ) : (
                 <Button
@@ -47,7 +47,7 @@ export default function FormFooter({
                     onClick={onSubmit}
                     className="bg-black text-white hover:bg-gray-800 flex items-center"
                 >
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="h-4 w-4 mr-2"/>
                     Tạo khóa học
                 </Button>
             )}

@@ -9,6 +9,20 @@ const nextConfig: NextConfig = {
                 destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1"}/:path*`,
             }
         ]
+    },
+
+    // Allow images from any host using remotePatterns
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**',
+            },
+            {
+                protocol: 'http',
+                hostname: '**',
+            }
+        ],
     }
 };
 

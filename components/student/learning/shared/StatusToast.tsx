@@ -1,5 +1,5 @@
-import { FC, useState, useEffect } from 'react';
-import { CheckCircle, AlertCircle, X } from 'lucide-react';
+import {FC, useState, useEffect} from 'react';
+import {CheckCircle, AlertCircle, X} from 'lucide-react';
 
 export type StatusType = 'success' | 'error' | 'info' | 'warning';
 
@@ -12,12 +12,12 @@ interface StatusToastProps {
 }
 
 const StatusToast: FC<StatusToastProps> = ({
-    message,
-    type,
-    duration = 3000,
-    onClose,
-    show
-}) => {
+                                               message,
+                                               type,
+                                               duration = 3000,
+                                               onClose,
+                                               show
+                                           }) => {
     const [isVisible, setIsVisible] = useState(show);
 
     useEffect(() => {
@@ -52,14 +52,14 @@ const StatusToast: FC<StatusToastProps> = ({
     const getIcon = () => {
         switch (type) {
             case 'success':
-                return <CheckCircle className="w-5 h-5 text-green-600" />;
+                return <CheckCircle className="w-5 h-5 text-green-600"/>;
             case 'error':
-                return <AlertCircle className="w-5 h-5 text-red-600" />;
+                return <AlertCircle className="w-5 h-5 text-red-600"/>;
             case 'warning':
-                return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+                return <AlertCircle className="w-5 h-5 text-yellow-600"/>;
             case 'info':
             default:
-                return <AlertCircle className="w-5 h-5 text-blue-600" />;
+                return <AlertCircle className="w-5 h-5 text-blue-600"/>;
         }
     };
 
@@ -78,7 +78,7 @@ const StatusToast: FC<StatusToastProps> = ({
                     className="ml-3 text-gray-500 hover:text-gray-800"
                     title="Close"
                 >
-                    <X className="w-5 h-5" />
+                    <X className="w-5 h-5"/>
                 </button>
             </div>
         </div>

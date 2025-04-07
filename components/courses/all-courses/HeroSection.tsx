@@ -1,6 +1,6 @@
 // components/HeroSection.tsx
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import {Input} from "@/components/ui/input";
+import {Search} from "lucide-react";
 
 interface HeroSectionProps {
     searchQuery: string;
@@ -8,9 +8,9 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({
-    searchQuery,
-    setSearchQuery
-}: HeroSectionProps) {
+                                searchQuery,
+                                setSearchQuery
+                            }: HeroSectionProps) {
     return (
         <div className="bg-black py-16">
             <div className="container mx-auto px-4 text-center">

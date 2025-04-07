@@ -1,5 +1,5 @@
-import { FileText, Trash2, Plus, AlertCircle } from 'lucide-react';
-import { Lecture, Resource } from '@/types/lecture';
+import {FileText, Trash2, Plus, AlertCircle} from 'lucide-react';
+import {Lecture, Resource} from '@/types/lecture';
 import ResourceItem from '../resources/ResourceItem';
 
 interface ResourcesTabProps {
@@ -7,7 +7,7 @@ interface ResourcesTabProps {
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
 }
 
-export default function ResourcesTab({ lecture, setLecture }: ResourcesTabProps) {
+export default function ResourcesTab({lecture, setLecture}: ResourcesTabProps) {
     const addResource = () => {
         const newResource: Resource = {
             id: `r${Date.now()}`,
@@ -35,7 +35,7 @@ export default function ResourcesTab({ lecture, setLecture }: ResourcesTabProps)
             ...newResources[index],
             [field]: value
         };
-        setLecture({ ...lecture, resources: newResources });
+        setLecture({...lecture, resources: newResources});
     };
 
     return (
@@ -71,7 +71,7 @@ export default function ResourcesTab({ lecture, setLecture }: ResourcesTabProps)
                     onClick={addResource}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                 >
-                    <Plus className="h-4 w-4 mr-2" /> Thêm tài liệu
+                    <Plus className="h-4 w-4 mr-2"/> Thêm tài liệu
                 </button>
             </div>
 
@@ -79,11 +79,12 @@ export default function ResourcesTab({ lecture, setLecture }: ResourcesTabProps)
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <AlertCircle className="h-5 w-5 text-blue-400" />
+                            <AlertCircle className="h-5 w-5 text-blue-400"/>
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-blue-700">
-                                Mẹo: Hãy cung cấp tài liệu bổ sung liên quan để học viên có thể củng cố kiến thức sau khi học xong bài giảng.
+                                Mẹo: Hãy cung cấp tài liệu bổ sung liên quan để học viên có thể củng cố kiến thức sau
+                                khi học xong bài giảng.
                             </p>
                         </div>
                     </div>

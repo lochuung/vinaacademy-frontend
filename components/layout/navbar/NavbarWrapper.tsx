@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Navbar from "./Navbar";
 
 export default function NavbarWrapper() {
@@ -15,5 +15,5 @@ export default function NavbarWrapper() {
     // Ẩn Navbar nếu ở trang dashboard
     if (pathname === "/dashboard") return null;
 
-    return <Navbar onNavigateHome={handleNavigateHome} />;
+    return <Navbar onNavigateHome={handleNavigateHome}/>;
 }

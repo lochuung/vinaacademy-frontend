@@ -26,6 +26,11 @@ const CategoriesList = ({
         router.push(`/categories/${category.slug}`);
     };
 
+    // Display hierarchical path in the component title
+    const getCategoryPath = (category: CategoryDto) => {
+        return category.parentSlug ? `${category.parentSlug} > ${category.name}` : category.name;
+    };
+
     return (
         <div className="py-2">
             {categories.map((category, index) => (
@@ -40,10 +45,13 @@ const CategoriesList = ({
                         onClick={(e) => handleCategoryClick(category, e)}
                     >
                         <span>{category.name}</span>
-                        <ChevronRight className="w-4 h-4" />
+                        {/* Only show chevron if category has children */}
+                        {category.children && category.children.length > 0 && (
+                            <ChevronRight className="w-4 h-4" />
+                        )}
                     </a>
 
-                    {activeCategory === index && category.children.length > 0 && (
+                    {activeCategory === index && category.children && category.children.length > 0 && (
                         <SubCategoriesList
                             category={category}
                             activeCategory={activeCategory}

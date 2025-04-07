@@ -1,4 +1,4 @@
-import { Quiz } from '@/types/lecture';
+import {Quiz} from '@/types/lecture';
 import SettingCheckbox from './SettingCheckbox';
 import PassingScoreInput from './PassingScoreInput';
 
@@ -7,7 +7,7 @@ interface QuizSettingsProps {
     onUpdateSettings: (field: keyof Quiz['settings'], value: boolean | number) => void;
 }
 
-export default function QuizSettings({ settings, onUpdateSettings }: QuizSettingsProps) {
+export default function QuizSettings({settings, onUpdateSettings}: QuizSettingsProps) {
     const handleSettingChange = (field: keyof Quiz['settings']) => (checked: boolean) => {
         onUpdateSettings(field, checked);
     };

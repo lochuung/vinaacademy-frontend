@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import {useState, useEffect} from "react";
+import {useParams} from "next/navigation";
 import Link from "next/link";
 import CourseProgressDetail from "@/components/student/progress/CourseProgressDetail";
-import { mockCourseDetail, CourseDetailData } from "@/data/mockCourseData";
+import {mockCourseDetail, CourseDetailData} from "@/data/mockCourseData";
 
 export default function LearningCoursePage() {
     const params = useParams();

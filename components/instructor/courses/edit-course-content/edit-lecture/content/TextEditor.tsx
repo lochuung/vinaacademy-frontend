@@ -1,11 +1,11 @@
-import { List } from 'lucide-react';
+import {List} from 'lucide-react';
 
 interface TextEditorProps {
     textContent: string;
     handleTextContentChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-export default function TextEditor({ textContent, handleTextContentChange }: TextEditorProps) {
+export default function TextEditor({textContent, handleTextContentChange}: TextEditorProps) {
     return (
         <div className="mt-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -25,7 +25,7 @@ export default function TextEditor({ textContent, handleTextContentChange }: Tex
                         </button>
                         <span className="border-r border-gray-300 mx-1"></span>
                         <button className="p-1 hover:bg-gray-200 rounded">
-                            <List className="h-4 w-4" />
+                            <List className="h-4 w-4"/>
                         </button>
                     </div>
                 </div>

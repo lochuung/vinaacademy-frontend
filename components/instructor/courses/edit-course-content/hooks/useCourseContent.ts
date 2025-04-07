@@ -1,7 +1,7 @@
 // hooks/useCourseContent.ts
-import { useState } from 'react';
-import { Section, Lecture } from '@/types/instructor-course-edit';
-import { mockSections } from '@/data/mockCourseContent';
+import {useState} from 'react';
+import {Section, Lecture} from '@/types/instructor-course-edit';
+import {mockSections} from '@/data/mockCourseContent';
 
 export const useCourseContent = () => {
     const [sections, setSections] = useState<Section[]>(mockSections);

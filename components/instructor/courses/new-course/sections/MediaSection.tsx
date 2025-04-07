@@ -1,6 +1,6 @@
 // components/course-creator/sections/MediaSection.tsx
-import { ImagePlus, Video, Info } from 'lucide-react';
-import { CourseData } from '@/types/new-course';
+import {ImagePlus, Video, Info} from 'lucide-react';
+import {CourseData} from '@/types/new-course';
 import FileUpload from '../FileUpload';
 import InfoAlert from '../InfoAlert';
 
@@ -14,13 +14,13 @@ interface MediaSectionProps {
 }
 
 export default function MediaSection({
-    courseData,
-    previewThumbnail,
-    previewVideo,
-    onFileChange,
-    onThumbnailRemove,
-    onVideoRemove
-}: MediaSectionProps) {
+                                         courseData,
+                                         previewThumbnail,
+                                         previewVideo,
+                                         onFileChange,
+                                         onThumbnailRemove,
+                                         onVideoRemove
+                                     }: MediaSectionProps) {
     return (
         <div className="p-6 space-y-6">
             <InfoAlert title="Tại sao hình ảnh quan trọng?">
@@ -35,7 +35,7 @@ export default function MediaSection({
                 name="thumbnail"
                 label="Ảnh thumbnail"
                 accept="image/*"
-                icon={<ImagePlus className="mx-auto h-12 w-12 text-gray-400" />}
+                icon={<ImagePlus className="mx-auto h-12 w-12 text-gray-400"/>}
                 preview={previewThumbnail}
                 helpText="Kích thước đề xuất: 1280x720 pixel, tỷ lệ 16:9"
                 onChange={onFileChange}
@@ -48,7 +48,7 @@ export default function MediaSection({
                 name="promo_video"
                 label="Video giới thiệu"
                 accept="video/*"
-                icon={<Video className="mx-auto h-12 w-12 text-gray-400" />}
+                icon={<Video className="mx-auto h-12 w-12 text-gray-400"/>}
                 preview={previewVideo}
                 helpText="Video giới thiệu ngắn sẽ giúp học viên hiểu rõ hơn về nội dung khóa học"
                 onChange={onFileChange}

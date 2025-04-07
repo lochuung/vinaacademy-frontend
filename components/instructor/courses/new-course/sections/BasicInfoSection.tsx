@@ -1,12 +1,12 @@
 // components/course-creator/sections/BasicInfoSection.tsx
-import { CourseData } from '@/types/new-course';
+import {CourseData} from '@/types/new-course';
 
 interface BasicInfoSectionProps {
     courseData: CourseData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
-export default function BasicInfoSection({ courseData, onChange }: BasicInfoSectionProps) {
+export default function BasicInfoSection({courseData, onChange}: BasicInfoSectionProps) {
     return (
         <div className="p-6 space-y-6">
             <div>

@@ -1,19 +1,19 @@
-import { siteConfig } from "@/config/site.config";
-import { MetadataRoute } from "next";
+import {siteConfig} from "@/config/site.config";
+import {MetadataRoute} from "next";
 
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // courses
     const courses = await fetch(`${siteConfig.apiUrl}/courses`);
     const coursesData = await courses.json();
-    
+
     const courseUrls = coursesData.map((course: any) => ({
         url: `${siteConfig.url}/courses/${course.slug}`,
         lastModified: new Date(course.updatedAt),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
     }));
-    
+
 
     // Static pages
     const staticPages = [

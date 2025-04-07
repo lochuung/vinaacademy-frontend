@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 
 interface CallToActionProps {
     title: string;
@@ -8,11 +8,11 @@ interface CallToActionProps {
 }
 
 export function CallToAction({
-    title,
-    description,
-    buttonText,
-    buttonHref
-}: CallToActionProps) {
+                                 title,
+                                 description,
+                                 buttonText,
+                                 buttonHref
+                             }: CallToActionProps) {
     return (
         <div className="bg-white text-gray-900 py-16">
             <div className="container mx-auto px-4 text-center">

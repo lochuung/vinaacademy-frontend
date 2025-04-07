@@ -1,10 +1,10 @@
 // PriceRangeFilter.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import {useState, useEffect} from "react";
+import {Button} from "@/components/ui/button";
 import FilterSection from "../ui/FilterSection";
-import { FilterUpdates } from "@/app/(public)/courses/search/page";
+import {FilterUpdates} from "@/app/(public)/courses/search/page";
 
 interface PriceRangeFilterProps {
     expanded: boolean;
@@ -15,12 +15,12 @@ interface PriceRangeFilterProps {
 }
 
 export default function PriceRangeFilter({
-    expanded,
-    toggleSection,
-    minPrice,
-    maxPrice,
-    applyFilters
-}: PriceRangeFilterProps) {
+                                             expanded,
+                                             toggleSection,
+                                             minPrice,
+                                             maxPrice,
+                                             applyFilters
+                                         }: PriceRangeFilterProps) {
     // Local state for price inputs
     const [priceInputs, setPriceInputs] = useState({
         min: "",
@@ -56,14 +56,14 @@ export default function PriceRangeFilter({
                         type="number"
                         placeholder="Từ"
                         value={priceInputs.min}
-                        onChange={(e) => setPriceInputs({ ...priceInputs, min: e.target.value })}
+                        onChange={(e) => setPriceInputs({...priceInputs, min: e.target.value})}
                         className="w-1/2 p-2 text-sm border border-gray-300 rounded bg-white text-gray-700"
                     />
                     <input
                         type="number"
                         placeholder="Đến"
                         value={priceInputs.max}
-                        onChange={(e) => setPriceInputs({ ...priceInputs, max: e.target.value })}
+                        onChange={(e) => setPriceInputs({...priceInputs, max: e.target.value})}
                         className="w-1/2 p-2 text-sm border border-gray-300 rounded bg-white text-gray-700"
                     />
                 </div>

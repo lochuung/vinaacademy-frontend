@@ -1,28 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {
-    Search,
-    Filter,
-    Download,
-    ChevronDown,
-    ArrowUpRight,
     ArrowDownLeft,
+    ArrowUpRight,
+    BarChart,
+    ChevronDown,
     CreditCard,
     DollarSign,
-    BarChart
+    Download,
+    Filter,
+    Search
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 
 export default function AdminPaymentsPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -114,12 +107,12 @@ export default function AdminPaymentsPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                     <Button variant="outline">
-                        <Download className="mr-2 h-4 w-4" />
+                        <Download className="mr-2 h-4 w-4"/>
                         Xuất báo cáo
                     </Button>
                     <Link href="/admin/payments/withdrawals">
                         <Button>
-                            <DollarSign className="mr-2 h-4 w-4" />
+                            <DollarSign className="mr-2 h-4 w-4"/>
                             Yêu cầu rút tiền
                         </Button>
                     </Link>
@@ -133,12 +126,12 @@ export default function AdminPaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Tổng doanh thu
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-green-600" />
+                        <DollarSign className="h-4 w-4 text-green-600"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">158.500.000 đ</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             12% so với tháng trước
                         </p>
                     </CardContent>
@@ -148,12 +141,12 @@ export default function AdminPaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Tổng chi
                         </CardTitle>
-                        <ArrowDownLeft className="h-4 w-4 text-red-600" />
+                        <ArrowDownLeft className="h-4 w-4 text-red-600"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">98.250.000 đ</div>
                         <p className="text-xs text-gray-500 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             8% so với tháng trước
                         </p>
                     </CardContent>
@@ -163,12 +156,12 @@ export default function AdminPaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Số giao dịch
                         </CardTitle>
-                        <BarChart className="h-4 w-4 text-blue-600" />
+                        <BarChart className="h-4 w-4 text-blue-600"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">1,245</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             15% so với tháng trước
                         </p>
                     </CardContent>
@@ -178,7 +171,7 @@ export default function AdminPaymentsPage() {
                         <CardTitle className="text-sm font-medium">
                             Chờ xử lý
                         </CardTitle>
-                        <CreditCard className="h-4 w-4 text-orange-600" />
+                        <CreditCard className="h-4 w-4 text-orange-600"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">8</div>
@@ -192,7 +185,7 @@ export default function AdminPaymentsPage() {
             {/* Bộ lọc */}
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-4">
                 <div className="relative w-full md:w-auto md:flex-1">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500"/>
                     <input
                         type="text"
                         placeholder="Tìm kiếm giao dịch..."
@@ -206,7 +199,7 @@ export default function AdminPaymentsPage() {
                     className="md:w-auto"
                     onClick={() => setShowFilters(!showFilters)}
                 >
-                    <Filter className="mr-2 h-4 w-4" />
+                    <Filter className="mr-2 h-4 w-4"/>
                     Bộ lọc
                 </Button>
                 <div className="bg-white border rounded-md overflow-hidden flex">
@@ -238,25 +231,29 @@ export default function AdminPaymentsPage() {
                             <div>
                                 <label className="text-sm font-medium">Loại giao dịch</label>
                                 <div className="relative">
-                                    <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
+                                    <select
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
                                         <option>Tất cả</option>
                                         <option>Thu</option>
                                         <option>Chi</option>
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                                    <ChevronDown
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"/>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium">Trạng thái</label>
                                 <div className="relative">
-                                    <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
+                                    <select
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
                                         <option>Tất cả</option>
                                         <option>Thành công</option>
                                         <option>Đang xử lý</option>
                                         <option>Chờ xác nhận</option>
                                         <option>Thất bại</option>
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                                    <ChevronDown
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"/>
                                 </div>
                             </div>
                             <div>
@@ -307,7 +304,8 @@ export default function AdminPaymentsPage() {
                                 <TableCell>{transaction.description}</TableCell>
                                 <TableCell>{transaction.user}</TableCell>
                                 <TableCell>
-                                    <span className={`flex items-center ${transaction.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
+                                    <span
+                                        className={`flex items-center ${transaction.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
                                         {transaction.type === 'in' ? '+' : '-'}
                                         {transaction.amount.toLocaleString()} đ
                                     </span>
@@ -315,9 +313,9 @@ export default function AdminPaymentsPage() {
                                 <TableCell>
                                     <span className={`inline-flex px-2 py-1 text-xs rounded-full font-medium
                                         ${transaction.status === 'Thành công' ? 'bg-green-100 text-green-800' :
-                                            transaction.status === 'Đang xử lý' ? 'bg-blue-100 text-blue-800' :
-                                                transaction.status === 'Chờ xác nhận' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-red-100 text-red-800'}`}>
+                                        transaction.status === 'Đang xử lý' ? 'bg-blue-100 text-blue-800' :
+                                            transaction.status === 'Chờ xác nhận' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-red-100 text-red-800'}`}>
                                         {transaction.status}
                                     </span>
                                 </TableCell>

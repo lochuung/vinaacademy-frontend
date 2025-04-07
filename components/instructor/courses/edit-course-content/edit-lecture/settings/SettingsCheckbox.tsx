@@ -7,12 +7,12 @@ interface SettingsCheckboxProps {
 }
 
 export default function SettingsCheckbox({
-    checked,
-    onChange,
-    label,
-    description,
-    icon
-}: SettingsCheckboxProps) {
+                                             checked,
+                                             onChange,
+                                             label,
+                                             description,
+                                             icon
+                                         }: SettingsCheckboxProps) {
     return (
         <div>
             <label className="flex items-center">

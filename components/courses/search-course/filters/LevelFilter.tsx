@@ -1,8 +1,8 @@
 // LevelFilter.tsx
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Label} from "@/components/ui/label";
 import FilterSection from "../ui/FilterSection";
 
 interface LevelFilterProps {
@@ -13,11 +13,11 @@ interface LevelFilterProps {
 }
 
 export default function LevelFilter({
-    expanded,
-    toggleSection,
-    levels,
-    handleLevelToggle
-}: LevelFilterProps) {
+                                        expanded,
+                                        toggleSection,
+                                        levels,
+                                        handleLevelToggle
+                                    }: LevelFilterProps) {
     // Level options
     const levelOptions = ["Cơ bản", "Trung cấp", "Nâng cao"];
 

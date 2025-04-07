@@ -1,6 +1,6 @@
 'use client';
 
-import LoginForm, { LoginFormValues } from '@/components/ui/loginform';
+import LoginForm, {LoginFormValues} from '@/components/ui/loginform';
 import React, {useState} from "react";
 import {LoginCredentials} from "@/types/auth";
 import {useAuth} from "@/context/AuthContext";
@@ -26,7 +26,7 @@ export default function LoginPage() {
                 email: data.email,
                 password: data.password
             };
-            
+
             const success = await login(credentials);
 
             if (success) {
@@ -43,10 +43,11 @@ export default function LoginPage() {
     };
 
     return (
-        <main className='flex items-center justify-center max-h-full bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
+        <main
+            className='flex items-center justify-center max-h-full bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
 
             <div className='w-full max-w-[28%]'>
-                <LoginForm 
+                <LoginForm
                     onSubmit={handleSubmit}
                     isSubmitting={isLoading}
                     error={error}

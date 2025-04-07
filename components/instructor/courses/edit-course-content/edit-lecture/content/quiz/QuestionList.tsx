@@ -1,5 +1,5 @@
-import { Plus } from 'lucide-react';
-import { QuizQuestion } from '@/types/lecture';
+import {Plus} from 'lucide-react';
+import {QuizQuestion} from '@/types/lecture';
 import QuestionItem from './QuestionItem';
 
 interface QuestionListProps {
@@ -22,23 +22,23 @@ interface QuestionListProps {
 }
 
 export default function QuestionList({
-    questions,
-    expandedQuestion,
-    setExpandedQuestion,
-    onAddQuestion,
-    onRemoveQuestion,
-    onDuplicateQuestion,
-    onUpdateQuestionText,
-    onUpdateQuestionType,
-    onAddOption,
-    onRemoveOption,
-    onUpdateOptionText,
-    onToggleOptionCorrect,
-    onUpdateExplanation,
-    onUpdatePoints,
-    onToggleRequired,
-    onMoveQuestion
-}: QuestionListProps) {
+                                         questions,
+                                         expandedQuestion,
+                                         setExpandedQuestion,
+                                         onAddQuestion,
+                                         onRemoveQuestion,
+                                         onDuplicateQuestion,
+                                         onUpdateQuestionText,
+                                         onUpdateQuestionType,
+                                         onAddOption,
+                                         onRemoveOption,
+                                         onUpdateOptionText,
+                                         onToggleOptionCorrect,
+                                         onUpdateExplanation,
+                                         onUpdatePoints,
+                                         onToggleRequired,
+                                         onMoveQuestion
+                                     }: QuestionListProps) {
     return (
         <div>
             <div className="space-y-4">
@@ -73,7 +73,7 @@ export default function QuestionList({
                     onClick={onAddQuestion}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                 >
-                    <Plus size={16} className="mr-2" /> Thêm câu hỏi
+                    <Plus size={16} className="mr-2"/> Thêm câu hỏi
                 </button>
             </div>
         </div>

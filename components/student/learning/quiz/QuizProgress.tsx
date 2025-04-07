@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { QuizQuestion } from '@/types/lecture';
+import {FC} from 'react';
+import {QuizQuestion} from '@/types/lecture';
 
 interface QuizProgressProps {
     currentQuestion: number;
@@ -11,13 +11,13 @@ interface QuizProgressProps {
 }
 
 const QuizProgress: FC<QuizProgressProps> = ({
-    currentQuestion,
-    totalQuestions,
-    questions,
-    selectedAnswers,
-    textAnswers,
-    onSelectQuestion
-}) => {
+                                                 currentQuestion,
+                                                 totalQuestions,
+                                                 questions,
+                                                 selectedAnswers,
+                                                 textAnswers,
+                                                 onSelectQuestion
+                                             }) => {
     // Kiểm tra xem câu hỏi đã được trả lời chưa
     const isQuestionAnswered = (questionId: string, type: QuizQuestion['type']) => {
         if (type === 'text') {
@@ -46,7 +46,7 @@ const QuizProgress: FC<QuizProgressProps> = ({
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                     className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                    style={{ width: `${completionPercentage}%` }}
+                    style={{width: `${completionPercentage}%`}}
                 ></div>
             </div>
 
@@ -63,11 +63,11 @@ const QuizProgress: FC<QuizProgressProps> = ({
                             onClick={() => onSelectQuestion(index)}
                             className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors
                                 ${isActive
-                                    ? 'bg-blue-600 text-white ring-2 ring-blue-300'
-                                    : isAnswered
-                                        ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }
+                                ? 'bg-blue-600 text-white ring-2 ring-blue-300'
+                                : isAnswered
+                                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }
                                 ${isRequired && !isAnswered ? 'outline outline-offset-1 outline-red-300' : ''}
                             `}
                             title={`Câu hỏi ${index + 1}${isRequired ? ' (Bắt buộc)' : ''}`}

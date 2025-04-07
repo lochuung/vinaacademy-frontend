@@ -1,5 +1,5 @@
 // components/CourseFilterTags.tsx
-import { X } from "lucide-react";
+import {X} from "lucide-react";
 
 interface CourseFilterTagsProps {
     selectedCategory: string;
@@ -12,14 +12,14 @@ interface CourseFilterTagsProps {
 }
 
 export function CourseFilterTags({
-    selectedCategory,
-    setSelectedCategory,
-    selectedLevel,
-    setSelectedLevel,
-    priceRange,
-    setPriceRange,
-    clearAllFilters
-}: CourseFilterTagsProps) {
+                                     selectedCategory,
+                                     setSelectedCategory,
+                                     selectedLevel,
+                                     setSelectedLevel,
+                                     priceRange,
+                                     setPriceRange,
+                                     clearAllFilters
+                                 }: CourseFilterTagsProps) {
     // Nếu không có bộ lọc nào được chọn, không hiển thị gì
     if (!selectedCategory && !selectedLevel && !priceRange) {
         return null;
@@ -47,7 +47,7 @@ export function CourseFilterTags({
                 <div className="bg-gray-100 rounded-full px-3 py-1 text-sm flex items-center">
                     <span>Danh mục: {selectedCategory}</span>
                     <button onClick={() => setSelectedCategory("")} className="ml-2">
-                        <X size={14} />
+                        <X size={14}/>
                     </button>
                 </div>
             )}
@@ -56,7 +56,7 @@ export function CourseFilterTags({
                 <div className="bg-gray-100 rounded-full px-3 py-1 text-sm flex items-center">
                     <span>Cấp độ: {selectedLevel}</span>
                     <button onClick={() => setSelectedLevel("")} className="ml-2">
-                        <X size={14} />
+                        <X size={14}/>
                     </button>
                 </div>
             )}
@@ -65,7 +65,7 @@ export function CourseFilterTags({
                 <div className="bg-gray-100 rounded-full px-3 py-1 text-sm flex items-center">
                     <span>Giá: {getPriceRangeText(priceRange)}</span>
                     <button onClick={() => setPriceRange("")} className="ml-2">
-                        <X size={14} />
+                        <X size={14}/>
                     </button>
                 </div>
             )}

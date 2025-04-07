@@ -1,5 +1,5 @@
-import { Video, Play } from 'lucide-react';
-import { Lecture } from '@/types/lecture';
+import {Video, Play} from 'lucide-react';
+import {Lecture} from '@/types/lecture';
 
 interface VideoUploaderProps {
     lecture: Lecture;
@@ -10,12 +10,12 @@ interface VideoUploaderProps {
 }
 
 export default function VideoUploader({
-    lecture,
-    setLecture,
-    isUploading,
-    uploadProgress,
-    handleFileUpload
-}: VideoUploaderProps) {
+                                          lecture,
+                                          setLecture,
+                                          isUploading,
+                                          uploadProgress,
+                                          handleFileUpload
+                                      }: VideoUploaderProps) {
     // Format seconds to MM:SS
     const formatDuration = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
@@ -34,11 +34,12 @@ export default function VideoUploader({
                     <div className="bg-gray-100 p-4 rounded-md">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                                <Video className="h-5 w-5 text-gray-400 mr-3" />
+                                <Video className="h-5 w-5 text-gray-400 mr-3"/>
                                 <div>
                                     <span className="text-sm font-medium text-gray-900 block">Video đã tải lên</span>
                                     {lecture.duration && (
-                                        <span className="text-xs text-gray-500">{formatDuration(lecture.duration)}</span>
+                                        <span
+                                            className="text-xs text-gray-500">{formatDuration(lecture.duration)}</span>
                                     )}
                                 </div>
                             </div>
@@ -51,7 +52,7 @@ export default function VideoUploader({
                                         window.alert("Xem trước video");
                                     }}
                                 >
-                                    <Play className="h-4 w-4 inline mr-1" />
+                                    <Play className="h-4 w-4 inline mr-1"/>
                                     Xem
                                 </button>
                                 <button
@@ -65,7 +66,8 @@ export default function VideoUploader({
                     </div>
                 </div>
             ) : (
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div
+                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                     <div className="space-y-1 text-center">
                         <svg
                             className="mx-auto h-12 w-12 text-gray-400"
@@ -108,7 +110,7 @@ export default function VideoUploader({
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                                     <div
                                         className="bg-black h-2.5 rounded-full transition-all"
-                                        style={{ width: `${uploadProgress}%` }}
+                                        style={{width: `${uploadProgress}%`}}
                                     ></div>
                                 </div>
                             </div>

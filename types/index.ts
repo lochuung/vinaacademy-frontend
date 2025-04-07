@@ -1,4 +1,4 @@
-import { Icons } from '@/components/icons';
+import {Icons} from '@/components/icons';
 
 // Định nghĩa interface NavItem cho một mục navigation (menu)
 // Bao gồm tiêu đề, URL, một số thuộc tính tùy chọn như disabled, external, shortcut, icon, label, description, isActive và danh sách con items (nếu có)

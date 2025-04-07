@@ -1,6 +1,6 @@
 // components/SortingControl.tsx
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Filter} from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -17,11 +17,11 @@ interface SortingControlProps {
 }
 
 export function SortingControl({
-    sortBy,
-    setSortBy,
-    totalCourses,
-    onOpenMobileFilter
-}: SortingControlProps) {
+                                   sortBy,
+                                   setSortBy,
+                                   totalCourses,
+                                   onOpenMobileFilter
+                               }: SortingControlProps) {
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export function SortingControl({
                     className="md:hidden flex items-center gap-2"
                     onClick={onOpenMobileFilter}
                 >
-                    <Filter size={16} />
+                    <Filter size={16}/>
                     Bộ lọc
                 </Button>
 
@@ -44,7 +44,7 @@ export function SortingControl({
                     <span className="text-gray-600 text-sm hidden md:inline">Sắp xếp theo:</span>
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="min-w-[180px]">
-                            <SelectValue placeholder="Phổ biến nhất" />
+                            <SelectValue placeholder="Phổ biến nhất"/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="popular">Phổ biến nhất</SelectItem>

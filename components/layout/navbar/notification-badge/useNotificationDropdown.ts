@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import {useRef, useState, useEffect} from "react";
 
 export function useNotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);

@@ -1,8 +1,8 @@
 // components/LectureItem.tsx
 import Link from 'next/link';
-import { Grip, Edit, Trash2 } from 'lucide-react';
-import { Lecture } from '@/types/instructor-course-edit';
-import { formatDuration, getLectureTypeIcon } from './formatters';
+import {Grip, Edit, Trash2} from 'lucide-react';
+import {Lecture} from '@/types/instructor-course-edit';
+import {formatDuration, getLectureTypeIcon} from './formatters';
 
 interface LectureItemProps {
     lecture: Lecture;
@@ -14,13 +14,13 @@ interface LectureItemProps {
 }
 
 export const LectureItem = ({
-    lecture,
-    courseId,
-    sectionId,
-    onDragStart,
-    onDragEnd,
-    onDelete
-}: LectureItemProps) => {
+                                lecture,
+                                courseId,
+                                sectionId,
+                                onDragStart,
+                                onDragEnd,
+                                onDelete
+                            }: LectureItemProps) => {
     return (
         <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md">
             <div className="flex items-center">
@@ -30,7 +30,7 @@ export const LectureItem = ({
                     onMouseDown={onDragStart}
                     onMouseUp={onDragEnd}
                 >
-                    <Grip className="h-4 w-4" />
+                    <Grip className="h-4 w-4"/>
                 </button>
                 <div className="flex items-center mr-2">
                     {getLectureTypeIcon(lecture.type)}
@@ -57,7 +57,7 @@ export const LectureItem = ({
                         type="button"
                         className="text-gray-400 hover:text-blue-500 p-1"
                     >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4"/>
                     </button>
                 </Link>
                 <button
@@ -65,7 +65,7 @@ export const LectureItem = ({
                     className="text-gray-400 hover:text-red-500 p-1"
                     onClick={() => onDelete(sectionId, lecture.id)}
                 >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4"/>
                 </button>
             </div>
         </div>

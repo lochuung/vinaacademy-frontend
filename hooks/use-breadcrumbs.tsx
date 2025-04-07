@@ -1,7 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import {usePathname} from 'next/navigation';
+import {useMemo} from 'react';
 
 // Định nghĩa kiểu dữ liệu cho một mục breadcrumb với tiêu đề và liên kết
 type BreadcrumbItem = {
@@ -12,14 +12,14 @@ type BreadcrumbItem = {
 // Định nghĩa bản đồ route custom: mỗi đường dẫn sẽ tương ứng với một mảng các BreadcrumbItem
 // Điều này cho phép đặt tiêu đề tùy chỉnh cho các đường dẫn cụ thể
 const routeMapping: Record<string, BreadcrumbItem[]> = {
-    '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }],
+    '/dashboard': [{title: 'Dashboard', link: '/dashboard'}],
     '/dashboard/employee': [
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Employee', link: '/dashboard/employee' }
+        {title: 'Dashboard', link: '/dashboard'},
+        {title: 'Employee', link: '/dashboard/employee'}
     ],
     '/dashboard/product': [
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Product', link: '/dashboard/product' }
+        {title: 'Dashboard', link: '/dashboard'},
+        {title: 'Product', link: '/dashboard/product'}
     ]
     // Có thể thêm nhiều mapping tùy chỉnh khác nếu cần
 };

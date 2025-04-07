@@ -1,20 +1,20 @@
 "use client";
 
-import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { categoriesData } from "@/data/categories";
-import { mockCourses } from "@/data/mockCourses";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
+import {useEffect, useState} from "react";
+import {categoriesData} from "@/data/categories";
+import {mockCourses} from "@/data/mockCourses";
 
 // Import components
-import { LoadingState } from "@/components/categories/ui/LoadingState";
-import { NotFoundState } from "@/components/categories/ui/NotFoundState";
-import { SubCategoryNavigation } from "@/components/categories/sub-category/SubCategoryNavigation";
-import { SubCategoryHeader } from "@/components/categories/sub-category/SubCategoryHeader";
-import { SubCategoryFilterSidebar } from "@/components/categories/sub-category/SubCategoryFilterSidebar";
-import { SubCategorySortingControls } from "@/components/categories/sub-category/SubCategorySortingControls";
-import { CourseTabs } from "@/components/categories/ui/CourseTabs";
-import { CourseGrid } from "@/components/categories/ui/CourseGrid";
-import { SubCategoryEmptyState } from "@/components/categories/sub-category/SubCategoryEmptyState";
+import {LoadingState} from "@/components/categories/ui/LoadingState";
+import {NotFoundState} from "@/components/categories/ui/NotFoundState";
+import {SubCategoryNavigation} from "@/components/categories/sub-category/SubCategoryNavigation";
+import {SubCategoryHeader} from "@/components/categories/sub-category/SubCategoryHeader";
+import {SubCategoryFilterSidebar} from "@/components/categories/sub-category/SubCategoryFilterSidebar";
+import {SubCategorySortingControls} from "@/components/categories/sub-category/SubCategorySortingControls";
+import {CourseTabs} from "@/components/categories/ui/CourseTabs";
+import {CourseGrid} from "@/components/categories/ui/CourseGrid";
+import {SubCategoryEmptyState} from "@/components/categories/sub-category/SubCategoryEmptyState";
 
 export default function SubCategoryPage() {
     const router = useRouter();
@@ -116,10 +116,10 @@ export default function SubCategoryPage() {
         if (selectedTopic) {
             const topicSlug = selectedTopic.toLowerCase().replace(/ /g, '-');
             const newUrl = `/categories/${category}/${subcategory}?topic=${topicSlug}`;
-            router.replace(newUrl, { scroll: false });
+            router.replace(newUrl, {scroll: false});
         } else if (topicParam && selectedTopic === null) {
             // If there was a topic in the URL but user selected "All"
-            router.replace(`/categories/${category}/${subcategory}`, { scroll: false });
+            router.replace(`/categories/${category}/${subcategory}`, {scroll: false});
         }
     }, [selectedTopic, category, subcategory, router, topicParam]);
 
@@ -193,18 +193,18 @@ export default function SubCategoryPage() {
         setPriceRange(undefined);
         setSelectedTopic(null);
         if (topicParam) {
-            router.replace(`/categories/${category}/${subcategory}`, { scroll: false });
+            router.replace(`/categories/${category}/${subcategory}`, {scroll: false});
         }
     };
 
     // Handle error when category not found
     if (matchingCount === 0) {
-        return <NotFoundState />;
+        return <NotFoundState/>;
     }
 
     // Loading state
     if (!categoryInfo.category || !categoryInfo.subCategory) {
-        return <LoadingState />;
+        return <LoadingState/>;
     }
 
     return (
@@ -272,7 +272,7 @@ export default function SubCategoryPage() {
                                 />
                             </div>
                         ) : (
-                            <SubCategoryEmptyState resetFilters={resetFilters} />
+                            <SubCategoryEmptyState resetFilters={resetFilters}/>
                         )}
                     </div>
                 </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { FC, useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Check, Clock, AlertCircle } from 'lucide-react';
-import { Quiz, QuizQuestion as QuizQuestionType } from '@/types/lecture';
+import {FC, useState, useEffect} from 'react';
+import {ChevronLeft, ChevronRight, Check, Clock, AlertCircle} from 'lucide-react';
+import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
 import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
@@ -13,7 +13,7 @@ interface QuizContentProps {
     lectureId: string;
 }
 
-const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) => {
+const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => {
     // Trong ứng dụng thực, bạn sẽ lấy dữ liệu quiz từ API
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -38,10 +38,10 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                         text: 'Toán tử nào được sử dụng để kiểm tra xem hai đối tượng có cùng giá trị không?',
                         type: 'single_choice',
                         options: [
-                            { id: 'q1_a', text: '==', isCorrect: true },
-                            { id: 'q1_b', text: 'is', isCorrect: false },
-                            { id: 'q1_c', text: '===', isCorrect: false },
-                            { id: 'q1_d', text: 'equals()', isCorrect: false }
+                            {id: 'q1_a', text: '==', isCorrect: true},
+                            {id: 'q1_b', text: 'is', isCorrect: false},
+                            {id: 'q1_c', text: '===', isCorrect: false},
+                            {id: 'q1_d', text: 'equals()', isCorrect: false}
                         ],
                         explanation: 'Toán tử == kiểm tra giá trị bằng nhau, trong khi "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không.',
                         points: 1,
@@ -52,11 +52,11 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                         text: 'Trong Python, các toán tử nào thực hiện phép tính số học?',
                         type: 'multiple_choice',
                         options: [
-                            { id: 'q2_a', text: '+', isCorrect: true },
-                            { id: 'q2_b', text: '**', isCorrect: true },
-                            { id: 'q2_c', text: 'and', isCorrect: false },
-                            { id: 'q2_d', text: '%', isCorrect: true },
-                            { id: 'q2_e', text: 'in', isCorrect: false }
+                            {id: 'q2_a', text: '+', isCorrect: true},
+                            {id: 'q2_b', text: '**', isCorrect: true},
+                            {id: 'q2_c', text: 'and', isCorrect: false},
+                            {id: 'q2_d', text: '%', isCorrect: true},
+                            {id: 'q2_e', text: 'in', isCorrect: false}
                         ],
                         explanation: 'Các toán tử số học trong Python bao gồm +, -, *, /, %, // và **.',
                         points: 2,
@@ -67,8 +67,8 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                         text: 'True or False: Toán tử "is" trong Python kiểm tra xem hai biến có cùng một giá trị hay không.',
                         type: 'true_false',
                         options: [
-                            { id: 'q3_a', text: 'Đúng', isCorrect: false },
-                            { id: 'q3_b', text: 'Sai', isCorrect: true }
+                            {id: 'q3_a', text: 'Đúng', isCorrect: false},
+                            {id: 'q3_b', text: 'Sai', isCorrect: true}
                         ],
                         explanation: 'Sai. Toán tử "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không, không phải kiểm tra giá trị bằng nhau.',
                         points: 1,
@@ -88,10 +88,10 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                         text: 'Đâu là kết quả của biểu thức: 3 ** 2 % 5 trong Python?',
                         type: 'single_choice',
                         options: [
-                            { id: 'q5_a', text: '9', isCorrect: false },
-                            { id: 'q5_b', text: '4', isCorrect: true },
-                            { id: 'q5_c', text: '1', isCorrect: false },
-                            { id: 'q5_d', text: '0', isCorrect: false }
+                            {id: 'q5_a', text: '9', isCorrect: false},
+                            {id: 'q5_b', text: '4', isCorrect: true},
+                            {id: 'q5_c', text: '1', isCorrect: false},
+                            {id: 'q5_d', text: '0', isCorrect: false}
                         ],
                         explanation: '3 ** 2 = 9, sau đó 9 % 5 = 4 (phần dư khi chia 9 cho 5)',
                         points: 1,
@@ -367,7 +367,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
 
                         {/* Nếu có thời gian giới hạn, hiển thị đồng hồ đếm ngược */}
                         {remainingTime !== null && (
-                            <QuizTimer remainingTime={remainingTime} />
+                            <QuizTimer remainingTime={remainingTime}/>
                         )}
                     </div>
 
@@ -412,9 +412,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                             className={`flex items-center px-4 py-2 border rounded-md ${currentQuestionIndex === 0
                                 ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                                 : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                }`}
+                            }`}
                         >
-                            <ChevronLeft size={16} className="mr-1" /> Câu hỏi trước
+                            <ChevronLeft size={16} className="mr-1"/> Câu hỏi trước
                         </button>
 
                         {currentQuestionIndex < quiz.questions.length - 1 ? (
@@ -422,14 +422,14 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                                 onClick={goToNextQuestion}
                                 className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                             >
-                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1" />
+                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1"/>
                             </button>
                         ) : (
                             <button
                                 onClick={handleConfirmSubmit}
                                 className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                             >
-                                <Check size={16} className="mr-1" /> Nộp bài
+                                <Check size={16} className="mr-1"/> Nộp bài
                             </button>
                         )}
                     </div>
@@ -442,7 +442,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId: lectureId }) =
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
                         <div className="flex items-start mb-4">
                             <div className="flex-shrink-0">
-                                <AlertCircle className="h-6 w-6 text-yellow-500" />
+                                <AlertCircle className="h-6 w-6 text-yellow-500"/>
                             </div>
                             <div className="ml-3">
                                 <h3 className="text-lg font-medium text-gray-900">Có câu hỏi bắt buộc chưa trả lời</h3>

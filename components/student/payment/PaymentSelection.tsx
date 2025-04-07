@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Image from 'next/image';
 import {
     Tabs,
@@ -8,9 +8,9 @@ import {
     TabsList,
     TabsTrigger
 } from "@/components/ui/tabs";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
@@ -18,7 +18,7 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 type PaymentMethod = 'vnpay' | 'credit-card';
 type SavedCard = {
@@ -35,11 +35,11 @@ type PaymentSelectionProps = {
     onPaymentInitiate: (method: PaymentMethod, cardId?: string) => void;
 };
 
-const PaymentSelection = ({ 
-    savedCards, 
-    onPaymentMethodChange, 
-    onPaymentInitiate 
-}: PaymentSelectionProps) => {
+const PaymentSelection = ({
+                              savedCards,
+                              onPaymentMethodChange,
+                              onPaymentInitiate
+                          }: PaymentSelectionProps) => {
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('vnpay');
     const [selectedCard, setSelectedCard] = useState<string | null>(null);
     const [isAddingNewCard, setIsAddingNewCard] = useState(false);
@@ -110,7 +110,8 @@ const PaymentSelection = ({
                                     <li>Nhấn nút "Tiến hành thanh toán" bên dưới</li>
                                     <li>Bạn sẽ được chuyển đến trang thanh toán của VN PAY</li>
                                     <li>Hoàn tất thanh toán bằng ngân hàng hoặc phương thức thanh toán bạn chọn</li>
-                                    <li>Sau khi thanh toán thành công, bạn sẽ được chuyển về trang web của chúng tôi</li>
+                                    <li>Sau khi thanh toán thành công, bạn sẽ được chuyển về trang web của chúng tôi
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -128,7 +129,7 @@ const PaymentSelection = ({
                                 >
                                     {savedCards.map((card) => (
                                         <div key={card.id} className="flex items-center space-x-2">
-                                            <RadioGroupItem value={card.id} id={`card-${card.id}`} />
+                                            <RadioGroupItem value={card.id} id={`card-${card.id}`}/>
                                             <Label htmlFor={`card-${card.id}`} className="flex-1">
                                                 {maskCardNumber(card)}
                                             </Label>
@@ -151,20 +152,20 @@ const PaymentSelection = ({
                                     <div className="space-y-4">
                                         <div>
                                             <Label>Tên chủ thẻ</Label>
-                                            <Input placeholder="Nhập tên chủ thẻ" />
+                                            <Input placeholder="Nhập tên chủ thẻ"/>
                                         </div>
                                         <div>
                                             <Label>Số thẻ</Label>
-                                            <Input placeholder="Nhập số thẻ" />
+                                            <Input placeholder="Nhập số thẻ"/>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <Label>Ngày hết hạn</Label>
-                                                <Input placeholder="MM/YY" />
+                                                <Input placeholder="MM/YY"/>
                                             </div>
                                             <div>
                                                 <Label>CVV</Label>
-                                                <Input placeholder="CVV" />
+                                                <Input placeholder="CVV"/>
                                             </div>
                                         </div>
                                         <Button className="w-full">Lưu thẻ</Button>
@@ -179,7 +180,8 @@ const PaymentSelection = ({
                                     <li>Chọn thẻ credit bạn muốn thanh toán</li>
                                     <li>Nếu chưa có hãy bấm "Thêm thẻ mới" để thêm vào</li>
                                     <li>Nhấn nút "Tiến hành thanh toán" bên dưới đơn hàng</li>
-                                    <li>Sau khi thanh toán thành công, bạn sẽ được chuyển về trang web của chúng tôi</li>
+                                    <li>Sau khi thanh toán thành công, bạn sẽ được chuyển về trang web của chúng tôi
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -213,4 +215,4 @@ const PaymentSelection = ({
 };
 
 export default PaymentSelection;
-export type { PaymentMethod, SavedCard };
+export type {PaymentMethod, SavedCard};

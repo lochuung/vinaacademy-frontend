@@ -1,8 +1,8 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import { CategoryDto, CategoryRequest } from "@/types/category";
-import { AxiosResponse } from "axios";
+import {CategoryDto, CategoryRequest} from "@/types/category";
+import {AxiosResponse} from "axios";
 
 // 🔍 GET /categories
 export async function getCategories(): Promise<CategoryDto[]> {

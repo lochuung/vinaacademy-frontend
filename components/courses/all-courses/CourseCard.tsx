@@ -1,8 +1,8 @@
 // components/CourseCard.tsx
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
-import { useState, useEffect } from "react";
+import {Star} from "lucide-react";
+import {useState, useEffect} from "react";
 
 interface CourseCardProps {
     course: {
@@ -21,7 +21,7 @@ interface CourseCardProps {
     };
 }
 
-export function CourseCard({ course }: CourseCardProps) {
+export function CourseCard({course}: CourseCardProps) {
     const [duration, setDuration] = useState(course.duration || "—");
     const [isMounted, setIsMounted] = useState(false);
 
@@ -35,7 +35,8 @@ export function CourseCard({ course }: CourseCardProps) {
 
     return (
         <Link href={`/courses/${course.id}`}>
-            <div className="bg-white border border-gray-200 rounded-md overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
+            <div
+                className="bg-white border border-gray-200 rounded-md overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
                 <div className="relative aspect-video">
                     <Image
                         src={course.image}
@@ -44,7 +45,8 @@ export function CourseCard({ course }: CourseCardProps) {
                         className="object-cover"
                     />
                     {course.bestSeller && (
-                        <div className="absolute top-2 left-2 bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded">
+                        <div
+                            className="absolute top-2 left-2 bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded">
                             Bán chạy nhất
                         </div>
                     )}
