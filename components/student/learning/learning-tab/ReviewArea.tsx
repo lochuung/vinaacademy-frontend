@@ -8,116 +8,52 @@ import {Textarea} from "@/components/ui/textarea";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from "@/components/ui/dialog";
 import BeautifulSpinner from '@/components/ui/spinner';
 
-interface Review {
-    id: number;
-    userId: number;
-    rating: number;
-    comment: string;
-    avatarUrl?: string;
-    user?: {
-        name: string;
-        avatar?: string;
-    };
-    createdAt?: string;
-}
+
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { Star, Edit2, Trash2, Plus } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import Image from 'next/image';
+import { CourseReviewDto } from '@/types/course';
+
+// Lazy load components that aren't needed on initial render
+const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
+const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
+const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
+const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
+const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
+
+// Lazy load spinner with a simple fallback
+const BeautifulSpinner = dynamic(
+  () => import('@/components/ui/spinner'),
+  { ssr: false, loading: () => <div className="flex justify-center p-8">Loading...</div> }
+);
 
 interface ReviewsAreaProps {
     courseId: string;
-    currentUserId?: number;
+    reviews?: CourseReviewDto[];
+    currentUserId?: string;
     mainPage?: boolean;
 }
 
-// Mock data - in a real app, this would be fetched from an API
-const mockReviews: Review[] = [
-    {
-        id: 1,
-        userId: 1,
-        rating: 5,
-        comment: 'Bài học rất hay và dễ hiểu. Tôi đã học được rất nhiều từ khóa học này.',
-        user: {
-            name: 'Nguyễn Văn A',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '12/03/2024'
-    },
-    {
-        id: 2,
-        userId: 2,
-        rating: 4,
-        comment: 'Giảng viên giải thích rất rõ ràng. Tuy nhiên, một số ví dụ còn hơi khó hiểu.',
-        user: {
-            name: 'Trần Thị B',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '05/03/2024'
-    },
-    {
-        id: 3,
-        userId: 3,
-        rating: 5,
-        comment: 'Nội dung bài học rất phong phú và đầy đủ. Tôi rất hài lòng với khóa học này.',
-        user: {
-            name: 'Lê Văn C',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '28/02/2024'
-    },
-    {
-        id: 4,
-        userId: 4,
-        rating: 4,
-        comment: 'Khóa học cung cấp nhiều kiến thức bổ ích. Tôi đã học được nhiều kỹ năng mới.',
-        user: {
-            name: 'Phạm Thị D',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '20/02/2024'
-    },
-    {
-        id: 5,
-        userId: 5,
-        rating: 3,
-        comment: 'Nội dung khá tốt nhưng tôi nghĩ cần thêm nhiều bài tập thực hành hơn.',
-        user: {
-            name: 'Hoàng Văn E',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '15/02/2024'
-    },
-    {
-        id: 6,
-        userId: 6,
-        rating: 5,
-        comment: 'Tôi rất thích cách giảng viên trình bày bài học. Dễ hiểu và thu hút.',
-        user: {
-            name: 'Vũ Thị F',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '10/02/2024'
-    },
-    {
-        id: 7,
-        userId: 7,
-        rating: 4,
-        comment: 'Khóa học đáng giá với số tiền bỏ ra. Tôi đã học được nhiều điều mới.',
-        user: {
-            name: 'Mai Văn G',
-            avatar: '/images/default-avatar.png'
-        },
-        createdAt: '05/02/2024'
-    }
-];
-
-const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentUserId = 1}) => {
+const ReviewsArea: React.FC<ReviewsAreaProps> = ({
+    courseId,
+    reviews: initialReviews = [],
+    mainPage = false,
+    currentUserId = '1'
+}) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [allReviews, setAllReviews] = useState<Review[]>([]);
-    const [displayedReviews, setDisplayedReviews] = useState<Review[]>([]);
+    const [allReviews, setAllReviews] = useState<CourseReviewDto[]>([]);
+    const [displayedReviews, setDisplayedReviews] = useState<CourseReviewDto[]>([]);
     const [averageRating, setAverageRating] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [editingReview, setEditingReview] = useState<Review | null>(null);
+    const [editingReview, setEditingReview] = useState<CourseReviewDto | null>(null);
     const [newReview, setNewReview] = useState({
         rating: 5,
-        comment: '',
+        review: '',
+
     });
 
     // Pagination settings
@@ -125,24 +61,58 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreReviews, setHasMoreReviews] = useState(false);
 
-    // Simulated loading of reviews data
+
+    // Load reviews data
     useEffect(() => {
-        const loadReviews = async () => {
-            setIsLoading(true);
+        // Use an immediately-invoked async function to avoid "top-level await"
+        (async () => {
+            if (!isLoading) return; // Prevent duplicate loading
+            
+            try {
+                // Use initialReviews if available or prepare for mock data
+                let reviewsData = initialReviews.length > 0 ? [...initialReviews] : [];
 
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+                // If no reviews provided as props, use mock data in development
+                if (reviewsData.length === 0 && process.env.NODE_ENV === 'development') {
+                    // Simulate network delay only in development
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Create mock data using Array.from for better performance
+                    reviewsData = Array.from({ length: 10 }, (_, index) => ({
+                        id: index + 1,
+                        courseId: courseId,
+                        courseName: 'Khóa học mẫu',
+                        userId: index === 0 ? currentUserId : `${index + 100}`,
+                        rating: Math.floor(Math.random() * 3) + 3, // Random rating 3-5
+                        review: `Đây là đánh giá mẫu ${index + 1} cho khóa học. Nội dung này chỉ hiển thị trong môi trường phát triển.`,
+                        userFullName: index === 0 ? 'Bạn' : `Học viên ${index + 1}`,
+                        createdDate: new Date(Date.now() - index * 86400000).toISOString(),
+                        updatedDate: new Date(Date.now() - index * 86400000).toISOString(),
+                    }));
+                }
 
-            const totalRating = mockReviews.reduce((sum, review) => sum + review.rating, 0);
-            const avgRating = mockReviews.length > 0 ? totalRating / mockReviews.length : 0;
+                // Process reviews data only if we have data to process
+                if (reviewsData.length > 0) {
+                    // Sort reviews by date (newest first)
+                    const sortedReviews = [...reviewsData].sort((a, b) =>
+                        new Date(b.updatedDate || b.createdDate).getTime() -
+                        new Date(a.updatedDate || a.createdDate).getTime()
+                    );
 
-            setAllReviews(mockReviews);
-            setAverageRating(avgRating);
-            setIsLoading(false);
-        };
+                    // Calculate average rating
+                    const totalRating = sortedReviews.reduce((sum, review) => sum + review.rating, 0);
+                    const avgRating = sortedReviews.length > 0 ? totalRating / sortedReviews.length : 0;
 
-        loadReviews();
-    }, [courseId]);
+                    setAllReviews(sortedReviews);
+                    setAverageRating(avgRating);
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        })();
+    }, [courseId, initialReviews, currentUserId, isLoading]);
 
     // Update displayed reviews when allReviews or currentPage changes
     useEffect(() => {
@@ -151,13 +121,8 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
         setHasMoreReviews(endIndex < allReviews.length);
     }, [allReviews, currentPage]);
 
-    // Handle load more reviews
-    const handleLoadMoreReviews = () => {
-        setCurrentPage(currentPage + 1);
-    };
-
-    // Calculate rating distribution
-    const calculateRatingDistribution = () => {
+    // Memoize rating distribution calculation to avoid recalculating on every render
+    const ratingDistribution = React.useMemo(() => {
         const ratingCounts = [0, 0, 0, 0, 0]; // 5, 4, 3, 2, 1 stars
 
         allReviews.forEach(review => {
@@ -166,99 +131,117 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
             }
         });
 
-        const totalRatings = allReviews.length;
-        return ratingCounts.map(count =>
-            totalRatings > 0 ? (count / totalRatings) * 100 : 0
-        );
+        return {
+            counts: ratingCounts,
+            percentages: ratingCounts.map(count =>
+                allReviews.length > 0 ? (count / allReviews.length) * 100 : 0
+            )
+        };
+    }, [allReviews]);
+
+    // Handle load more reviews
+    const handleLoadMoreReviews = () => {
+        setCurrentPage(prev => prev + 1);
     };
 
-    const ratingPercentages = calculateRatingDistribution();
-
-    // Add or edit review
-    const handleSaveReview = () => {
-        if (editingReview) {
-            // Update existing review
-            const updatedReviews = allReviews.map(review =>
-                review.id === editingReview.id
-                    ? {
-                        ...review,
-                        rating: newReview.rating,
-                        comment: newReview.comment
-                    }
-                    : review
-            );
-            setAllReviews(updatedReviews);
-        } else {
-            // Add new review
-            const newReviewObject: Review = {
-                id: Math.max(...allReviews.map(r => r.id), 0) + 1,
-                userId: currentUserId,
-                rating: newReview.rating,
-                comment: newReview.comment,
-                user: {
-                    name: 'Bạn',
-                    avatar: '/images/default-avatar.png'
-                },
-                createdAt: new Date().toLocaleDateString('vi-VN')
-            };
-
-            setAllReviews([newReviewObject, ...allReviews]);
+    // Format date - memoize this function for better performance
+    const formatDate = React.useCallback((dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(date);
+        } catch (error) {
+            return dateString;
         }
+    }, []);
 
-        // Recalculate average rating
-        const updatedReviews = editingReview
-            ? allReviews.map(review =>
-                review.id === editingReview.id
-                    ? {...review, rating: newReview.rating, comment: newReview.comment}
-                    : review
-            )
-            : [
-                {
+    // Add or update review
+    const handleSaveReview = async () => {
+        try {
+            // In a real app, you would call an API endpoint to save the review
+            let updatedReviews: CourseReviewDto[];
+
+            if (editingReview) {
+                // Update existing review
+                updatedReviews = allReviews.map(review =>
+                    review.id === editingReview.id
+                        ? {
+                            ...review,
+                            rating: newReview.rating,
+                            review: newReview.review,
+                            updatedDate: new Date().toISOString()
+                        }
+                        : review
+                );
+            } else {
+                // Add new review
+                const newReviewObject: CourseReviewDto = {
                     id: Math.max(...allReviews.map(r => r.id), 0) + 1,
+                    courseId: courseId,
+                    courseName: allReviews.length > 0 ? allReviews[0].courseName : 'Khóa học',
                     userId: currentUserId,
                     rating: newReview.rating,
-                    comment: newReview.comment,
-                    user: {
-                        name: 'Bạn',
-                        avatar: '/images/default-avatar.png'
-                    },
-                    createdAt: new Date().toLocaleDateString('vi-VN')
-                },
-                ...allReviews
-            ];
+                    review: newReview.review,
+                    userFullName: 'Bạn',
+                    createdDate: new Date().toISOString(),
+                    updatedDate: new Date().toISOString(),
+                };
 
-        const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
-        const newAvgRating = newTotalRating / updatedReviews.length;
+                updatedReviews = [newReviewObject, ...allReviews];
+            }
 
-        setAverageRating(newAvgRating);
-        setEditingReview(null);
-        setNewReview({rating: 5, comment: ''});
-        setDialogOpen(false);
+            // Recalculate average rating
+            const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
+            const newAvgRating = updatedReviews.length > 0 ? newTotalRating / updatedReviews.length : 0;
+
+            setAllReviews(updatedReviews);
+            setAverageRating(newAvgRating);
+            setEditingReview(null);
+            setNewReview({ rating: 5, review: '' });
+            setDialogOpen(false);
+        } catch (error) {
+            console.error('Error saving review:', error);
+            // Handle error (show notification, etc.)
+        }
     };
 
     // Delete review
-    const handleDeleteReview = (id: number) => {
-        const updatedReviews = allReviews.filter(review => review.id !== id);
-        setAllReviews(updatedReviews);
+    const handleDeleteReview = async (id: number) => {
+        if (!confirm('Bạn có chắc chắn muốn xóa đánh giá này?')) {
+            return;
+        }
 
-        // Recalculate average rating
-        const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
-        const newAvgRating = updatedReviews.length > 0
-            ? newTotalRating / updatedReviews.length
-            : 0;
+        try {
+            // In a real app, you would call an API endpoint to delete the review
+            const updatedReviews = allReviews.filter(review => review.id !== id);
 
-        setAverageRating(newAvgRating);
+            // Recalculate average rating
+            const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
+            const newAvgRating = updatedReviews.length > 0
+                ? newTotalRating / updatedReviews.length
+                : 0;
+
+            setAllReviews(updatedReviews);
+            setAverageRating(newAvgRating);
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            // Handle error (show notification, etc.)
+        }
     };
 
     // Start editing a review
-    const handleEditReview = (review: Review) => {
+    const handleEditReview = (review: CourseReviewDto) => {
         setEditingReview(review);
         setNewReview({
             rating: review.rating,
-            comment: review.comment
+            review: review.review
         });
         setDialogOpen(true);
     };
+
 
     // Check if current user has already submitted a review
     const userHasReview = allReviews.some(review => review.userId === currentUserId);
@@ -267,26 +250,108 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
     if (isLoading) {
         return (
             <div className="p-6 flex justify-center items-center h-64">
-                <BeautifulSpinner name='Đang tải đánh giá...'/>
+                <BeautifulSpinner name='Đang tải đánh giá...' />
+
             </div>
         );
     }
 
+    // Pre-render star icons for reuse
+    const renderStarRating = (rating: number, size: number = 20) => (
+        <div className="flex text-[#f69c08]">
+            {[...Array(5)].map((_, i) => (
+                <Star
+                    key={i}
+                    size={size}
+                    fill={i < rating ? "#f69c08" : "none"}
+                    className={i < rating ? "" : "opacity-50"}
+                />
+            ))}
+        </div>
+    );
+
+    // Only render dialog when open to improve performance
+    const renderDialog = dialogOpen && (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>{editingReview ? 'Chỉnh sửa đánh giá' : 'Viết đánh giá'}</DialogTitle>
+                </DialogHeader>
+
+                <div className="py-4">
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-1">Đánh giá của bạn</label>
+                        <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => setNewReview({ ...newReview, rating: star })}
+                                    className="text-2xl"
+                                    aria-label={`Đánh giá ${star} sao`}
+                                >
+                                    <Star
+                                        size={24}
+                                        className="text-[#f69c08]"
+                                        fill={star <= newReview.rating ? "#f69c08" : "none"}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <label
+                            htmlFor="review-comment"
+                            className="block text-sm font-medium mb-1"
+                        >
+                            Nhận xét của bạn
+                        </label>
+                        <Textarea
+                            id="review-comment"
+                            value={newReview.review}
+                            onChange={(e) => setNewReview({ ...newReview, review: e.target.value })}
+                            placeholder="Chia sẻ trải nghiệm học tập của bạn..."
+                            rows={4}
+                            className="w-full"
+                        />
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button
+                        variant="outline"
+                        onClick={() => setDialogOpen(false)}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        onClick={handleSaveReview}
+                        disabled={newReview.review.trim() === ''}
+                    >
+                        {editingReview ? 'Cập nhật' : 'Đăng'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+
     return (
-        <div className="p-6">
+        <div className={`${mainPage ? 'p-0' : 'p-6'}`}>
+
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Đánh giá từ học viên</h2>
                 {!userHasReview && (
                     <Button
                         onClick={() => {
                             setEditingReview(null);
-                            setNewReview({rating: 5, comment: ''});
+                            setNewReview({ rating: 5, review: '' });
                             setDialogOpen(true);
                         }}
                         variant="outline"
                         className="flex items-center gap-2"
                     >
-                        <Plus size={16}/>
+                        <Plus size={16} />
                         Viết đánh giá
                     </Button>
                 )}
@@ -296,19 +361,11 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
                 {/* Rating summary */}
                 <div className="md:w-1/3">
                     <div className="flex flex-col items-center">
-                        <div className="text-5xl font-bold text-[#b4690e]"
-                             aria-label={`Đánh giá trung bình ${averageRating.toFixed(1)} trên 5 sao`}>
+                        <div className="text-5xl font-bold text-[#b4690e]" aria-label={`Đánh giá trung bình ${averageRating.toFixed(1)} trên 5 sao`}>
                             {averageRating.toFixed(1)}
                         </div>
                         <div className="flex text-[#f69c08] my-2" aria-hidden="true">
-                            {[...Array(5)].map((_, i) => (
-                                <Star
-                                    key={i}
-                                    size={20}
-                                    fill={i < Math.floor(averageRating) ? "currentColor" : "none"}
-                                    className={i < Math.floor(averageRating) ? "" : "opacity-50"}
-                                />
-                            ))}
+                            {renderStarRating(Math.floor(averageRating))}
                         </div>
                         <div className="text-sm text-gray-600">{allReviews.length} đánh giá</div>
                     </div>
@@ -318,14 +375,15 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
                         {[5, 4, 3, 2, 1].map((stars, index) => (
                             <div key={stars} className="flex items-center gap-2">
                                 <div className="w-8 text-sm text-right">{stars}</div>
-                                <Star size={14} className="text-[#f69c08]" fill="#f69c08" aria-hidden="true"/>
+                                <Star size={14} className="text-[#f69c08]" fill="#f69c08" aria-hidden="true" />
                                 <Progress
-                                    value={ratingPercentages[index]}
+                                    value={ratingDistribution.percentages[index]}
                                     className="h-2 flex-1"
-                                    aria-label={`${stars} sao: ${Math.round(ratingPercentages[index])}%`}
+                                    aria-label={`${stars} sao: ${Math.round(ratingDistribution.percentages[index])}%`}
                                 />
-                                <span
-                                    className="text-xs text-gray-600 w-10">{Math.round(ratingPercentages[index])}%</span>
+                                <span className="text-xs text-gray-600 w-10">
+                                    {ratingDistribution.counts[index]}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -339,29 +397,24 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
                             {displayedReviews.map((review) => (
                                 <article key={review.id} className="border-b pb-6 last:border-b-0">
                                     <header className="flex items-center gap-4 mb-2">
-                                        <Avatar
-                                            src={review.user?.avatar || '/images/default-avatar.png'}
-                                            alt={review.user?.name || ''}
-                                            size={48}
-                                            className="w-12 h-12"
-                                        />
+                                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                                            {/* Using first letter of name as avatar placeholder */}
+                                            <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-600 text-xl font-bold">
+                                                {review.userFullName.charAt(0)}
+                                            </div>
+                                        </div>
                                         <div className="flex-1">
-                                            <div
-                                                className="font-medium">{review.user?.name} {review.userId === currentUserId ? "(Bạn)" : ""}</div>
+                                            <div className="font-medium">
+                                                {review.userFullName} {review.userId === currentUserId ? "(Bạn)" : ""}
+                                            </div>
                                             <div className="flex items-center gap-2">
-                                                <div className="flex text-[#f69c08]"
-                                                     aria-label={`Đánh giá ${review.rating} sao`}>
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            size={14}
-                                                            fill={i < review.rating ? "#f69c08" : "none"}
-                                                            className={i < review.rating ? "" : "text-gray-300"}
-                                                        />
-                                                    ))}
+                                                <div className="flex text-[#f69c08]" aria-label={`Đánh giá ${review.rating} sao`}>
+                                                    {renderStarRating(review.rating, 14)}
                                                 </div>
-                                                <time className="text-xs text-gray-600"
-                                                      dateTime="2023-10-10">{review.createdAt}</time>
+                                                <time className="text-xs text-gray-600" dateTime={review.updatedDate || review.createdDate}>
+                                                    {formatDate(review.updatedDate || review.createdDate)}
+                                                </time>
+
                                             </div>
                                         </div>
 
@@ -373,19 +426,19 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
                                                     className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
                                                     aria-label="Chỉnh sửa đánh giá"
                                                 >
-                                                    <Edit2 size={16}/>
+                                                    <Edit2 size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteReview(review.id)}
                                                     className="p-1 text-gray-500 hover:text-red-600 transition-colors"
                                                     aria-label="Xóa đánh giá"
                                                 >
-                                                    <Trash2 size={16}/>
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         )}
                                     </header>
-                                    <p className="text-gray-700">{review.comment}</p>
+                                    <p className="text-gray-700">{review.review}</p>
                                 </article>
                             ))}
 
@@ -410,71 +463,11 @@ const ReviewsArea: FC<ReviewsAreaProps> = ({courseId, mainPage = false, currentU
                 </div>
             </div>
 
-            {/* Review Form Dialog */}
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>{editingReview ? 'Chỉnh sửa đánh giá' : 'Viết đánh giá'}</DialogTitle>
-                    </DialogHeader>
-
-                    <div className="py-4">
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Đánh giá của bạn</label>
-                            <div className="flex gap-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <button
-                                        key={star}
-                                        type="button"
-                                        onClick={() => setNewReview({...newReview, rating: star})}
-                                        className="text-2xl"
-                                        aria-label={`Đánh giá ${star} sao`}
-                                    >
-                                        <Star
-                                            size={24}
-                                            className="text-[#f69c08]"
-                                            fill={star <= newReview.rating ? "#f69c08" : "none"}
-                                        />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="mb-4">
-                            <label
-                                htmlFor="review-comment"
-                                className="block text-sm font-medium mb-1"
-                            >
-                                Nhận xét của bạn
-                            </label>
-                            <Textarea
-                                id="review-comment"
-                                value={newReview.comment}
-                                onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                                placeholder="Chia sẻ trải nghiệm học tập của bạn..."
-                                rows={4}
-                                className="w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setDialogOpen(false)}
-                        >
-                            Hủy
-                        </Button>
-                        <Button
-                            onClick={handleSaveReview}
-                            disabled={newReview.comment.trim() === ''}
-                        >
-                            {editingReview ? 'Cập nhật' : 'Đăng'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            {/* Only render dialog when open */}
+            {renderDialog}
         </div>
     );
 };
 
 export default ReviewsArea;
+
