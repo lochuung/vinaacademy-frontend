@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { categoriesData } from "@/data/categories";
+import { CategoryDto } from "@/types/category";
 
-export default function SubNavbar() {
+interface SubNavbarProps {
+    categories: CategoryDto[];
+}
+
+export default function SubNavbar({ categories }: SubNavbarProps) {
     const router = useRouter();
     const pathname = usePathname();
     const [openCategory, setOpenCategory] = useState<string | null>(null);
@@ -14,24 +18,22 @@ export default function SubNavbar() {
     if (pathname.includes("categories") || pathname.includes("search")
         || pathname.includes("my-courses") || pathname.includes("courses")
         || pathname.includes("my-profile") || pathname.includes("cart")
-
         || pathname.includes("payment") || pathname.includes("profile")
         || pathname.includes("login") || pathname.includes("register") 
-
     ) return null;
 
     // Xử lý khi nhấp vào danh mục
-    const handleCategoryClick = (e: React.MouseEvent, category: any) => {
+    const handleCategoryClick = (e: React.MouseEvent, category: CategoryDto) => {
         e.preventDefault();
-        // Chuyển hướng trực tiếp đến trang category với đường dẫn link của category
-        router.push(category.link);
+        // Chuyển hướng đến trang category với slug
+        router.push(`/categories/${category.slug}`);
     };
 
     // Xử lý khi nhấp vào danh mục con
-    const handleSubCategoryClick = (e: React.MouseEvent, subCategory: any) => {
+    const handleSubCategoryClick = (e: React.MouseEvent, parentCategory: CategoryDto, subCategory: CategoryDto) => {
         e.preventDefault();
-        // Chuyển hướng trực tiếp đến trang subcategory với đường dẫn link của subcategory
-        router.push(subCategory.link);
+        // Chuyển hướng đến trang subcategory với slugs
+        router.push(`/categories/${parentCategory.slug}/${subCategory.slug}`);
     };
 
     return (
@@ -43,14 +45,14 @@ export default function SubNavbar() {
         >
             {/* Thanh danh mục chính */}
             <div className="container mx-auto px-4 py-2 flex justify-center gap-x-8">
-                {categoriesData.map((category) => (
+                {categories.map((category) => (
                     <div
-                        key={category.name}
+                        key={category.id}
                         className="relative"
                         onMouseEnter={() => setOpenCategory(category.name)}
                     >
                         <a
-                            href={category.link}
+                            href={`/categories/${category.slug}`}
                             className="text-black hover:text-gray-500 font-medium transition duration-200"
                             onClick={(e) => handleCategoryClick(e, category)}
                         >
@@ -71,16 +73,20 @@ export default function SubNavbar() {
                     }}
                 >
                     <div className="container mx-auto flex justify-center space-x-4 py-1">
-                        {categoriesData
+                        {categories
                             .find((cat) => cat.name === openCategory)
-                            ?.subCategories.map((sub) => (
+                            ?.children.map((child) => (
                                 <a
-                                    key={sub.name}
-                                    href={sub.link}
+                                    key={child.id}
+                                    href={`/categories/${categories.find(cat => cat.name === openCategory)?.slug}/${child.slug}`}
                                     className="px-4 py-1 text-white hover:bg-gray-700 transition rounded-md"
-                                    onClick={(e) => handleSubCategoryClick(e, sub)}
+                                    onClick={(e) => handleSubCategoryClick(
+                                        e, 
+                                        categories.find(cat => cat.name === openCategory)!, 
+                                        child
+                                    )}
                                 >
-                                    {sub.name}
+                                    {child.name}
                                 </a>
                             ))}
                     </div>

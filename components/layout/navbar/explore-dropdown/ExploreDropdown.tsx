@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Category } from "@/types/navbar";
-import { categoriesData } from "@/data/categories";
+import { CategoryDto } from "@/types/category";
 import { ChevronDown } from "lucide-react";
 import CategoriesList from "./CategoriesList";
 
 interface ExploreDropdownProps {
-    categories?: Category[];
+    categories?: CategoryDto[];
 }
 
-const ExploreDropdown = ({ categories = categoriesData }: ExploreDropdownProps) => {
+const ExploreDropdown = ({ categories = [] }: ExploreDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<number | null>(null);
     const [activeSubCategory, setActiveSubCategory] = useState<number | null>(null);

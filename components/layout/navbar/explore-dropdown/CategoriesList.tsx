@@ -1,10 +1,10 @@
 import { useRouter } from "next/navigation";
-import { Category } from "@/types/navbar";
+import { CategoryDto } from "@/types/category";
 import { ChevronRight } from "lucide-react";
 import SubCategoriesList from "./SubCategoriesList";
 
 interface CategoriesListProps {
-    categories: Category[];
+    categories: CategoryDto[];
     activeCategory: number | null;
     activeSubCategory: number | null;
     onCategoryHover: (index: number) => void;
@@ -21,21 +21,21 @@ const CategoriesList = ({
     const router = useRouter();
 
     // Chuyển hướng đến trang danh mục
-    const handleCategoryClick = (category: Category, e: React.MouseEvent) => {
+    const handleCategoryClick = (category: CategoryDto, e: React.MouseEvent) => {
         e.preventDefault();
-        router.push(category.link);
+        router.push(`/categories/${category.slug}`);
     };
 
     return (
         <div className="py-2">
             {categories.map((category, index) => (
                 <div
-                    key={index}
+                    key={category.id}
                     className="relative"
                     onMouseEnter={() => onCategoryHover(index)}
                 >
                     <a
-                        href={category.link}
+                        href={`/categories/${category.slug}`}
                         className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"
                         onClick={(e) => handleCategoryClick(category, e)}
                     >
@@ -43,7 +43,7 @@ const CategoriesList = ({
                         <ChevronRight className="w-4 h-4" />
                     </a>
 
-                    {activeCategory === index && (
+                    {activeCategory === index && category.children.length > 0 && (
                         <SubCategoriesList
                             category={category}
                             activeCategory={activeCategory}
