@@ -116,7 +116,6 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                                     <section className="bg-white border rounded-lg p-6 mb-8">
                                         <ReviewsArea
                                             courseId={course.id}
-                                            reviews={course.reviews}
                                             mainPage={true}
                                         />
                                     </section>
