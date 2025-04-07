@@ -66,19 +66,6 @@ const CourseHeader = ({ course }: CourseHeaderProps) => {
                             course.level === 'INTERMEDIATE' ? 'Trung cấp' : 'Nâng cao'}</span>
                     </div>
                 </div>
-                
-                {/* Course Image - Right Side */}
-                <div className="md:w-1/3">
-                    <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                        <Image 
-                            src={course.image || '/images/course-placeholder.jpg'} 
-                            alt={course.name}
-                            fill 
-                            className="object-cover"
-                            priority
-                        />
-                    </div>
-                </div>
             </div>
         </div>
     );

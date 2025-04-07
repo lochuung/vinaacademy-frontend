@@ -1,4 +1,13 @@
 'use client';
+import {FC, useState, useEffect} from 'react';
+import {Star, Edit2, Trash2, Plus} from 'lucide-react';
+import {Progress} from "@/components/ui/progress";
+import {Avatar} from "@/components/ui/avatar";
+import {Button} from "@/components/ui/button";
+import {Textarea} from "@/components/ui/textarea";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from "@/components/ui/dialog";
+import BeautifulSpinner from '@/components/ui/spinner';
+
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
@@ -44,12 +53,14 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     const [newReview, setNewReview] = useState({
         rating: 5,
         review: '',
+
     });
 
     // Pagination settings
     const reviewsPerPage = 3;
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreReviews, setHasMoreReviews] = useState(false);
+
 
     // Load reviews data
     useEffect(() => {
@@ -231,6 +242,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
         setDialogOpen(true);
     };
 
+
     // Check if current user has already submitted a review
     const userHasReview = allReviews.some(review => review.userId === currentUserId);
 
@@ -239,6 +251,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
         return (
             <div className="p-6 flex justify-center items-center h-64">
                 <BeautifulSpinner name='Đang tải đánh giá...' />
+
             </div>
         );
     }
@@ -325,6 +338,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 
     return (
         <div className={`${mainPage ? 'p-0' : 'p-6'}`}>
+
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Đánh giá từ học viên</h2>
                 {!userHasReview && (
@@ -400,6 +414,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                                 <time className="text-xs text-gray-600" dateTime={review.updatedDate || review.createdDate}>
                                                     {formatDate(review.updatedDate || review.createdDate)}
                                                 </time>
+
                                             </div>
                                         </div>
 
@@ -455,3 +470,4 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 };
 
 export default ReviewsArea;
+
