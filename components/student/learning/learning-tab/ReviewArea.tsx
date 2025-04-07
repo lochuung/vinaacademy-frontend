@@ -1,14 +1,5 @@
 'use client';
-import {FC, useState, useEffect} from 'react';
-import {Star, Edit2, Trash2, Plus} from 'lucide-react';
-import {Progress} from "@/components/ui/progress";
 import {Avatar} from "@/components/ui/avatar";
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from "@/components/ui/dialog";
-import BeautifulSpinner from '@/components/ui/spinner';
-
-
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Star, Edit2, Trash2, Plus } from 'lucide-react';
