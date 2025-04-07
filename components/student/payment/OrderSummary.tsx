@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { Separator } from '../../ui/separator';
-import CouponSelectDialog, { Coupon } from './CouponSelection';
-import { useState } from 'react';
+import {Separator} from '../../ui/separator';
+import CouponSelectDialog, {Coupon} from './CouponSelection';
+import {useState} from 'react';
 
 type CartItem = {
     id: number;
@@ -19,9 +19,7 @@ type OrderSummaryProps = {
 };
 
 
-
-
-const OrderSummary = ( {cartItems, coupons} : OrderSummaryProps) => {
+const OrderSummary = ({cartItems, coupons}: OrderSummaryProps) => {
     const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
     // Calculate totals
@@ -80,14 +78,14 @@ const OrderSummary = ( {cartItems, coupons} : OrderSummaryProps) => {
                 ))}
             </div>
             {/* Coupon Selection */}
-            <CouponSelectDialog 
-                totalPrice={totalPrice} 
+            <CouponSelectDialog
+                totalPrice={totalPrice}
                 onCouponSelect={(coupon) => setSelectedCoupon(coupon)}
                 coupons={coupons}
             />
 
-            <Separator className="my-4 bg-slate-400" />
-            
+            <Separator className="my-4 bg-slate-400"/>
+
             <div className="space-y-3">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
                     <span>Tổng số khóa học:</span>
@@ -104,7 +102,7 @@ const OrderSummary = ( {cartItems, coupons} : OrderSummaryProps) => {
                     <span>Giá sau giảm:</span>
                     <span>{formatPrice(totalPrice)}</span>
                 </div>
-                
+
                 {/* Coupon Discount Display */}
                 {selectedCoupon && (
                     <div className="flex justify-between text-green-600">
@@ -116,11 +114,10 @@ const OrderSummary = ( {cartItems, coupons} : OrderSummaryProps) => {
                         </span>
                     </div>
                 )}
-                
-                
-                
-                <Separator className='bg-slate-400' />
-                
+
+
+                <Separator className='bg-slate-400'/>
+
                 <div className="flex justify-between text-lg font-semibold">
                     <span>Tổng cộng:</span>
                     <span>{formatPrice(finalPrice)}</span>
@@ -131,4 +128,4 @@ const OrderSummary = ( {cartItems, coupons} : OrderSummaryProps) => {
 };
 
 export default OrderSummary;
-export type { CartItem };
+export type {CartItem};

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Quiz } from '@/types/lecture';
+import {useState} from 'react';
+import {Quiz} from '@/types/lecture';
 import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
 
@@ -8,7 +8,7 @@ interface QuizPreviewProps {
     onClose: () => void;
 }
 
-export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
+export default function QuizPreview({quiz, onClose}: QuizPreviewProps) {
     const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string[]>>({});
     const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
     const [showResults, setShowResults] = useState(false);
@@ -195,7 +195,8 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
                             <div key={question.id} className="border border-gray-200 rounded-lg p-4">
                                 <div className="mb-4 text-sm text-gray-500 flex items-center justify-between">
                                     <div className="flex items-center">
-                                        <div className="flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-sm font-medium mr-2">
+                                        <div
+                                            className="flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-sm font-medium mr-2">
                                             {index + 1}
                                         </div>
                                         <div>

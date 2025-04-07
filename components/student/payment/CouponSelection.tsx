@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
-import { Button } from '../../ui/button';
-import { Badge } from '../../ui/badge';
+import React, {useState} from 'react';
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from '../../ui/dialog';
+import {Button} from '../../ui/button';
+import {Badge} from '../../ui/badge';
 
 // Define Coupon type
 type Coupon = {
@@ -17,21 +17,20 @@ type Coupon = {
 };
 
 
-
 type CouponSelectDialogProps = {
     totalPrice: number;
     onCouponSelect: (coupon: Coupon | null) => void;
     coupons: Coupon[];
 };
 
-const CouponSelectDialog: React.FC<CouponSelectDialogProps> = ({ totalPrice, onCouponSelect, coupons }) => {
+const CouponSelectDialog: React.FC<CouponSelectDialogProps> = ({totalPrice, onCouponSelect, coupons}) => {
     const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleCouponSelect = (coupon: Coupon) => {
         // Check if coupon is applicable
         const isApplicable = !coupon.minPurchaseAmount || totalPrice >= coupon.minPurchaseAmount;
-        
+
         if (isApplicable) {
             setSelectedCoupon(coupon);
             onCouponSelect(coupon);
@@ -71,8 +70,8 @@ const CouponSelectDialog: React.FC<CouponSelectDialogProps> = ({ totalPrice, onC
                         </DialogHeader>
                         <div className="space-y-4">
                             {coupons.map((coupon) => (
-                                <div 
-                                    key={coupon.id} 
+                                <div
+                                    key={coupon.id}
                                     className="border p-4 rounded-lg hover:bg-gray-100 cursor-pointer"
                                     onClick={() => handleCouponSelect(coupon)}
                                 >
@@ -96,4 +95,4 @@ const CouponSelectDialog: React.FC<CouponSelectDialogProps> = ({ totalPrice, onC
 };
 
 export default CouponSelectDialog;
-export type { Coupon };
+export type {Coupon};

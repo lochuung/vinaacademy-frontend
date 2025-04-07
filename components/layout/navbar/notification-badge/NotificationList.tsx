@@ -1,4 +1,4 @@
-import { Notification } from "@/types/navbar";
+import {Notification} from "@/types/navbar";
 
 interface NotificationListProps {
     notifications: Notification[];
@@ -7,10 +7,10 @@ interface NotificationListProps {
 }
 
 const NotificationList = ({
-    notifications,
-    onMarkAllAsRead,
-    onNotificationClick
-}: NotificationListProps) => {
+                              notifications,
+                              onMarkAllAsRead,
+                              onNotificationClick
+                          }: NotificationListProps) => {
     return (
         <div className="p-4">
             <div className="flex justify-between items-center mb-3">

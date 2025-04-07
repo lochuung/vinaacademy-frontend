@@ -4,7 +4,7 @@ import {
     Copy,
     Trash2
 } from 'lucide-react';
-import { QuizQuestion } from '@/types/lecture';
+import {QuizQuestion} from '@/types/lecture';
 import QuestionContent from './QuestionContent';
 
 interface QuestionItemProps {
@@ -28,30 +28,31 @@ interface QuestionItemProps {
 }
 
 export default function QuestionItem({
-    question,
-    index,
-    isExpanded,
-    onToggleExpand,
-    totalQuestions,
-    onRemove,
-    onDuplicate,
-    onUpdateText,
-    onUpdateType,
-    onAddOption,
-    onRemoveOption,
-    onUpdateOptionText,
-    onToggleOptionCorrect,
-    onUpdateExplanation,
-    onUpdatePoints,
-    onToggleRequired,
-    onMove
-}: QuestionItemProps) {
+                                         question,
+                                         index,
+                                         isExpanded,
+                                         onToggleExpand,
+                                         totalQuestions,
+                                         onRemove,
+                                         onDuplicate,
+                                         onUpdateText,
+                                         onUpdateType,
+                                         onAddOption,
+                                         onRemoveOption,
+                                         onUpdateOptionText,
+                                         onToggleOptionCorrect,
+                                         onUpdateExplanation,
+                                         onUpdatePoints,
+                                         onToggleRequired,
+                                         onMove
+                                     }: QuestionItemProps) {
     return (
         <div className="border border-gray-200 rounded-md overflow-hidden">
             {/* Question header */}
             <div className="bg-gray-50 p-3 flex items-center justify-between">
                 <div className="flex items-center flex-1">
-                    <div className="flex items-center justify-center w-6 h-6 bg-black text-white rounded-full text-sm font-medium mr-3">
+                    <div
+                        className="flex items-center justify-center w-6 h-6 bg-black text-white rounded-full text-sm font-medium mr-3">
                         {index + 1}
                     </div>
                     <div className="flex-1 truncate font-medium">
@@ -67,7 +68,7 @@ export default function QuestionItem({
                         onClick={onToggleExpand}
                         className="text-gray-500 hover:text-gray-700 p-1"
                     >
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {isExpanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                     </button>
                 </div>
             </div>

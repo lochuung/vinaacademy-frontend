@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { mockCourses } from "@/data/mockCourses";
-import { categoriesData } from "@/data/categories";
+import {useEffect, useState} from "react";
+import {mockCourses} from "@/data/mockCourses";
+import {categoriesData} from "@/data/categories";
 
 // Import components
-import { HeroSection } from "@/components/courses/all-courses/HeroSection";
-import { SortingControl } from "@/components/courses/all-courses/SortingControl";
-import { CourseFilterTags } from "@/components/courses/all-courses/CourseFilterTags";
-import { CourseFilterSidebar } from "@/components/courses/all-courses/CourseFilterSidebar";
-import { MobileFilterDrawer } from "@/components/courses/all-courses/MobileFilterDrawer";
-import { CoursesGrid } from "@/components/courses/all-courses/CoursesGrid";
+import {HeroSection} from "@/components/courses/all-courses/HeroSection";
+import {SortingControl} from "@/components/courses/all-courses/SortingControl";
+import {MobileFilterDrawer} from "@/components/courses/all-courses/MobileFilterDrawer";
+import {CoursesGrid} from "@/components/courses/all-courses/CoursesGrid";
 
 export default function AllCoursesPage() {
     // State cho các khóa học và bộ lọc
@@ -111,7 +109,7 @@ export default function AllCoursesPage() {
     // Xử lý chuyển trang
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
     // Xử lý xóa tất cả bộ lọc

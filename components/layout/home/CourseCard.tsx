@@ -19,7 +19,7 @@ interface CourseCardProps {
     course: CourseType;
 }
 
-const CourseCard = ({ course }: CourseCardProps) => {
+const CourseCard = ({course}: CourseCardProps) => {
     // Hàm lấy màu thanh tiến độ dựa vào phần trăm hoàn thành
     const getProgressColor = (progress: number) => {
         if (progress >= 100) return "bg-black";
@@ -66,14 +66,15 @@ const CourseCard = ({ course }: CourseCardProps) => {
 
                     <div className="mt-3">
                         <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-600">{course.completedLessons}/{course.totalLessons} bài học</span>
+                            <span
+                                className="text-gray-600">{course.completedLessons}/{course.totalLessons} bài học</span>
                             <span className="font-medium">{course.progress}%</span>
                         </div>
 
                         <div className="w-full bg-gray-100 h-2 rounded-full">
                             <div
                                 className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
-                                style={{ width: `${course.progress}%` }}
+                                style={{width: `${course.progress}%`}}
                             ></div>
                         </div>
                     </div>

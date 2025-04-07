@@ -1,6 +1,6 @@
 // components/lecture/content/quiz/preview/QuizResults.tsx
-import { CheckCircle, XCircle } from 'lucide-react';
-import { Quiz, QuizQuestion as QuestionType } from '@/types/lecture';
+import {CheckCircle, XCircle} from 'lucide-react';
+import {Quiz, QuizQuestion as QuestionType} from '@/types/lecture';
 import QuizQuestionView from './QuizQuestion';
 
 interface QuizResultsProps {
@@ -26,15 +26,15 @@ interface QuizResultsProps {
 }
 
 export default function QuizResults({
-    quiz,
-    questions,
-    quizResults,
-    selectedAnswers,
-    textAnswers,
-    onReview,
-    onRetake,
-    onClose
-}: QuizResultsProps) {
+                                        quiz,
+                                        questions,
+                                        quizResults,
+                                        selectedAnswers,
+                                        textAnswers,
+                                        onReview,
+                                        onRetake,
+                                        onClose
+                                    }: QuizResultsProps) {
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -50,7 +50,8 @@ export default function QuizResults({
 
                 <div className="mb-8 text-center">
                     <div className="text-2xl font-bold mb-2">
-                        Điểm số: {quizResults.totalScore}/{quizResults.maxScore} ({quizResults.percentageScore.toFixed(1)}%)
+                        Điểm
+                        số: {quizResults.totalScore}/{quizResults.maxScore} ({quizResults.percentageScore.toFixed(1)}%)
                     </div>
 
                     {quiz.settings.requirePassingScore && (
@@ -71,7 +72,8 @@ export default function QuizResults({
                             <div key={question.id} className="border border-gray-200 rounded-lg overflow-hidden">
                                 <div className="bg-gray-50 p-3 flex items-center justify-between">
                                     <div className="flex items-center">
-                                        <div className="flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-sm font-medium mr-3">
+                                        <div
+                                            className="flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-sm font-medium mr-3">
                                             {index + 1}
                                         </div>
                                         <div className="font-medium">{question.text}</div>
@@ -79,12 +81,12 @@ export default function QuizResults({
                                     <div className="flex items-center">
                                         {isCorrect === true && (
                                             <span className="text-green-600 flex items-center">
-                                                <CheckCircle size={16} className="mr-1" /> Đúng
+                                                <CheckCircle size={16} className="mr-1"/> Đúng
                                             </span>
                                         )}
                                         {isCorrect === false && (
                                             <span className="text-red-600 flex items-center">
-                                                <XCircle size={16} className="mr-1" /> Sai
+                                                <XCircle size={16} className="mr-1"/> Sai
                                             </span>
                                         )}
                                         {isCorrect === null && (
@@ -98,8 +100,10 @@ export default function QuizResults({
                                         question={question}
                                         selectedAnswers={selectedAnswers[question.id] || []}
                                         textAnswer={textAnswers[question.id] || ''}
-                                        onSelectOption={() => { }} // Disabled in results view
-                                        onTextChange={() => { }} // Disabled in results view
+                                        onSelectOption={() => {
+                                        }} // Disabled in results view
+                                        onTextChange={() => {
+                                        }} // Disabled in results view
                                         showCorrectAnswers={quiz.settings.showCorrectAnswers}
                                     />
                                 </div>

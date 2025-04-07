@@ -1,7 +1,7 @@
 "use client";
 
-import { Star } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {Star} from 'lucide-react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 
 interface RecentActivitiesProps {
     className?: string;
@@ -9,20 +9,50 @@ interface RecentActivitiesProps {
 
 // Mock data
 const recentEnrollments = [
-    { id: '1', name: 'Nguyễn Văn A', course: 'Lập trình JavaScript', date: '2025-03-07', image: '/api/placeholder/32/32' },
-    { id: '2', name: 'Trần Thị B', course: 'React Fundamentals', date: '2025-03-06', image: '/api/placeholder/32/32' },
-    { id: '3', name: 'Lê Văn C', course: 'NodeJS Advanced', date: '2025-03-05', image: '/api/placeholder/32/32' },
-    { id: '4', name: 'Phạm Thị D', course: 'UI/UX Design', date: '2025-03-04', image: '/api/placeholder/32/32' },
-    { id: '5', name: 'Vũ Văn E', course: 'React Fundamentals', date: '2025-03-03', image: '/api/placeholder/32/32' },
+    {
+        id: '1',
+        name: 'Nguyễn Văn A',
+        course: 'Lập trình JavaScript',
+        date: '2025-03-07',
+        image: '/api/placeholder/32/32'
+    },
+    {id: '2', name: 'Trần Thị B', course: 'React Fundamentals', date: '2025-03-06', image: '/api/placeholder/32/32'},
+    {id: '3', name: 'Lê Văn C', course: 'NodeJS Advanced', date: '2025-03-05', image: '/api/placeholder/32/32'},
+    {id: '4', name: 'Phạm Thị D', course: 'UI/UX Design', date: '2025-03-04', image: '/api/placeholder/32/32'},
+    {id: '5', name: 'Vũ Văn E', course: 'React Fundamentals', date: '2025-03-03', image: '/api/placeholder/32/32'},
 ];
 
 const recentReviews = [
-    { id: '1', name: 'Mai Thị F', course: 'Lập trình JavaScript', rating: 5, comment: 'Khóa học rất hay và dễ hiểu!', date: '2025-03-07', image: '/api/placeholder/32/32' },
-    { id: '2', name: 'Trương Văn G', course: 'React Fundamentals', rating: 4, comment: 'Kiến thức bổ ích, nhưng cần thêm bài tập thực hành.', date: '2025-03-05', image: '/api/placeholder/32/32' },
-    { id: '3', name: 'Ngô Thị H', course: 'NodeJS Advanced', rating: 5, comment: 'Giảng viên giảng dạy rất tốt, dễ hiểu.', date: '2025-03-03', image: '/api/placeholder/32/32' },
+    {
+        id: '1',
+        name: 'Mai Thị F',
+        course: 'Lập trình JavaScript',
+        rating: 5,
+        comment: 'Khóa học rất hay và dễ hiểu!',
+        date: '2025-03-07',
+        image: '/api/placeholder/32/32'
+    },
+    {
+        id: '2',
+        name: 'Trương Văn G',
+        course: 'React Fundamentals',
+        rating: 4,
+        comment: 'Kiến thức bổ ích, nhưng cần thêm bài tập thực hành.',
+        date: '2025-03-05',
+        image: '/api/placeholder/32/32'
+    },
+    {
+        id: '3',
+        name: 'Ngô Thị H',
+        course: 'NodeJS Advanced',
+        rating: 5,
+        comment: 'Giảng viên giảng dạy rất tốt, dễ hiểu.',
+        date: '2025-03-03',
+        image: '/api/placeholder/32/32'
+    },
 ];
 
-export default function RecentActivities({ className }: RecentActivitiesProps) {
+export default function RecentActivities({className}: RecentActivitiesProps) {
     return (
         <Card className={className}>
             <CardHeader>
@@ -33,7 +63,8 @@ export default function RecentActivities({ className }: RecentActivitiesProps) {
                     <div>
                         <div className="flex items-center">
                             <h4 className="text-sm font-semibold mb-2">Đăng ký mới</h4>
-                            <span className="ml-2 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                            <span
+                                className="ml-2 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
                                 {recentEnrollments.length}
                             </span>
                         </div>
@@ -66,7 +97,8 @@ export default function RecentActivities({ className }: RecentActivitiesProps) {
                     <div>
                         <div className="flex items-center">
                             <h4 className="text-sm font-semibold mb-2">Đánh giá mới</h4>
-                            <span className="ml-2 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                            <span
+                                className="ml-2 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                 {recentReviews.length}
                             </span>
                         </div>

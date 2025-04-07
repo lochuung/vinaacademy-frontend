@@ -1,8 +1,8 @@
 // FilterSection.tsx
 "use client";
 
-import { ReactNode } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import {ReactNode} from "react";
+import {ChevronUp, ChevronDown} from "lucide-react";
 
 interface FilterSectionProps {
     title: string;
@@ -13,12 +13,12 @@ interface FilterSectionProps {
 }
 
 export default function FilterSection({
-    title,
-    expanded,
-    toggleSection,
-    children,
-    className = ""
-}: FilterSectionProps) {
+                                          title,
+                                          expanded,
+                                          toggleSection,
+                                          children,
+                                          className = ""
+                                      }: FilterSectionProps) {
     return (
         <div className={className}>
             <div
@@ -26,7 +26,7 @@ export default function FilterSection({
                 onClick={toggleSection}
             >
                 <h3 className="font-semibold">{title}</h3>
-                {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {expanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
             </div>
 
             {expanded && children}

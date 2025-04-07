@@ -1,19 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import {
-    ArrowUpRight,
-    Download,
-    Calendar,
-    ChevronDown,
-    Layers,
-    Users,
-    BookOpen,
-    DollarSign
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {useState} from 'react';
+import {ArrowUpRight, BookOpen, Calendar, ChevronDown, DollarSign, Download, Layers, Users} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import RevenueReport from '@/components/admin/reports/revenue-report';
 import UserGrowth from '@/components/admin/reports/user-growth';
 import CoursePerformance from '@/components/admin/reports/course-performance';
@@ -36,17 +27,17 @@ export default function AdminReportsPage() {
                         variant="outline"
                         className="h-9 gap-1.5 bg-white"
                     >
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-4 w-4"/>
                         <span>
                             {timeRange === 'week' && '7 ngày qua'}
                             {timeRange === 'month' && '30 ngày qua'}
                             {timeRange === 'quarter' && '3 tháng qua'}
                             {timeRange === 'year' && '12 tháng qua'}
                         </span>
-                        <ChevronDown className="h-4 w-4 opacity-50" />
+                        <ChevronDown className="h-4 w-4 opacity-50"/>
                     </Button>
                     <Button>
-                        <Download className="mr-2 h-4 w-4" />
+                        <Download className="mr-2 h-4 w-4"/>
                         Xuất báo cáo
                     </Button>
                 </div>
@@ -87,12 +78,12 @@ export default function AdminReportsPage() {
                         <CardTitle className="text-sm font-medium">
                             Tổng doanh thu
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <DollarSign className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">158.500.000 đ</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             12% so với kỳ trước
                         </p>
                     </CardContent>
@@ -102,12 +93,12 @@ export default function AdminReportsPage() {
                         <CardTitle className="text-sm font-medium">
                             Người dùng mới
                         </CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <Users className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">1,248</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             8% so với kỳ trước
                         </p>
                     </CardContent>
@@ -117,12 +108,12 @@ export default function AdminReportsPage() {
                         <CardTitle className="text-sm font-medium">
                             Khóa học mới
                         </CardTitle>
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        <BookOpen className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">45</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             15% so với kỳ trước
                         </p>
                     </CardContent>
@@ -132,12 +123,12 @@ export default function AdminReportsPage() {
                         <CardTitle className="text-sm font-medium">
                             Ghi danh mới
                         </CardTitle>
-                        <Layers className="h-4 w-4 text-muted-foreground" />
+                        <Layers className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">2,456</div>
                         <p className="text-xs text-green-600 flex items-center mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
+                            <ArrowUpRight className="h-3 w-3 mr-1"/>
                             18% so với kỳ trước
                         </p>
                     </CardContent>
@@ -159,7 +150,7 @@ export default function AdminReportsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="h-96">
-                                <RevenueReport timeRange={timeRange} />
+                                <RevenueReport timeRange={timeRange}/>
                             </div>
                         </CardContent>
                     </Card>
@@ -172,7 +163,7 @@ export default function AdminReportsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="h-96">
-                                <UserGrowth timeRange={timeRange} />
+                                <UserGrowth timeRange={timeRange}/>
                             </div>
                         </CardContent>
                     </Card>
@@ -185,7 +176,7 @@ export default function AdminReportsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="h-96">
-                                <CoursePerformance timeRange={timeRange} />
+                                <CoursePerformance timeRange={timeRange}/>
                             </div>
                         </CardContent>
                     </Card>

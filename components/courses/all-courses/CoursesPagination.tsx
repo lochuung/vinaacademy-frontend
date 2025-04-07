@@ -1,6 +1,6 @@
 // components/CoursesPagination.tsx
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {ChevronLeft, ChevronRight} from "lucide-react";
 
 interface CoursesPaginationProps {
     currentPage: number;
@@ -9,10 +9,10 @@ interface CoursesPaginationProps {
 }
 
 export function CoursesPagination({
-    currentPage,
-    totalPages,
-    onPageChange
-}: CoursesPaginationProps) {
+                                      currentPage,
+                                      totalPages,
+                                      onPageChange
+                                  }: CoursesPaginationProps) {
     // Không hiển thị phân trang nếu chỉ có 1 trang
     if (totalPages <= 1) return null;
 
@@ -34,8 +34,8 @@ export function CoursesPagination({
             pageNumbers.push(1);
 
             // Xác định phạm vi các trang hiển thị
-            let startPage = Math.max(2, currentPage - 1);
-            let endPage = Math.min(totalPages - 1, currentPage + 1);
+            const startPage = Math.max(2, currentPage - 1);
+            const endPage = Math.min(totalPages - 1, currentPage + 1);
 
             // Thêm dấu "..." nếu cần
             if (startPage > 2) {
@@ -67,7 +67,7 @@ export function CoursesPagination({
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
-                    <ChevronLeft size={16} />
+                    <ChevronLeft size={16}/>
                 </Button>
 
                 {getPageNumbers().map((page, index) => {
@@ -97,7 +97,7 @@ export function CoursesPagination({
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
-                    <ChevronRight size={16} />
+                    <ChevronRight size={16}/>
                 </Button>
             </div>
         </div>

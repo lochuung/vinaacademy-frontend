@@ -1,147 +1,120 @@
 "use client";
 
-import { ChevronUp, ChevronDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { categoriesData } from "@/data/categories";
+import { useState } from "react";
+import { Search } from "lucide-react";
+import { useCategories } from "@/context/CategoryContext";
 import FilterSection from "../ui/FilterSection";
+import CategoryFilterTree from "./CategoryFilterTree";
 
 interface CategoryFilterProps {
-    expanded: boolean;
-    toggleSection: () => void;
-    categories: string[];
-    expandedCategories: string[];
-    handleCategoryToggle: (category: string) => void;
-    handleCategoryExpand: (category: string) => void;
-    subCategories: string[];
-    expandedSubCategories: string[];
-    handleSubCategoryToggle: (subCategory: string) => void;
-    handleSubCategoryExpand: (subCategory: string) => void;
-    selectedTopics: string[];
-    handleTopicToggle: (topic: string) => void;
+  expanded: boolean;
+  toggleSection: () => void;
+  categories: string[];
+  expandedCategories: string[];
+  handleCategoryToggle: (category: string) => void;
+  handleCategoryExpand: (category: string) => void;
+  subCategories?: string[];
+  expandedSubCategories?: string[];
+  handleSubCategoryToggle?: (subCategory: string) => void;
+  handleSubCategoryExpand?: (subCategory: string) => void;
+  selectedTopics?: string[];
+  handleTopicToggle?: (topic: string) => void;
 }
 
 export default function CategoryFilter({
-    expanded,
-    toggleSection,
-    categories,
-    expandedCategories,
-    handleCategoryToggle,
-    handleCategoryExpand,
-    subCategories,
-    expandedSubCategories,
-    handleSubCategoryToggle,
-    handleSubCategoryExpand,
-    selectedTopics,
-    handleTopicToggle
+  expanded,
+  toggleSection,
+  categories,
+  expandedCategories,
+  handleCategoryToggle,
+  handleCategoryExpand,
+  subCategories = [],
+  expandedSubCategories = [],
+  handleSubCategoryToggle = () => {},
+  handleSubCategoryExpand = () => {},
+  selectedTopics = [],
+  handleTopicToggle = () => {}
 }: CategoryFilterProps) {
-    return (
-        <FilterSection
-            title="Danh mục"
-            expanded={expanded}
-            toggleSection={toggleSection}
-            className="mb-6 border-b pb-4"
-        >
-            <div className="space-y-2 mt-3 max-h-96 overflow-y-auto pr-1">
-                {categoriesData.map((category) => (
-                    <div key={category.name} className="mb-2">
-                        {/* Main category */}
-                        <div className="flex items-center">
-                            <Checkbox
-                                id={`category-${category.name}`}
-                                checked={categories.includes(category.name)}
-                                onCheckedChange={() => handleCategoryToggle(category.name)}
-                            />
-                            <div className="flex items-center justify-between w-full ml-2">
-                                <Label
-                                    htmlFor={`category-${category.name}`}
-                                    className="text-sm cursor-pointer font-medium"
-                                    onClick={() => handleCategoryToggle(category.name)}
-                                >
-                                    {category.name}
-                                </Label>
-                                <button
-                                    className="focus:outline-none"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCategoryExpand(category.name);
-                                    }}
-                                >
-                                    {expandedCategories.includes(category.name) ?
-                                        <ChevronUp size={14} /> :
-                                        <ChevronDown size={14} />
-                                    }
-                                </button>
-                            </div>
-                        </div>
+  const { categories: allCategories, isLoading } = useCategories();
+  const [searchTerm, setSearchTerm] = useState("");
 
-                        {/* Subcategories */}
-                        {expandedCategories.includes(category.name) && (
-                            <div className="ml-6 mt-1">
-                                {category.subCategories.map(subCat => (
-                                    <div key={subCat.name} className="mt-2">
-                                        <div className="flex items-center">
-                                            <Checkbox
-                                                id={`subcat-${subCat.name}`}
-                                                checked={subCategories.includes(subCat.name)}
-                                                onCheckedChange={() => handleSubCategoryToggle(subCat.name)}
-                                            />
-                                            <div className="flex items-center justify-between w-full ml-2">
-                                                <Label
-                                                    htmlFor={`subcat-${subCat.name}`}
-                                                    className="text-sm cursor-pointer"
-                                                    onClick={() => handleSubCategoryToggle(subCat.name)}
-                                                >
-                                                    {subCat.name}
-                                                </Label>
-                                                <button
-                                                    className="focus:outline-none"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleSubCategoryExpand(subCat.name);
-                                                    }}
-                                                >
-                                                    {expandedSubCategories.includes(subCat.name) ?
-                                                        <ChevronUp size={14} /> :
-                                                        <ChevronDown size={14} />
-                                                    }
-                                                </button>
-                                            </div>
-                                        </div>
+  // Filter categories by search term
+  const getFilteredCategories = () => {
+    if (!searchTerm) return allCategories;
 
-                                        {/* Trending topics */}
-                                        {expandedSubCategories.includes(subCat.name) && (
-                                            <div className="ml-6 mt-1">
-                                                {subCat.trendingTopics.map(topic => (
-                                                    <div key={topic.name} className="flex items-center mt-1">
-                                                        <Checkbox
-                                                            id={`topic-${topic.name}`}
-                                                            checked={selectedTopics.includes(topic.name)}
-                                                            onCheckedChange={() => handleTopicToggle(topic.name)}
-                                                        />
-                                                        <div className="ml-2 flex items-center">
-                                                            <Label
-                                                                htmlFor={`topic-${topic.name}`}
-                                                                className="text-sm cursor-pointer"
-                                                                onClick={() => handleTopicToggle(topic.name)}
-                                                            >
-                                                                {topic.name}
-                                                            </Label>
-                                                            <span className="ml-2 text-xs text-gray-500">
-                                                                {topic.students}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </FilterSection>
-    );
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    // Recursive function to search through category hierarchy
+    const filterCategories = (cats: any[]): any[] => {
+      return cats.reduce((filtered, category) => {
+        const matchesSearch = category.name.toLowerCase().includes(lowerSearchTerm);
+        
+        // Filter children recursively
+        const filteredChildren = category.children && category.children.length > 0 
+          ? filterCategories(category.children) 
+          : [];
+        
+        // Include this category if it matches or if any children match
+        if (matchesSearch || filteredChildren.length > 0) {
+          filtered.push({
+            ...category,
+            children: filteredChildren
+          });
+        }
+        
+        return filtered;
+      }, [] as any[]);
+    };
+    
+    return filterCategories(allCategories);
+  };
+
+  const filteredCategories = getFilteredCategories();
+
+  return (
+    <FilterSection
+      title="Danh mục"
+      expanded={expanded}
+      toggleSection={toggleSection}
+      className="mb-6 border-b pb-4"
+    >
+      {/* Search input for categories */}
+      <div className="mb-3">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Tìm danh mục..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-8 pr-2 py-1.5 border rounded-md text-sm focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Categories tree */}
+      <div className="max-h-[300px] overflow-y-auto pr-2">
+        {isLoading ? (
+          <div className="py-4 text-center text-sm text-gray-500">
+            Đang tải danh mục...
+          </div>
+        ) : filteredCategories.length > 0 ? (
+          filteredCategories.map(category => (
+            <CategoryFilterTree
+              key={category.id}
+              category={category}
+              selectedCategories={categories}
+              onCategoryChange={handleCategoryToggle}
+              expandedCategories={expandedCategories}
+              toggleExpanded={handleCategoryExpand}
+            />
+          ))
+        ) : (
+          <div className="py-4 text-center text-sm text-gray-500">
+            Không tìm thấy danh mục phù hợp
+          </div>
+        )}
+      </div>
+    </FilterSection>
+  );
 }

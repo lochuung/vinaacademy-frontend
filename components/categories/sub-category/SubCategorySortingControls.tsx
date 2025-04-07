@@ -19,15 +19,15 @@ interface SubCategorySortingControlsProps {
 }
 
 export function SubCategorySortingControls({
-    sortBy,
-    setSortBy,
-    selectedLevel,
-    setSelectedLevel,
-    priceRange,
-    setPriceRange,
-    selectedTopic,
-    setSelectedTopic,
-}: SubCategorySortingControlsProps) {
+                                               sortBy,
+                                               setSortBy,
+                                               selectedLevel,
+                                               setSelectedLevel,
+                                               priceRange,
+                                               setPriceRange,
+                                               selectedTopic,
+                                               setSelectedTopic,
+                                           }: SubCategorySortingControlsProps) {
     const hasFilters = selectedLevel || priceRange || selectedTopic;
 
     return (
@@ -38,7 +38,7 @@ export function SubCategorySortingControls({
                     <span className="text-sm text-gray-600">Sắp xếp theo:</span>
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="w-[180px] bg-white">
-                            <SelectValue placeholder="Phổ biến nhất" />
+                            <SelectValue placeholder="Phổ biến nhất"/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="popular">Phổ biến nhất</SelectItem>

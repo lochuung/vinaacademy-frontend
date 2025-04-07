@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { FaSearch } from "react-icons/fa";
-import { categoriesData } from "@/data/categories";
+import {useState, useEffect} from "react";
+import {useRouter} from "next/navigation";
+import {FaSearch} from "react-icons/fa";
+import {categoriesData} from "@/data/categories";
+import {useCategories} from "@/context/CategoryContext";
 
 const SearchBar = () => {
     const router = useRouter();
@@ -11,8 +12,11 @@ const SearchBar = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
     const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-    const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+    const [priceRange, setPriceRange] = useState({min: "", max: ""});
     const [level, setLevel] = useState<string[]>([]);
+
+    // Use shared categories context instead of fetching directly
+    const {categories, isLoading} = useCategories();
 
     const levels = ["Cơ bản", "Trung cấp", "Nâng cao"];
 
@@ -20,6 +24,21 @@ const SearchBar = () => {
     const getSubCategories = () => {
         if (selectedCategories.length === 0) return [];
 
+        // If using API data
+        if (categories.length > 0) {
+            let allSubCategories: any[] = [];
+
+            selectedCategories.forEach(catSlug => {
+                const category = categories.find(cat => cat.slug === catSlug);
+                if (category && category.subCategories) {
+                    allSubCategories = [...allSubCategories, ...category.subCategories];
+                }
+            });
+
+            return allSubCategories;
+        }
+
+        // Fallback to mock data
         let allSubCategories: { name: string; link: string; trendingTopics: any[] }[] = [];
 
         selectedCategories.forEach(catName => {
@@ -30,27 +49,6 @@ const SearchBar = () => {
         });
 
         return allSubCategories;
-    };
-
-    // Lấy danh sách chủ đề dựa trên danh mục con đã chọn
-    const getTopics = () => {
-        if (selectedCategories.length === 0 || selectedSubCategories.length === 0) return [];
-
-        let allTopics: { name: string; link: string; students: string }[] = [];
-
-        selectedCategories.forEach(catName => {
-            const category = categoriesData.find(cat => cat.name === catName);
-            if (category) {
-                selectedSubCategories.forEach(subCatName => {
-                    const subCategory = category.subCategories.find(sub => sub.name === subCatName);
-                    if (subCategory) {
-                        allTopics = [...allTopics, ...subCategory.trendingTopics];
-                    }
-                });
-            }
-        });
-
-        return allTopics;
     };
 
     // Reset danh mục con khi thay đổi danh mục
@@ -89,6 +87,9 @@ const SearchBar = () => {
         if (priceRange.max) params.append("maxPrice", priceRange.max);
         if (level.length > 0) params.append("level", level.join(","));
 
+        // Add default page parameter
+        params.append("page", "1");
+
         // Redirect to the new courses search URL structure
         router.push(`/courses/search?${params.toString()}`);
     };
@@ -107,10 +108,9 @@ const SearchBar = () => {
                 className="absolute right-3 text-black"
                 aria-label="Tìm kiếm"
             >
-                <FaSearch />
+                <FaSearch/>
             </button>
-
-        </form >
+        </form>
     );
 };
 

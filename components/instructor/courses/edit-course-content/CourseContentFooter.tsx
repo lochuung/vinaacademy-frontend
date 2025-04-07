@@ -5,7 +5,7 @@ interface CourseContentFooterProps {
     onPublish: () => void;
 }
 
-export const CourseContentFooter = ({ onSaveDraft, onPublish }: CourseContentFooterProps) => {
+export const CourseContentFooter = ({onSaveDraft, onPublish}: CourseContentFooterProps) => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
             <div className="bg-white shadow rounded-lg overflow-hidden">

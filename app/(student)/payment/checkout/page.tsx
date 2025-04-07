@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import PaymentSelection, {SavedCard, PaymentMethod} from '@/components/student/payment/PaymentSelection';
+import React, {useState} from 'react';
+import PaymentSelection, {PaymentMethod, SavedCard} from '@/components/student/payment/PaymentSelection';
 import OrderSummary, {CartItem} from '@/components/student/payment/OrderSummary';
-import { Coupon } from '@/components/student/payment/CouponSelection';
-
-
+import {Coupon} from '@/components/student/payment/CouponSelection';
 
 
 const CheckoutPage = () => {
@@ -88,7 +86,7 @@ const CheckoutPage = () => {
         // Add your payment processing logic here
     };
 
-    return (    
+    return (
         <div className="min-h-screen bg-gray-50 pb-8 -mt-8 pt-4">
             <div className="max-w-6xl mx-auto px-4">
                 <h1 className="text-3xl font-bold mb-8">Thanh toán</h1>
@@ -96,7 +94,7 @@ const CheckoutPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Payment Method Section */}
                     <div className="md:col-span-2">
-                        <PaymentSelection 
+                        <PaymentSelection
                             savedCards={savedCards}
                             onPaymentMethodChange={handlePaymentMethodChange}
                             onPaymentInitiate={handlePaymentInitiate}

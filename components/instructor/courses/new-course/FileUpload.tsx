@@ -1,6 +1,6 @@
 // components/course-creator/FileUpload.tsx
-import { ReactNode } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import {ReactNode} from 'react';
+import {CheckCircle2} from 'lucide-react';
 
 interface FileUploadProps {
     id: string;
@@ -17,18 +17,18 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({
-    id,
-    name,
-    label,
-    accept,
-    icon,
-    preview,
-    previewComponent,
-    helpText,
-    onChange,
-    onRemove,
-    required = false
-}: FileUploadProps) {
+                                       id,
+                                       name,
+                                       label,
+                                       accept,
+                                       icon,
+                                       preview,
+                                       previewComponent,
+                                       helpText,
+                                       onChange,
+                                       onRemove,
+                                       required = false
+                                   }: FileUploadProps) {
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -63,7 +63,8 @@ export default function FileUpload({
                     </button>
                 </div>
             ) : (
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
+                <div
+                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
                     <div className="space-y-1 text-center">
                         {icon}
                         <div className="flex text-sm text-gray-600 justify-center">
@@ -92,7 +93,7 @@ export default function FileUpload({
                 </div>
             )}
             <p className="mt-2 text-sm text-gray-500 flex items-center">
-                <CheckCircle2 className="h-4 w-4 text-gray-400 mr-1" />
+                <CheckCircle2 className="h-4 w-4 text-gray-400 mr-1"/>
                 {helpText}
             </p>
         </div>

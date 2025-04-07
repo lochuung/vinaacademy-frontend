@@ -5,16 +5,16 @@ export interface Category {
     parent?: Category | null;
     children?: Category[];
     courses?: Course[];
-  }
-  
-  export interface Course {
+}
+
+export interface Course {
     id?: number;
     name: string;
     category: Category;
-  }
-  
-  export interface CategoryFormData {
+}
+
+export interface CategoryFormData {
     name: string;
     slug: string;
     parentId?: number;
-  }
+}

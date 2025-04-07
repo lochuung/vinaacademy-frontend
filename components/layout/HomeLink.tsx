@@ -1,13 +1,13 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 
 interface HomeLinkProps {
     className?: string;
     children: React.ReactNode;
 }
 
-export default function HomeLink({ className, children }: HomeLinkProps) {
+export default function HomeLink({className, children}: HomeLinkProps) {
     const router = useRouter();
 
     const handleClick = (e: React.MouseEvent) => {

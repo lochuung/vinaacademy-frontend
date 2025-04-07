@@ -1,12 +1,12 @@
 'use client';
 
-import { FC, useState, useEffect } from 'react';
-import { use } from 'react';
+import {FC, useState, useEffect} from 'react';
+import {use} from 'react';
 import Link from 'next/link';
-import { BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle } from 'lucide-react';
+import {BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle} from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
-import { Course } from '@/types/lecture';
-import { mockCourseData } from '@/data/mockLearningData';
+import {Course} from '@/types/lecture';
+import {mockCourseData} from '@/data/mockLearningData';
 import StatusToast from '@/components/student/learning/shared/StatusToast';
 
 interface CoursePageProps {
@@ -15,7 +15,7 @@ interface CoursePageProps {
     }>;
 }
 
-const CoursePage: FC<CoursePageProps> = ({ params }) => {
+const CoursePage: FC<CoursePageProps> = ({params}) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
     const slug = unwrappedParams.slug;
@@ -82,15 +82,15 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
     const getLectureTypeIcon = (type: string) => {
         switch (type) {
             case 'video':
-                return <Video className="w-4 h-4 text-blue-500" />;
+                return <Video className="w-4 h-4 text-blue-500"/>;
             case 'reading':
-                return <BookOpen className="w-4 h-4 text-green-500" />;
+                return <BookOpen className="w-4 h-4 text-green-500"/>;
             case 'quiz':
-                return <FileText className="w-4 h-4 text-orange-500" />;
+                return <FileText className="w-4 h-4 text-orange-500"/>;
             case 'assignment':
-                return <PenSquare className="w-4 h-4 text-purple-500" />;
+                return <PenSquare className="w-4 h-4 text-purple-500"/>;
             default:
-                return <Video className="w-4 h-4 text-gray-500" />;
+                return <Video className="w-4 h-4 text-gray-500"/>;
         }
     };
 
@@ -109,15 +109,15 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{course.title}</h1>
                         <div className="mt-4 flex flex-wrap items-center gap-6">
                             <div className="flex items-center text-gray-600">
-                                <Clock className="w-5 h-5 mr-2" />
+                                <Clock className="w-5 h-5 mr-2"/>
                                 <span>20 giờ tổng thời lượng</span>
                             </div>
                             <div className="flex items-center text-gray-600">
-                                <FileText className="w-5 h-5 mr-2" />
+                                <FileText className="w-5 h-5 mr-2"/>
                                 <span>{totalLectures} bài học</span>
                             </div>
                             <div className="flex items-center text-gray-600">
-                                <Users className="w-5 h-5 mr-2" />
+                                <Users className="w-5 h-5 mr-2"/>
                                 <span>1,234 học viên</span>
                             </div>
                             <div className="flex items-center text-gray-600">
@@ -135,7 +135,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                             <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
                                     className="bg-blue-600 h-2 rounded-full"
-                                    style={{ width: `${course.progress}%` }}
+                                    style={{width: `${course.progress}%`}}
                                 ></div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                             <p className="text-sm text-gray-500">{course.currentLecture.duration}</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                                    <ChevronRight className="w-5 h-5 text-gray-400"/>
                                 </Link>
                             </div>
                         )}
@@ -172,28 +172,28 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                     <p className="text-sm text-blue-700">Video</p>
                                     <p className="text-xl font-bold text-blue-900">{countLecturesByType('video')}</p>
                                 </div>
-                                <Video className="w-8 h-8 text-blue-500" />
+                                <Video className="w-8 h-8 text-blue-500"/>
                             </div>
                             <div className="p-4 bg-green-50 rounded-lg flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-green-700">Bài đọc</p>
                                     <p className="text-xl font-bold text-green-900">{countLecturesByType('reading')}</p>
                                 </div>
-                                <BookOpen className="w-8 h-8 text-green-500" />
+                                <BookOpen className="w-8 h-8 text-green-500"/>
                             </div>
                             <div className="p-4 bg-orange-50 rounded-lg flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-orange-700">Bài kiểm tra</p>
                                     <p className="text-xl font-bold text-orange-900">{countLecturesByType('quiz')}</p>
                                 </div>
-                                <FileText className="w-8 h-8 text-orange-500" />
+                                <FileText className="w-8 h-8 text-orange-500"/>
                             </div>
                             <div className="p-4 bg-purple-50 rounded-lg flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-purple-700">Bài tập</p>
                                     <p className="text-xl font-bold text-purple-900">{countLecturesByType('assignment')}</p>
                                 </div>
-                                <PenSquare className="w-8 h-8 text-purple-500" />
+                                <PenSquare className="w-8 h-8 text-purple-500"/>
                             </div>
                         </div>
 
@@ -216,7 +216,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                             >
                                                 <div className="w-8 text-center text-gray-500 mr-2">
                                                     {lecture.isCompleted ? (
-                                                        <CheckCircle className="w-5 h-5 text-green-500 mx-auto" />
+                                                        <CheckCircle className="w-5 h-5 text-green-500 mx-auto"/>
                                                     ) : (
                                                         <span>{sectionIndex + 1}.{lectureIndex + 1}</span>
                                                     )}
@@ -224,9 +224,11 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                                 <div className="flex-1">
                                                     <div className="flex items-center">
                                                         {getLectureTypeIcon(lecture.type || 'video')}
-                                                        <span className="ml-2 font-medium text-gray-800">{lecture.title}</span>
+                                                        <span
+                                                            className="ml-2 font-medium text-gray-800">{lecture.title}</span>
                                                         {lecture.isCurrent && (
-                                                            <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                            <span
+                                                                className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
                                                                 Đang học
                                                             </span>
                                                         )}
@@ -235,7 +237,7 @@ const CoursePage: FC<CoursePageProps> = ({ params }) => {
                                                         {lecture.duration}
                                                     </p>
                                                 </div>
-                                                <ChevronRight className="w-5 h-5 text-gray-400" />
+                                                <ChevronRight className="w-5 h-5 text-gray-400"/>
                                             </Link>
                                         ))}
                                     </div>

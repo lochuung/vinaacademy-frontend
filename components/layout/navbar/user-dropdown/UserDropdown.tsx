@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 import Link from "next/link";
 
 interface UserDropdownProps {
@@ -6,14 +6,14 @@ interface UserDropdownProps {
     isVisible: boolean;
 }
 
-const UserDropdown = ({ isVisible }: UserDropdownProps) => {
-    const { logout } = useAuth();
+const UserDropdown = ({isVisible}: UserDropdownProps) => {
+    const {logout} = useAuth();
     return (
         <div
             className={`absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isVisible
                 ? "transform-none opacity-100 visible"
                 : "transform translate-y-2 opacity-0 invisible pointer-events-none"
-                }`}
+            }`}
             aria-hidden={!isVisible}
         >
             {/* Mũi tên chỉ hướng */}

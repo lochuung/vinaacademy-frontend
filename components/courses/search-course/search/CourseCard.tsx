@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import {Star} from "lucide-react";
 
 interface CourseCardProps {
     course: {
@@ -20,7 +20,7 @@ interface CourseCardProps {
     };
 }
 
-export default function CourseCard({ course }: CourseCardProps) {
+export default function CourseCard({course}: CourseCardProps) {
     return (
         <Link href={`/courses/${course.id}`}>
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
@@ -33,7 +33,8 @@ export default function CourseCard({ course }: CourseCardProps) {
                             className="object-cover"
                         />
                         {course.discount && course.discount > 0 && (
-                            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            <div
+                                className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                                 -{course.discount}%
                             </div>
                         )}
@@ -42,7 +43,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                         <h3 className="text-lg font-semibold mb-1 line-clamp-2">{course.title}</h3>
                         <p className="text-sm text-gray-600 mb-2">{course.instructor}</p>
                         <div className="flex items-center gap-1 mb-2">
-                            <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                            <Star size={16} className="text-yellow-500 fill-yellow-500"/>
                             <span className="text-sm font-medium">{course.rating}</span>
                             <span className="text-xs text-gray-500 ml-1">({course.students})</span>
                         </div>

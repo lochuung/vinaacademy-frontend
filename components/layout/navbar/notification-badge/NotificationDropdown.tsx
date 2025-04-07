@@ -1,8 +1,8 @@
 "use client";
-import { Notification } from "@/types/navbar";
+import {Notification} from "@/types/navbar";
 import NotificationBadge from "./NotificationBadge";
 import NotificationList from "./NotificationList";
-import { useNotificationDropdown } from "./useNotificationDropdown";
+import {useNotificationDropdown} from "./useNotificationDropdown";
 
 interface NotificationDropdownProps {
     notifications: Notification[];
@@ -11,10 +11,11 @@ interface NotificationDropdownProps {
 }
 
 const NotificationDropdown = ({
-    notifications = [],
-    onMarkAllAsRead = () => { },
-    onNotificationClick
-}: NotificationDropdownProps) => {
+                                  notifications = [],
+                                  onMarkAllAsRead = () => {
+                                  },
+                                  onNotificationClick
+                              }: NotificationDropdownProps) => {
     const {
         isOpen,
         dropdownRef,
@@ -42,11 +43,12 @@ const NotificationDropdown = ({
                 className={`absolute right-0 top-12 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isOpen
                     ? "transform-none opacity-100 visible"
                     : "transform translate-y-2 opacity-0 invisible pointer-events-none"
-                    }`}
+                }`}
                 aria-hidden={!isOpen}
             >
                 {/* Mũi tên chỉ hướng */}
-                <div className="absolute -top-2 right-3 h-4 w-4 rotate-45 bg-white border-t border-l border-gray-200"></div>
+                <div
+                    className="absolute -top-2 right-3 h-4 w-4 rotate-45 bg-white border-t border-l border-gray-200"></div>
 
                 <NotificationList
                     notifications={notifications}

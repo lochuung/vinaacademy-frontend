@@ -13,9 +13,9 @@ import {Form, FormField, FormItem, FormControl, FormMessage} from "@/components/
 
 //icon
 
-import { FcGoogle } from "react-icons/fc";
-import { FaUserShield } from "react-icons/fa";
-import { IoMdLock } from "react-icons/io";
+import {FcGoogle} from "react-icons/fc";
+import {FaUserShield} from "react-icons/fa";
+import {IoMdLock} from "react-icons/io";
 
 import DialogOTP from "./otp-dialog";
 
@@ -55,21 +55,21 @@ interface LoginFormProps {
 
 export default function LoginForm({
 
-    heading = "VN Academy",
-    subheading = "Đăng nhập ngay để trải nghiệm",
-    logo = {
-        url: "https://localhost:3000",
-        src: "https://www.shadcnblocks.com/images/block/block-1.svg",
-        alt: "logo",
-    },
-    loginText = "Đăng nhập",
-    googleText = "Đăng nhập bằng Google",
-    signupText = "Chưa có tài khoản?",
-    signupUrl = "/register",
-    onSubmit,
-    isSubmitting = false,
-    error = null,
-}: LoginFormProps) {
+                                      heading = "VN Academy",
+                                      subheading = "Đăng nhập ngay để trải nghiệm",
+                                      logo = {
+                                          url: "https://localhost:3000",
+                                          src: "https://www.shadcnblocks.com/images/block/block-1.svg",
+                                          alt: "logo",
+                                      },
+                                      loginText = "Đăng nhập",
+                                      googleText = "Đăng nhập bằng Google",
+                                      signupText = "Chưa có tài khoản?",
+                                      signupUrl = "/register",
+                                      onSubmit,
+                                      isSubmitting = false,
+                                      error = null,
+                                  }: LoginFormProps) {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const form = useForm<LoginFormValues>({
@@ -95,7 +95,7 @@ export default function LoginForm({
                         <div className="mb-6 flex flex-col items-center">
                             <a href={logo.url}>
 
-                                <img src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto" />
+                                <img src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto"/>
 
                             </a>
                             <p className="mb-2 text-2xl font-bold">{heading}</p>
@@ -104,7 +104,9 @@ export default function LoginForm({
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4">
                                 {error && (
-                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                    <div
+                                        className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+                                        role="alert">
                                         <span className="block sm:inline">{error}</span>
                                     </div>
                                 )}
@@ -112,18 +114,18 @@ export default function LoginForm({
                                     control={form.control}
                                     name="email"
 
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <Label>Email</Label>
                                             <FormControl>
                                                 <Input
                                                     type="email"
                                                     placeholder="Nhập email của bạn"
-                                                    iconLeft={<FaUserShield />}
+                                                    iconLeft={<FaUserShield/>}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
 
                                         </FormItem>
                                     )}
@@ -132,7 +134,7 @@ export default function LoginForm({
                                     control={form.control}
                                     name="password"
 
-                                    render={({ field }) => (
+                                    render={({field}) => (
 
                                         <FormItem>
                                             <Label>Mật khẩu</Label>
@@ -141,12 +143,12 @@ export default function LoginForm({
 
                                                     type="password"
                                                     placeholder="Nhập mật khẩu của bạn"
-                                                    iconLeft={<IoMdLock />}
+                                                    iconLeft={<IoMdLock/>}
                                                     passwordEye={true}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
 
                                         </FormItem>
                                     )}
@@ -156,7 +158,7 @@ export default function LoginForm({
                                         control={form.control}
                                         name="remember"
 
-                                        render={({ field }) => (
+                                        render={({field}) => (
                                             <FormItem className="flex items-center space-x-2">
                                                 <FormControl>
                                                     <Checkbox
@@ -172,10 +174,10 @@ export default function LoginForm({
                                     />
                                     <a className="text-sm text-primary hover:underline hover:cursor-pointer"
 
-                                        onClick={() => setDialogOpen(true)}>
+                                       onClick={() => setDialogOpen(true)}>
                                         Quên mật khẩu
                                     </a>
-                                    <DialogOTP open={dialogOpen} onClose={() => setDialogOpen(false)} />
+                                    <DialogOTP open={dialogOpen} onClose={() => setDialogOpen(false)}/>
 
                                 </div>
                                 <Button type="submit" className="mt-2 w-full" disabled={isSubmitting}>
@@ -189,8 +191,8 @@ export default function LoginForm({
                                 </div>
                                 <Button type="button" variant="outline" className="w-full border-gray-400"
 
-                                    disabled={isSubmitting}>
-                                    <FcGoogle className="mr-2 size-5" />
+                                        disabled={isSubmitting}>
+                                    <FcGoogle className="mr-2 size-5"/>
 
                                     {googleText}
                                 </Button>

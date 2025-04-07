@@ -1,5 +1,5 @@
-import { FC, useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import {FC, useState, useRef, useEffect} from 'react';
+import {Play, Pause, Volume2, VolumeX, Maximize, Settings, ChevronLeft, ChevronRight} from 'lucide-react';
 
 interface VideoPlayerProps {
     videoUrl: string;
@@ -7,7 +7,7 @@ interface VideoPlayerProps {
     onTimeUpdate?: (currentTime: number) => void;
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) => {
+const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -192,7 +192,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                 poster="/api/thumbnail/lesson-1"
                 playsInline
             >
-                {videoUrl && <source src={videoUrl} type="video/mp4" />}
+                {videoUrl && <source src={videoUrl} type="video/mp4"/>}
                 Trình duyệt của bạn không hỗ trợ thẻ video.
             </video>
 
@@ -230,14 +230,14 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                     onClick={togglePlay}
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-4 hover:bg-opacity-90 transition"
                 >
-                    <Play size={32} className="text-black" />
+                    <Play size={32} className="text-black"/>
                 </button>
             )}
 
             {/* Lớp điều khiển */}
             <div
                 className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}
-                style={{ pointerEvents: showControls ? 'auto' : 'none' }}
+                style={{pointerEvents: showControls ? 'auto' : 'none'}}
             >
                 {/* Thanh tiến trình */}
                 <div className="mb-2 flex items-center">
@@ -262,7 +262,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                             onClick={togglePlay}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? <Pause size={20}/> : <Play size={20}/>}
                         </button>
 
                         {/* Nút tua lùi/tiến 10s */}
@@ -270,7 +270,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                             onClick={skipBackward}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <ChevronLeft size={20} />
+                            <ChevronLeft size={20}/>
                             <span className="sr-only">Tua lùi 10s</span>
                         </button>
 
@@ -278,7 +278,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                             onClick={skipForward}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <ChevronRight size={20} />
+                            <ChevronRight size={20}/>
                             <span className="sr-only">Tua tiến 10s</span>
                         </button>
 
@@ -288,7 +288,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                                 onClick={toggleMute}
                                 className="text-white hover:text-blue-500 transition mr-2"
                             >
-                                {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                                {isMuted || volume === 0 ? <VolumeX size={20}/> : <Volume2 size={20}/>}
                             </button>
                             <input
                                 type="range"
@@ -313,7 +313,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                     <div className="flex items-center space-x-4">
                         {/* Nút Cài đặt */}
                         <button className="text-white hover:text-blue-500 transition">
-                            <Settings size={20} />
+                            <Settings size={20}/>
                         </button>
 
                         {/* Nút Toàn màn hình */}
@@ -321,7 +321,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, title, onTimeUpdate }) =>
                             onClick={toggleFullscreen}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <Maximize size={20} />
+                            <Maximize size={20}/>
                         </button>
                     </div>
                 </div>

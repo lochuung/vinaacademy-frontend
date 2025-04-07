@@ -3,8 +3,8 @@ import Link from "next/link"; // Import component Link từ next/link
 // Định nghĩa component NavigationLinks
 export const NavigationLinks = () => {
     const links = [
-        { href: "/blog", label: "Blog" }, // Định nghĩa liên kết đến trang Blog
-        { href: "/teaching", label: "Trở thành Giảng viên" }, // Định nghĩa liên kết đến trang Trở thành Giảng viên
+        {href: "/blog", label: "Blog"}, // Định nghĩa liên kết đến trang Blog
+        {href: "/teaching", label: "Trở thành Giảng viên"}, // Định nghĩa liên kết đến trang Trở thành Giảng viên
     ];
 
     return (

@@ -1,13 +1,13 @@
 'use client'
-import React, { useState } from 'react';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import React, {useState} from 'react';
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
 import * as z from "zod";
-import { KeyRound } from "lucide-react";
-import { passwordFormSchema } from '@/lib/profile-schema';
+import {KeyRound} from "lucide-react";
+import {passwordFormSchema} from '@/lib/profile-schema';
 
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -17,8 +17,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import {Input} from "@/components/ui/input";
+import {toast} from "sonner";
 import {
     Dialog,
     DialogContent,
@@ -45,6 +45,7 @@ export function PasswordChange() {
         defaultValues: defaultPasswordValues,
         mode: "onChange",
     });
+
     // Password form submission handler
     function onPasswordSubmit(data: PasswordFormValues) {
         try {
@@ -64,11 +65,12 @@ export function PasswordChange() {
             });
         }
     }
+
     return (
         <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" type="button" className="w-full flex items-center">
-                    <KeyRound className="mr-2 h-4 w-4" />
+                    <KeyRound className="mr-2 h-4 w-4"/>
                     Đổi mật khẩu
                 </Button>
             </DialogTrigger>
@@ -85,7 +87,7 @@ export function PasswordChange() {
                         <FormField
                             control={passwordForm.control}
                             name="currentPassword"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Mật khẩu hiện tại</FormLabel>
                                     <FormControl>
@@ -95,7 +97,7 @@ export function PasswordChange() {
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
@@ -104,7 +106,7 @@ export function PasswordChange() {
                         <FormField
                             control={passwordForm.control}
                             name="newPassword"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Mật khẩu mới</FormLabel>
                                     <FormControl>
@@ -117,7 +119,7 @@ export function PasswordChange() {
                                     <FormDescription>
                                         <span className="text-xs italic text-slate-400">Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt</span>
                                     </FormDescription>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
@@ -126,7 +128,7 @@ export function PasswordChange() {
                         <FormField
                             control={passwordForm.control}
                             name="confirmPassword"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Xác nhận mật khẩu</FormLabel>
                                     <FormControl>
@@ -136,7 +138,7 @@ export function PasswordChange() {
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />

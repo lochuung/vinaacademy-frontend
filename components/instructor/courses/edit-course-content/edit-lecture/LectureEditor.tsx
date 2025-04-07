@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import {useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
 import Header from './LectureHeader';
 import TabNavigation from './TabNavigation';
 import ContentTab from './tabs/ContentTab';
 import ResourcesTab from './tabs/ResourcesTab';
 import SettingsTab from './tabs/SettingsTab';
 import Footer from './LectureFooter';
-import { Lecture, mockLecture } from '@/types/lecture';
+import {Lecture, mockLecture} from '@/types/lecture';
 
 export default function LectureEditor() {
     const router = useRouter();
@@ -48,7 +48,7 @@ export default function LectureEditor() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <div className="bg-white shadow rounded-lg overflow-hidden">
-                    <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab}/>
 
                     <div className="p-6">
                         {activeTab === 'content' && (

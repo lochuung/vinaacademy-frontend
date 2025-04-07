@@ -1,5 +1,5 @@
-import { Plus } from 'lucide-react';
-import { QuizQuestion, QuizOption } from '@/types/lecture';
+import {Plus} from 'lucide-react';
+import {QuizQuestion, QuizOption} from '@/types/lecture';
 import OptionItem from './OptionItem';
 
 interface QuestionOptionsProps {
@@ -12,13 +12,13 @@ interface QuestionOptionsProps {
 }
 
 export default function QuestionOptions({
-    questionType,
-    options,
-    onAddOption,
-    onRemoveOption,
-    onUpdateOptionText,
-    onToggleOptionCorrect
-}: QuestionOptionsProps) {
+                                            questionType,
+                                            options,
+                                            onAddOption,
+                                            onRemoveOption,
+                                            onUpdateOptionText,
+                                            onToggleOptionCorrect
+                                        }: QuestionOptionsProps) {
     // Nếu là câu hỏi tự luận, không hiển thị options
     if (questionType === 'text') {
         return null;
@@ -51,7 +51,7 @@ export default function QuestionOptions({
                     onClick={onAddOption}
                     className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >
-                    <Plus size={16} className="mr-1" /> Thêm lựa chọn
+                    <Plus size={16} className="mr-1"/> Thêm lựa chọn
                 </button>
             )}
         </div>

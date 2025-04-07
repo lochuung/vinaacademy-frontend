@@ -1,4 +1,4 @@
-import { CartItem } from '@/types/navbar';
+import {CartItem} from '@/types/navbar';
 
 // Mảng chứa các sản phẩm có trong giỏ hàng ban đầu (initial cart items)
 export const initialCartItems: CartItem[] = [

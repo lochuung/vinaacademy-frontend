@@ -1,7 +1,7 @@
 "use client";
 
-import { FC, useState } from 'react';
-import { MessageSquare, ThumbsUp, Reply, MoreHorizontal } from 'lucide-react';
+import {FC, useState} from 'react';
+import {MessageSquare, ThumbsUp, Reply, MoreHorizontal} from 'lucide-react';
 
 interface UserType {
     id: string;
@@ -33,7 +33,7 @@ interface DiscussionAreaProps {
     lectureId: string;
 }
 
-const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureId }) => {
+const DiscussionArea: FC<DiscussionAreaProps> = ({courseId, lectureId: lectureId}) => {
     const [comments, setComments] = useState<CommentType[]>([
         {
             id: '1',
@@ -185,7 +185,7 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
         setComments(prevComments =>
             prevComments.map(comment =>
                 comment.id === commentId
-                    ? { ...comment, replies: [...comment.replies, newReplyObj] }
+                    ? {...comment, replies: [...comment.replies, newReplyObj]}
                     : comment
             )
         );
@@ -212,7 +212,7 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                         className={`px-3 py-1 rounded ${filter === 'newest'
                             ? 'bg-gray-200 text-gray-800'
                             : 'bg-white text-gray-600 hover:bg-gray-100'
-                            }`}
+                        }`}
                     >
                         Mới nhất
                     </button>
@@ -221,7 +221,7 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                         className={`px-3 py-1 rounded ${filter === 'popular'
                             ? 'bg-gray-200 text-gray-800'
                             : 'bg-white text-gray-600 hover:bg-gray-100'
-                            }`}
+                        }`}
                     >
                         Phổ biến nhất
                     </button>
@@ -255,9 +255,10 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
             <div className="flex-1 overflow-y-auto">
                 {filteredComments.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
-                        <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+                        <MessageSquare className="mx-auto h-12 w-12 text-gray-400"/>
                         <h3 className="mt-2 text-lg font-medium text-gray-900">Chưa có thảo luận nào</h3>
-                        <p className="mt-1 text-gray-500">Hãy là người đầu tiên bắt đầu cuộc thảo luận về bài học này!</p>
+                        <p className="mt-1 text-gray-500">Hãy là người đầu tiên bắt đầu cuộc thảo luận về bài học
+                            này!</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -274,7 +275,7 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                                             </div>
                                         </div>
                                         <button className="text-gray-400 hover:text-gray-600">
-                                            <MoreHorizontal size={18} />
+                                            <MoreHorizontal size={18}/>
                                         </button>
                                     </div>
 
@@ -289,14 +290,14 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                                             onClick={() => toggleCommentLike(comment.id)}
                                             className={`flex items-center space-x-1 ${comment.isLiked ? 'text-blue-600' : 'hover:text-gray-700'}`}
                                         >
-                                            <ThumbsUp size={16} />
+                                            <ThumbsUp size={16}/>
                                             <span>{comment.likes}</span>
                                         </button>
                                         <button
                                             onClick={() => setReplyingTo(comment.id)}
                                             className="flex items-center space-x-1 hover:text-gray-700"
                                         >
-                                            <Reply size={16} />
+                                            <Reply size={16}/>
                                             <span>Trả lời</span>
                                         </button>
                                     </div>
@@ -339,7 +340,8 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                                                     {/* Reply header */}
                                                     <div className="flex items-start justify-between mb-2">
                                                         <div className="flex items-center">
-                                                            <div className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
+                                                            <div
+                                                                className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
                                                             <div>
                                                                 <p className="font-medium text-sm">{reply.user.name}</p>
                                                                 <p className="text-xs text-gray-500">{formatRelativeTime(reply.createdAt)}</p>
@@ -357,7 +359,7 @@ const DiscussionArea: FC<DiscussionAreaProps> = ({ courseId, lectureId: lectureI
                                                         onClick={() => toggleReplyLike(comment.id, reply.id)}
                                                         className={`flex items-center space-x-1 text-sm ${reply.isLiked ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                                                     >
-                                                        <ThumbsUp size={14} />
+                                                        <ThumbsUp size={14}/>
                                                         <span>{reply.likes}</span>
                                                     </button>
                                                 </div>

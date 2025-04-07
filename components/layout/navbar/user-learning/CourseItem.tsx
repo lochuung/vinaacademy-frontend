@@ -1,7 +1,6 @@
-
 import Image from "next/image"; // Import component Image từ next/image
-import { ProgressBar } from "./ProgressBar"; // Import component ProgressBar
-import { LearningCourse } from "@/types/navbar";
+import {ProgressBar} from "./ProgressBar"; // Import component ProgressBar
+import {LearningCourse} from "@/types/navbar";
 
 // Định nghĩa interface cho các props của component CourseItem
 interface CourseItemProps {
@@ -9,7 +8,7 @@ interface CourseItemProps {
 }
 
 // Định nghĩa component CourseItem
-const CourseItem = ({ course }: CourseItemProps) => {
+const CourseItem = ({course}: CourseItemProps) => {
     return (
         <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"> {/* Một mục trong danh sách khóa học */}
             <div className="relative w-16 h-16 flex-shrink-0"> {/* Hình ảnh của khóa học */}
@@ -25,7 +24,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
                     {course.name}
                 </h4>
                 <div className="mt-1">
-                    <ProgressBar progress={course.progress} /> {/* Hiển thị ProgressBar */}
+                    <ProgressBar progress={course.progress}/> {/* Hiển thị ProgressBar */}
                     <p className="text-xs text-gray-500 mt-1">
                         {course.progress}% hoàn thành
                     </p>

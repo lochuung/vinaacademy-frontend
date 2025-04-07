@@ -1,5 +1,5 @@
 'use client'; // Chỉ định rằng file này sẽ được render phía client
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar-shadcn'; // Import các component Avatar từ thư mục components/ui/avatar
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar-shadcn'; // Import các component Avatar từ thư mục components/ui/avatar
 import {
     Collapsible,
     CollapsibleContent,
@@ -30,7 +30,7 @@ import {
     SidebarRail,
     useSidebar
 } from '@/components/ui/sidebar-shadcn'; // Import các component Sidebar từ thư mục components/ui/sidebar
-import { navItems } from '@/constants/data'; // Import dữ liệu navItems từ thư mục constants/data
+import {navItems} from '@/constants/data'; // Import dữ liệu navItems từ thư mục constants/data
 import {
     BadgeCheck,
     Bell,
@@ -40,13 +40,13 @@ import {
     GalleryVerticalEnd,
     LogOut
 } from 'lucide-react'; // Import các icon từ thư viện lucide-react
-import { signOut, useSession } from 'next-auth/react'; // Import các hàm signOut và useSession từ thư viện next-auth/react
+import {signOut, useSession} from 'next-auth/react'; // Import các hàm signOut và useSession từ thư viện next-auth/react
 import Link from 'next/link'; // Import component Link từ thư viện next/link
-import { usePathname } from 'next/navigation'; // Import hook usePathname từ thư viện next/navigation
+import {usePathname} from 'next/navigation'; // Import hook usePathname từ thư viện next/navigation
 import * as React from 'react'; // Import tất cả các export từ thư viện react
-import { Icons } from '../icons'; // Import các icon từ thư mục icons
+import {Icons} from '../icons'; // Import các icon từ thư mục icons
 import PageContainer from '@/components/layout/page-container'; // Import component PageContainer từ thư mục components/layout/page-container
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Import các component Card từ thư mục components/ui/card
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'; // Import các component Card từ thư mục components/ui/card
 
 export const company = {
     name: 'Vina Academy', // Tên công ty
@@ -56,20 +56,23 @@ export const company = {
 
 // Định nghĩa component AppSidebar
 export default function AppSidebar() {
-    const { data: session } = useSession(); // Lấy dữ liệu phiên từ useSession
+    const {data: session} = useSession(); // Lấy dữ liệu phiên từ useSession
     const pathname = usePathname(); // Lấy đường dẫn hiện tại
-    const { state, isMobile } = useSidebar(); // Lấy trạng thái sidebar và kiểm tra xem có phải là thiết bị di động không
+    const {state, isMobile} = useSidebar(); // Lấy trạng thái sidebar và kiểm tra xem có phải là thiết bị di động không
 
     return (
         <Sidebar collapsible='icon'> {/* Sidebar có thể thu gọn */}
             <SidebarHeader>
                 <div className='flex gap-2 py-2 text-sidebar-accent-foreground'>
-                    <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
-                        <company.logo className='size-4' /> {/* Hiển thị logo công ty */}
+                    <div
+                        className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
+                        <company.logo className='size-4'/>
+                        {/* Hiển thị logo công ty */}
                     </div>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                         <span className='truncate font-semibold'>{company.name}</span> {/* Hiển thị tên công ty */}
-                        <span className='truncate text-xs'>{company.plan}</span> {/* Hiển thị gói dịch vụ của công ty */}
+                        <span
+                            className='truncate text-xs'>{company.plan}</span> {/* Hiển thị gói dịch vụ của công ty */}
                     </div>
                 </div>
             </SidebarHeader>
@@ -92,9 +95,10 @@ export default function AppSidebar() {
                                                 tooltip={item.title}
                                                 isActive={pathname === item.url}
                                             >
-                                                {item.icon && <Icon />} {/* Hiển thị icon của mục */}
+                                                {item.icon && <Icon/>} {/* Hiển thị icon của mục */}
                                                 <span>{item.title}</span> {/* Hiển thị tiêu đề của mục */}
-                                                <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' /> {/* Hiển thị icon ChevronRight */}
+                                                <ChevronRight
+                                                    className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90'/> {/* Hiển thị icon ChevronRight */}
                                             </SidebarMenuButton>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
@@ -123,7 +127,7 @@ export default function AppSidebar() {
                                         isActive={pathname === item.url}
                                     >
                                         <Link href={item.url}>
-                                            <Icon /> {/* Hiển thị icon của mục */}
+                                            <Icon/> {/* Hiển thị icon của mục */}
                                             <span>{item.title}</span> {/* Hiển thị tiêu đề của mục */}
                                         </Link>
                                     </SidebarMenuButton>
@@ -159,7 +163,7 @@ export default function AppSidebar() {
                                             {session?.user?.email || ''}
                                         </span>
                                     </div>
-                                    <ChevronsUpDown className='ml-auto size-4' /> {/* Hiển thị icon ChevronsUpDown */}
+                                    <ChevronsUpDown className='ml-auto size-4'/> {/* Hiển thị icon ChevronsUpDown */}
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -191,25 +195,25 @@ export default function AppSidebar() {
                                         </div>
                                     </div>
                                 </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuSeparator/>
 
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem>
-                                        <BadgeCheck />
+                                        <BadgeCheck/>
                                         Account
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <CreditCard />
+                                        <CreditCard/>
                                         Billing
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Bell />
+                                        <Bell/>
                                         Notifications
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuSeparator/>
                                 <DropdownMenuItem onClick={() => signOut()}>
-                                    <LogOut />
+                                    <LogOut/>
                                     Log out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -217,7 +221,7 @@ export default function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
-            <SidebarRail />
+            <SidebarRail/>
         </Sidebar>
     );
 }

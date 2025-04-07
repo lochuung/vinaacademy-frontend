@@ -1,13 +1,13 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
 import Navbar from "./navbar/Navbar";
 import ClientWrapper from "./announcement-bar/ClientWrapper";
 import Footer from "./Footer";
 import LogoClickHandler from "./LogoClickHandler"; // Import the new component
-import { useAuth } from "@/context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export default function LayoutWrapper({children}: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     // Danh sách từ khóa để ẩn layout nếu đường dẫn chứa bất kỳ từ nào trong đây
@@ -18,11 +18,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     return (
         <>
-            {!shouldHideLayout && <ClientWrapper />}
-            {!shouldHideLayout && <Navbar />}
-            {!shouldHideLayout && <LogoClickHandler />}
+            {!shouldHideLayout && <ClientWrapper/>}
+            {!shouldHideLayout && <Navbar/>}
+            {!shouldHideLayout && <LogoClickHandler/>}
             {children}
-            {!shouldHideLayout && <Footer />}
+            {!shouldHideLayout && <Footer/>}
         </>
     );
 }

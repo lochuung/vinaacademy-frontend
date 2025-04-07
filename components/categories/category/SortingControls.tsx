@@ -17,13 +17,13 @@ interface SortingControlsProps {
 }
 
 export function SortingControls({
-    sortBy,
-    setSortBy,
-    selectedLevel,
-    setSelectedLevel,
-    priceRange,
-    setPriceRange,
-}: SortingControlsProps) {
+                                    sortBy,
+                                    setSortBy,
+                                    selectedLevel,
+                                    setSelectedLevel,
+                                    priceRange,
+                                    setPriceRange,
+                                }: SortingControlsProps) {
     const hasFilters = selectedLevel || priceRange;
 
     return (
@@ -34,7 +34,7 @@ export function SortingControls({
                     <span className="text-sm text-gray-600">Sắp xếp theo:</span>
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="w-[180px] bg-white">
-                            <SelectValue placeholder="Phổ biến nhất" />
+                            <SelectValue placeholder="Phổ biến nhất"/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="popular">Phổ biến nhất</SelectItem>

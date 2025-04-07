@@ -1,4 +1,4 @@
-import { QuizQuestion } from '@/types/lecture';
+import {QuizQuestion} from '@/types/lecture';
 
 interface QuestionFormProps {
     text: string;
@@ -10,13 +10,13 @@ interface QuestionFormProps {
 }
 
 export default function QuestionForm({
-    text,
-    type,
-    points,
-    onUpdateText,
-    onUpdateType,
-    onUpdatePoints
-}: QuestionFormProps) {
+                                         text,
+                                         type,
+                                         points,
+                                         onUpdateText,
+                                         onUpdateType,
+                                         onUpdatePoints
+                                     }: QuestionFormProps) {
     return (
         <div>
             {/* Question text */}

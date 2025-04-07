@@ -6,7 +6,7 @@ interface SearchHeaderProps {
     resultCount: number;
 }
 
-export default function SearchHeader({ query, resultCount }: SearchHeaderProps) {
+export default function SearchHeader({query, resultCount}: SearchHeaderProps) {
     return (
         <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">

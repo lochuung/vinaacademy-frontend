@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {
     MoreHorizontal,
@@ -21,7 +21,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 
 // Mock data
 const courseData = [
@@ -162,7 +162,7 @@ interface CourseListProps {
     searchQuery: string;
 }
 
-export default function CourseList({ view, searchQuery }: CourseListProps) {
+export default function CourseList({view, searchQuery}: CourseListProps) {
     const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
 
     const formatPrice = (price: number) => {
@@ -209,29 +209,33 @@ export default function CourseList({ view, searchQuery }: CourseListProps) {
         switch (status) {
             case 'published':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <Check className="w-3 h-3 mr-1" />
+                    <span
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <Check className="w-3 h-3 mr-1"/>
                         Đã xuất bản
                     </span>
                 );
             case 'draft':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        <Pencil className="w-3 h-3 mr-1" />
+                    <span
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <Pencil className="w-3 h-3 mr-1"/>
                         Bản nháp
                     </span>
                 );
             case 'pending':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        <AlertTriangle className="w-3 h-3 mr-1" />
+                    <span
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <AlertTriangle className="w-3 h-3 mr-1"/>
                         Chờ duyệt
                     </span>
                 );
             case 'rejected':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        <X className="w-3 h-3 mr-1" />
+                    <span
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <X className="w-3 h-3 mr-1"/>
                         Từ chối
                     </span>
                 );
@@ -247,29 +251,30 @@ export default function CourseList({ view, searchQuery }: CourseListProps) {
                     <span className="text-sm font-medium">Đã chọn {selectedCourses.length} khóa học</span>
                     <div className="space-x-2">
                         <Button variant="outline" size="sm">
-                            <X className="w-4 h-4 mr-1" />
+                            <X className="w-4 h-4 mr-1"/>
                             Bỏ chọn
                         </Button>
                         {view === 'pending' && (
                             <>
-                                <Button variant="outline" size="sm" className="bg-green-500 text-white hover:bg-green-600">
-                                    <Check className="w-4 h-4 mr-1" />
+                                <Button variant="outline" size="sm"
+                                        className="bg-green-500 text-white hover:bg-green-600">
+                                    <Check className="w-4 h-4 mr-1"/>
                                     Phê duyệt
                                 </Button>
                                 <Button variant="outline" size="sm" className="bg-red-500 text-white hover:bg-red-600">
-                                    <X className="w-4 h-4 mr-1" />
+                                    <X className="w-4 h-4 mr-1"/>
                                     Từ chối
                                 </Button>
                             </>
                         )}
                         {view === 'published' && (
                             <Button variant="outline" size="sm" className="bg-red-500 text-white hover:bg-red-600">
-                                <X className="w-4 h-4 mr-1" />
+                                <X className="w-4 h-4 mr-1"/>
                                 Ẩn khóa học
                             </Button>
                         )}
                         <Button variant="outline" size="sm" className="bg-red-500 text-white hover:bg-red-600">
-                            <Trash2 className="w-4 h-4 mr-1" />
+                            <Trash2 className="w-4 h-4 mr-1"/>
                             Xóa
                         </Button>
                     </div>
@@ -277,152 +282,163 @@ export default function CourseList({ view, searchQuery }: CourseListProps) {
             )}
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
-                    <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <tr>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <input
+                            type="checkbox"
+                            className="h-4 w-4 text-black border-gray-300 rounded focus:ring-black"
+                            checked={selectedCourses.length === filteredCourses.length && filteredCourses.length > 0}
+                            onChange={toggleSelectAll}
+                        />
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Khóa học
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Giảng viên
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Danh mục
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Giá
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Đánh giá
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Học viên
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trạng thái
+                    </th>
+                    <th scope="col"
+                        className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thao tác
+                    </th>
+                </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                {filteredCourses.map((course) => (
+                    <tr key={course.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
                             <input
                                 type="checkbox"
                                 className="h-4 w-4 text-black border-gray-300 rounded focus:ring-black"
-                                checked={selectedCourses.length === filteredCourses.length && filteredCourses.length > 0}
-                                onChange={toggleSelectAll}
+                                checked={selectedCourses.includes(course.id)}
+                                onChange={() => toggleSelectCourse(course.id)}
                             />
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Khóa học
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Giảng viên
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Danh mục
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Giá
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Đánh giá
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Học viên
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Trạng thái
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Thao tác
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredCourses.map((course) => (
-                        <tr key={course.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <input
-                                    type="checkbox"
-                                    className="h-4 w-4 text-black border-gray-300 rounded focus:ring-black"
-                                    checked={selectedCourses.includes(course.id)}
-                                    onChange={() => toggleSelectCourse(course.id)}
-                                />
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0 h-10 w-10">
-                                        <img
-                                            className="h-10 w-10 rounded object-cover"
-                                            src={course.thumbnail}
-                                            alt=""
-                                        />
+                        </td>
+                        <td className="px-6 py-4">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                    <img
+                                        className="h-10 w-10 rounded object-cover"
+                                        src={course.thumbnail}
+                                        alt=""
+                                    />
+                                </div>
+                                <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                                        {course.title}
                                     </div>
-                                    <div className="ml-4">
-                                        <div className="text-sm font-medium text-gray-900 line-clamp-2">
-                                            {course.title}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                            Cập nhật: {new Date(course.lastUpdated).toLocaleDateString('vi-VN')}
-                                        </div>
+                                    <div className="text-xs text-gray-500">
+                                        Cập nhật: {new Date(course.lastUpdated).toLocaleDateString('vi-VN')}
                                     </div>
                                 </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{course.instructor}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{course.category}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{formatPrice(course.price)}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
-                                    {course.rating > 0 ? (
-                                        <div className="flex items-center">
-                                            <span>{course.rating}</span>
-                                            <svg className="h-4 w-4 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        </div>
-                                    ) : (
-                                        <span className="text-gray-500">-</span>
+                            </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{course.instructor}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{course.category}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{formatPrice(course.price)}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                                {course.rating > 0 ? (
+                                    <div className="flex items-center">
+                                        <span>{course.rating}</span>
+                                        <svg className="h-4 w-4 text-yellow-400 ml-1" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                    </div>
+                                ) : (
+                                    <span className="text-gray-500">-</span>
+                                )}
+                            </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{course.students.toLocaleString()}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            {renderStatus(course.status)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Mở menu</span>
+                                        <MoreHorizontal className="h-4 w-4"/>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
+                                    <DropdownMenuItem>
+                                        <Eye className="mr-2 h-4 w-4"/>
+                                        <span>Xem</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Edit className="mr-2 h-4 w-4"/>
+                                        <span>Chỉnh sửa</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <DollarSign className="mr-2 h-4 w-4"/>
+                                        <span>Chỉnh sửa giá</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator/>
+                                    {course.status === 'pending' && (
+                                        <>
+                                            <DropdownMenuItem>
+                                                <Check className="mr-2 h-4 w-4"/>
+                                                <span>Phê duyệt</span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <X className="mr-2 h-4 w-4"/>
+                                                <span>Từ chối</span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator/>
+                                        </>
                                     )}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{course.students.toLocaleString()}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                {renderStatus(course.status)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                            <span className="sr-only">Mở menu</span>
-                                            <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                                        <DropdownMenuItem>
-                                            <Eye className="mr-2 h-4 w-4" />
-                                            <span>Xem</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Edit className="mr-2 h-4 w-4" />
-                                            <span>Chỉnh sửa</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <DollarSign className="mr-2 h-4 w-4" />
-                                            <span>Chỉnh sửa giá</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        {course.status === 'pending' && (
-                                            <>
-                                                <DropdownMenuItem>
-                                                    <Check className="mr-2 h-4 w-4" />
-                                                    <span>Phê duyệt</span>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <X className="mr-2 h-4 w-4" />
-                                                    <span>Từ chối</span>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                            </>
-                                        )}
-                                        <DropdownMenuItem className="text-red-600">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            <span>Xóa</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </td>
-                        </tr>
-                    ))}
-                    {filteredCourses.length === 0 && (
-                        <tr>
-                            <td colSpan={9} className="px-6 py-10 text-center text-sm text-gray-500">
-                                Không tìm thấy khóa học nào phù hợp với điều kiện tìm kiếm
-                            </td>
-                        </tr>
-                    )}
+                                    <DropdownMenuItem className="text-red-600">
+                                        <Trash2 className="mr-2 h-4 w-4"/>
+                                        <span>Xóa</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </td>
+                    </tr>
+                ))}
+                {filteredCourses.length === 0 && (
+                    <tr>
+                        <td colSpan={9} className="px-6 py-10 text-center text-sm text-gray-500">
+                            Không tìm thấy khóa học nào phù hợp với điều kiện tìm kiếm
+                        </td>
+                    </tr>
+                )}
                 </tbody>
             </table>
         </div>

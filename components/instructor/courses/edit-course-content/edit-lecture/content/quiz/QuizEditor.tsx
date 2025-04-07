@@ -1,6 +1,6 @@
 // components/lecture/content/quiz/QuizEditor.tsx
-import { useState } from 'react';
-import { Quiz, QuizQuestion, QuizOption, Lecture } from '@/types/lecture';
+import {useState} from 'react';
+import {Quiz, QuizQuestion, QuizOption, Lecture} from '@/types/lecture';
 import QuizHeader from './QuizHeader';
 import QuestionList from './QuestionList';
 import QuizSettings from './QuizSettings';
@@ -12,7 +12,7 @@ interface QuizEditorProps {
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
 }
 
-export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
+export default function QuizEditor({lecture, setLecture}: QuizEditorProps) {
     // -- State và logic xử lý chính --
     const [expandedQuestion, setExpandedQuestion] = useState<string>('');
     const [showPreview, setShowPreview] = useState(false);
@@ -26,8 +26,8 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                 text: '',
                 type: 'single_choice',
                 options: [
-                    { id: `o_${Date.now()}_1`, text: '', isCorrect: false },
-                    { id: `o_${Date.now()}_2`, text: '', isCorrect: false }
+                    {id: `o_${Date.now()}_1`, text: '', isCorrect: false},
+                    {id: `o_${Date.now()}_2`, text: '', isCorrect: false}
                 ],
                 explanation: '',
                 points: 1,
@@ -100,8 +100,8 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
             text: '',
             type: 'single_choice',
             options: [
-                { id: `o_${Date.now()}_1`, text: '', isCorrect: false },
-                { id: `o_${Date.now()}_2`, text: '', isCorrect: false }
+                {id: `o_${Date.now()}_1`, text: '', isCorrect: false},
+                {id: `o_${Date.now()}_2`, text: '', isCorrect: false}
             ],
             explanation: '',
             points: 1,
@@ -173,7 +173,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
         if (!lecture.quiz) return;
 
         const updatedQuestions = questions.map(q =>
-            q.id === questionId ? { ...q, text } : q
+            q.id === questionId ? {...q, text} : q
         );
 
         updateQuiz({
@@ -201,8 +201,8 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                 // Đối với đúng/sai, tạo đúng 2 lựa chọn
                 if (type === 'true_false') {
                     options = [
-                        { id: `o_${Date.now()}_1`, text: 'Đúng', isCorrect: true },
-                        { id: `o_${Date.now()}_2`, text: 'Sai', isCorrect: false }
+                        {id: `o_${Date.now()}_1`, text: 'Đúng', isCorrect: true},
+                        {id: `o_${Date.now()}_2`, text: 'Sai', isCorrect: false}
                     ];
                 }
 
@@ -211,7 +211,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                     options = [];
                 }
 
-                return { ...q, type, options };
+                return {...q, type, options};
             }
             return q;
         });
@@ -233,7 +233,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                     text: '',
                     isCorrect: false
                 };
-                return { ...q, options: [...q.options, newOption] };
+                return {...q, options: [...q.options, newOption]};
             }
             return q;
         });
@@ -253,7 +253,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                 if (q.options.length <= 2) {
                     return q; // Không xóa nếu chỉ còn 2 lựa chọn
                 }
-                return { ...q, options: q.options.filter(o => o.id !== optionId) };
+                return {...q, options: q.options.filter(o => o.id !== optionId)};
             }
             return q;
         });
@@ -273,7 +273,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                 return {
                     ...q,
                     options: q.options.map(o =>
-                        o.id === optionId ? { ...o, text } : o
+                        o.id === optionId ? {...o, text} : o
                     )
                 };
             }
@@ -306,7 +306,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
                     return {
                         ...q,
                         options: q.options.map(o =>
-                            o.id === optionId ? { ...o, isCorrect: !o.isCorrect } : o
+                            o.id === optionId ? {...o, isCorrect: !o.isCorrect} : o
                         )
                     };
                 }
@@ -325,7 +325,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
         if (!lecture.quiz) return;
 
         const updatedQuestions = questions.map(q =>
-            q.id === questionId ? { ...q, explanation } : q
+            q.id === questionId ? {...q, explanation} : q
         );
 
         updateQuiz({
@@ -339,7 +339,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
         if (!lecture.quiz) return;
 
         const updatedQuestions = questions.map(q =>
-            q.id === questionId ? { ...q, points } : q
+            q.id === questionId ? {...q, points} : q
         );
 
         const totalPoints = updatedQuestions.reduce((sum, q) => sum + q.points, 0);
@@ -356,7 +356,7 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
         if (!lecture.quiz) return;
 
         const updatedQuestions = questions.map(q =>
-            q.id === questionId ? { ...q, isRequired: !q.isRequired } : q
+            q.id === questionId ? {...q, isRequired: !q.isRequired} : q
         );
 
         updateQuiz({
@@ -433,11 +433,11 @@ export default function QuizEditor({ lecture, setLecture }: QuizEditorProps) {
             />
 
             {/* 4. Mẹo Quiz */}
-            <QuizTips />
+            <QuizTips/>
 
             {/* 5. Modal Xem trước Quiz */}
             {showPreview && quiz && (
-                <QuizPreview quiz={quiz} onClose={() => setShowPreview(false)} />
+                <QuizPreview quiz={quiz} onClose={() => setShowPreview(false)}/>
             )}
         </div>
     );

@@ -5,7 +5,7 @@ interface SortSelectorProps {
     onChange?: (value: string) => void;
 }
 
-export default function SortSelector({ onChange }: SortSelectorProps) {
+export default function SortSelector({onChange}: SortSelectorProps) {
     return (
         <div className="flex items-center">
             <span className="text-sm mr-2 text-gray-600">Sắp xếp theo:</span>

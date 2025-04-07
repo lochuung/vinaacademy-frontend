@@ -5,7 +5,7 @@ interface WelcomeSectionProps {
     userAvatar: string;
 }
 
-const WelcomeSection = ({ userName, userAvatar }: WelcomeSectionProps) => {
+const WelcomeSection = ({userName, userAvatar}: WelcomeSectionProps) => {
     return (
         <div className="flex items-center justify-start gap-4 py-4 w-full max-w-6xl px-5">
             {/* Avatar */}
@@ -16,7 +16,8 @@ const WelcomeSection = ({ userName, userAvatar }: WelcomeSectionProps) => {
                     className="w-12 h-12 rounded-full border-2 border-gray-300"
                 />
             ) : (
-                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 border-2 border-gray-400">
+                <div
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 border-2 border-gray-400">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

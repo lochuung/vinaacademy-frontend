@@ -1,12 +1,12 @@
 // components/NoResults.tsx
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 
 interface NoResultsProps {
     clearAllFilters: () => void;
 }
 
-export function NoResults({ clearAllFilters }: NoResultsProps) {
+export function NoResults({clearAllFilters}: NoResultsProps) {
     return (
         <div className="text-center py-12 border rounded-lg">
             <div className="mb-4">

@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/ui/modal';
+import {useEffect, useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Modal} from '@/components/ui/modal';
 
 // Định nghĩa giao diện cho các props của component AlertModal
 interface AlertModalProps {
@@ -13,11 +13,11 @@ interface AlertModalProps {
 
 // Component AlertModal hiển thị một cảnh báo với modal
 export const AlertModal: React.FC<AlertModalProps> = ({
-    isOpen,
-    onClose,
-    onConfirm,
-    loading
-}) => {
+                                                          isOpen,
+                                                          onClose,
+                                                          onConfirm,
+                                                          loading
+                                                      }) => {
     // State để kiểm tra component đã được mount trên client hay chưa
     const [isMounted, setIsMounted] = useState(false);
 

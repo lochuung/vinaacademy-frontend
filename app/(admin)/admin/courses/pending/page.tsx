@@ -1,26 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import {
-    Search,
-    Filter,
-    Clock,
-    Check,
-    X,
-    EyeIcon,
-    ChevronDown
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import {useState} from 'react';
+import {Check, ChevronDown, Clock, EyeIcon, Filter, Search, X} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent} from '@/components/ui/card';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 
 export default function AdminPendingCoursesPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -80,14 +64,14 @@ export default function AdminPendingCoursesPage() {
                     </p>
                 </div>
                 <Button variant="outline">
-                    <Clock className="mr-2 h-4 w-4" />
+                    <Clock className="mr-2 h-4 w-4"/>
                     Lịch sử phê duyệt
                 </Button>
             </div>
 
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-4">
                 <div className="relative w-full md:w-auto md:flex-1">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500"/>
                     <input
                         type="text"
                         placeholder="Tìm kiếm khóa học..."
@@ -101,7 +85,7 @@ export default function AdminPendingCoursesPage() {
                     className="md:w-auto"
                     onClick={() => setShowFilters(!showFilters)}
                 >
-                    <Filter className="mr-2 h-4 w-4" />
+                    <Filter className="mr-2 h-4 w-4"/>
                     Bộ lọc
                 </Button>
             </div>
@@ -113,32 +97,37 @@ export default function AdminPendingCoursesPage() {
                             <div>
                                 <label className="text-sm font-medium">Thể loại</label>
                                 <div className="relative">
-                                    <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
+                                    <select
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
                                         <option>Tất cả thể loại</option>
                                         <option>Lập trình Web</option>
                                         <option>Khoa học dữ liệu</option>
                                         <option>Thiết kế</option>
                                         <option>Marketing</option>
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                                    <ChevronDown
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"/>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium">Ngày nộp</label>
                                 <div className="relative">
-                                    <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
+                                    <select
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
                                         <option>Tất cả</option>
                                         <option>Hôm nay</option>
                                         <option>7 ngày qua</option>
                                         <option>30 ngày qua</option>
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                                    <ChevronDown
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"/>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium">Giảng viên</label>
                                 <div className="relative">
-                                    <select className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
+                                    <select
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md">
                                         <option>Tất cả giảng viên</option>
                                         <option>Nguyễn Thành</option>
                                         <option>Phạm Thảo</option>
@@ -146,7 +135,8 @@ export default function AdminPendingCoursesPage() {
                                         <option>Vũ Duy</option>
                                         <option>Mai Anh</option>
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                                    <ChevronDown
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"/>
                                 </div>
                             </div>
                         </div>
@@ -184,15 +174,17 @@ export default function AdminPendingCoursesPage() {
                                 <TableCell className="text-right">
                                     <div className="flex justify-end space-x-2">
                                         <Button variant="outline" size="sm">
-                                            <EyeIcon className="h-4 w-4 mr-1" />
+                                            <EyeIcon className="h-4 w-4 mr-1"/>
                                             Xem
                                         </Button>
-                                        <Button variant="outline" size="sm" className="text-green-600 border-green-600 hover:bg-green-50">
-                                            <Check className="h-4 w-4 mr-1" />
+                                        <Button variant="outline" size="sm"
+                                                className="text-green-600 border-green-600 hover:bg-green-50">
+                                            <Check className="h-4 w-4 mr-1"/>
                                             Duyệt
                                         </Button>
-                                        <Button variant="outline" size="sm" className="text-red-600 border-red-600 hover:bg-red-50">
-                                            <X className="h-4 w-4 mr-1" />
+                                        <Button variant="outline" size="sm"
+                                                className="text-red-600 border-red-600 hover:bg-red-50">
+                                            <X className="h-4 w-4 mr-1"/>
                                             Từ chối
                                         </Button>
                                     </div>

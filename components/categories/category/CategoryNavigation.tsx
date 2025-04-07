@@ -1,6 +1,6 @@
 // components/CategoryNavigation.tsx
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import {ChevronRight} from "lucide-react";
 
 interface CategoryNavigationProps {
     categoryData: any;
@@ -12,7 +12,7 @@ interface CategoryNavigationProps {
     };
 }
 
-export function CategoryNavigation({ categoryData, categoryInfo }: CategoryNavigationProps) {
+export function CategoryNavigation({categoryData, categoryInfo}: CategoryNavigationProps) {
     if (!categoryData || !categoryInfo.category) {
         return (
             <div className="border-b">
@@ -39,18 +39,21 @@ export function CategoryNavigation({ categoryData, categoryInfo }: CategoryNavig
 
                     {/* Mũi tên phân cách lớn giữa danh mục cha và con */}
                     <div className="flex items-center self-stretch h-full mx-1 py-2">
-                        <ChevronRight className="text-gray-400" size={24} strokeWidth={1.5} />
+                        <ChevronRight className="text-gray-400" size={24} strokeWidth={1.5}/>
                     </div>
 
                     {/* Bọc danh mục con trong container để styling */}
                     <div className="flex space-x-6">
                         {/* Hiển thị tất cả danh mục con */}
-                        {categoryData.subCategories && categoryData.subCategories.map((subCat: { name: string; link: string }, index: number) => (
+                        {categoryData.subCategories && categoryData.subCategories.map((subCat: {
+                            name: string;
+                            link: string
+                        }, index: number) => (
                             <Link
                                 key={index}
                                 href={subCat.link}
                                 className={`whitespace-nowrap px-4 py-2 text-gray-700 hover:text-purple-700 ${categoryInfo.subCategory === subCat.name ? "font-medium border-b-2 border-purple-500" : ""
-                                    }`}
+                                }`}
                             >
                                 {subCat.name}
                             </Link>

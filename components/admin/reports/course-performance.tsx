@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import {
     BarChart,
     Bar,
@@ -16,42 +16,42 @@ import {
     LineChart,
     Line
 } from 'recharts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Card, CardContent, CardHeader, CardTitle, CardDescription} from '@/components/ui/card';
 
 type CoursePerformanceProps = {
     timeRange: 'week' | 'month' | 'quarter' | 'year';
 };
 
-export default function CoursePerformance({ timeRange }: CoursePerformanceProps) {
+export default function CoursePerformance({timeRange}: CoursePerformanceProps) {
     const [view, setView] = useState<'popular' | 'engagement' | 'ratings'>('popular');
 
     // Dữ liệu về khóa học phổ biến
     const popularCoursesData = [
-        { name: 'JavaScript Advanced', enrollments: 245, revenue: 49000000 },
-        { name: 'Python for Data Science', enrollments: 210, revenue: 42000000 },
-        { name: 'React Fundamentals', enrollments: 185, revenue: 37000000 },
-        { name: 'UI/UX Design', enrollments: 165, revenue: 33000000 },
-        { name: 'Node.js Backend', enrollments: 140, revenue: 28000000 },
-        { name: 'Digital Marketing', enrollments: 125, revenue: 25000000 },
-        { name: 'Flutter Development', enrollments: 110, revenue: 22000000 },
-        { name: 'Machine Learning', enrollments: 95, revenue: 19000000 },
+        {name: 'JavaScript Advanced', enrollments: 245, revenue: 49000000},
+        {name: 'Python for Data Science', enrollments: 210, revenue: 42000000},
+        {name: 'React Fundamentals', enrollments: 185, revenue: 37000000},
+        {name: 'UI/UX Design', enrollments: 165, revenue: 33000000},
+        {name: 'Node.js Backend', enrollments: 140, revenue: 28000000},
+        {name: 'Digital Marketing', enrollments: 125, revenue: 25000000},
+        {name: 'Flutter Development', enrollments: 110, revenue: 22000000},
+        {name: 'Machine Learning', enrollments: 95, revenue: 19000000},
     ];
 
     // Dữ liệu về tương tác khóa học
     const generateEngagementData = () => {
         if (timeRange === 'week') {
             return [
-                { name: 'Thứ 2', completionRate: 28, watchTime: 142, assignments: 86 },
-                { name: 'Thứ 3', completionRate: 32, watchTime: 158, assignments: 94 },
-                { name: 'Thứ 4', completionRate: 37, watchTime: 172, assignments: 102 },
-                { name: 'Thứ 5', completionRate: 35, watchTime: 165, assignments: 98 },
-                { name: 'Thứ 6', completionRate: 42, watchTime: 188, assignments: 110 },
-                { name: 'Thứ 7', completionRate: 48, watchTime: 210, assignments: 125 },
-                { name: 'CN', completionRate: 44, watchTime: 196, assignments: 115 },
+                {name: 'Thứ 2', completionRate: 28, watchTime: 142, assignments: 86},
+                {name: 'Thứ 3', completionRate: 32, watchTime: 158, assignments: 94},
+                {name: 'Thứ 4', completionRate: 37, watchTime: 172, assignments: 102},
+                {name: 'Thứ 5', completionRate: 35, watchTime: 165, assignments: 98},
+                {name: 'Thứ 6', completionRate: 42, watchTime: 188, assignments: 110},
+                {name: 'Thứ 7', completionRate: 48, watchTime: 210, assignments: 125},
+                {name: 'CN', completionRate: 44, watchTime: 196, assignments: 115},
             ];
         } else if (timeRange === 'month') {
-            return Array.from({ length: 30 }, (_, i) => ({
+            return Array.from({length: 30}, (_, i) => ({
                 name: `${i + 1}`,
                 completionRate: 25 + Math.floor(Math.random() * 25),
                 watchTime: 140 + Math.floor(Math.random() * 80),
@@ -59,33 +59,33 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
             }));
         } else if (timeRange === 'quarter') {
             return [
-                { name: 'Tuần 1', completionRate: 32, watchTime: 165, assignments: 98 },
-                { name: 'Tuần 2', completionRate: 35, watchTime: 172, assignments: 102 },
-                { name: 'Tuần 3', completionRate: 38, watchTime: 178, assignments: 105 },
-                { name: 'Tuần 4', completionRate: 40, watchTime: 185, assignments: 110 },
-                { name: 'Tuần 5', completionRate: 42, watchTime: 192, assignments: 114 },
-                { name: 'Tuần 6', completionRate: 45, watchTime: 198, assignments: 118 },
-                { name: 'Tuần 7', completionRate: 47, watchTime: 205, assignments: 122 },
-                { name: 'Tuần 8', completionRate: 48, watchTime: 212, assignments: 126 },
-                { name: 'Tuần 9', completionRate: 50, watchTime: 218, assignments: 130 },
-                { name: 'Tuần 10', completionRate: 52, watchTime: 225, assignments: 134 },
-                { name: 'Tuần 11', completionRate: 54, watchTime: 232, assignments: 138 },
-                { name: 'Tuần 12', completionRate: 58, watchTime: 240, assignments: 145 },
+                {name: 'Tuần 1', completionRate: 32, watchTime: 165, assignments: 98},
+                {name: 'Tuần 2', completionRate: 35, watchTime: 172, assignments: 102},
+                {name: 'Tuần 3', completionRate: 38, watchTime: 178, assignments: 105},
+                {name: 'Tuần 4', completionRate: 40, watchTime: 185, assignments: 110},
+                {name: 'Tuần 5', completionRate: 42, watchTime: 192, assignments: 114},
+                {name: 'Tuần 6', completionRate: 45, watchTime: 198, assignments: 118},
+                {name: 'Tuần 7', completionRate: 47, watchTime: 205, assignments: 122},
+                {name: 'Tuần 8', completionRate: 48, watchTime: 212, assignments: 126},
+                {name: 'Tuần 9', completionRate: 50, watchTime: 218, assignments: 130},
+                {name: 'Tuần 10', completionRate: 52, watchTime: 225, assignments: 134},
+                {name: 'Tuần 11', completionRate: 54, watchTime: 232, assignments: 138},
+                {name: 'Tuần 12', completionRate: 58, watchTime: 240, assignments: 145},
             ];
         } else {
             return [
-                { name: 'T1', completionRate: 32, watchTime: 165, assignments: 98 },
-                { name: 'T2', completionRate: 35, watchTime: 172, assignments: 102 },
-                { name: 'T3', completionRate: 38, watchTime: 178, assignments: 105 },
-                { name: 'T4', completionRate: 42, watchTime: 185, assignments: 110 },
-                { name: 'T5', completionRate: 45, watchTime: 192, assignments: 114 },
-                { name: 'T6', completionRate: 48, watchTime: 198, assignments: 118 },
-                { name: 'T7', completionRate: 52, watchTime: 205, assignments: 122 },
-                { name: 'T8', completionRate: 55, watchTime: 212, assignments: 126 },
-                { name: 'T9', completionRate: 58, watchTime: 218, assignments: 130 },
-                { name: 'T10', completionRate: 62, watchTime: 225, assignments: 134 },
-                { name: 'T11', completionRate: 65, watchTime: 232, assignments: 138 },
-                { name: 'T12', completionRate: 68, watchTime: 240, assignments: 145 },
+                {name: 'T1', completionRate: 32, watchTime: 165, assignments: 98},
+                {name: 'T2', completionRate: 35, watchTime: 172, assignments: 102},
+                {name: 'T3', completionRate: 38, watchTime: 178, assignments: 105},
+                {name: 'T4', completionRate: 42, watchTime: 185, assignments: 110},
+                {name: 'T5', completionRate: 45, watchTime: 192, assignments: 114},
+                {name: 'T6', completionRate: 48, watchTime: 198, assignments: 118},
+                {name: 'T7', completionRate: 52, watchTime: 205, assignments: 122},
+                {name: 'T8', completionRate: 55, watchTime: 212, assignments: 126},
+                {name: 'T9', completionRate: 58, watchTime: 218, assignments: 130},
+                {name: 'T10', completionRate: 62, watchTime: 225, assignments: 134},
+                {name: 'T11', completionRate: 65, watchTime: 232, assignments: 138},
+                {name: 'T12', completionRate: 68, watchTime: 240, assignments: 145},
             ];
         }
     };
@@ -94,11 +94,11 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
 
     // Dữ liệu đánh giá khóa học
     const ratingsData = [
-        { name: '5 sao', value: 58 },
-        { name: '4 sao', value: 32 },
-        { name: '3 sao', value: 7 },
-        { name: '2 sao', value: 2 },
-        { name: '1 sao', value: 1 },
+        {name: '5 sao', value: 58},
+        {name: '4 sao', value: 32},
+        {name: '3 sao', value: 7},
+        {name: '2 sao', value: 2},
+        {name: '1 sao', value: 1},
     ];
 
     // Màu sắc cho biểu đồ
@@ -106,11 +106,11 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
 
     // Top khóa học theo đánh giá
     const topRatedCourses = [
-        { name: 'Machine Learning', rating: 4.9, reviews: 85 },
-        { name: 'JavaScript Advanced', rating: 4.8, reviews: 120 },
-        { name: 'UI/UX Design', rating: 4.8, reviews: 95 },
-        { name: 'Python for Data Science', rating: 4.7, reviews: 110 },
-        { name: 'React Fundamentals', rating: 4.6, reviews: 105 },
+        {name: 'Machine Learning', rating: 4.9, reviews: 85},
+        {name: 'JavaScript Advanced', rating: 4.8, reviews: 120},
+        {name: 'UI/UX Design', rating: 4.8, reviews: 95},
+        {name: 'Python for Data Science', rating: 4.7, reviews: 110},
+        {name: 'React Fundamentals', rating: 4.6, reviews: 105},
     ];
 
     // Format số tiền (VNĐ)
@@ -124,13 +124,13 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
     };
 
     // Custom tooltip cho biểu đồ
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    const CustomTooltip = ({active, payload, label}: any) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-white p-3 border rounded shadow-sm">
                     <p className="font-medium">{label}</p>
                     {payload.map((entry: any, index: number) => (
-                        <p key={index} style={{ color: entry.color }}>
+                        <p key={index} style={{color: entry.color}}>
                             {entry.name}: {entry.value}
                             {entry.name === 'Tỷ lệ hoàn thành' ? '%' :
                                 entry.name === 'Thời gian xem' ? ' phút' : ''}
@@ -162,14 +162,14 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
                                         data={popularCoursesData}
-                                        margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                                        margin={{top: 10, right: 30, left: 0, bottom: 5}}
                                         layout="vertical"
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis type="number" />
-                                        <YAxis type="category" dataKey="name" width={150} />
-                                        <Tooltip content={<CustomTooltip />} />
-                                        <Legend />
+                                        <CartesianGrid strokeDasharray="3 3"/>
+                                        <XAxis type="number"/>
+                                        <YAxis type="category" dataKey="name" width={150}/>
+                                        <Tooltip content={<CustomTooltip/>}/>
+                                        <Legend/>
                                         <Bar
                                             dataKey="enrollments"
                                             name="Lượt ghi danh"
@@ -190,10 +190,10 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
                                         data={popularCoursesData}
-                                        margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                                        margin={{top: 10, right: 30, left: 0, bottom: 5}}
                                         layout="vertical"
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <CartesianGrid strokeDasharray="3 3"/>
                                         <XAxis
                                             type="number"
                                             tickFormatter={(value) => {
@@ -201,12 +201,12 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                                 return value;
                                             }}
                                         />
-                                        <YAxis type="category" dataKey="name" width={150} />
+                                        <YAxis type="category" dataKey="name" width={150}/>
                                         <Tooltip
                                             formatter={(value: any) => formatCurrency(value)}
-                                            content={<CustomTooltip />}
+                                            content={<CustomTooltip/>}
                                         />
-                                        <Legend />
+                                        <Legend/>
                                         <Bar
                                             dataKey="revenue"
                                             name="Doanh thu"
@@ -229,19 +229,19 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart
                                         data={engagementData}
-                                        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                                        margin={{top: 10, right: 30, left: 0, bottom: 0}}
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip content={<CustomTooltip />} />
-                                        <Legend />
+                                        <CartesianGrid strokeDasharray="3 3"/>
+                                        <XAxis dataKey="name"/>
+                                        <YAxis/>
+                                        <Tooltip content={<CustomTooltip/>}/>
+                                        <Legend/>
                                         <Line
                                             type="monotone"
                                             dataKey="completionRate"
                                             name="Tỷ lệ hoàn thành"
                                             stroke="#8884d8"
-                                            activeDot={{ r: 8 }}
+                                            activeDot={{r: 8}}
                                         />
                                         <Line
                                             type="monotone"
@@ -321,16 +321,16 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                                 cx="50%"
                                                 cy="50%"
                                                 labelLine={false}
-                                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                                label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                                 outerRadius={80}
                                                 fill="#8884d8"
                                                 dataKey="value"
                                             >
                                                 {ratingsData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
                                                 ))}
                                             </Pie>
-                                            <Tooltip />
+                                            <Tooltip/>
                                         </PieChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -367,7 +367,8 @@ export default function CoursePerformance({ timeRange }: CoursePerformanceProps)
                                                             fill="currentColor"
                                                             viewBox="0 0 20 20"
                                                         >
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            <path
+                                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                                         </svg>
                                                     ))}
                                                 </div>

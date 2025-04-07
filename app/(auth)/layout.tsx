@@ -1,17 +1,14 @@
-
-
-
 export default function ProfileLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                          children,
+                                      }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
+    return (
 
-    <div className="relative mt-[-37px]">
-      {children}
-    </div>
+        <div className="relative mt-[-37px]">
+            {children}
+        </div>
 
 
-  );
+    );
 }

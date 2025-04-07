@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import {
     AreaChart,
     Area,
@@ -13,30 +13,30 @@ import {
     Bar,
     Legend
 } from 'recharts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 
 type RevenueReportProps = {
     timeRange: 'week' | 'month' | 'quarter' | 'year';
 };
 
-export default function RevenueReport({ timeRange }: RevenueReportProps) {
+export default function RevenueReport({timeRange}: RevenueReportProps) {
     const [view, setView] = useState<'overview' | 'categories' | 'comparison'>('overview');
 
     // Mô phỏng dữ liệu doanh thu dựa trên timeRange
     const generateData = () => {
         if (timeRange === 'week') {
             return [
-                { name: 'Thứ 2', revenue: 12500000, profit: 8750000, cost: 3750000 },
-                { name: 'Thứ 3', revenue: 14200000, profit: 9940000, cost: 4260000 },
-                { name: 'Thứ 4', revenue: 16800000, profit: 11760000, cost: 5040000 },
-                { name: 'Thứ 5', revenue: 15600000, profit: 10920000, cost: 4680000 },
-                { name: 'Thứ 6', revenue: 19200000, profit: 13440000, cost: 5760000 },
-                { name: 'Thứ 7', revenue: 22500000, profit: 15750000, cost: 6750000 },
-                { name: 'CN', revenue: 18700000, profit: 13090000, cost: 5610000 },
+                {name: 'Thứ 2', revenue: 12500000, profit: 8750000, cost: 3750000},
+                {name: 'Thứ 3', revenue: 14200000, profit: 9940000, cost: 4260000},
+                {name: 'Thứ 4', revenue: 16800000, profit: 11760000, cost: 5040000},
+                {name: 'Thứ 5', revenue: 15600000, profit: 10920000, cost: 4680000},
+                {name: 'Thứ 6', revenue: 19200000, profit: 13440000, cost: 5760000},
+                {name: 'Thứ 7', revenue: 22500000, profit: 15750000, cost: 6750000},
+                {name: 'CN', revenue: 18700000, profit: 13090000, cost: 5610000},
             ];
         } else if (timeRange === 'month') {
-            return Array.from({ length: 30 }, (_, i) => ({
+            return Array.from({length: 30}, (_, i) => ({
                 name: `${i + 1}`,
                 revenue: 5000000 + Math.random() * 20000000,
                 profit: 3500000 + Math.random() * 14000000,
@@ -44,33 +44,33 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
             }));
         } else if (timeRange === 'quarter') {
             return [
-                { name: 'Tuần 1', revenue: 95000000, profit: 66500000, cost: 28500000 },
-                { name: 'Tuần 2', revenue: 102000000, profit: 71400000, cost: 30600000 },
-                { name: 'Tuần 3', revenue: 108000000, profit: 75600000, cost: 32400000 },
-                { name: 'Tuần 4', revenue: 115000000, profit: 80500000, cost: 34500000 },
-                { name: 'Tuần 5', revenue: 120000000, profit: 84000000, cost: 36000000 },
-                { name: 'Tuần 6', revenue: 125000000, profit: 87500000, cost: 37500000 },
-                { name: 'Tuần 7', revenue: 130000000, profit: 91000000, cost: 39000000 },
-                { name: 'Tuần 8', revenue: 135000000, profit: 94500000, cost: 40500000 },
-                { name: 'Tuần 9', revenue: 140000000, profit: 98000000, cost: 42000000 },
-                { name: 'Tuần 10', revenue: 145000000, profit: 101500000, cost: 43500000 },
-                { name: 'Tuần 11', revenue: 150000000, profit: 105000000, cost: 45000000 },
-                { name: 'Tuần 12', revenue: 158500000, profit: 110950000, cost: 47550000 },
+                {name: 'Tuần 1', revenue: 95000000, profit: 66500000, cost: 28500000},
+                {name: 'Tuần 2', revenue: 102000000, profit: 71400000, cost: 30600000},
+                {name: 'Tuần 3', revenue: 108000000, profit: 75600000, cost: 32400000},
+                {name: 'Tuần 4', revenue: 115000000, profit: 80500000, cost: 34500000},
+                {name: 'Tuần 5', revenue: 120000000, profit: 84000000, cost: 36000000},
+                {name: 'Tuần 6', revenue: 125000000, profit: 87500000, cost: 37500000},
+                {name: 'Tuần 7', revenue: 130000000, profit: 91000000, cost: 39000000},
+                {name: 'Tuần 8', revenue: 135000000, profit: 94500000, cost: 40500000},
+                {name: 'Tuần 9', revenue: 140000000, profit: 98000000, cost: 42000000},
+                {name: 'Tuần 10', revenue: 145000000, profit: 101500000, cost: 43500000},
+                {name: 'Tuần 11', revenue: 150000000, profit: 105000000, cost: 45000000},
+                {name: 'Tuần 12', revenue: 158500000, profit: 110950000, cost: 47550000},
             ];
         } else {
             return [
-                { name: 'T1', revenue: 380000000, profit: 266000000, cost: 114000000 },
-                { name: 'T2', revenue: 410000000, profit: 287000000, cost: 123000000 },
-                { name: 'T3', revenue: 425000000, profit: 297500000, cost: 127500000 },
-                { name: 'T4', revenue: 440000000, profit: 308000000, cost: 132000000 },
-                { name: 'T5', revenue: 455000000, profit: 318500000, cost: 136500000 },
-                { name: 'T6', revenue: 470000000, profit: 329000000, cost: 141000000 },
-                { name: 'T7', revenue: 485000000, profit: 339500000, cost: 145500000 },
-                { name: 'T8', revenue: 500000000, profit: 350000000, cost: 150000000 },
-                { name: 'T9', revenue: 515000000, profit: 360500000, cost: 154500000 },
-                { name: 'T10', revenue: 530000000, profit: 371000000, cost: 159000000 },
-                { name: 'T11', revenue: 545000000, profit: 381500000, cost: 163500000 },
-                { name: 'T12', revenue: 580000000, profit: 406000000, cost: 174000000 },
+                {name: 'T1', revenue: 380000000, profit: 266000000, cost: 114000000},
+                {name: 'T2', revenue: 410000000, profit: 287000000, cost: 123000000},
+                {name: 'T3', revenue: 425000000, profit: 297500000, cost: 127500000},
+                {name: 'T4', revenue: 440000000, profit: 308000000, cost: 132000000},
+                {name: 'T5', revenue: 455000000, profit: 318500000, cost: 136500000},
+                {name: 'T6', revenue: 470000000, profit: 329000000, cost: 141000000},
+                {name: 'T7', revenue: 485000000, profit: 339500000, cost: 145500000},
+                {name: 'T8', revenue: 500000000, profit: 350000000, cost: 150000000},
+                {name: 'T9', revenue: 515000000, profit: 360500000, cost: 154500000},
+                {name: 'T10', revenue: 530000000, profit: 371000000, cost: 159000000},
+                {name: 'T11', revenue: 545000000, profit: 381500000, cost: 163500000},
+                {name: 'T12', revenue: 580000000, profit: 406000000, cost: 174000000},
             ];
         }
     };
@@ -79,27 +79,27 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
 
     // Dữ liệu cho biểu đồ thể loại
     const categoryData = [
-        { name: 'Lập trình Web', revenue: 42500000 },
-        { name: 'Khoa học dữ liệu', revenue: 38750000 },
-        { name: 'Thiết kế', revenue: 35200000 },
-        { name: 'Marketing', revenue: 28450000 },
-        { name: 'Ngoại ngữ', revenue: 13600000 },
+        {name: 'Lập trình Web', revenue: 42500000},
+        {name: 'Khoa học dữ liệu', revenue: 38750000},
+        {name: 'Thiết kế', revenue: 35200000},
+        {name: 'Marketing', revenue: 28450000},
+        {name: 'Ngoại ngữ', revenue: 13600000},
     ];
 
     // Dữ liệu so sánh năm trước với năm nay
     const comparisonData = [
-        { name: 'T1', current: 380000000, previous: 320000000 },
-        { name: 'T2', current: 410000000, previous: 340000000 },
-        { name: 'T3', current: 425000000, previous: 360000000 },
-        { name: 'T4', current: 440000000, previous: 380000000 },
-        { name: 'T5', current: 455000000, previous: 395000000 },
-        { name: 'T6', current: 470000000, previous: 410000000 },
-        { name: 'T7', current: 485000000, previous: 430000000 },
-        { name: 'T8', current: 500000000, previous: 450000000 },
-        { name: 'T9', current: 515000000, previous: 465000000 },
-        { name: 'T10', current: 530000000, previous: 480000000 },
-        { name: 'T11', current: 545000000, previous: 495000000 },
-        { name: 'T12', current: 580000000, previous: 510000000 },
+        {name: 'T1', current: 380000000, previous: 320000000},
+        {name: 'T2', current: 410000000, previous: 340000000},
+        {name: 'T3', current: 425000000, previous: 360000000},
+        {name: 'T4', current: 440000000, previous: 380000000},
+        {name: 'T5', current: 455000000, previous: 395000000},
+        {name: 'T6', current: 470000000, previous: 410000000},
+        {name: 'T7', current: 485000000, previous: 430000000},
+        {name: 'T8', current: 500000000, previous: 450000000},
+        {name: 'T9', current: 515000000, previous: 465000000},
+        {name: 'T10', current: 530000000, previous: 480000000},
+        {name: 'T11', current: 545000000, previous: 495000000},
+        {name: 'T12', current: 580000000, previous: 510000000},
     ];
 
     // Format số tiền (VNĐ)
@@ -113,13 +113,13 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
     };
 
     // Custom tooltip cho biểu đồ
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    const CustomTooltip = ({active, payload, label}: any) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-white p-3 border rounded shadow-sm">
                     <p className="font-medium">{label}</p>
                     {payload.map((entry: any, index: number) => (
-                        <p key={index} style={{ color: entry.color }}>
+                        <p key={index} style={{color: entry.color}}>
                             {entry.name}: {formatCurrency(entry.value)}
                         </p>
                     ))}
@@ -143,18 +143,18 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
                                 data={data}
-                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                                margin={{top: 10, right: 30, left: 0, bottom: 0}}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <CartesianGrid strokeDasharray="3 3"/>
+                                <XAxis dataKey="name"/>
                                 <YAxis
                                     tickFormatter={(value) => {
                                         if (value >= 1000000) return `${value / 1000000}tr`;
                                         return value;
                                     }}
                                 />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend />
+                                <Tooltip content={<CustomTooltip/>}/>
+                                <Legend/>
                                 <Area
                                     type="monotone"
                                     dataKey="revenue"
@@ -222,19 +222,19 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={categoryData}
-                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                                margin={{top: 10, right: 30, left: 0, bottom: 0}}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <CartesianGrid strokeDasharray="3 3"/>
+                                <XAxis dataKey="name"/>
                                 <YAxis
                                     tickFormatter={(value) => {
                                         if (value >= 1000000) return `${value / 1000000}tr`;
                                         return value;
                                     }}
                                 />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend />
-                                <Bar dataKey="revenue" name="Doanh thu" fill="#8884d8" />
+                                <Tooltip content={<CustomTooltip/>}/>
+                                <Legend/>
+                                <Bar dataKey="revenue" name="Doanh thu" fill="#8884d8"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -246,7 +246,8 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
                                     <div key={index}>
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-sm">{category.name}</span>
-                                            <span className="text-sm font-medium">{formatCurrency(category.revenue)}</span>
+                                            <span
+                                                className="text-sm font-medium">{formatCurrency(category.revenue)}</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2">
                                             <div
@@ -268,20 +269,20 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={comparisonData}
-                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                                margin={{top: 10, right: 30, left: 0, bottom: 0}}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <CartesianGrid strokeDasharray="3 3"/>
+                                <XAxis dataKey="name"/>
                                 <YAxis
                                     tickFormatter={(value) => {
                                         if (value >= 1000000) return `${value / 1000000}tr`;
                                         return value;
                                     }}
                                 />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend />
-                                <Bar dataKey="current" name="Năm nay" fill="#8884d8" />
-                                <Bar dataKey="previous" name="Năm trước" fill="#82ca9d" />
+                                <Tooltip content={<CustomTooltip/>}/>
+                                <Legend/>
+                                <Bar dataKey="current" name="Năm nay" fill="#8884d8"/>
+                                <Bar dataKey="previous" name="Năm trước" fill="#82ca9d"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -324,7 +325,7 @@ export default function RevenueReport({ timeRange }: RevenueReportProps) {
                                             <span className="font-medium text-green-600">
                                                 {Math.round(
                                                     ((comparisonData.reduce((sum, item) => sum + item.current, 0) -
-                                                        comparisonData.reduce((sum, item) => sum + item.previous, 0)) /
+                                                            comparisonData.reduce((sum, item) => sum + item.previous, 0)) /
                                                         comparisonData.reduce((sum, item) => sum + item.previous, 0)) * 100
                                                 )}%
                                             </span>

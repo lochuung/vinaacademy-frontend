@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { X, Check } from 'lucide-react';
+import {useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {X, Check} from 'lucide-react';
 
 export default function Filters() {
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
@@ -12,25 +12,25 @@ export default function Filters() {
 
     // Mock data
     const categories = [
-        { id: 'web-dev', name: 'Web Development' },
-        { id: 'mobile-dev', name: 'Mobile Development' },
-        { id: 'data-science', name: 'Data Science' },
-        { id: 'design', name: 'Design' },
-        { id: 'marketing', name: 'Marketing' },
-        { id: 'business', name: 'Business' },
-        { id: 'it-software', name: 'IT & Software' },
-        { id: 'personal-dev', name: 'Personal Development' },
+        {id: 'web-dev', name: 'Web Development'},
+        {id: 'mobile-dev', name: 'Mobile Development'},
+        {id: 'data-science', name: 'Data Science'},
+        {id: 'design', name: 'Design'},
+        {id: 'marketing', name: 'Marketing'},
+        {id: 'business', name: 'Business'},
+        {id: 'it-software', name: 'IT & Software'},
+        {id: 'personal-dev', name: 'Personal Development'},
     ];
 
     const ratings = [5, 4, 3, 2, 1];
 
     const dateRanges = [
-        { id: 'all', name: 'Tất cả thời gian' },
-        { id: 'today', name: 'Hôm nay' },
-        { id: 'last-week', name: '7 ngày qua' },
-        { id: 'last-month', name: '30 ngày qua' },
-        { id: 'last-3-months', name: '3 tháng qua' },
-        { id: 'last-year', name: '1 năm qua' },
+        {id: 'all', name: 'Tất cả thời gian'},
+        {id: 'today', name: 'Hôm nay'},
+        {id: 'last-week', name: '7 ngày qua'},
+        {id: 'last-month', name: '30 ngày qua'},
+        {id: 'last-3-months', name: '3 tháng qua'},
+        {id: 'last-year', name: '1 năm qua'},
     ];
 
     // Toggle category selection
@@ -174,13 +174,17 @@ export default function Filters() {
                                 className="ml-2 text-sm text-gray-700 flex items-center"
                             >
                                 {[...Array(rating)].map((_, i) => (
-                                    <svg key={i} className="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    <svg key={i} className="h-4 w-4 text-yellow-400" fill="currentColor"
+                                         viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                     </svg>
                                 ))}
                                 {[...Array(5 - rating)].map((_, i) => (
-                                    <svg key={i} className="h-4 w-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    <svg key={i} className="h-4 w-4 text-gray-300" fill="currentColor"
+                                         viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                     </svg>
                                 ))}
                                 <span className="ml-1">& trở lên</span>
@@ -218,11 +222,11 @@ export default function Filters() {
             {/* Action buttons */}
             <div className="col-span-1 md:col-span-2 lg:col-span-4 flex justify-end space-x-2 pt-4 border-t">
                 <Button variant="outline" onClick={resetFilters}>
-                    <X className="h-4 w-4 mr-2" />
+                    <X className="h-4 w-4 mr-2"/>
                     Đặt lại
                 </Button>
                 <Button className="bg-black text-white" onClick={applyFilters}>
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4 mr-2"/>
                     Áp dụng
                 </Button>
             </div>

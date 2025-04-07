@@ -1,6 +1,6 @@
 // components/course-creator/sections/PricingSection.tsx
-import { DollarSign } from 'lucide-react';
-import { CourseData } from '@/types/new-course';
+import {DollarSign} from 'lucide-react';
+import {CourseData} from '@/types/new-course';
 import InfoAlert from '../InfoAlert';
 
 interface PricingSectionProps {
@@ -10,15 +10,15 @@ interface PricingSectionProps {
 }
 
 export default function PricingSection({
-    courseData,
-    onInputChange,
-    onCheckboxChange
-}: PricingSectionProps) {
+                                           courseData,
+                                           onInputChange,
+                                           onCheckboxChange
+                                       }: PricingSectionProps) {
     return (
         <div className="p-6 space-y-6">
             <InfoAlert
                 title="Định giá khóa học của bạn"
-                icon={<DollarSign className="h-6 w-6 text-green-500" />}
+                icon={<DollarSign className="h-6 w-6 text-green-500"/>}
                 variant="green"
             >
                 <p>
@@ -56,7 +56,8 @@ export default function PricingSection({
             <div className="pt-4 border-t border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Các tùy chọn giá</h3>
                 <div className="mt-4 space-y-4">
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                    <div
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
                         <div className="flex items-start">
                             <div className="flex items-center h-5 mt-1">
                                 <input
@@ -79,7 +80,8 @@ export default function PricingSection({
                         </div>
                     </div>
 
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                    <div
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
                         <div className="flex items-start">
                             <div className="flex items-center h-5 mt-1">
                                 <input

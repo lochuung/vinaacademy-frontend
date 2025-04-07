@@ -7,9 +7,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
-import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Slash } from 'lucide-react';
-import { Fragment } from 'react';
+import {useBreadcrumbs} from '@/hooks/use-breadcrumbs';
+import {Slash} from 'lucide-react';
+import {Fragment} from 'react';
 
 // Component Breadcrumbs hiển thị đường dẫn điều hướng (breadcrumbs) dựa trên hook useBreadcrumbs
 export function Breadcrumbs() {
@@ -36,7 +36,7 @@ export function Breadcrumbs() {
                         {/* Nếu không phải mục cuối cùng, hiển thị dấu phân cách (separator) */}
                         {index < items.length - 1 && (
                             <BreadcrumbSeparator className='hidden md:block'>
-                                <Slash />
+                                <Slash/>
                             </BreadcrumbSeparator>
                         )}
                         {/* Nếu là mục cuối cùng, hiển thị BreadcrumbPage (điểm hiện tại) */}

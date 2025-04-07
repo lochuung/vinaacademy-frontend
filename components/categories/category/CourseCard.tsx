@@ -1,7 +1,7 @@
 // components/CourseCard.tsx
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import {Star} from "lucide-react";
 
 interface CourseCardProps {
     course: {
@@ -17,7 +17,7 @@ interface CourseCardProps {
     };
 }
 
-export function CourseCard({ course }: CourseCardProps) {
+export function CourseCard({course}: CourseCardProps) {
     return (
         <Link href={`/courses/${course.id}`}>
             <div className="bg-white border border-gray-200 hover:shadow-lg transition-shadow">

@@ -13,13 +13,14 @@ interface FilterSidebarProps {
     showMobileFilters: boolean;
     toggleMobileFilters: () => void;
     categories: string[];
-    subCategories: string[];
-    topics: string[];
-    selectedTopics: string[];
-    setSelectedTopics: (topics: string[]) => void;
+    subCategories?: string[];
+    topics?: string[];
+    selectedTopics?: string[];
+    setSelectedTopics?: (topics: string[]) => void;
     minPrice: string;
     maxPrice: string;
     levels: string[];
+    selectedRating: string;
     applyFilters: (filters: FilterUpdates) => void;
     clearAllFilters: () => void;
 }
@@ -28,13 +29,14 @@ export default function FilterSidebar({
     showMobileFilters,
     toggleMobileFilters,
     categories,
-    subCategories,
-    topics,
-    selectedTopics,
-    setSelectedTopics,
+    subCategories = [],
+    topics = [],
+    selectedTopics = [],
+    setSelectedTopics = () => {},
     minPrice,
     maxPrice,
     levels,
+    selectedRating,
     applyFilters,
     clearAllFilters
 }: FilterSidebarProps) {
@@ -139,6 +141,11 @@ export default function FilterSidebar({
         });
     };
 
+    const hasActiveFilters = categories.length > 0 || 
+                            (subCategories && subCategories.length > 0) || 
+                            (topics && topics.length > 0) || 
+                            minPrice || maxPrice || levels.length > 0 || selectedRating;
+
     return (
         <div className={`${showMobileFilters ? 'block' : 'hidden'} lg:block lg:w-1/4`}>
             <div className="bg-white rounded-lg shadow-sm p-4 sticky top-24" style={{ position: "sticky", top: "24px" }}>
@@ -187,10 +194,12 @@ export default function FilterSidebar({
                 <RatingFilter
                     expanded={expandedSections.rating}
                     toggleSection={() => toggleSection('rating')}
+                    selectedRating={selectedRating}
+                    applyFilters={applyFilters}
                 />
 
                 {/* Nút xóa tất cả bộ lọc */}
-                {(categories.length > 0 || subCategories.length > 0 || topics.length > 0 || minPrice || maxPrice || levels.length > 0) && (
+                {hasActiveFilters && (
                     <Button
                         variant="outline"
                         size="sm"

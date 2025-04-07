@@ -5,7 +5,7 @@ interface CategoryHeaderProps {
     subCategory?: string;
 }
 
-export function CategoryHeader({ category, subCategory }: CategoryHeaderProps) {
+export function CategoryHeader({category, subCategory}: CategoryHeaderProps) {
     if (!category) return null;
 
     return (

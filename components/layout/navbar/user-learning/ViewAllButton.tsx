@@ -1,5 +1,5 @@
 import Link from "next/link"; // Import component Link từ next/link
-import { ChevronRight } from "lucide-react"; // Import icon ChevronRight từ thư viện lucide-react
+import {ChevronRight} from "lucide-react"; // Import icon ChevronRight từ thư viện lucide-react
 
 // Định nghĩa interface cho các props của component ViewAllButton
 interface ViewAllButtonProps {
@@ -9,9 +9,9 @@ interface ViewAllButtonProps {
 
 // Định nghĩa component ViewAllButton
 export const ViewAllButton = ({
-    href = "/my-courses",
-    className = "" // Đặt giá trị mặc định cho className là chuỗi rỗng
-}: ViewAllButtonProps) => {
+                                  href = "/my-courses",
+                                  className = "" // Đặt giá trị mặc định cho className là chuỗi rỗng
+                              }: ViewAllButtonProps) => {
     return (
         <Link
             href={href}
@@ -24,7 +24,7 @@ export const ViewAllButton = ({
             `}
         >
             <span>Xem tất cả</span> {/* Hiển thị văn bản "Xem tất cả" */}
-            <ChevronRight className="w-4 h-4" /> {/* Hiển thị icon ChevronRight */}
+            <ChevronRight className="w-4 h-4"/> {/* Hiển thị icon ChevronRight */}
         </Link>
     );
 };

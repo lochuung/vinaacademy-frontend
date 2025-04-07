@@ -3,7 +3,7 @@ interface PassingScoreInputProps {
     onChange: (value: number) => void;
 }
 
-export default function PassingScoreInput({ value, onChange }: PassingScoreInputProps) {
+export default function PassingScoreInput({value, onChange}: PassingScoreInputProps) {
     return (
         <div className="pl-6">
             <label htmlFor="min-score" className="block text-sm text-gray-700 mb-1">

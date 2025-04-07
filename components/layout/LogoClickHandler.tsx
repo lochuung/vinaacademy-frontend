@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 
 export default function LogoClickHandler() {
     useEffect(() => {
@@ -19,7 +19,8 @@ export default function LogoClickHandler() {
         return () => {
             const logo = document.querySelector('a.text-2xl.font-bold');
             if (logo) {
-                logo.removeEventListener('click', () => { });
+                logo.removeEventListener('click', () => {
+                });
             }
         };
     }, []);

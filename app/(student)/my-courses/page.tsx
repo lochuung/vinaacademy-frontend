@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { LearningCourse } from "@/types/navbar";
-import { mockEnrolledCourses } from "@/data/mockCourseData";
+import {useState, useEffect} from "react";
+import {LearningCourse} from "@/types/navbar";
+import {mockEnrolledCourses} from "@/data/mockCourseData";
 import CourseCard from "@/components/student/progress/CourseCard";
 
 type SortOption = "newest" | "oldest" | "progress-high" | "progress-low" | "name-az" | "name-za";
@@ -56,9 +56,9 @@ const MyCoursesPage = () => {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(
                 course =>
-                (course.name?.toLowerCase().includes(query) ||
-                    course.instructor?.toLowerCase().includes(query) ||
-                    course.category?.toLowerCase().includes(query))
+                    (course.name?.toLowerCase().includes(query) ||
+                        course.instructor?.toLowerCase().includes(query) ||
+                        course.category?.toLowerCase().includes(query))
             );
         }
 
@@ -135,7 +135,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "all"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                                }`}
+                            }`}
                         >
                             Tất cả khóa học
                         </button>
@@ -144,7 +144,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "inProgress"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                                }`}
+                            }`}
                         >
                             Đang học
                         </button>
@@ -153,7 +153,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "completed"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                                }`}
+                            }`}
                         >
                             Hoàn thành
                         </button>
@@ -162,7 +162,8 @@ const MyCoursesPage = () => {
 
                 {/* Search and Sort Controls */}
                 {!isLoading && courses.length > 0 && (
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <div
+                        className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                         <div className="relative w-full md:w-1/3">
                             <input
                                 type="text"
@@ -208,7 +209,8 @@ const MyCoursesPage = () => {
                 {/* Loading state */}
                 {isLoading ? (
                     <div className="flex justify-center items-center py-12">
-                        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+                        <div
+                            className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
                     </div>
                 ) : (
                     <>
@@ -247,7 +249,7 @@ const MyCoursesPage = () => {
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredCourses.map((course) => (
-                                    <CourseCard key={course.id} course={course} />
+                                    <CourseCard key={course.id} course={course}/>
                                 ))}
                             </div>
                         )}

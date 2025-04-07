@@ -1,11 +1,11 @@
-import { FC, useEffect, useState } from 'react';
-import { Clock } from 'lucide-react';
+import {FC, useEffect, useState} from 'react';
+import {Clock} from 'lucide-react';
 
 interface QuizTimerProps {
     remainingTime: number; // thời gian còn lại tính bằng giây
 }
 
-const QuizTimer: FC<QuizTimerProps> = ({ remainingTime }) => {
+const QuizTimer: FC<QuizTimerProps> = ({remainingTime}) => {
     const [warningLevel, setWarningLevel] = useState<'normal' | 'warning' | 'danger'>('normal');
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const QuizTimer: FC<QuizTimerProps> = ({ remainingTime }) => {
 
     return (
         <div className={getTimerClasses()}>
-            <Clock size={18} className="mr-2" />
+            <Clock size={18} className="mr-2"/>
             <span className="text-lg">{formatTime(remainingTime)}</span>
         </div>
     );

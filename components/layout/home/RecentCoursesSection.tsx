@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { mockEnrolledCourses } from "@/data/mockCourseData";
+import {useEffect, useState} from "react";
+import {mockEnrolledCourses} from "@/data/mockCourseData";
 import CourseCard from "@/components/layout/home/CourseCard";
 
 // Định nghĩa kiểu dữ liệu cho các khóa học
@@ -49,7 +49,7 @@ const RecentCoursesSection = () => {
             {/* 3 khóa học gần nhất từ mockCourseData */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-5">
                 {recentCourses.map((course) => (
-                    <CourseCard key={course.id} course={course} />
+                    <CourseCard key={course.id} course={course}/>
                 ))}
             </div>
         </>

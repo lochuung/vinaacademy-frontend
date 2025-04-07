@@ -1,6 +1,6 @@
 // components/MobileFilterDrawer.tsx
-import { Button } from "@/components/ui/button";
-import { Filter, X } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Filter, X} from "lucide-react";
 import {
     Drawer,
     DrawerContent,
@@ -33,21 +33,21 @@ interface MobileFilterDrawerProps {
 }
 
 export function MobileFilterDrawer({
-    categories,
-    selectedCategory,
-    setSelectedCategory,
-    selectedLevel,
-    setSelectedLevel,
-    priceRange,
-    setPriceRange,
-    clearAllFilters,
-    levels
-}: MobileFilterDrawerProps) {
+                                       categories,
+                                       selectedCategory,
+                                       setSelectedCategory,
+                                       selectedLevel,
+                                       setSelectedLevel,
+                                       priceRange,
+                                       setPriceRange,
+                                       clearAllFilters,
+                                       levels
+                                   }: MobileFilterDrawerProps) {
     return (
         <Drawer>
             <DrawerTrigger asChild>
                 <Button variant="outline" className="md:hidden flex items-center gap-2">
-                    <Filter size={16} />
+                    <Filter size={16}/>
                     Bộ lọc
                 </Button>
             </DrawerTrigger>
@@ -56,7 +56,7 @@ export function MobileFilterDrawer({
                     <h3 className="text-lg font-bold">Bộ lọc</h3>
                     <DrawerClose asChild>
                         <Button variant="ghost" size="icon">
-                            <X size={18} />
+                            <X size={18}/>
                         </Button>
                     </DrawerClose>
                 </div>
@@ -68,7 +68,7 @@ export function MobileFilterDrawer({
                         <h4 className="font-medium mb-2">Danh mục</h4>
                         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Tất cả danh mục" />
+                                <SelectValue placeholder="Tất cả danh mục"/>
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Tất cả danh mục</SelectItem>

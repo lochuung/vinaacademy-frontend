@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 
 // Mảng chứa đường dẫn các hình ảnh banner
 const slides = [
@@ -37,21 +37,23 @@ const Banner: React.FC = () => {
         <div className="relative w-full overflow-hidden">
             {/* Phần hiển thị các slides */}
             <div className="flex transition-transform duration-700 ease-in-out"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                 style={{transform: `translateX(-${currentSlide * 100}%)`}}
             >
                 {/* Render từng slide */}
                 {slides.map((src, index) => (
                     <div key={index} className="min-w-full">
-                        <img src={src} className="w-full" alt={`Banner ${index + 1}`} />
+                        <img src={src} className="w-full" alt={`Banner ${index + 1}`}/>
                     </div>
                 ))}
             </div>
 
             {/* Nút điều hướng Previous và Next */}
-            <button onClick={handlePrevClick} className="absolute left-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
+            <button onClick={handlePrevClick}
+                    className="absolute left-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
                 ❮
             </button>
-            <button onClick={handleNextClick} className="absolute right-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
+            <button onClick={handleNextClick}
+                    className="absolute right-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
                 ❯
             </button>
 

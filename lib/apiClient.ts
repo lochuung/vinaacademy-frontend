@@ -48,7 +48,7 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        console.error(`❌ Response error: ${error.response?.status || 'NETWORK ERROR'}`, error.response?.data || error.message);  
+        console.error(`❌ Response error: ${error.response?.status || 'NETWORK ERROR'}`, error.response?.data || error.message);
         const originalRequest = error.config;
         if (error.response?.status === 401 &&
             originalRequest &&

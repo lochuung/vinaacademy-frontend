@@ -1,18 +1,19 @@
 import React from "react";
 import Link from "next/link";
-import { LearningCourse } from "@/types/navbar";
+import {LearningCourse} from "@/types/navbar";
 
 interface CourseCardProps {
     course: LearningCourse;
 }
 
-const CourseCard = ({ course }: CourseCardProps) => {
+const CourseCard = ({course}: CourseCardProps) => {
     const isCompleted = course.progress === 100;
     const title = course.name;
     const courseSlug = course.slug || course.id.toString();
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div
+            className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="relative">
                 <img
                     src={course.image}
@@ -20,7 +21,8 @@ const CourseCard = ({ course }: CourseCardProps) => {
                     className="w-full h-48 object-cover"
                 />
                 {course.category && (
-                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-medium text-gray-700">
+                    <div
+                        className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-medium text-gray-700">
                         {course.category}
                     </div>
                 )}
@@ -32,7 +34,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
                         {course.instructor}
                     </span>
                     <span className={`text-sm font-medium ${isCompleted ? "text-gray-700" : "text-black"
-                        }`}>
+                    }`}>
                         {isCompleted ? "Đã hoàn thành" : `${course.progress}% hoàn thành`}
                     </span>
                 </div>
@@ -51,8 +53,8 @@ const CourseCard = ({ course }: CourseCardProps) => {
                                         : course.progress >= 20
                                             ? "bg-gray-400"
                                             : "bg-gray-300"
-                            }`}
-                        style={{ width: `${course.progress}%` }}
+                        }`}
+                        style={{width: `${course.progress}%`}}
                     ></div>
                 </div>
 

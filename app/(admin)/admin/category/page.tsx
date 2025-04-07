@@ -1,15 +1,15 @@
 'use client';
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CategoryForm } from "@/components/admin/category/CategoryForm";
-import { CategoryList } from "@/components/admin/category/CategoryList";
-import { Category, CategoryFormData } from "@/types/category-type"; 
-import { useToast } from "@/hooks/use-toast";
+import React, {useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {CategoryForm} from "@/components/admin/category/CategoryForm";
+import {CategoryList} from "@/components/admin/category/CategoryList";
+import {Category, CategoryFormData} from "@/types/category-type";
+import {useToast} from "@/hooks/use-toast";
 
 export default function CategoryManagementPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [editingCategory, setEditingCategory] = useState<Category | undefined>(undefined);
-    const { toast } = useToast();
+    const {toast} = useToast();
 
     const handleUpdateCategory = async (data: CategoryFormData) => {
         if (!editingCategory) return;
@@ -30,7 +30,7 @@ export default function CategoryManagementPage() {
                 };
 
                 // add to new that parent choose (if no change parent so it will add again to old parent because removed from child of parent before)
-                
+
                 if (data.parentId && data.parentId !== -999) {
                     console.log("updatedCategories", data.parentId);
                     updatedCategories = addToNewParent(updatedCategories, updatedCategory, data.parentId);
@@ -128,12 +128,12 @@ export default function CategoryManagementPage() {
                             categoryAdded = true; // Mark as added
                             return {
                                 ...cat,
-                                children: [...(cat.children || []), { ...newCategory, parent: cat }]
+                                children: [...(cat.children || []), {...newCategory, parent: cat}]
                             };
                         }
 
                         if (cat.children && cat.children.length > 0) {
-                            return { ...cat, children: findAndAddCategory(cat.children) };
+                            return {...cat, children: findAndAddCategory(cat.children)};
                         }
 
                         return cat;
@@ -168,7 +168,7 @@ export default function CategoryManagementPage() {
 
     const handleDeleteCategory = (categoryId: number) => {
         try {
-            
+
             setCategories(prevCategories => {
                 // Recursive function to remove category and its children
                 const removeCategory = (cats: Category[]): Category[] => {
@@ -220,7 +220,7 @@ export default function CategoryManagementPage() {
                             {editingCategory ? 'Chỉnh sửa danh mục' : 'Tạo danh mục mới'}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent >
+                    <CardContent>
                         <CategoryForm
                             categories={categories}
                             onSubmit={editingCategory ? handleUpdateCategory : handleCreateCategory}

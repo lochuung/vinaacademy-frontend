@@ -1,5 +1,5 @@
-import { GripVertical, Trash2, CheckCircle } from 'lucide-react';
-import { QuizOption, QuizQuestion } from '@/types/lecture';
+import {GripVertical, Trash2, CheckCircle} from 'lucide-react';
+import {QuizOption, QuizQuestion} from '@/types/lecture';
 
 interface OptionItemProps {
     option: QuizOption;
@@ -12,18 +12,18 @@ interface OptionItemProps {
 }
 
 export default function OptionItem({
-    option,
-    optionIndex,
-    questionType,
-    onRemove,
-    onUpdateText,
-    onToggleCorrect,
-    canRemove
-}: OptionItemProps) {
+                                       option,
+                                       optionIndex,
+                                       questionType,
+                                       onRemove,
+                                       onUpdateText,
+                                       onToggleCorrect,
+                                       canRemove
+                                   }: OptionItemProps) {
     return (
         <div className="flex items-center">
             <div className="flex-none mr-2">
-                <GripVertical className="h-4 w-4 text-gray-300" />
+                <GripVertical className="h-4 w-4 text-gray-300"/>
             </div>
 
             <div className="mr-2">
@@ -33,10 +33,10 @@ export default function OptionItem({
                         className={`w-5 h-5 rounded border cursor-pointer flex items-center justify-center ${option.isCorrect
                             ? 'bg-green-500 border-green-500'
                             : 'border-gray-300 hover:border-gray-400'
-                            }`}
+                        }`}
                         onClick={onToggleCorrect}
                     >
-                        {option.isCorrect && <CheckCircle size={16} className="text-white" />}
+                        {option.isCorrect && <CheckCircle size={16} className="text-white"/>}
                     </div>
                 ) : (
                     // Radio button cho single choice và true/false
@@ -44,7 +44,7 @@ export default function OptionItem({
                         className={`w-5 h-5 rounded-full border cursor-pointer flex items-center justify-center ${option.isCorrect
                             ? 'bg-green-500 border-green-500'
                             : 'border-gray-300 hover:border-gray-400'
-                            }`}
+                        }`}
                         onClick={onToggleCorrect}
                     >
                         {option.isCorrect && <div className="w-2 h-2 bg-white rounded-full"></div>}
@@ -71,7 +71,7 @@ export default function OptionItem({
                     className="ml-2 text-gray-400 hover:text-red-500"
                     title="Xóa lựa chọn"
                 >
-                    <Trash2 size={16} />
+                    <Trash2 size={16}/>
                 </button>
             )}
         </div>

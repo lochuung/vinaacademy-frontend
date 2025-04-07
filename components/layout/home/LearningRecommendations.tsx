@@ -10,7 +10,7 @@ const LearningRecommendations = () => {
                 <h5 className="text-xl font-semibold text-gray-800 mt-1">Gợi ý cho bạn</h5>
             </div>
             <div className="mt-[-20px] w-full">
-                <Carousel />
+                <Carousel/>
             </div>
         </div>
     );

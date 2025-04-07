@@ -1,11 +1,11 @@
 import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {ScrollArea} from '@/components/ui/scroll-area';
 
 // Component PageContainer dùng để chứa nội dung trang với khả năng cuộn nội dung nếu cần
 export default function PageContainer({
-    children,            // Các thành phần con sẽ được hiển thị bên trong container
-    scrollable = true    // Thuộc tính cho biết liệu nội dung có cuộn được hay không
-}: {
+                                          children,            // Các thành phần con sẽ được hiển thị bên trong container
+                                          scrollable = true    // Thuộc tính cho biết liệu nội dung có cuộn được hay không
+                                      }: {
     children: React.ReactNode;
     scrollable?: boolean;
 }) {

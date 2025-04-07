@@ -1,6 +1,6 @@
 'use client';
 
-import { CartItem } from '@/types/cart-courses';
+import {CartItem} from '@/types/cart-courses';
 import EmptyCartMessage from '@/components/cart/EmptyCartMessage';
 import CartItemCard from '@/components/cart/CartItemCard';
 import CheckoutSummary from '@/components/cart/CheckoutSummary';
@@ -67,7 +67,7 @@ export default function Cart() {
             <h1 className="text-2xl font-bold mb-6">Giỏ hàng</h1>
 
             {cartItems.length === 0 ? (
-                <EmptyCartMessage />
+                <EmptyCartMessage/>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Cart Content */}
@@ -87,7 +87,7 @@ export default function Cart() {
 
                     {/* Checkout Summary */}
                     <div className="lg:col-span-1">
-                        <CheckoutSummary cartItems={cartItems} />
+                        <CheckoutSummary cartItems={cartItems}/>
                     </div>
                 </div>
             )}

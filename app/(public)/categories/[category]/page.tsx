@@ -1,20 +1,20 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { categoriesData } from "@/data/categories";
-import { mockCourses } from "@/data/mockCourses";
+import {useParams, useRouter} from "next/navigation";
+import {useEffect, useState} from "react";
+import {categoriesData} from "@/data/categories";
+import {mockCourses} from "@/data/mockCourses";
 
 // Import components
-import { LoadingState } from "@/components/categories/ui/LoadingState";
-import { NotFoundState } from "@/components/categories/ui/NotFoundState";
-import { CategoryNavigation } from "@/components/categories/category/CategoryNavigation";
-import { CategoryHeader } from "@/components/categories/category/CategoryHeader";
-import { FilterSidebar } from "@/components/categories/category/FilterSidebar";
-import { SortingControls } from "@/components/categories/category/SortingControls";
-import { TrendingTopics } from "@/components/categories/category/TrendingTopics";
-import { CourseTabs } from "@/components/categories/ui/CourseTabs";
-import { CourseGrid } from "@/components/categories/ui/CourseGrid";
+import {LoadingState} from "@/components/categories/ui/LoadingState";
+import {NotFoundState} from "@/components/categories/ui/NotFoundState";
+import {CategoryNavigation} from "@/components/categories/category/CategoryNavigation";
+import {CategoryHeader} from "@/components/categories/category/CategoryHeader";
+import {FilterSidebar} from "@/components/categories/category/FilterSidebar";
+import {SortingControls} from "@/components/categories/category/SortingControls";
+import {TrendingTopics} from "@/components/categories/category/TrendingTopics";
+import {CourseTabs} from "@/components/categories/ui/CourseTabs";
+import {CourseGrid} from "@/components/categories/ui/CourseGrid";
 
 export default function CategoryPage() {
     const router = useRouter();
@@ -213,11 +213,11 @@ export default function CategoryPage() {
 
     // Handle error when category not found
     if (matchingCount === 0) {
-        return <NotFoundState />;
+        return <NotFoundState/>;
     }
 
     if (!categoryInfo.category) {
-        return <LoadingState />;
+        return <LoadingState/>;
     }
 
     // Reset all filters

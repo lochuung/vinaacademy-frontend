@@ -6,7 +6,7 @@ interface SubCategoryHeaderProps {
     selectedTopic: string | null;
 }
 
-export function SubCategoryHeader({ category, subCategory, selectedTopic }: SubCategoryHeaderProps) {
+export function SubCategoryHeader({category, subCategory, selectedTopic}: SubCategoryHeaderProps) {
     if (!subCategory) return null;
 
     return (

@@ -65,7 +65,7 @@ export const Icons = {
     moon: Moon,
     laptop: Laptop,
     // Định nghĩa một icon tùy chỉnh cho GitHub sử dụng thẻ SVG
-    gitHub: ({ ...props }: LucideProps) => (
+    gitHub: ({...props}: LucideProps) => (
         <svg
             aria-hidden='true'              // Ẩn icon khỏi các công cụ trợ năng nếu cần
             focusable='false'              // Vô hiệu hoá khả năng focus của icon
@@ -74,7 +74,7 @@ export const Icons = {
             role='img'                     // Định nghĩa vai trò của phần tử là hình ảnh
             xmlns='http://www.w3.org/2000/svg' // Khai báo không gian tên SVG
             viewBox='0 0 496 512'          // Thiết lập viewBox cho icon
-            {...props}                     // Truyền các props tùy chỉnh từ bên ngoài
+            {...props} // Truyền các props tùy chỉnh từ bên ngoài
         >
             <path
                 fill='currentColor'       // Thiết lập màu của icon kế thừa từ màu hiện tại

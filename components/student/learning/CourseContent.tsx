@@ -1,9 +1,9 @@
 "use client";
 
-import { FC, useState, useEffect } from 'react';
-import { CheckCircle, Circle, Play } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { Lecture, Section } from '@/types/lecture';
+import {FC, useState, useEffect} from 'react';
+import {CheckCircle, Circle, Play} from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {Lecture, Section} from '@/types/lecture';
 
 interface CourseContentProps {
     title: string;
@@ -11,7 +11,7 @@ interface CourseContentProps {
     courseSlug: string;
 }
 
-const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSections, courseSlug }) => {
+const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections, courseSlug}) => {
     const router = useRouter();
     const [sections, setSections] = useState<Section[]>(initialSections);
     const [expandedSections, setExpandedSections] = useState<string[]>(
@@ -66,7 +66,7 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
             ...section,
             lectures: section.lectures.map(lecture =>
                 lecture.id === lectureId
-                    ? { ...lecture, isCompleted }
+                    ? {...lecture, isCompleted}
                     : lecture
             )
         }));
@@ -115,7 +115,7 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
     // Lấy icon tương ứng với loại bài học
     const getLectureTypeIcon = (lecture: Lecture) => {
         if (lecture.isCurrent) {
-            return <Play className="w-5 h-5 text-blue-500 fill-current" />;
+            return <Play className="w-5 h-5 text-blue-500 fill-current"/>;
         }
         return null;
     };
@@ -125,8 +125,9 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="text-xl font-bold">Nội dung khóa học</h2>
                 <button className="text-gray-500 hover:text-gray-700" title="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
@@ -148,8 +149,8 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
                                         : progressPercentage >= 20
                                             ? "bg-gray-400"
                                             : "bg-gray-300"
-                            }`}
-                        style={{ width: `${progressPercentage}%` }}
+                        }`}
+                        style={{width: `${progressPercentage}%`}}
                     ></div>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">{progressPercentage}% hoàn thành</p>
@@ -171,7 +172,7 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
 
@@ -186,9 +187,9 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
                                             aria-label={lecture.isCompleted ? "Đánh dấu chưa hoàn thành" : "Đánh dấu đã hoàn thành"}
                                         >
                                             {lecture.isCompleted ? (
-                                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                                <CheckCircle className="w-5 h-5 text-green-500"/>
                                             ) : (
-                                                <Circle className="w-5 h-5 text-gray-400" />
+                                                <Circle className="w-5 h-5 text-gray-400"/>
                                             )}
                                         </button>
 
@@ -205,12 +206,17 @@ const CourseContent: FC<CourseContentProps> = ({ title, sections: initialSection
                                                 <div className="flex-1">
                                                     <p className="text-sm">{lecture.title}</p>
                                                     <div className="flex items-center mt-1">
-                                                        <svg className="w-4 h-4 text-gray-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                                        <svg className="w-4 h-4 text-gray-400 mr-1" fill="currentColor"
+                                                             viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd"
+                                                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                                  clipRule="evenodd"/>
                                                         </svg>
-                                                        <span className="text-xs text-gray-500">{lecture.duration}</span>
+                                                        <span
+                                                            className="text-xs text-gray-500">{lecture.duration}</span>
                                                         {lecture.type && (
-                                                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-700">
+                                                            <span
+                                                                className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-700">
                                                                 {lecture.type === 'video' && 'Video'}
                                                                 {lecture.type === 'reading' && 'Bài đọc'}
                                                                 {lecture.type === 'quiz' && 'Bài kiểm tra'}

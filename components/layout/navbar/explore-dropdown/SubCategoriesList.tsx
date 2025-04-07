@@ -46,15 +46,20 @@ const SubCategoriesList = ({
                             onClick={(e) => handleSubCategoryClick(category, child, e)}
                         >
                             <span>{child.name}</span>
-                            {/* <ChevronRight className="w-4 h-4" /> */}
+                            {/* Show chevron only if this subcategory has children */}
+                            {child.children && child.children.length > 0 && (
+                                <ChevronRight className="w-4 h-4" />
+                            )}
                         </a>
 
-                        {/* {activeCategory === categoryIndex && activeSubCategory === subIndex && (
+                        {/* Show third level (topics) if this subcategory is active and has children */}
+                        {activeCategory === categoryIndex && activeSubCategory === subIndex && 
+                         child.children && child.children.length > 0 && (
                             <TopicsList
                                 parentCategory={category}
                                 subCategory={child}
                             />
-                        )} */}
+                        )}
                     </div>
                 ))}
             </div>

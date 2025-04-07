@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {ChevronLeft, ChevronRight} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 interface PaginationProps {
     currentPage: number;
@@ -10,10 +10,10 @@ interface PaginationProps {
 }
 
 export default function Pagination({
-    currentPage,
-    totalPages,
-    onPageChange
-}: PaginationProps) {
+                                       currentPage,
+                                       totalPages,
+                                       onPageChange
+                                   }: PaginationProps) {
     const handlePrevious = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
@@ -76,7 +76,7 @@ export default function Pagination({
                 disabled={currentPage === 1}
                 className="px-3"
             >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={16}/>
             </Button>
 
             {getPageNumbers().map((pageNumber, index) => (
@@ -102,7 +102,7 @@ export default function Pagination({
                 disabled={currentPage === totalPages}
                 className="px-3"
             >
-                <ChevronRight size={16} />
+                <ChevronRight size={16}/>
             </Button>
         </div>
     );

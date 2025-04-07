@@ -1,23 +1,23 @@
 // components/lecture/tabs/ContentTab.tsx
-import { useState } from 'react';
+import {useState} from 'react';
 import VideoUploader from '../content/VideoUploader';
 import TextEditor from '../content/TextEditor';
 import ContentTypeSelector from '../content/ContentTypeSelector';
 import QuizEditor from '../content/quiz/QuizEditor';
 import AssignmentEditor from '../content/AssignmentEditor';
-import { Lecture } from '@/types/lecture';
+import {Lecture} from '@/types/lecture';
 
 interface ContentTabProps {
     lecture: Lecture;
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
 }
 
-export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
+export default function ContentTab({lecture, setLecture}: ContentTabProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         // For type changes, we need to handle differently
         if (name === 'type' && value !== lecture.type) {
@@ -144,7 +144,7 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
             </div>
 
             {/* Loại nội dung */}
-            <ContentTypeSelector lecture={lecture} handleInputChange={handleInputChange} />
+            <ContentTypeSelector lecture={lecture} handleInputChange={handleInputChange}/>
 
             {/* Content based on type */}
             {lecture.type === 'video' && (
@@ -165,10 +165,10 @@ export default function ContentTab({ lecture, setLecture }: ContentTabProps) {
             )}
 
             {lecture.type === 'quiz' && (
-                <QuizEditor lecture={lecture} setLecture={setLecture} />
+                <QuizEditor lecture={lecture} setLecture={setLecture}/>
             )}
 
-            {lecture.type === 'assignment' && <AssignmentEditor />}
+            {lecture.type === 'assignment' && <AssignmentEditor/>}
         </div>
     );
 }

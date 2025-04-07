@@ -1,14 +1,14 @@
 'use client';
 
-import { FC, useState, useEffect } from 'react';
-import { use } from 'react';
+import {FC, useState, useEffect} from 'react';
+import {use} from 'react';
 import VideoPlayer from '@/components/student/learning/content-area/VideoPlayer';
 import ReadingContent from '@/components/student/learning/content-area/ReadingContent';
 import QuizContent from '@/components/student/learning/content-area/QuizContent';
 import CourseContent from '@/components/student/learning/CourseContent';
 import LearningHeader from '@/components/student/learning/LearningHeader';
 import LearningTabs from '@/components/student/learning/LearningTabs';
-import { Lecture } from '@/types/lecture';
+import {Lecture} from '@/types/lecture';
 import {
     mockCourseData, videoLectureExample, readingLectureExample, quizLectureExample,
     assignmentLectureExample
@@ -21,7 +21,7 @@ interface LecturePageProps {
     }>;
 }
 
-const LecturePage: FC<LecturePageProps> = ({ params }) => {
+const LecturePage: FC<LecturePageProps> = ({params}) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
     const slug = unwrappedParams.slug;
@@ -151,12 +151,12 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                             <div>
                                 <p className="text-sm text-gray-500">
                                     Thời hạn nộp bài: {new Date(assignment.deadline).toLocaleDateString('vi-VN', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
                                 </p>
                                 <p className="text-sm text-gray-500 mt-1">
                                     Định dạng file: {assignment.allowedFileTypes.join(', ')}
@@ -176,10 +176,12 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                         <h3 className="text-lg font-semibold mb-3">Tài liệu tham khảo</h3>
                         <div className="space-y-2">
                             {assignment.resources.map(resource => (
-                                <div key={resource.id} className="p-3 border border-gray-200 rounded-md hover:bg-gray-50">
-                                    <a href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:text-blue-800">
+                                <div key={resource.id}
+                                     className="p-3 border border-gray-200 rounded-md hover:bg-gray-50">
+                                    <a href={resource.url} target="_blank" rel="noopener noreferrer"
+                                       className="flex items-center text-blue-600 hover:text-blue-800">
                                         <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                                            <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/>
                                         </svg>
                                         {resource.title} ({resource.type.toUpperCase()})
                                     </a>
@@ -221,7 +223,7 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                             </div>
                         ) : isAssignmentLecture ? (
                             <div className="w-full p-4 bg-white">
-                                <AssignmentContent />
+                                <AssignmentContent/>
                             </div>
                         ) : (
                             <div className="w-full bg-black">
@@ -249,7 +251,8 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                 </div>
 
                 {/* Thanh bên nội dung khóa học - có thể ẩn hiện */}
-                <div className={`border-l border-gray-200 bg-white overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-96' : 'w-0'} hidden md:block`}>
+                <div
+                    className={`border-l border-gray-200 bg-white overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-96' : 'w-0'} hidden md:block`}>
                     {sidebarOpen && (
                         <CourseContent
                             title={mockCourseData.title}
@@ -267,8 +270,9 @@ const LecturePage: FC<LecturePageProps> = ({ params }) => {
                 title="Toggle Sidebar"
                 aria-label="Toggle Sidebar"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
         </div>
