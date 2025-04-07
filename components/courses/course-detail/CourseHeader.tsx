@@ -1,110 +1,87 @@
 "use client";
-import {Star, Users, Award, Clock, Globe} from 'lucide-react';
+import React from 'react';
+import { CourseDetailsResponse } from '@/types/course';
 import Image from 'next/image';
+import { Star } from 'lucide-react';
 
-interface Instructor {
-    id: number;
-    name: string;
-    email: string;
-    isOwner: boolean;
+interface CourseHeaderProps {
+    course: CourseDetailsResponse;
 }
 
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-    parent: any;
-}
-
-interface CourseProps {
-    course: {
-        id: string;
-        name: string;
-        description: string;
-        image: string;
-        rating: number;
-        totalRating: number;
-        totalStudent: number;
-        level: string;
-        language: string;
-        instructors: Instructor[];
-        category: Category;
-        updatedAt?: string;
-    };
-}
-
-export default function CourseHeader({course}: CourseProps) {
-    const mainInstructor = course.instructors.find(instr => instr.isOwner) || course.instructors[0];
-
+const CourseHeader = ({ course }: CourseHeaderProps) => {
     return (
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10">
-            <div className="flex flex-col lg:flex-row gap-8 items-start">
-                <div className="lg:w-2/3 space-y-4">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl md:text-4xl font-bold" id="course-title">{course.name}</h1>
-                        <p className="text-xl" id="course-description">{course.description}</p>
-                    </div>
-
-                    <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm" aria-label="Đánh giá khóa học">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8">
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+                {/* Course Information - Left Side */}
+                <div className="md:w-2/3 space-y-4">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">{course.name}</h1>
+                    <p className="text-lg text-gray-200">{course.description}</p>
+                    
+                    {/* Ratings and Info */}
+                    <div className="flex flex-wrap items-center gap-4 text-sm">
                         <div className="flex items-center">
-              <span className="text-[#f69c08] font-bold" aria-label={`Đánh giá ${course.rating.toFixed(1)} trên 5 sao`}>
-                {course.rating.toFixed(1)}
-              </span>
-                            <div className="flex text-[#f69c08] ml-1" aria-hidden="true">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
+                            <span className="text-yellow-400 font-bold">{course.rating.toFixed(1)}</span>
+                            <div className="flex items-center ml-1">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star 
                                         key={i}
-                                        size={16}
-                                        fill={i < Math.floor(course.rating) ? "currentColor" : "none"}
-                                        className={i < Math.floor(course.rating) ? "" : "opacity-50"}
+                                        className={`w-4 h-4 ${i < Math.floor(course.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} 
                                     />
                                 ))}
                             </div>
-                            <span className="ml-1 underline">({course.totalRating} đánh giá)</span>
+                            <span className="ml-1 text-blue-400">({course.totalRating} đánh giá)</span>
                         </div>
-
-                        <div className="flex items-center">
-                            <Users size={16} className="mr-1" aria-hidden="true"/>
-
-                            <span>{course.totalStudent} học viên</span>
-
-                        </div>
+                        <span>{course.totalStudent} học viên</span>
                     </div>
-
-                    <div className="flex items-center text-sm">
-                        <p className="mr-3">Tạo bởi <span className="underline font-medium">{mainInstructor.name}</span>
-                        </p>
+                    
+                    {/* Instructor Info */}
+                    <div className="text-sm">
+                        <span className="text-gray-300">Tạo bởi </span>
+                        <span className="text-blue-400">
+                            {course.instructors.map((instructor, index) => (
+                                <React.Fragment key={instructor.id}>
+                                    {index > 0 && ', '}
+                                    {instructor.fullName}
+                                </React.Fragment>
+                            ))}
+                        </span>
                     </div>
-
-                    <div className="flex flex-wrap gap-4 text-sm" aria-label="Thông tin thêm">
-                        <div className="flex items-center">
-                            <Clock size={16} className="mr-1" aria-hidden="true"/>
-                            <span>Cập nhật {course.updatedAt || "10/2023"}</span>
-                        </div>
-                        <div className="flex items-center">
-                            <Globe size={16} className="mr-1" aria-hidden="true"/>
-                            <span>{course.language}</span>
-                        </div>
-                        <div className="flex items-center">
-                            <Award size={16} className="mr-1" aria-hidden="true"/>
-                            <span>Trình độ {course.level === 'BEGINNER' ? 'Cơ bản' : course.level === 'INTERMEDIATE' ? 'Trung cấp' : 'Nâng cao'}</span>
-                        </div>
+                    
+                    {/* Additional Info */}
+                    <div className="flex flex-wrap items-center gap-4 text-sm">
+                        <span>Cập nhật lần cuối {new Date(course.updatedDate!).toLocaleDateString('vi-VN')}</span>
+                        <span>{course.language}</span>
+                    </div>
+                    
+                    {/* Course Category */}
+                    <div className="text-sm">
+                        <span className="text-gray-300">Danh mục: </span>
+                        <span className="text-blue-400">{course.categoryName}</span>
+                    </div>
+                    
+                    {/* Course Level */}
+                    <div className="text-sm">
+                        <span className="text-gray-300">Cấp độ: </span>
+                        <span className="text-blue-400">{course.level === 'BEGINNER' ? 'Cơ bản' : 
+                            course.level === 'INTERMEDIATE' ? 'Trung cấp' : 'Nâng cao'}</span>
                     </div>
                 </div>
-
-                {/* Course Preview Image on Mobile */}
-                <div className="lg:hidden w-full">
-                    <div className="aspect-video rounded-lg overflow-hidden relative">
-                        <Image
-                            src={course.image}
-                            alt={`Ảnh khóa học ${course.name}`}
-                            fill
+                
+                {/* Course Image - Right Side */}
+                <div className="md:w-1/3">
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+                        <Image 
+                            src={course.image || '/images/course-placeholder.jpg'} 
+                            alt={course.name}
+                            fill 
                             className="object-cover"
-                            priority // Important images should load with priority
+                            priority
                         />
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
+
+export default CourseHeader;

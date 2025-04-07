@@ -1,22 +1,32 @@
 import CourseHeader from '@/components/courses/course-detail/CourseHeader';
 import CourseDetails from '@/components/courses/course-detail/CourseDetails';
-
 import ReviewsArea from '@/components/student/learning/learning-tab/ReviewArea';
-
 import PurchaseCard from '@/components/courses/course-detail/PurchaseCard';
-import {Metadata} from 'next';
+import { Metadata } from 'next';
 import Script from 'next/script';
+import { notFound } from 'next/navigation';
+import { fetchCourseBySlug } from '@/services/courseActions';
+import { CourseDetailsResponse } from '@/types/course';
 
 // Generate metadata for the page
-export async function generateMetadata({params}: { params: { slug?: string } }): Promise<Metadata> {
-    // In a real app, fetch data here based on slug
-    const slug = (await params)?.slug;
-    const course = {
-        name: "Lập trình Java cơ bản",
-        description: "Khóa học giúp bạn nắm vững những kiến thức cơ bản về Java.",
-        image: "/test.jpg",
-    };
+export async function generateMetadata({ params }: { params: { slug?: string } }): Promise<Metadata> {
+    const slug = params?.slug;
+    if (!slug) {
+        return {
+            title: 'Khóa học | VinaAcademy',
+            description: 'Khám phá các khóa học tại VinaAcademy'
+        };
+    }
 
+    // Fetch course data from API using server action
+    const course = await fetchCourseBySlug(slug);
+    
+    if (!course) {
+        return {
+            title: 'Không tìm thấy khóa học | VinaAcademy',
+            description: 'Khóa học không tồn tại hoặc đã bị xóa'
+        };
+    }
 
     return {
         title: `${course.name} | VinaAcademy`,
@@ -24,7 +34,7 @@ export async function generateMetadata({params}: { params: { slug?: string } }):
         openGraph: {
             title: `${course.name} | VinaAcademy`,
             description: course.description,
-            images: [{url: course.image, alt: course.name}],
+            images: [{ url: course.image, alt: course.name }],
             type: 'website',
         },
         twitter: {
@@ -34,79 +44,20 @@ export async function generateMetadata({params}: { params: { slug?: string } }):
             images: [course.image],
         },
         alternates: {
-            canonical: slug ? `https://vinaacademy.edu.vn/courses/${slug}` : 'https://vinaacademy.edu.vn/courses',
+            canonical: `https://vinaacademy.edu.vn/courses/${slug}`,
         }
     };
 }
 
-export default async function CoursePage({params}: { params: { slug: string } }) {
+export default async function CoursePage({ params }: { params: { slug: string } }) {
     try {
-        const course = {
-            "id": "550e8400-e29b-41d4-a716-446655440000",
-            "image": "/images/courses/react.jpg",
-            "name": "Lập trình Java cơ bản",
-            "description": "Khóa học giúp bạn nắm vững những kiến thức cơ bản về Java.",
-            "slug": "lap-trinh-java-co-ban",
-            "price": 199.99,
-            "level": "BEGINNER",
-            "status": "PUBLISHED",
-            "language": "Tiếng Việt",
-            "category": {
-                "id": 1,
-                "name": "Lập trình",
-                "slug": "lap-trinh",
-                "parent": null
-            },
-            "rating": 4.8,
-            "totalRating": 150,
-            "totalStudent": 1200,
-            "totalSection": 5,
-            "totalLesson": 30,
-            "sections": [
-                {
-                    "id": 101,
-                    "name": "Giới thiệu về Java",
-                    "order": 1
-                },
-                {
-                    "id": 102,
-                    "name": "Cấu trúc điều khiển",
-                    "order": 2
-                }
-            ],
-            "instructors": [
-                {
-                    "id": 10,
-                    "name": "Nguyễn Văn A",
-                    "email": "nguyenvana@example.com",
-                    "isOwner": true,
-                    "avatarUrl": "/images/default-avatar.png" // Added avatar URL
-                },
-                {
-                    "id": 11,
-                    "name": "Trần Thị B",
-                    "email": "tranthib@example.com",
-                    "isOwner": false,
-                    "avatarUrl": "/images/default-avatar.png" // Added avatar URL
-                }
-            ],
-            "courseReviews": [
-                {
-                    "id": 3001,
-                    "userId": 2001,
-                    "rating": 5,
-                    "comment": "Khóa học rất bổ ích!",
-                    "avatarUrl": "/images/default-avatar.png" // Added avatar URL
-                },
-                {
-                    "id": 3002,
-                    "userId": 2002,
-                    "rating": 4,
-                    "comment": "Giảng viên dạy dễ hiểu.",
-                    "avatarUrl": "/images/default-avatar.png" // Added avatar URL
-                }
-            ]
-        };
+        // Fetch course data from API using server action
+        const course = await fetchCourseBySlug(params.slug);
+        
+        // If course not found, return 404
+        if (!course) {
+            return notFound();
+        }
 
         // Create structured data for the course
         const structuredData = {
@@ -130,9 +81,13 @@ export default async function CoursePage({params}: { params: { slug: string } })
                 ratingValue: course.rating,
                 reviewCount: course.totalRating
             },
-            inLanguage: course.language === 'Tiếng Việt' ? 'vi' : 'en'
+            inLanguage: course.language === 'Tiếng Việt' ? 'vi' : 'en',
+            instructor: course.instructors.map(instructor => ({
+                '@type': 'Person',
+                name: instructor.fullName,
+                description: instructor.description || '',
+            })),
         };
-
 
         return (
             <>
@@ -161,6 +116,7 @@ export default async function CoursePage({params}: { params: { slug: string } })
                                     <section className="bg-white border rounded-lg p-6 mb-8">
                                         <ReviewsArea
                                             courseId={course.id}
+                                            reviews={course.reviews}
                                             mainPage={true}
                                         />
                                     </section>
@@ -169,7 +125,11 @@ export default async function CoursePage({params}: { params: { slug: string } })
                                 {/* Purchase Sidebar - 1/3 width, sticky on desktop, hidden on mobile */}
                                 <aside className="lg:w-1/3 hidden lg:block">
                                     <div className="sticky top-24">
-                                        <PurchaseCard course={course}/>
+                                        <PurchaseCard 
+                                            course={course} 
+                                            instructors={course.instructors}
+                                            sections={course.sections}
+                                        />
                                     </div>
                                 </aside>
                             </div>
@@ -192,6 +152,7 @@ export default async function CoursePage({params}: { params: { slug: string } })
             </>
         );
     } catch (error) {
-        return <div className="text-center text-xl text-red-500">Lỗi khi tải khóa học!</div>;
+        console.error("Error loading course:", error);
+        return <div className="text-center text-xl text-red-500 p-10">Lỗi khi tải khóa học! Vui lòng thử lại sau.</div>;
     }
 }

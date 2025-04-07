@@ -52,7 +52,6 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
                     </div>
                 </div>
             </nav>
-            <SubNavbar categories={isLoading ? [] : categories} />
         </div>
     );
 };
