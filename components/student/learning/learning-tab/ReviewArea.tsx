@@ -24,14 +24,12 @@ const BeautifulSpinner = dynamic(
 
 interface ReviewsAreaProps {
     courseId: string;
-    reviews?: CourseReviewDto[];
     currentUserId?: string;
     mainPage?: boolean;
 }
 
 const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     courseId,
-    reviews: initialReviews = [],
     mainPage = false,
     currentUserId = '1'
 }) => {
@@ -61,7 +59,11 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             
             try {
                 // Use initialReviews if available or prepare for mock data
-                let reviewsData = initialReviews.length > 0 ? [...initialReviews] : [];
+                //WHEN USE API: Reviews data fetched from server /courses/[ID]/reviews/page=1&limit=3
+                let reviewsData = [] as CourseReviewDto[];
+
+                // Call api from server backend to get reviews data
+                // Use it here to have lazy loading instead put data outsite from this component
 
                 // If no reviews provided as props, use mock data in development
                 if (reviewsData.length === 0 && process.env.NODE_ENV === 'development') {
@@ -103,11 +105,13 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                 setIsLoading(false);
             }
         })();
-    }, [courseId, initialReviews, currentUserId, isLoading]);
+    }, [courseId, currentUserId, isLoading]);
 
     // Update displayed reviews when allReviews or currentPage changes
     useEffect(() => {
         const endIndex = currentPage * reviewsPerPage;
+        //replace the setDisplayedReviews with FETCH DATA from server CALL /courses/[ID]/reviews?page=currentpage&limit=3
+        // below demo with FAKE DATA
         setDisplayedReviews(allReviews.slice(0, endIndex));
         setHasMoreReviews(endIndex < allReviews.length);
     }, [allReviews, currentPage]);
