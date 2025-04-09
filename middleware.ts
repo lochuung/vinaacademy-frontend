@@ -10,8 +10,7 @@ const publicPaths = ['/auth'];
 export function middleware(request: NextRequest) {
     const {pathname} = request.nextUrl;
 
-
-    // Get token from cookies
+    // Get token from cookies - no change needed as we're already using cookies here
     const token = request.cookies.get('access_token')?.value;
 
     // Check if path is protected

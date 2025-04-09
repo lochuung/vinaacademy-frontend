@@ -1,23 +1,25 @@
 'use client';
 
 import axios, {AxiosResponse} from 'axios';
-// Remove Cookies import as we're using localStorage now
+import Cookies from 'js-cookie';
 
 const ACCESS_TOKEN_NAME = 'access_token';
 const REFRESH_TOKEN_NAME = 'refresh_token';
 
-
-// Safe storage functions that work in both client and server environments
-const getStorageItem = (key: string): string | null => {
-    return localStorage.getItem(key);
+// Safe storage functions that work with cookies
+const getStorageItem = (key: string): string | undefined => {
+    return Cookies.get(key);
 };
 
 const setStorageItem = (key: string, value: string): void => {
-    localStorage.setItem(key, value);
+    Cookies.set(key, value, { 
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
 };
 
 const removeStorageItem = (key: string): void => {
-    localStorage.removeItem(key);
+    Cookies.remove(key);
 };
 
 const apiClient = axios.create({
@@ -40,7 +42,6 @@ apiClient.interceptors.request.use(
         return Promise.reject(error);
     }
 )
-
 
 apiClient.interceptors.response.use(
     (response) => {
@@ -69,7 +70,7 @@ apiClient.interceptors.response.use(
 
                 setStorageItem(ACCESS_TOKEN_NAME, access_token);
                 setStorageItem(REFRESH_TOKEN_NAME, refresh_token);
-                console.log('💾 New tokens stored in localStorage');
+                console.log('💾 New tokens stored in cookies');
 
                 if (originalRequest.headers) {
                     originalRequest.headers['X-Retry'] = 'true';
@@ -101,12 +102,12 @@ export function removeTokens(): void {
     removeStorageItem(REFRESH_TOKEN_NAME);
 }
 
-export function getAccessToken(): string | null {
+export function getAccessToken(): string | undefined {
     const token = getStorageItem(ACCESS_TOKEN_NAME);
     return token;
 }
 
-export function getRefreshToken(): string | null {
+export function getRefreshToken(): string | undefined {
     const token = getStorageItem(REFRESH_TOKEN_NAME);
     return token;
 }
