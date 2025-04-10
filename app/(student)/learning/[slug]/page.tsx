@@ -5,9 +5,12 @@ import {use} from 'react';
 import Link from 'next/link';
 import {BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle} from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
-import {Course} from '@/types/lecture';
-import {mockCourseData} from '@/data/mockLearningData';
+import {Course, Lecture, LectureType, Section} from '@/types/lecture';
 import StatusToast from '@/components/student/learning/shared/StatusToast';
+import {getCourseBySlug} from '@/services/courseService';
+import {getLessonsBySectionId} from '@/services/lessonService';
+import {CourseDetailsResponse, LessonType} from '@/types/course';
+import { useRouter } from 'next/navigation';
 
 interface CoursePageProps {
     params: Promise<{
@@ -19,30 +22,99 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
     const slug = unwrappedParams.slug;
+    const router = useRouter();
 
-    const [course, setCourse] = useState<Course>(mockCourseData as unknown as Course);
+    const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
 
-    // Lấy thông tin khóa học từ API hoặc dữ liệu mẫu
+    // Fetch course and lesson data
     useEffect(() => {
-        // Trong thực tế, bạn sẽ gọi API để lấy thông tin khóa học dựa trên slug
-        // const fetchCourse = async () => {
-        //   const response = await fetch(`/api/courses/by-slug/${slug}`);
-        //   const data = await response.json();
-        //   setCourse(data);
-        //   setLoading(false);
-        // };
-        // fetchCourse();
+        const fetchCourse = async () => {
+            setLoading(true);
+            try {
+                const apiResponse = await getCourseBySlug(slug);
+                
+                if (!apiResponse) {
+                    console.error('Failed to fetch course data');
+                    setLoading(false);
+                    return;
+                }
+                
+                // Transform API response to match the Course type structure
+                const transformedCourse: Course = {
+                    id: apiResponse.id,
+                    slug: apiResponse.slug,
+                    title: apiResponse.name,
+                    progress: 0, // Default progress - would come from user progress API
+                    sections: [],
+                    // Initialize with empty currentLecture, will be set later
+                    currentLecture: null
+                };
+                
+                // Process sections and lessons
+                const sectionsWithLessons = await Promise.all(
+                    apiResponse.sections.map(async (section) => {
+                        // Fetch lessons for each section
+                        const lessons = await getLessonsBySectionId(section.id);
+                        
+                        const mappedSection: Section = {
+                            id: section.id,
+                            title: section.title,
+                            lectures: lessons.map(lesson => ({
+                                id: lesson.id,
+                                title: lesson.title,
+                                // Map lesson type to lecture type
+                                type: mapLessonTypeToLectureType(lesson.type),
+                                description: '',
+                                duration: lesson.videoDuration ? 
+                                    `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
+                                    '0:00',
+                                isCompleted: false,
+                                isCurrent: false,
+                                videoUrl: lesson.videoUrl,
+                                textContent: lesson.content
+                            }))
+                        };
+                        
+                        return mappedSection;
+                    })
+                );
+                
+                transformedCourse.sections = sectionsWithLessons;
+                
+                // Set first lecture as current if available
+                if (sectionsWithLessons.length > 0 && sectionsWithLessons[0].lectures.length > 0) {
+                    const firstLecture = {...sectionsWithLessons[0].lectures[0], isCurrent: true};
+                    transformedCourse.currentLecture = firstLecture;
+                }
+                
+                setCourse(transformedCourse);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching course:', error);
+                setLoading(false);
+                router.push('/');
+            }
+        };
 
-        // Mô phỏng việc tải dữ liệu
-        setLoading(true);
-        setTimeout(() => {
-            setCourse(mockCourseData as unknown as Course);
-            setLoading(false);
-        }, 500);
-    }, [slug]);
+        // Function to map backend lesson type to frontend lecture type
+        const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType => {
+            switch (lessonType) {
+                case 'VIDEO':
+                    return 'video';
+                case 'READING':
+                    return 'reading';
+                case 'QUIZ':
+                    return 'quiz';
+                default:
+                    return 'video';
+            }
+        };
+
+        fetchCourse();
+    }, [slug, router]);
 
     const handleContinueLearning = () => {
         setToastMessage('Tiếp tục học tập từ bài học cuối cùng');
@@ -53,12 +125,31 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
         return (
             <div className="flex flex-col h-screen bg-white text-black">
                 <LearningHeader
-                    courseTitle={mockCourseData.title}
-                    progress={mockCourseData.progress}
+                    courseTitle="Loading..."
+                    progress={0}
                     courseSlug={slug}
                 />
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!course) {
+        return (
+            <div className="flex flex-col h-screen bg-white text-black">
+                <LearningHeader
+                    courseTitle="Course Not Found"
+                    progress={0}
+                    courseSlug={slug}
+                />
+                <div className="flex flex-col items-center justify-center h-full">
+                    <h1 className="text-2xl font-bold mb-4">Không tìm thấy khóa học</h1>
+                    <p className="mb-6">Khóa học bạn đang tìm kiếm có thể đã bị xóa hoặc không tồn tại.</p>
+                    <Link href="/my-courses" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Quay lại khóa học của tôi
+                    </Link>
                 </div>
             </div>
         );
