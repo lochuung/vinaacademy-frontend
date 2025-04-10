@@ -89,7 +89,7 @@ export interface Course {
     id: string;
     slug: string; // Thêm thuộc tính slug
     title: string;
-    currentLecture: Lecture;
+    currentLecture: Lecture | null;
     sections: Section[];
     progress: number; // Phần trăm hoàn thành khóa học
 }

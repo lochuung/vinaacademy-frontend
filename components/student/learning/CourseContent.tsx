@@ -3,7 +3,9 @@
 import {FC, useState, useEffect} from 'react';
 import {CheckCircle, Circle, Play} from 'lucide-react';
 import {useRouter} from 'next/navigation';
-import {Lecture, Section} from '@/types/lecture';
+import {Lecture, LectureType, Section} from '@/types/lecture';
+import { LessonType } from '@/types/course';
+import { mapLessonTypeToDisplay } from '@/services/lessonService';
 
 interface CourseContentProps {
     title: string;
@@ -217,10 +219,7 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
                                                         {lecture.type && (
                                                             <span
                                                                 className="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-700">
-                                                                {lecture.type === 'video' && 'Video'}
-                                                                {lecture.type === 'reading' && 'Bài đọc'}
-                                                                {lecture.type === 'quiz' && 'Bài kiểm tra'}
-                                                                {lecture.type === 'assignment' && 'Bài tập'}
+                                                                {mapLessonTypeToDisplay(lecture.type.toUpperCase() as LessonType)}
                                                             </span>
                                                         )}
                                                     </div>
