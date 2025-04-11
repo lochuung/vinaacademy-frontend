@@ -8,6 +8,7 @@ interface FormFooterProps {
     onBack: () => void;
     onContinue: () => void;
     onSubmit: (e: React.FormEvent) => void;
+
 }
 
 export default function FormFooter({
