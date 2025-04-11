@@ -3,31 +3,19 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import {
-    Search, Check, X, Eye, ChevronLeft, ChevronRight,
-    Loader, ArrowUpDown, Calendar
-} from 'lucide-react';
+    Search, 
+    Loader} from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import CourseDetailsPreview from '@/components/staff/DetailCourse';
 import ApprovalCourses from '@/components/staff/ApprovalCourses';
 
 // Shadcn UI Components
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import RightPanel from "@/components/staff/RightPanel";
 import Filter from '@/components/staff/Filter';
-import { Course, CourseLevel, CourseSortOption, CoursesResponse, PaginationData } from '@/types/new-course';
+import { Course, CourseLevel, CourseSortOption, CoursesResponse, CourseStatus, CourseStatusOption, PaginationData } from '@/types/new-course';
 import Pagination from '@/components/staff/Pagination';
 
 // Define TypeScript interfaces
@@ -114,7 +102,7 @@ const fetchCourses = async (
 export default function CourseApprovalPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-    const [status, setStatus] = useState<string>('pending');
+    const [status, setStatus] = useState<CourseStatusOption>(CourseStatus.PENDING);
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
