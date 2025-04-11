@@ -314,9 +314,9 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                             </div>
                         ) : (
                             <div className="w-full bg-black">
-                                {currentLecture.videoUrl && (
+                                {currentLecture.id && (
                                     <VideoPlayer
-                                        videoUrl={currentLecture.videoUrl}
+                                        videoId={currentLecture.id}
                                         title={currentLecture.title}
                                         onTimeUpdate={handleTimeUpdate}
                                     />

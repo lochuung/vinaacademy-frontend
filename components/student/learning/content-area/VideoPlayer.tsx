@@ -1,13 +1,22 @@
-import {FC, useState, useRef, useEffect} from 'react';
-import {Play, Pause, Volume2, VolumeX, Maximize, Settings, ChevronLeft, ChevronRight} from 'lucide-react';
+import { FC, useState, useRef, useEffect } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import Hls from 'hls.js';
+import { getAccessToken } from '@/lib/apiClient';
+import { getMasterPlaylistUrl } from '@/services/videoService';
 
 interface VideoPlayerProps {
-    videoUrl: string;
+    // videoUrl: string;
+    videoId: string;
     title: string;
     onTimeUpdate?: (currentTime: number) => void;
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
+interface QualityOption {
+    value: number;
+    label: string;
+}
+
+const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -20,6 +29,123 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const playerRef = useRef<HTMLDivElement>(null);
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [qualities, setQualities] = useState<QualityOption[]>([]);
+    const [currentQuality, setCurrentQuality] = useState<number>(-1);
+    const [showQualityMenu, setShowQualityMenu] = useState(false);
+
+    // HLS Configuration
+    const hlsRef = useRef<Hls | null>(null);
+    const token = getAccessToken();
+    const masterPlaylistUrl = getMasterPlaylistUrl(videoId);
+
+    // Initialize HLS
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        setIsLoading(true);
+
+        const initHls = (): void => {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hlsRef.current = hls;
+
+
+                // Setup request headers for authorization
+                hls.config.xhrSetup = function (xhr: XMLHttpRequest): void {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                };
+
+                hls.attachMedia(video);
+                hls.loadSource(masterPlaylistUrl);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, (event: string, data: any): void => {
+                    setIsLoading(false);
+
+                    // Get quality levels
+                    const levels = hls.levels;
+
+                    // Set available qualities
+                    const qualityOptions: QualityOption[] = levels.map((level, index) => {
+                        const resolution = `${level.height}p`;
+                        const bitrateMbps = (level.bitrate / 1000000).toFixed(1);
+                        return {
+                            value: index,
+                            label: `${resolution}`
+                        };
+                    });
+
+                    setQualities([{ value: -1, label: 'Tự động' }, ...qualityOptions]);
+
+                    if (isPlaying) {
+                        video.play().catch(error => {
+                            console.error('Error playing video:', error);
+                            setIsPlaying(false);
+                        });
+                    }
+                });
+
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                setError("Lỗi kết nối mạng. Vui lòng thử lại sau.");
+                                setIsLoading(false);
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                setError("Lỗi phát lại video. Vui lòng thử lại.");
+                                setIsLoading(false);
+                                break;
+                            default:
+                                setError("Không thể tải video. Vui lòng thử lại sau.");
+                                setIsLoading(false);
+                                break;
+                        }
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari)
+                video.src = masterPlaylistUrl;
+                video.addEventListener('loadedmetadata', function () {
+                    setIsLoading(false);
+                    if (isPlaying) {
+                        video.play().catch(error => {
+                            console.error('Error playing video:', error);
+                            setIsPlaying(false);
+                        });
+                    }
+                });
+                // Hide quality selector for native HLS
+                setQualities([]);
+            } else {
+                setError("Trình duyệt của bạn không hỗ trợ HLS streaming.");
+                setIsLoading(false);
+            }
+        };
+
+        initHls();
+
+        // Cleanup function
+        return () => {
+            if (hlsRef.current) {
+                hlsRef.current.destroy();
+            }
+            if (video) {
+                video.removeEventListener('loadedmetadata', () => { });
+            }
+        };
+    }, [videoId, isPlaying]);
+
+    // Handle quality change
+    const handleQualityChange = (level: number): void => {
+        setCurrentQuality(level);
+
+        if (hlsRef.current) {
+            hlsRef.current.currentLevel = level;
+        }
+
+        setShowQualityMenu(false);
+    };
 
     // Ẩn điều khiển sau thời gian không hoạt động
     useEffect(() => {
@@ -114,7 +240,16 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
     }, [volume, isMuted]);
 
     const togglePlay = () => {
-        setIsPlaying(!isPlaying);
+        if (videoRef.current) {
+            if (isPlaying) {
+                videoRef.current.pause();
+            } else {
+                videoRef.current.play().catch((error) => {
+                    console.error('Lỗi khi phát video:', error);
+                });
+            }
+            setIsPlaying(!isPlaying);
+        }
     };
 
     const toggleMute = () => {
@@ -189,10 +324,9 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                 ref={videoRef}
                 className="w-full h-full object-contain"
                 onClick={togglePlay}
-                poster="/api/thumbnail/lesson-1"
+                poster={`/api/videos/${videoId}/thumbnail`}
                 playsInline
             >
-                {videoUrl && <source src={videoUrl} type="video/mp4"/>}
                 Trình duyệt của bạn không hỗ trợ thẻ video.
             </video>
 
@@ -204,6 +338,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
             )}
 
             {/* Lớp phủ lỗi */}
+            {/* Lớp phủ lỗi */}
             {error && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
                     <div className="text-center text-white p-4">
@@ -213,6 +348,14 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                             onClick={() => {
                                 setError(null);
                                 setIsLoading(true);
+
+                                // Reinitialize HLS
+                                if (hlsRef.current) {
+                                    hlsRef.current.destroy();
+                                    hlsRef.current = null;
+                                }
+
+                                // Trigger reloading by unmounting and remounting the component
                                 if (videoRef.current) {
                                     videoRef.current.load();
                                 }
@@ -230,14 +373,14 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                     onClick={togglePlay}
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-4 hover:bg-opacity-90 transition"
                 >
-                    <Play size={32} className="text-black"/>
+                    <Play size={32} className="text-black" />
                 </button>
             )}
 
             {/* Lớp điều khiển */}
             <div
                 className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}
-                style={{pointerEvents: showControls ? 'auto' : 'none'}}
+                style={{ pointerEvents: showControls ? 'auto' : 'none' }}
             >
                 {/* Thanh tiến trình */}
                 <div className="mb-2 flex items-center">
@@ -262,7 +405,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                             onClick={togglePlay}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            {isPlaying ? <Pause size={20}/> : <Play size={20}/>}
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                         </button>
 
                         {/* Nút tua lùi/tiến 10s */}
@@ -270,7 +413,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                             onClick={skipBackward}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <ChevronLeft size={20}/>
+                            <ChevronLeft size={20} />
                             <span className="sr-only">Tua lùi 10s</span>
                         </button>
 
@@ -278,7 +421,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                             onClick={skipForward}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <ChevronRight size={20}/>
+                            <ChevronRight size={20} />
                             <span className="sr-only">Tua tiến 10s</span>
                         </button>
 
@@ -288,7 +431,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                                 onClick={toggleMute}
                                 className="text-white hover:text-blue-500 transition mr-2"
                             >
-                                {isMuted || volume === 0 ? <VolumeX size={20}/> : <Volume2 size={20}/>}
+                                {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
                             </button>
                             <input
                                 type="range"
@@ -311,17 +454,49 @@ const VideoPlayer: FC<VideoPlayerProps> = ({videoUrl, title, onTimeUpdate}) => {
                     </div>
 
                     <div className="flex items-center space-x-4">
-                        {/* Nút Cài đặt */}
-                        <button className="text-white hover:text-blue-500 transition">
-                            <Settings size={20}/>
-                        </button>
+                        {/* Menu chọn độ phân giải */}
+                        <div className="relative flex items-center justify-center">
+                            <button
+                                className="text-white hover:text-blue-500 transition flex items-center justify-center"
+                                onClick={() => setShowQualityMenu(!showQualityMenu)}
+                            >
+                                <Settings size={20} />
+                            </button>
+
+                            {showQualityMenu && qualities.length > 0 && (
+                                <div className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-gray-700 w-48 transform transition-all duration-200 ease-in-out animate-fade-in">
+                                    <div className="text-white text-sm font-medium mb-2 pb-1 border-b border-gray-700 flex items-center">
+                                        <Settings size={14} className="mr-1.5 text-blue-400" />
+                                        Chất lượng video
+                                    </div>
+                                    <div className="space-y-1.5 max-h-60 overflow-y-auto custom-scrollbar">
+                                        {qualities.map((quality) => (
+                                            <button
+                                                key={quality.value}
+                                                className={`group flex items-center justify-between w-full text-left px-3 py-1.5 text-sm rounded-md transition-all duration-150 ${
+                                                    currentQuality === quality.value
+                                                    ? 'bg-blue-600/80 text-white font-medium'
+                                                    : 'text-gray-200 hover:bg-gray-700/70 hover:text-white'
+                                                }`}
+                                                onClick={() => handleQualityChange(quality.value)}
+                                            >
+                                                <span>{quality.label}</span>
+                                                {currentQuality === quality.value && (
+                                                    <span className="w-2 h-2 rounded-full bg-white"></span>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Nút Toàn màn hình */}
                         <button
                             onClick={toggleFullscreen}
                             className="text-white hover:text-blue-500 transition"
                         >
-                            <Maximize size={20}/>
+                            <Maximize size={20} />
                         </button>
                     </div>
                 </div>
