@@ -25,7 +25,7 @@ export default function MediaSection({
         <div className="p-6 space-y-6">
             <InfoAlert title="Tại sao hình ảnh quan trọng?">
                 <p>
-                    Hình ảnh và video chất lượng cao sẽ giúp thu hút người học vào khóa học của bạn.
+                    Hình ảnh thể hiện trọng điểm sẽ giúp thu hút người học vào khóa học của bạn.
                     Nghiên cứu cho thấy rằng các khóa học có hình ảnh đẹp có tỷ lệ đăng ký cao hơn 25%.
                 </p>
             </InfoAlert>
@@ -43,7 +43,7 @@ export default function MediaSection({
                 required
             />
 
-            <FileUpload
+            {/* <FileUpload
                 id="promo_video"
                 name="promo_video"
                 label="Video giới thiệu"
@@ -53,7 +53,7 @@ export default function MediaSection({
                 helpText="Video giới thiệu ngắn sẽ giúp học viên hiểu rõ hơn về nội dung khóa học"
                 onChange={onFileChange}
                 onRemove={onVideoRemove}
-            />
+            /> */}
         </div>
     );
 }
