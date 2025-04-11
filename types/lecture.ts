@@ -1,4 +1,5 @@
 // Cập nhật interface Lecture
+import { CourseDto, LessonDto, SectionDto } from './course';
 
 export interface Resource {
     id: string;
@@ -84,11 +85,13 @@ export interface Section {
     lectures: Lecture[];
 }
 
-// Course structure
-export interface Course {
+// Using CourseDto from course.ts rather than defining a separate Course type
+// The following interfaces are for internal frontend representation that maps
+// from the API response types (CourseDto, SectionDto, LessonDto)
+export interface LearningCourse {
     id: string;
-    slug: string; // Thêm thuộc tính slug
-    title: string;
+    slug: string;
+    title: string; // Maps to course.name
     currentLecture: Lecture | null;
     sections: Section[];
     progress: number; // Phần trăm hoàn thành khóa học

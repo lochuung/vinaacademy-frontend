@@ -5,11 +5,11 @@ import {use} from 'react';
 import Link from 'next/link';
 import {BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle} from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
-import {Course, Lecture, LectureType, Section} from '@/types/lecture';
 import StatusToast from '@/components/student/learning/shared/StatusToast';
-import {getCourseBySlug} from '@/services/courseService';
+import {getCourseLearning} from '@/services/courseService';
 import {getLessonsBySectionId} from '@/services/lessonService';
-import {CourseDetailsResponse, LessonType} from '@/types/course';
+import {CourseDto, LessonType} from '@/types/course';
+import {LearningCourse, Section, Lecture, LectureType} from '@/types/lecture';
 import { useRouter } from 'next/navigation';
 
 interface CoursePageProps {
@@ -24,17 +24,45 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
     const slug = unwrappedParams.slug;
     const router = useRouter();
 
-    const [course, setCourse] = useState<Course | null>(null);
+    const [course, setCourse] = useState<LearningCourse | null>(null);
     const [loading, setLoading] = useState(true);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [apiResponse, setApiResponse] = useState<CourseDto | null>(null);
+
+    // Helper function to format total duration from sections
+    const formatTotalDuration = (sections: Section[]) => {
+        const totalSeconds = sections.reduce((total, section) => {
+            return total + section.lectures.reduce((sectionTotal, lecture) => {
+                // Extract minutes and seconds from duration string (e.g., "5:30")
+                const [minutes, seconds] = lecture.duration.split(':').map(Number);
+                return sectionTotal + (minutes * 60) + (seconds || 0);
+            }, 0);
+        }, 0);
+
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        
+        return hours > 0 ? `${hours} giờ ${minutes} phút` : `${minutes} phút`;
+    };
+
+    // Helper function to format last updated date
+    const formatLastUpdated = (dateString?: string) => {
+        if (!dateString) return 'N/A';
+        
+        const date = new Date(dateString);
+        const month = date.getMonth() + 1; // getMonth() returns 0-11
+        const year = date.getFullYear();
+        
+        return `T${month}/${year}`;
+    };
 
     // Fetch course and lesson data
     useEffect(() => {
         const fetchCourse = async () => {
             setLoading(true);
             try {
-                const apiResponse = await getCourseBySlug(slug);
+                const apiResponse = await getCourseLearning(slug);
                 
                 if (!apiResponse) {
                     console.error('Failed to fetch course data');
@@ -42,12 +70,15 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                     return;
                 }
                 
-                // Transform API response to match the Course type structure
-                const transformedCourse: Course = {
+                // Store the original API response for use in other parts of the component
+                setApiResponse(apiResponse);
+                
+                // Transform API response to match the LearningCourse type structure
+                const transformedCourse: LearningCourse = {
                     id: apiResponse.id,
                     slug: apiResponse.slug,
                     title: apiResponse.name,
-                    progress: 0, // Default progress - would come from user progress API
+                    progress: apiResponse.progress?.progressPercentage || 0,
                     sections: [],
                     // Initialize with empty currentLecture, will be set later
                     currentLecture: null
@@ -55,9 +86,9 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                 
                 // Process sections and lessons
                 const sectionsWithLessons = await Promise.all(
-                    apiResponse.sections.map(async (section) => {
-                        // Fetch lessons for each section
-                        const lessons = await getLessonsBySectionId(section.id);
+                    (apiResponse.sections || []).map(async (section) => {
+                        // Fetch lessons for each section if not already included
+                        const lessons = section.lessons || await getLessonsBySectionId(section.id);
                         
                         const mappedSection: Section = {
                             id: section.id,
@@ -71,7 +102,7 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                                 duration: lesson.videoDuration ? 
                                     `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
                                     '0:00',
-                                isCompleted: false,
+                                isCompleted: lesson?.currentUserProgress?.completed || false,
                                 isCurrent: false,
                                 videoUrl: lesson.videoUrl,
                                 textContent: lesson.content
@@ -84,8 +115,21 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                 
                 transformedCourse.sections = sectionsWithLessons;
                 
-                // Set first lecture as current if available
-                if (sectionsWithLessons.length > 0 && sectionsWithLessons[0].lectures.length > 0) {
+                // Set current lecture based on progress if available
+                /* if (apiResponse.progress?.currentLessonId) {
+                    const currentLessonId = apiResponse.progress.currentLessonId;
+                    
+                    // Find the current lecture in all sections
+                    for (const section of sectionsWithLessons) {
+                        const currentLecture = section.lectures.find(lecture => lecture.id === currentLessonId);
+                        if (currentLecture) {
+                            transformedCourse.currentLecture = {...currentLecture, isCurrent: true};
+                            break;
+                        }
+                    }
+                }
+                // If no current lesson is set, use the first one
+                else  */if (sectionsWithLessons.length > 0 && sectionsWithLessons[0].lectures.length > 0) {
                     const firstLecture = {...sectionsWithLessons[0].lectures[0], isCurrent: true};
                     transformedCourse.currentLecture = firstLecture;
                 }
@@ -201,7 +245,7 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                         <div className="mt-4 flex flex-wrap items-center gap-6">
                             <div className="flex items-center text-gray-600">
                                 <Clock className="w-5 h-5 mr-2"/>
-                                <span>20 giờ tổng thời lượng</span>
+                                <span>{formatTotalDuration(course.sections)} tổng thời lượng</span>
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <FileText className="w-5 h-5 mr-2"/>
@@ -209,11 +253,11 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <Users className="w-5 h-5 mr-2"/>
-                                <span>1,234 học viên</span>
+                                <span>{apiResponse?.totalStudent || 0} học viên</span>
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                <span>Cập nhật lần cuối: T3/2025</span>
+                                <span>Cập nhật lần cuối: {formatLastUpdated(apiResponse?.updatedDate)}</span>
                             </div>
                         </div>
 
