@@ -5,7 +5,7 @@ import {CheckCircle, Circle, Play} from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {Lecture, LectureType, Section} from '@/types/lecture';
 import { LessonType } from '@/types/course';
-import { mapLessonTypeToDisplay } from '@/services/lessonService';
+import { mapLessonTypeToDisplay, markLessonComplete } from '@/services/lessonService';
 
 interface CourseContentProps {
     title: string;
@@ -27,29 +27,11 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
         router.push(`/learning/${courseSlug}/lecture/${lectureId}`);
     };
 
-    // Tải trạng thái hoàn thành từ localStorage khi khởi tạo
+    // Cập nhật trạng thái hoàn thành từ API và localStorage khi khởi tạo
     useEffect(() => {
-        const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`);
-
-        if (savedCompletionStatus) {
-            try {
-                const completionData = JSON.parse(savedCompletionStatus);
-
-                // Cập nhật các phần với trạng thái hoàn thành đã lưu
-                const updatedSections = initialSections.map(section => ({
-                    ...section,
-                    lectures: section.lectures.map(lecture => ({
-                        ...lecture,
-                        isCompleted: completionData[lecture.id] || lecture.isCompleted || false
-                    }))
-                }));
-
-                setSections(updatedSections);
-            } catch (error) {
-                console.error("Lỗi khi tải trạng thái hoàn thành:", error);
-            }
-        }
-    }, [courseSlug, initialSections]);
+        // Cập nhật sections state khi initialSections thay đổi
+        setSections(initialSections);
+    }, [initialSections]);
 
     const toggleSection = (sectionId: string) => {
         setExpandedSections(prevExpanded =>
@@ -59,11 +41,11 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
         );
     };
 
-    const toggleLectureCompletion = (e: React.MouseEvent, lectureId: string, isCompleted: boolean) => {
+    const toggleLectureCompletion = async (e: React.MouseEvent, lectureId: string, isCompleted: boolean) => {
         // Ngăn chặn sự kiện lan tỏa để không kích hoạt handleLectureSelect
         e.stopPropagation();
 
-        // Cập nhật trạng thái các phần
+        // Optimistic update trước khi gọi API
         const updatedSections = sections.map(section => ({
             ...section,
             lectures: section.lectures.map(lecture =>
@@ -75,18 +57,29 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
 
         setSections(updatedSections);
 
-        // Lưu vào localStorage
-        const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`) || '{}';
+        // Gọi API để cập nhật server
         try {
-            const completionData = JSON.parse(savedCompletionStatus);
-            completionData[lectureId] = isCompleted;
-            localStorage.setItem(`course-${courseSlug}-completion`, JSON.stringify(completionData));
+            const success = await markLessonComplete(lectureId, isCompleted);
+            
+            if (!success) {
+                // Nếu API thất bại, hoàn tác thay đổi UI
+                console.error("Failed to update completion status on server");
+                setSections(sections); // Revert to original state
+            } else {
+                // Lưu vào localStorage làm cache
+                const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`) || '{}';
+                try {
+                    const completionData = JSON.parse(savedCompletionStatus);
+                    completionData[lectureId] = isCompleted;
+                    localStorage.setItem(`course-${courseSlug}-completion`, JSON.stringify(completionData));
+                } catch (error) {
+                    console.error("Lỗi khi lưu trạng thái hoàn thành vào localStorage:", error);
+                }
+            }
         } catch (error) {
-            console.error("Lỗi khi lưu trạng thái hoàn thành:", error);
+            console.error("Error updating completion status:", error);
+            setSections(sections); // Revert to original state on error
         }
-
-        // Ở đây bạn cũng sẽ gọi API để cập nhật server
-        // Ví dụ: api.updateLectureCompletion(courseSlug, lecturenId, isCompleted);
     };
 
     // Tính tổng thời lượng và số bài học
