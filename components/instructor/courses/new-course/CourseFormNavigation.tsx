@@ -7,13 +7,15 @@ interface CourseFormNavigationProps {
     onSectionChange: (section: CourseSection) => void;
     isBasicSectionComplete: boolean;
     isMediaSectionComplete: boolean;
+    isPriceSectionComplete: boolean;
 }
 
 export default function CourseFormNavigation({
                                                  activeSection,
                                                  onSectionChange,
                                                  isBasicSectionComplete,
-                                                 isMediaSectionComplete
+                                                 isMediaSectionComplete,
+                                                 isPriceSectionComplete
                                              }: CourseFormNavigationProps) {
     return (
         <div className="border-b border-gray-200">
@@ -42,7 +44,7 @@ export default function CourseFormNavigation({
                     {isMediaSectionComplete && (
                         <CheckCircle2 className="h-4 w-4 text-green-500 mr-2"/>
                     )}
-                    <span>Hình ảnh & Video</span>
+                    <span>Hình ảnh</span>
                 </button>
                 <button
                     type="button"
@@ -52,6 +54,9 @@ export default function CourseFormNavigation({
                     }`}
                     onClick={() => onSectionChange('pricing')}
                 >
+                    {isPriceSectionComplete && (
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mr-2"/>
+                    )}
                     <span>Định giá</span>
                 </button>
             </nav>

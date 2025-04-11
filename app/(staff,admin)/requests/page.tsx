@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import {
     Search, Check, X, Eye, ChevronLeft, ChevronRight,
-    Loader, ArrowUpDown, Calendar} from 'lucide-react';
+    Loader, ArrowUpDown, Calendar
+} from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import CourseDetailsPreview from '@/components/staff/DetailCourse';
+import ApprovalCourses from '@/components/staff/ApprovalCourses';
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -23,47 +25,22 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import RightPanel from "@/components/staff/RightPanel";
+import Filter from '@/components/staff/Filter';
+import { Course, CourseLevel, CourseSortOption, CoursesResponse, PaginationData } from '@/types/new-course';
+import Pagination from '@/components/staff/Pagination';
+
 // Define TypeScript interfaces
-enum CourseLevel {
-    BEGINNER = 'BEGINNER',
-    INTERMEDIATE = 'INTERMEDIATE',
-    ADVANCED = 'ADVANCED'
-}
 
-
-interface Course {
-    id: number;
-    title: string;
-    instructor: string;
-    department: string;
-    submittedDate: string;
-    thumbnail: string;
-    status: 'pending' | 'approved' | 'rejected';
-    level: CourseLevel;
-    slug: string;
-}
-
-interface PaginationData {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    hasMore: boolean;
-}
-
-interface CoursesResponse {
-    courses: Course[];
-    pagination: PaginationData;
-}
 
 // Sort types
-type SortOption = 'newest' | 'oldest' | 'normal';
 
 // Mock API call to fetch courses
 const fetchCourses = async (
     page: number = 1,
     status: string = 'pending',
     searchTerm: string = '',
-    sortBy: SortOption = 'normal'
+    sortBy: CourseSortOption = 'normal'
 ): Promise<CoursesResponse> => {
     // Simulating API delay
     await new Promise(resolve => setTimeout(resolve, 800));
@@ -148,7 +125,7 @@ export default function CourseApprovalPage() {
         hasMore: false
     });
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [sortOption, setSortOption] = useState<SortOption>('normal');
+    const [sortOption, setSortOption] = useState<CourseSortOption>('normal');
     const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
 
     const loadCourses = async (): Promise<void> => {
@@ -273,83 +250,13 @@ export default function CourseApprovalPage() {
                                     </div>
                                 </div>
 
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline">
-                                            <ArrowUpDown className="mr-2 h-4 w-4" />
-                                            Bộ lọc
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56">
-                                        <DropdownMenuLabel>Lọc theo trạng thái</DropdownMenuLabel>
-                                        <DropdownMenuGroup>
-                                            <DropdownMenuItem onClick={() => handleStatusChange('all')}>
-                                                <span className="flex justify-between items-center w-full">
-                                                    Tất cả
-                                                    <div className="">
-                                                        {status == "all" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleStatusChange('pending')}>
-                                                <span className="flex justify-between items-center w-full">
-                                                    Hàng chờ
-                                                    <div className="">
-                                                        {status == "pending" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleStatusChange('approved')}>
-                                                <span className="flex justify-between items-center w-full">
-                                                    Đã duyệt
-                                                    <div className="">
-                                                        {status == "approved" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleStatusChange('rejected')}>
-                                                <span className="flex justify-between items-center w-full">
-                                                    Đã từ chối
-                                                    <div className="">
-                                                        {status == "rejected" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuGroup>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuLabel>Xếp theo ngày</DropdownMenuLabel>
-                                        <DropdownMenuGroup>
-                                            <DropdownMenuItem onClick={() => setSortOption('normal')}>
-                                                <Calendar className="mr-2 h-4 w-4" />
-                                                <span className="flex justify-between items-center w-full">
-                                                    Bình thường
-                                                    <div className="">
-                                                        {sortOption == "normal" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setSortOption('newest')}>
-                                                <Calendar className="mr-2 h-4 w-4" />
-                                                <span className="flex justify-between items-center w-full">
-                                                    Mới nhất
-                                                    <div className="">
-                                                        {sortOption == "newest" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setSortOption('oldest')}>
-                                                <Calendar className="mr-2 h-4 w-4" />
-                                                <span className="flex justify-between items-center w-full">
-                                                    Cũ nhất
-                                                    <div className="">
-                                                        {sortOption == "oldest" ? <Check size={16} /> : null}
-                                                    </div>
-                                                </span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                {/* Sort/Filter dropdown menu */}
+                                <Filter
+                                    sortOption={sortOption}
+                                    status={status}
+                                    handleStatusChange={handleStatusChange}
+                                    setSortOption={setSortOption}
+                                />
                             </div>
 
                             {/* Status tabs */}
@@ -374,249 +281,33 @@ export default function CourseApprovalPage() {
                                     <p className="text-gray-500">Không tìm thấy khóa học nào được upload</p>
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-gray-200">
-                                    {courses.map((course) => (
-                                        <li
-                                            key={course.id}
-                                            className={`px-4 py-4 hover:bg-gray-50 cursor-pointer transition-colors ${selectedCourse?.id === course.id ? 'bg-blue-50' : ''}`}
-                                            onClick={() => handleCourseSelect(course)}
-                                        >
-                                            <div className="flex items-center space-x-4">
-                                                <div className="flex-shrink-0 h-12 w-12 relative rounded overflow-hidden">
-                                                    <div className="bg-gray-200 h-full w-full flex items-center justify-center">
-                                                        <span className="text-xs text-gray-500">IMG</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-gray-900 truncate">{course.title}</p>
-                                                    <p className="text-sm text-gray-500">{course.instructor}</p>
-                                                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                        <p className="text-xs text-gray-400">{course.department}</p>
-                                                        <span className="text-xs text-gray-300">•</span>
-                                                        <p className="text-xs text-gray-400">Submitted {new Date(course.submittedDate).toLocaleDateString()}</p>
-                                                        <Badge variant="outline" className="text-xs h-5 bg-gray-300">
-                                                            {course.level}
-                                                        </Badge>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-shrink-0 flex items-center space-x-2">
-                                                    {course.status === 'pending' && (
-                                                        <>
-                                                            <Button
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleApprove(course.id);
-                                                                }}
-                                                            >
-                                                                <Check size={16} />
-                                                            </Button>
-                                                            <Button
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleReject(course.id);
-                                                                }}
-                                                            >
-                                                                <X size={16} />
-                                                            </Button>
-                                                        </>
-                                                    )}
-
-                                                    {course.status === 'approved' && (
-                                                        <Badge variant="secondary" className='bg-green-400 hover:bg-green-300'>Đã duyệt</Badge>
-                                                    )}
-
-                                                    {course.status === 'rejected' && (
-                                                        <Badge variant="destructive">Đã từ chối</Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <ApprovalCourses
+                                    courses={courses}
+                                    selectedCourse={selectedCourse}
+                                    handleCourseSelect={handleCourseSelect}
+                                    handleApprove={handleApprove}
+                                    handleReject={handleReject}
+                                />
                             )}
 
                             {/* Pagination controls */}
-                            <div className="px-4 py-4 flex items-center justify-between border-t border-gray-200">
-                                <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                                    <p className="text-sm text-gray-700">
-                                        Đang hiển thị từ <span className="font-medium">{courses.length ? (page - 1) * 5 + 1 : 0}</span> đến{' '}
-                                        <span className="font-medium">{Math.min(page * 5, pagination.totalItems)}</span> trong{' '}
-                                        <span className="font-medium">{pagination.totalItems}</span> kết quả
-                                    </p>
-                                    <div className="flex space-x-1">
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => handlePageChange(page - 1)}
-                                            disabled={page === 1 || isLoading}
-                                            className="h-8 w-8"
-                                        >
-                                            <ChevronLeft size={16} />
-                                        </Button>
-
-                                        {getPaginationRange().map((pageNum, i) =>
-                                            pageNum === '...' ? (
-                                                <span key={`ellipsis-${i}`} className="flex items-center justify-center h-8 w-8">
-                                                    ...
-                                                </span>
-                                            ) : (
-                                                <Button
-                                                    key={`page-${pageNum}`}
-                                                    variant={page === pageNum ? "default" : "outline"}
-                                                    size="icon"
-                                                    onClick={() => handlePageChange(Number(pageNum))}
-                                                    className="h-8 w-8"
-                                                >
-                                                    {pageNum}
-                                                </Button>
-                                            )
-                                        )}
-
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => handlePageChange(page + 1)}
-                                            disabled={page >= pagination.totalPages || isLoading}
-                                            className="h-8 w-8"
-                                        >
-                                            <ChevronRight size={16} />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                            <Pagination
+                                pagination={pagination}
+                                handlePageChange={handlePageChange}
+                                paginationRange={getPaginationRange()}
+                                page={page}
+                                courses={courses}
+                            />
                         </div>
                     </div>
 
-                    {/* Right panel - Course Details */}
-                    <div className="w-full lg:w-1/3 bg-white rounded-lg shadow">
-                        {selectedCourse ? (
-                            <div className="p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">{selectedCourse.title}</h2>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Giảng viên</h3>
-                                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.instructor}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Danh mục</h3>
-                                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.department}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Submission Date</h3>
-                                        <p className="mt-1 text-sm text-gray-900">{new Date(selectedCourse.submittedDate).toLocaleDateString()}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Trạng thái</h3>
-                                        <div className="mt-1">
-                                            {selectedCourse.status === 'pending' && (
-                                                <Badge variant="outline" className="bg-yellow-300 text-yellow-800 hover:bg-yellow-300/40">
-                                                    Hàng chờ
-                                                </Badge>
-                                            )}
-                                            {selectedCourse.status === 'approved' && (
-                                                <Badge variant="outline" className="bg-green-400/60 text-green-800 hover:bg-green-300/50">
-                                                    Đã duyệt
-                                                </Badge>
-                                            )}
-                                            {selectedCourse.status === 'rejected' && (
-                                                <Badge variant="outline" className="bg-red-400/70 text-red-800 hover:bg-red-400/50">
-                                                    Đã từ chối
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Level</h3>
-                                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.level}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">Slug</h3>
-                                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.slug}</p>
-                                    </div>
-                                </div>
-
-                                <div className="border-t pt-4">
-                                    <h3 className="text-sm font-medium text-gray-500 mb-2">Actions</h3>
-
-                                    <div className="space-y-2">
-                                        <Button
-                                            className="w-full"
-                                            variant="outline"
-                                            onClick={() => setIsPreviewOpen(true)}
-                                        >
-                                            <Eye size={16} className="mr-2" />
-                                            Xem chi tiết thông tin khóa học này
-                                        </Button>
-
-                                        {selectedCourse.status === 'pending' && (
-                                            <>
-                                                <Button
-                                                    className="w-full bg-green-500"
-                                                    variant="default"
-                                                    onClick={() => handleApprove(selectedCourse.id)}
-                                                >
-                                                    <Check size={16} className="mr-2" />
-                                                    Duyệt khóa học
-                                                </Button>
-
-                                                <Button
-                                                    className="w-full"
-                                                    variant="destructive"
-                                                    onClick={() => handleReject(selectedCourse.id)}
-                                                >
-                                                    <X size={16} className="mr-2" />
-                                                    Từ chối khóa học
-                                                </Button>
-                                            </>
-                                        )}
-
-                                        {selectedCourse.status === 'approved' && (
-                                            <Button
-                                                className="w-full bg-red-600/70 hover:bg-red-500 text-white hover:text-white"
-                                                variant="outline"
-                                                onClick={() => handleReject(selectedCourse.id)}
-                                            >
-                                                <X size={16} className="mr-2 " />
-                                                Từ chối khoá học
-                                            </Button>
-                                        )}
-
-                                        {selectedCourse.status === 'rejected' && (
-                                            <Button
-                                                className="w-full bg-green-500/70 hover:bg-green-400/70 text-white hover:text-white"
-                                                variant="outline"
-                                                onClick={() => handleApprove(selectedCourse.id)}
-                                            >
-                                                <Check size={16} className="mr-2" />
-                                                Duyệt khóa học
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="h-full flex items-center justify-center p-6 text-center">
-                                <div className="max-w-md">
-                                    <h3 className="text-lg font-medium text-gray-900">Chưa chọn khóa học nào</h3>
-                                    <p className="mt-2 text-sm text-gray-500">
-                                        Chọn một khóa học trong danh sách để xem thông tin chi tiết
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    {/* Right panel - Course Details Small */}
+                    <RightPanel
+                        selectedCourse={selectedCourse}
+                        handleApprove={handleApprove}
+                        handleReject={handleReject}
+                        setIsPreviewOpen={setIsPreviewOpen}
+                    />
                 </div>
             </div>
 
