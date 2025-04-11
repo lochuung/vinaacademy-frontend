@@ -1,7 +1,7 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import {PaginatedResponse} from "@/types/api-response";
+import {ApiResponse, PaginatedResponse} from "@/types/api-response";
 import {CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest} from "@/types/course";
 import {AxiosResponse} from "axios";
 
@@ -99,4 +99,17 @@ export async function deleteCourse(slug: string): Promise<boolean> {
         console.error("deleteCourse error:", error);
         return false;
     }
+}
+
+
+export const getCourseLearning = async (slug: string): Promise<CourseDto | null> => {
+  try {
+    const response: AxiosResponse<ApiResponse<CourseDto>> = await apiClient.get(
+      `/courses/${slug}/learning`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("getCourseLearning error:", error);
+    return null;
+  }
 }

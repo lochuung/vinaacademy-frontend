@@ -1,11 +1,11 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import {CategoryDto, CategoryRequest} from "@/types/category";
-import {AxiosResponse} from "axios";
+import { CategoryDto, CategoryRequest } from "@/types/category";
+import { AxiosResponse } from "axios";
 import { ApiResponse } from "@/types/api-response";
 import { LessonDto, LessonRequest } from "@/types/lesson";
-import { LessonType } from "@/types/course";
+import { CourseDto, LessonType } from "@/types/course";
 
 // 🔍 GET /lessons/{id}
 export const getLessonById = async (id: string): Promise<LessonDto | null> => {
@@ -75,7 +75,7 @@ export const deleteLesson = async (id: string): Promise<boolean> => {
 // Thêm phương thức để chuyển đổi từ loại bài giảng sang text dễ hiểu cho frontend
 export function mapLessonTypeToDisplay(type: LessonType | string): string {
   const upperCaseType = typeof type === 'string' ? type.toUpperCase() as LessonType : type;
-  
+
   switch (upperCaseType) {
     case 'VIDEO':
       return 'Video';
