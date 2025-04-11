@@ -164,7 +164,7 @@ export default function CreateCoursePage() {
                         isPriceSectionComplete={isPriceSectionComplete()}
                     />
 
-                    <form onSubmit={handleSubmit}>
+                    
                         <CardContent className="p-0">
                             {activeSection === 'basic' && (
                                 <BasicInfoSection
@@ -200,7 +200,7 @@ export default function CreateCoursePage() {
                             onContinue={handleContinueClick}
                             onSubmit={handleSubmit}
                         />
-                    </form>
+                    
                 </Card>
 
                 <div className="flex justify-center">
