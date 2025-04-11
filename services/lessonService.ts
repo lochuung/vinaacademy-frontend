@@ -87,3 +87,16 @@ export function mapLessonTypeToDisplay(type: LessonType | string): string {
       return 'Bài học';
   }
 }
+
+export const markLessonComplete = async (lessonId: string, completed: boolean): Promise<boolean> => {
+  try {
+    const response: AxiosResponse = await apiClient.post(
+      `/lessons/${lessonId}/progress`,
+      { completed }
+    );
+    return response.data.success;
+  } catch (error) {
+    console.error("markLessonComplete error:", error);
+    return false;
+  }
+};
