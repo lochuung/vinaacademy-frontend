@@ -37,6 +37,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
     const hlsRef = useRef<Hls | null>(null);
     const token = getAccessToken();
     const masterPlaylistUrl = getMasterPlaylistUrl(videoId);
+    const playPromiseRef = useRef<Promise<void> | null>(null);
 
     // Initialize HLS
     useEffect(() => {
@@ -76,13 +77,6 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                     });
 
                     setQualities([{ value: -1, label: 'Tự động' }, ...qualityOptions]);
-
-                    if (isPlaying) {
-                        video.play().catch(error => {
-                            console.error('Error playing video:', error);
-                            setIsPlaying(false);
-                        });
-                    }
                 });
 
                 hls.on(Hls.Events.ERROR, function (event, data) {
@@ -108,12 +102,6 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                 video.src = masterPlaylistUrl;
                 video.addEventListener('loadedmetadata', function () {
                     setIsLoading(false);
-                    if (isPlaying) {
-                        video.play().catch(error => {
-                            console.error('Error playing video:', error);
-                            setIsPlaying(false);
-                        });
-                    }
                 });
                 // Hide quality selector for native HLS
                 setQualities([]);
@@ -134,7 +122,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                 video.removeEventListener('loadedmetadata', () => { });
             }
         };
-    }, [videoId, isPlaying]);
+    }, [videoId]);
 
     // Handle quality change
     const handleQualityChange = (level: number): void => {
@@ -218,17 +206,15 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
         };
     }, [onTimeUpdate]);
 
-    // Phát/Tạm dừng
+    // Ensure video state matches isPlaying state
     useEffect(() => {
-        if (videoRef.current) {
-            if (isPlaying) {
-                videoRef.current.play().catch((error) => {
-                    console.error('Lỗi khi phát video:', error);
-                    setIsPlaying(false);
-                });
-            } else {
-                videoRef.current.pause();
-            }
+        const videoElement = videoRef.current;
+        if (!videoElement) return;
+        
+        // Only synchronize the video state with isPlaying when needed
+        // Don't attempt to call play() here to avoid conflicts with togglePlay
+        if (!isPlaying && !videoElement.paused) {
+            videoElement.pause();
         }
     }, [isPlaying]);
 
@@ -244,9 +230,16 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
             if (isPlaying) {
                 videoRef.current.pause();
             } else {
-                videoRef.current.play().catch((error) => {
-                    console.error('Lỗi khi phát video:', error);
-                });
+                // Store the play promise so we can handle it properly
+                playPromiseRef.current = videoRef.current.play();
+                
+                // Handle any errors from the play promise
+                if (playPromiseRef.current) {
+                    playPromiseRef.current.catch((error) => {
+                        console.error('Lỗi khi phát video:', error);
+                        setIsPlaying(false);
+                    });
+                }
             }
             setIsPlaying(!isPlaying);
         }
@@ -324,8 +317,8 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                 ref={videoRef}
                 className="w-full h-full object-contain"
                 onClick={togglePlay}
-                poster={`/api/videos/${videoId}/thumbnail`}
                 playsInline
+                poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
             >
                 Trình duyệt của bạn không hỗ trợ thẻ video.
             </video>
