@@ -1,70 +1,90 @@
-import { ApiResponse } from '@/types/api-response';
+import apiClient from '@/lib/apiClient';
 
 export interface EnrollmentRequest {
     courseId: string;
+    paymentMethodId?: string;
+    couponCode?: string;
 }
 
 export interface EnrollmentResponse {
     id: number;
     userId: string;
     courseId: string;
+    courseName: string;
+    courseImage?: string;
     startAt: string;
-    completeAt?: string;
+    completedAt?: string;
     progressPercentage: number;
-    status: 'IN_PROGRESS' | 'COMPLETED' | 'DROPPED';
+    status: 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED';
     enrollmentDate: string;
+    lastAccessedAt?: string;
 }
 
-// Kiểm tra xem học viên đã đăng ký khóa học chưa
-export const checkEnrollment = async (courseId: string): Promise<boolean> => {
+/**
+ * Enrolls a user in a course
+ * @param enrollmentData The enrollment request data
+ * @returns A promise with the enrollment response
+ */
+export const enrollInCourse = async (enrollmentData: EnrollmentRequest): Promise<EnrollmentResponse> => {
     try {
-        const response = await fetch(`/api/v1/enrollments/check?courseId=${courseId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                // Giả định rằng token được lưu trong localStorage
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Bạn cần đăng nhập để thực hiện chức năng này');
-            }
-            throw new Error('Có lỗi xảy ra khi kiểm tra đăng ký');
-        }
-
-        const result: ApiResponse<boolean> = await response.json();
-        return result.data || false;
+        const response = await apiClient.post('/enrollments', enrollmentData);
+        return response.data.data;
     } catch (error) {
-        console.error('Lỗi khi kiểm tra đăng ký:', error);
+        console.error('Error enrolling in course:', error);
         throw error;
     }
 };
 
-// Đăng ký khóa học
-export const enrollCourse = async (courseId: string): Promise<EnrollmentResponse> => {
+/**
+ * Checks if the current user is enrolled in a course
+ * @param courseId The course ID to check
+ * @returns A promise with a boolean indicating if the user is enrolled
+ */
+export const checkEnrollment = async (courseId: string): Promise<boolean> => {
     try {
-        const response = await fetch('/api/v1/enrollments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ courseId })
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Bạn cần đăng nhập để đăng ký khóa học');
-            }
-            throw new Error('Có lỗi xảy ra khi đăng ký khóa học');
-        }
-
-        const result: ApiResponse<EnrollmentResponse> = await response.json();
-        return result.data;
+        const response = await apiClient.get(`/enrollments/check?courseId=${courseId}`);
+        return response.data.data;
     } catch (error) {
-        console.error('Lỗi khi đăng ký khóa học:', error);
+        console.error('Error checking enrollment:', error);
+        return false;
+    }
+};
+
+/**
+ * Gets all enrollments for the current user
+ * @param page The page number
+ * @param size The page size
+ * @param status Optional status filter
+ * @returns A promise with the paginated enrollment responses
+ */
+export const getUserEnrollments = async (
+    page = 0,
+    size = 10,
+    status?: 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED'
+) => {
+    try {
+        const url = status
+            ? `/enrollments?page=${page}&size=${size}&status=${status}`
+            : `/enrollments?page=${page}&size=${size}`;
+
+        const response = await apiClient.get(url);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting user enrollments:', error);
+        throw error;
+    }
+};
+
+/**
+ * Cancels a course enrollment
+ * @param enrollmentId The enrollment ID to cancel
+ * @returns A promise that resolves when the enrollment is cancelled
+ */
+export const cancelEnrollment = async (enrollmentId: number): Promise<void> => {
+    try {
+        await apiClient.delete(`/enrollments/${enrollmentId}`);
+    } catch (error) {
+        console.error('Error cancelling enrollment:', error);
         throw error;
     }
 };

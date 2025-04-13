@@ -1,6 +1,6 @@
 'use client';
 
-import axios, {AxiosResponse} from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 
 const ACCESS_TOKEN_NAME = 'access_token';
@@ -12,7 +12,7 @@ const getStorageItem = (key: string): string | undefined => {
 };
 
 const setStorageItem = (key: string, value: string): void => {
-    Cookies.set(key, value, { 
+    Cookies.set(key, value, {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'
     });
@@ -63,10 +63,10 @@ apiClient.interceptors.response.use(
             }
             try {
                 console.log('🔄 Sending refresh token request');
-                const requestTokenResponse: AxiosResponse = await axios.post('/api/auth/refresh', {refreshToken});
+                const requestTokenResponse: AxiosResponse = await axios.post('/api/auth/refresh', { refreshToken });
                 console.log('✅ Token refreshed successfully');
 
-                const {access_token, refresh_token} = requestTokenResponse.data['data'];
+                const { access_token, refresh_token } = requestTokenResponse.data['data'];
 
                 setStorageItem(ACCESS_TOKEN_NAME, access_token);
                 setStorageItem(REFRESH_TOKEN_NAME, refresh_token);
