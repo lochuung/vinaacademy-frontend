@@ -1,4 +1,5 @@
 import {BaseDto} from "./api-response";
+import { EnrollmentProgressDto, LessonProgress } from "./learning";
 
 export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED';
@@ -21,6 +22,8 @@ export interface CourseDto extends BaseDto {
     totalStudent: number;
     totalSection: number;
     totalLesson: number;
+    sections?: SectionDto[];
+    progress?: EnrollmentProgressDto; // Progress of the current user in this course
 }
 
 export interface Role {
@@ -57,6 +60,10 @@ export interface LessonDto extends BaseDto {
     courseName: string;
     
     // Fields specific to lesson types
+
+    // progress
+    currentUserProgress?: LessonProgress;
+
     // For Video lessons
     thumbnailUrl?: string;
     status?: VideoStatus;

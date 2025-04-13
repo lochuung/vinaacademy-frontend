@@ -8,11 +8,11 @@ import QuizContent from '@/components/student/learning/content-area/QuizContent'
 import CourseContent from '@/components/student/learning/CourseContent';
 import LearningHeader from '@/components/student/learning/LearningHeader';
 import LearningTabs from '@/components/student/learning/LearningTabs';
-import {Lecture} from '@/types/lecture';
-import {
-    mockCourseData, videoLectureExample, readingLectureExample, quizLectureExample,
-    assignmentLectureExample
-} from '@/data/mockLearningData';
+import { getCourseLearning } from '@/services/courseService';
+import { getLessonById } from '@/services/lessonService';
+import { CourseDto, LessonDto, LessonType } from '@/types/course';
+import { Lecture, Section, LearningCourse, LectureType } from '@/types/lecture';
+import { useRouter } from 'next/navigation';
 
 interface LecturePageProps {
     params: Promise<{
@@ -26,63 +26,126 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
     const unwrappedParams = use(params);
     const slug = unwrappedParams.slug;
     const lectureId = unwrappedParams.lectureId;
+    const router = useRouter();
 
     const [currentTimestamp, setCurrentTimestamp] = useState<number>(0);
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-    const [currentLecture, setCurrentLecture] = useState<Lecture>(mockCourseData.currentLecture);
+    const [currentLecture, setCurrentLecture] = useState<Lecture | null>(null);
+    const [courseData, setCourseData] = useState<LearningCourse | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Lấy bài học từ API hoặc dữ liệu mẫu dựa trên lectureId
+    // Fetch course and lecture data
     useEffect(() => {
-        // Trong thực tế, bạn sẽ gọi API để lấy thông tin bài học
-        // const fetchLecture = async () => {
-        //   const response = await fetch(`/api/courses/by-slug/${slug}/lectures/${lectureId}`);
-        //   const data = await response.json();
-        //   setCurrentLecture(data);
-        //   setLoading(false);
-        // };
-        // fetchLecture();
-
-        // Mô phỏng việc tải dữ liệu
-        setLoading(true);
-        setTimeout(() => {
-            // Tìm bài học từ dữ liệu mẫu
-            let foundLecture: Lecture | null = null;
-
-            // Tìm trong tất cả các phần của khóa học
-            for (const section of mockCourseData.sections) {
-                const lecture = section.lectures.find(l => l.id === lectureId);
-                if (lecture) {
-                    foundLecture = lecture;
-                    break;
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch course data
+                const courseResponse = await getCourseLearning(slug);
+                
+                if (!courseResponse) {
+                    console.error('Failed to fetch course data');
+                    setLoading(false);
+                    router.push('/my-courses');
+                    return;
                 }
-            }
-
-            // Nếu không tìm thấy theo ID, kiểm tra loại bài học từ URL
-            if (!foundLecture) {
-                const searchParams = typeof window !== 'undefined'
-                    ? new URLSearchParams(window.location.search)
-                    : new URLSearchParams('');
-                const type = searchParams.get('type');
-
-                if (type === 'video') {
-                    foundLecture = videoLectureExample as Lecture;
-                } else if (type === 'reading') {
-                    foundLecture = readingLectureExample as Lecture;
-                } else if (type === 'quiz') {
-                    foundLecture = quizLectureExample as Lecture;
-                } else if (type === 'assignment') {
-                    foundLecture = assignmentLectureExample as Lecture;
-                } else {
-                    // Mặc định là bài học hiện tại nếu không tìm thấy
-                    foundLecture = mockCourseData.currentLecture;
+                
+                // Transform API response to match the LearningCourse type
+                const transformedCourse: LearningCourse = {
+                    id: courseResponse.id,
+                    slug: courseResponse.slug,
+                    title: courseResponse.name,
+                    progress: courseResponse.progress?.progressPercentage || 0,
+                    sections: [],
+                    currentLecture: null
+                };
+                
+                // Process sections and lessons
+                const sectionsWithLessons: Section[] = [];
+                
+                for (const section of courseResponse.sections || []) {
+                    const lessons = section.lessons || [];
+                    
+                    const mappedSection: Section = {
+                        id: section.id,
+                        title: section.title,
+                        lectures: lessons.map(lesson => mapLessonToLecture(lesson))
+                    };
+                    
+                    sectionsWithLessons.push(mappedSection);
                 }
+                
+                transformedCourse.sections = sectionsWithLessons;
+                setCourseData(transformedCourse);
+                
+                // Find the current lecture
+                let foundLecture: Lecture | null = null;
+                
+                // Look for the lecture in all sections
+                for (const section of sectionsWithLessons) {
+                    const lecture = section.lectures.find(l => l.id === lectureId);
+                    if (lecture) {
+                        foundLecture = { ...lecture, isCurrent: true };
+                        break;
+                    }
+                }
+                
+                // If lecture is not found in the course data, fetch it directly
+                if (!foundLecture) {
+                    const lessonResponse = await getLessonById(lectureId);
+                    if (lessonResponse) {
+                        foundLecture = mapLessonToLecture(lessonResponse);
+                        foundLecture.isCurrent = true;
+                    } else {
+                        console.error('Lecture not found');
+                        router.push(`/learning/${slug}`);
+                        return;
+                    }
+                }
+                
+                setCurrentLecture(foundLecture);
+                transformedCourse.currentLecture = foundLecture;
+                
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+                router.push('/my-courses');
             }
+        };
+        
+        // Helper function to map LessonDto to Lecture
+        const mapLessonToLecture = (lesson: LessonDto): Lecture => {
+            return {
+                id: lesson.id,
+                title: lesson.title,
+                type: mapLessonTypeToLectureType(lesson.type),
+                description: lesson.content || '',
+                duration: lesson.videoDuration ? 
+                    `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
+                    '0:00',
+                isCompleted: lesson.currentUserProgress?.completed || false,
+                isCurrent: false,
+                videoUrl: lesson.videoUrl,
+                textContent: lesson.content
+            };
+        };
+        
+        // Function to map backend lesson type to frontend lecture type
+        const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType => {
+            switch (lessonType) {
+                case 'VIDEO':
+                    return 'video';
+                case 'READING':
+                    return 'reading';
+                case 'QUIZ':
+                    return 'quiz';
+                default:
+                    return 'video';
+            }
+        };
 
-            setCurrentLecture(foundLecture);
-            setLoading(false);
-        }, 500);
-    }, [slug, lectureId]);
+        fetchData();
+    }, [slug, lectureId, router]);
 
     const handleTimeUpdate = (time: number) => {
         setCurrentTimestamp(time);
@@ -96,12 +159,36 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
         return (
             <div className="flex flex-col h-screen bg-white text-black">
                 <LearningHeader
-                    courseTitle={mockCourseData.title}
-                    progress={mockCourseData.progress}
+                    courseTitle="Loading..."
+                    progress={0}
                     courseSlug={slug}
                 />
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!currentLecture || !courseData) {
+        return (
+            <div className="flex flex-col h-screen bg-white text-black">
+                <LearningHeader
+                    courseTitle="Not Found"
+                    progress={0}
+                    courseSlug={slug}
+                />
+                <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold mb-4">Không tìm thấy bài học</h1>
+                        <p className="mb-4">Bài học này không tồn tại hoặc bạn không có quyền truy cập.</p>
+                        <button 
+                            onClick={() => router.push(`/learning/${slug}`)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Quay lại khóa học
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -197,8 +284,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
     return (
         <div className="flex flex-col h-screen bg-white text-black">
             <LearningHeader
-                courseTitle={mockCourseData.title}
-                progress={mockCourseData.progress}
+                courseTitle={courseData.title}
+                progress={courseData.progress}
                 courseSlug={slug}
             />
 
@@ -227,9 +314,9 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                             </div>
                         ) : (
                             <div className="w-full bg-black">
-                                {currentLecture.videoUrl && (
+                                {currentLecture.id && (
                                     <VideoPlayer
-                                        videoUrl={currentLecture.videoUrl}
+                                        videoId={currentLecture.id}
                                         title={currentLecture.title}
                                         onTimeUpdate={handleTimeUpdate}
                                     />
@@ -255,8 +342,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                     className={`border-l border-gray-200 bg-white overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-96' : 'w-0'} hidden md:block`}>
                     {sidebarOpen && (
                         <CourseContent
-                            title={mockCourseData.title}
-                            sections={mockCourseData.sections}
+                            title={courseData.title}
+                            sections={courseData.sections}
                             courseSlug={slug}
                         />
                     )}

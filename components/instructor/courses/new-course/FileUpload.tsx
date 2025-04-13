@@ -64,7 +64,8 @@ export default function FileUpload({
                 </div>
             ) : (
                 <div
-                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
+                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative"
+                    onClick={() => document.getElementById(id+"upload")?.click()}>
                     <div className="space-y-1 text-center">
                         {icon}
                         <div className="flex text-sm text-gray-600 justify-center">
@@ -74,7 +75,7 @@ export default function FileUpload({
                             >
                                 <span>Tải {accept.includes('image') ? 'ảnh' : 'video'} lên</span>
                                 <input
-                                    id={id}
+                                    id={id+"upload"}
                                     name={name}
                                     type="file"
                                     accept={accept}

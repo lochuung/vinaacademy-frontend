@@ -5,9 +5,12 @@ import {use} from 'react';
 import Link from 'next/link';
 import {BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle} from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
-import {Course} from '@/types/lecture';
-import {mockCourseData} from '@/data/mockLearningData';
 import StatusToast from '@/components/student/learning/shared/StatusToast';
+import {getCourseLearning} from '@/services/courseService';
+import {getLessonsBySectionId} from '@/services/lessonService';
+import {CourseDto, LessonType} from '@/types/course';
+import {LearningCourse, Section, Lecture, LectureType} from '@/types/lecture';
+import { useRouter } from 'next/navigation';
 
 interface CoursePageProps {
     params: Promise<{
@@ -19,30 +22,143 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
     const slug = unwrappedParams.slug;
+    const router = useRouter();
 
-    const [course, setCourse] = useState<Course>(mockCourseData as unknown as Course);
+    const [course, setCourse] = useState<LearningCourse | null>(null);
     const [loading, setLoading] = useState(true);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [apiResponse, setApiResponse] = useState<CourseDto | null>(null);
 
-    // Lấy thông tin khóa học từ API hoặc dữ liệu mẫu
+    // Helper function to format total duration from sections
+    const formatTotalDuration = (sections: Section[]) => {
+        const totalSeconds = sections.reduce((total, section) => {
+            return total + section.lectures.reduce((sectionTotal, lecture) => {
+                // Extract minutes and seconds from duration string (e.g., "5:30")
+                const [minutes, seconds] = lecture.duration.split(':').map(Number);
+                return sectionTotal + (minutes * 60) + (seconds || 0);
+            }, 0);
+        }, 0);
+
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        
+        return hours > 0 ? `${hours} giờ ${minutes} phút` : `${minutes} phút`;
+    };
+
+    // Helper function to format last updated date
+    const formatLastUpdated = (dateString?: string) => {
+        if (!dateString) return 'N/A';
+        
+        const date = new Date(dateString);
+        const month = date.getMonth() + 1; // getMonth() returns 0-11
+        const year = date.getFullYear();
+        
+        return `T${month}/${year}`;
+    };
+
+    // Fetch course and lesson data
     useEffect(() => {
-        // Trong thực tế, bạn sẽ gọi API để lấy thông tin khóa học dựa trên slug
-        // const fetchCourse = async () => {
-        //   const response = await fetch(`/api/courses/by-slug/${slug}`);
-        //   const data = await response.json();
-        //   setCourse(data);
-        //   setLoading(false);
-        // };
-        // fetchCourse();
+        const fetchCourse = async () => {
+            setLoading(true);
+            try {
+                const apiResponse = await getCourseLearning(slug);
+                
+                if (!apiResponse) {
+                    console.error('Failed to fetch course data');
+                    setLoading(false);
+                    return;
+                }
+                
+                // Store the original API response for use in other parts of the component
+                setApiResponse(apiResponse);
+                
+                // Transform API response to match the LearningCourse type structure
+                const transformedCourse: LearningCourse = {
+                    id: apiResponse.id,
+                    slug: apiResponse.slug,
+                    title: apiResponse.name,
+                    progress: apiResponse.progress?.progressPercentage || 0,
+                    sections: [],
+                    // Initialize with empty currentLecture, will be set later
+                    currentLecture: null
+                };
+                
+                // Process sections and lessons
+                const sectionsWithLessons = await Promise.all(
+                    (apiResponse.sections || []).map(async (section) => {
+                        // Fetch lessons for each section if not already included
+                        const lessons = section.lessons || await getLessonsBySectionId(section.id);
+                        
+                        const mappedSection: Section = {
+                            id: section.id,
+                            title: section.title,
+                            lectures: lessons.map(lesson => ({
+                                id: lesson.id,
+                                title: lesson.title,
+                                // Map lesson type to lecture type
+                                type: mapLessonTypeToLectureType(lesson.type),
+                                description: '',
+                                duration: lesson.videoDuration ? 
+                                    `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
+                                    '0:00',
+                                isCompleted: lesson?.currentUserProgress?.completed || false,
+                                isCurrent: false,
+                                videoUrl: lesson.videoUrl,
+                                textContent: lesson.content
+                            }))
+                        };
+                        
+                        return mappedSection;
+                    })
+                );
+                
+                transformedCourse.sections = sectionsWithLessons;
+                
+                // Set current lecture based on progress if available
+                /* if (apiResponse.progress?.currentLessonId) {
+                    const currentLessonId = apiResponse.progress.currentLessonId;
+                    
+                    // Find the current lecture in all sections
+                    for (const section of sectionsWithLessons) {
+                        const currentLecture = section.lectures.find(lecture => lecture.id === currentLessonId);
+                        if (currentLecture) {
+                            transformedCourse.currentLecture = {...currentLecture, isCurrent: true};
+                            break;
+                        }
+                    }
+                }
+                // If no current lesson is set, use the first one
+                else  */if (sectionsWithLessons.length > 0 && sectionsWithLessons[0].lectures.length > 0) {
+                    const firstLecture = {...sectionsWithLessons[0].lectures[0], isCurrent: true};
+                    transformedCourse.currentLecture = firstLecture;
+                }
+                
+                setCourse(transformedCourse);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching course:', error);
+                setLoading(false);
+                router.push('/');
+            }
+        };
 
-        // Mô phỏng việc tải dữ liệu
-        setLoading(true);
-        setTimeout(() => {
-            setCourse(mockCourseData as unknown as Course);
-            setLoading(false);
-        }, 500);
-    }, [slug]);
+        // Function to map backend lesson type to frontend lecture type
+        const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType => {
+            switch (lessonType) {
+                case 'VIDEO':
+                    return 'video';
+                case 'READING':
+                    return 'reading';
+                case 'QUIZ':
+                    return 'quiz';
+                default:
+                    return 'video';
+            }
+        };
+
+        fetchCourse();
+    }, [slug, router]);
 
     const handleContinueLearning = () => {
         setToastMessage('Tiếp tục học tập từ bài học cuối cùng');
@@ -53,12 +169,31 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
         return (
             <div className="flex flex-col h-screen bg-white text-black">
                 <LearningHeader
-                    courseTitle={mockCourseData.title}
-                    progress={mockCourseData.progress}
+                    courseTitle="Loading..."
+                    progress={0}
                     courseSlug={slug}
                 />
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!course) {
+        return (
+            <div className="flex flex-col h-screen bg-white text-black">
+                <LearningHeader
+                    courseTitle="Course Not Found"
+                    progress={0}
+                    courseSlug={slug}
+                />
+                <div className="flex flex-col items-center justify-center h-full">
+                    <h1 className="text-2xl font-bold mb-4">Không tìm thấy khóa học</h1>
+                    <p className="mb-6">Khóa học bạn đang tìm kiếm có thể đã bị xóa hoặc không tồn tại.</p>
+                    <Link href="/my-courses" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Quay lại khóa học của tôi
+                    </Link>
                 </div>
             </div>
         );
@@ -110,7 +245,7 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                         <div className="mt-4 flex flex-wrap items-center gap-6">
                             <div className="flex items-center text-gray-600">
                                 <Clock className="w-5 h-5 mr-2"/>
-                                <span>20 giờ tổng thời lượng</span>
+                                <span>{formatTotalDuration(course.sections)} tổng thời lượng</span>
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <FileText className="w-5 h-5 mr-2"/>
@@ -118,11 +253,11 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <Users className="w-5 h-5 mr-2"/>
-                                <span>1,234 học viên</span>
+                                <span>{apiResponse?.totalStudent || 0} học viên</span>
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                <span>Cập nhật lần cuối: T3/2025</span>
+                                <span>Cập nhật lần cuối: {formatLastUpdated(apiResponse?.updatedDate)}</span>
                             </div>
                         </div>
 

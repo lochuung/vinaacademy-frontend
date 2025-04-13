@@ -11,6 +11,9 @@ import BasicInfoSection from '@/components/instructor/courses/new-course/section
 import MediaSection from '@/components/instructor/courses/new-course/sections/MediaSection';
 import PricingSection from '@/components/instructor/courses/new-course/sections/PricingSection';
 import FormFooter from '@/components/instructor/courses/new-course/FormFooter';
+import { InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { boolean } from 'zod';
+import { isValid } from 'date-fns';
 
 export default function CreateCoursePage() {
     const [activeSection, setActiveSection] = useState<CourseSection>('basic');
@@ -21,7 +24,8 @@ export default function CreateCoursePage() {
         category: '',
         level: '',
         language: 'vietnamese',
-        price: '',
+        price: 0,
+        oldPrice: 0,
         thumbnail: null,
         promo_video: null,
         discounted: false,
@@ -40,6 +44,14 @@ export default function CreateCoursePage() {
             [name]: value
         });
     };
+
+    const handleNumberChange = (e: InputNumberValueChangeEvent) => {
+        const {name, value} = e.target;
+        setCourseData({
+            ...courseData,
+            [name]: value
+        });
+    }
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, checked} = e.target;
@@ -71,6 +83,18 @@ export default function CreateCoursePage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Xử lý tạo khóa học
+        if (!isBasicSectionComplete()) {
+            updateSection('basic');
+            return;
+        }
+        if (!isMediaSectionComplete()) {
+            updateSection('media');
+            return;
+        }
+        if (!isPriceSectionComplete()) {
+            updateSection('pricing');
+            return;
+        }
         console.log(courseData);
         // Sau khi tạo, chuyển hướng đến trang chỉnh sửa chi tiết
     };
@@ -101,6 +125,17 @@ export default function CreateCoursePage() {
             courseData.category !== '' && courseData.level !== '';
     };
 
+    const isPriceSectionComplete = () => {
+        var isOk = courseData.price > 0;
+        
+        if (courseData.discounted) {
+            isOk = courseData.oldPrice > 0 && courseData.price < courseData.oldPrice;
+        }
+
+       return isOk;
+    }
+
+
     const isMediaSectionComplete = () => {
         return courseData.thumbnail !== null;
     };
@@ -126,9 +161,10 @@ export default function CreateCoursePage() {
                         onSectionChange={updateSection}
                         isBasicSectionComplete={isBasicSectionComplete()}
                         isMediaSectionComplete={isMediaSectionComplete()}
+                        isPriceSectionComplete={isPriceSectionComplete()}
                     />
 
-                    <form onSubmit={handleSubmit}>
+                    
                         <CardContent className="p-0">
                             {activeSection === 'basic' && (
                                 <BasicInfoSection
@@ -151,6 +187,7 @@ export default function CreateCoursePage() {
                             {activeSection === 'pricing' && (
                                 <PricingSection
                                     courseData={courseData}
+                                    onNumberChange={handleNumberChange}
                                     onInputChange={handleInputChange}
                                     onCheckboxChange={handleCheckboxChange}
                                 />
@@ -163,7 +200,7 @@ export default function CreateCoursePage() {
                             onContinue={handleContinueClick}
                             onSubmit={handleSubmit}
                         />
-                    </form>
+                    
                 </Card>
 
                 <div className="flex justify-center">
