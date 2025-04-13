@@ -1,9 +1,9 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import {ApiResponse, PaginatedResponse} from "@/types/api-response";
-import {CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest} from "@/types/course";
-import {AxiosResponse} from "axios";
+import { ApiResponse, PaginatedResponse } from "@/types/api-response";
+import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest } from "@/types/course";
+import { AxiosResponse } from "axios";
 
 // 📌 GET /courses/pagination
 export async function getCoursesPaginated(
@@ -103,13 +103,44 @@ export async function deleteCourse(slug: string): Promise<boolean> {
 
 
 export const getCourseLearning = async (slug: string): Promise<CourseDto | null> => {
-  try {
-    const response: AxiosResponse<ApiResponse<CourseDto>> = await apiClient.get(
-      `/courses/${slug}/learning`
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error("getCourseLearning error:", error);
-    return null;
-  }
+    try {
+        const response: AxiosResponse<ApiResponse<CourseDto>> = await apiClient.get(
+            `/courses/${slug}/learning`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error("getCourseLearning error:", error);
+        return null;
+    }
 }
+
+/**
+ * Lấy thông tin về khóa học bằng ID
+ * @param id ID của khóa học
+ * @returns Thông tin chi tiết của khóa học
+ */
+export const getCourseById = async (id: string): Promise<CourseDto | null> => {
+    try {
+        const response: AxiosResponse = await apiClient.get(`/courses/id/${id}`);
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching course by ID ${id}:`, error);
+        return null;
+    }
+};
+
+/**
+ * Lấy slug của khóa học từ ID khóa học
+ * @param id ID của khóa học cần lấy slug
+ * @returns Slug của khóa học
+ */
+export const getCourseSlugById = async (id: string): Promise<string | null> => {
+    try {
+        const response: AxiosResponse = await apiClient.get(`/courses/slug/${id}`);
+        return response.data.data.slug;
+    } catch (error) {
+        console.error(`Error fetching course slug for ID ${id}:`, error);
+        return null;
+    }
+};
+

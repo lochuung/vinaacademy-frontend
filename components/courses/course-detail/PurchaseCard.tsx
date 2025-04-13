@@ -80,7 +80,7 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             });
 
             // Redirect to the course learning page
-            router.push(`/learning/${course.id}`);
+            router.push(`/learning/${course.slug}`);
         } catch (error) {
             console.error("Error enrolling:", error);
             toast({
