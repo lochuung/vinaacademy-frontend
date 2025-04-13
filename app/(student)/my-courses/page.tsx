@@ -1,9 +1,10 @@
 "use client";
 
-import {useState, useEffect} from "react";
-import {LearningCourse} from "@/types/navbar";
-import {mockEnrolledCourses} from "@/data/mockCourseData";
+import { useState, useEffect } from "react";
+import { LearningCourse } from "@/types/navbar";
+import { mockEnrolledCourses } from "@/data/mockCourseData";
 import CourseCard from "@/components/student/progress/CourseCard";
+import { getUserEnrollments, EnrollmentResponse } from "@/services/enrollmentService";
 
 type SortOption = "newest" | "oldest" | "progress-high" | "progress-low" | "name-az" | "name-za";
 
@@ -14,51 +15,79 @@ const MyCoursesPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("newest");
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [error, setError] = useState<Error | null>(null);
+
+    // Convert activeTab to API status format
+    const getStatusFromTab = (): 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | undefined => {
+        switch (activeTab) {
+            case 'inProgress': return 'IN_PROGRESS';
+            case 'completed': return 'COMPLETED';
+            default: return undefined;
+        }
+    };
 
     useEffect(() => {
-        // Giả lập việc tải dữ liệu từ API
+        // Fetch enrollments from API
         const fetchCourses = async () => {
             setIsLoading(true);
             try {
-                // Giả lập độ trễ API
-                await new Promise(resolve => setTimeout(resolve, 500));
+                const status = getStatusFromTab();
+                const response = await getUserEnrollments(currentPage, 10, status);
 
-                // Trong thực tế, đây sẽ là gọi API thực sự
-                // const response = await fetch('/api/student/courses');
-                // const data = await response.json();
+                if (response && response.content) {
+                    // Map enrollment data to LearningCourse format
+                    // Đảm bảo id của course luôn là string
+                    const mappedCourses = response.content.map((enrollment: EnrollmentResponse) => ({
+                        id: String(enrollment.courseId), // Chuyển đổi sang string
+                        name: enrollment.courseName,
+                        slug: enrollment.courseSlug, // API provided slug
+                        image: enrollment.courseImage || '/images/course-placeholder.jpg',
+                        instructor: enrollment.instructorName || enrollment.instructor || '',
+                        progress: enrollment.progressPercentage || 0,
+                        completedLessons: enrollment.completedLessons || 0,
+                        totalLessons: enrollment.totalLessons || 0,
+                        category: enrollment.category || '',
+                        lastAccessed: enrollment.lastAccessedAt || '',
+                        enrollmentId: enrollment.id
+                    }));
 
-                // Sử dụng dữ liệu mẫu
-                setCourses(mockEnrolledCourses as LearningCourse[]);
-            } catch (error) {
-                console.error("Lỗi khi tải danh sách khóa học:", error);
+                    setCourses(mappedCourses);
+                    setTotalPages(response.totalPages || 1);
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải danh sách khóa học:", err);
+                setError(err instanceof Error ? err : new Error('Lỗi không xác định khi tải khóa học'));
+                // Fallback to mock data if API fails
+                // Đảm bảo chuyển đổi id trong dữ liệu mẫu sang string
+                const mockCoursesWithStringId = mockEnrolledCourses.map(course => ({
+                    ...course,
+                    id: String(course.id)
+                }));
+                setCourses(mockCoursesWithStringId as LearningCourse[]);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchCourses();
-    }, []);
+    }, [activeTab, currentPage]);
 
     // Lọc và sắp xếp khóa học
     useEffect(() => {
         if (!courses.length) return;
 
-        // Lọc theo tab
-        let filtered = courses.filter((course) => {
-            if (activeTab === "all") return true;
-            if (activeTab === "inProgress") return course.progress < 100;
-            if (activeTab === "completed") return course.progress === 100;
-            return true;
-        });
-
         // Lọc theo từ khóa tìm kiếm
+        let filtered = [...courses];
+
         if (searchQuery.trim() !== "") {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(
                 course =>
-                    (course.name?.toLowerCase().includes(query) ||
-                        course.instructor?.toLowerCase().includes(query) ||
-                        course.category?.toLowerCase().includes(query))
+                (course.name?.toLowerCase().includes(query) ||
+                    course.instructor?.toLowerCase().includes(query) ||
+                    course.category?.toLowerCase().includes(query))
             );
         }
 
@@ -66,30 +95,44 @@ const MyCoursesPage = () => {
         switch (sortOption) {
             case "newest":
                 filtered = [...filtered].sort((a, b) => {
-                    // Parse dates in DD/MM/YYYY format
-                    const parseDate = (dateStr: string | undefined) => {
-                        if (!dateStr) return new Date(0);
-                        const [day, month, year] = dateStr.split('/');
-                        return new Date(`${year}-${month}-${day}`);
+                    // Parse dates in DD/MM/YYYY format or ISO format
+                    const getTimestamp = (dateStr: string | undefined) => {
+                        if (!dateStr) return 0;
+
+                        if (dateStr.includes('/')) {
+                            // DD/MM/YYYY format
+                            const [day, month, year] = dateStr.split('/');
+                            return new Date(`${year}-${month}-${day}`).getTime();
+                        } else {
+                            // ISO format
+                            return new Date(dateStr).getTime();
+                        }
                     };
 
-                    const dateA = parseDate(a.lastAccessed);
-                    const dateB = parseDate(b.lastAccessed);
-                    return dateB.getTime() - dateA.getTime();
+                    const dateA = getTimestamp(a.lastAccessed);
+                    const dateB = getTimestamp(b.lastAccessed);
+                    return dateB - dateA;
                 });
                 break;
             case "oldest":
                 filtered = [...filtered].sort((a, b) => {
-                    // Parse dates in DD/MM/YYYY format
-                    const parseDate = (dateStr: string | undefined) => {
-                        if (!dateStr) return new Date(0);
-                        const [day, month, year] = dateStr.split('/');
-                        return new Date(`${year}-${month}-${day}`);
+                    // Parse dates in DD/MM/YYYY format or ISO format
+                    const getTimestamp = (dateStr: string | undefined) => {
+                        if (!dateStr) return 0;
+
+                        if (dateStr.includes('/')) {
+                            // DD/MM/YYYY format
+                            const [day, month, year] = dateStr.split('/');
+                            return new Date(`${year}-${month}-${day}`).getTime();
+                        } else {
+                            // ISO format
+                            return new Date(dateStr).getTime();
+                        }
                     };
 
-                    const dateA = parseDate(a.lastAccessed);
-                    const dateB = parseDate(b.lastAccessed);
-                    return dateA.getTime() - dateB.getTime();
+                    const dateA = getTimestamp(a.lastAccessed);
+                    const dateB = getTimestamp(b.lastAccessed);
+                    return dateA - dateB;
                 });
                 break;
             case "progress-high":
@@ -115,7 +158,7 @@ const MyCoursesPage = () => {
         }
 
         setFilteredCourses(filtered);
-    }, [courses, activeTab, searchQuery, sortOption]);
+    }, [courses, searchQuery, sortOption]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -135,7 +178,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "all"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                            }`}
+                                }`}
                         >
                             Tất cả khóa học
                         </button>
@@ -144,7 +187,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "inProgress"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                            }`}
+                                }`}
                         >
                             Đang học
                         </button>
@@ -153,7 +196,7 @@ const MyCoursesPage = () => {
                             className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === "completed"
                                 ? "border-black text-black"
                                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                            }`}
+                                }`}
                         >
                             Hoàn thành
                         </button>
@@ -249,11 +292,72 @@ const MyCoursesPage = () => {
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredCourses.map((course) => (
-                                    <CourseCard key={course.id} course={course}/>
+                                    <CourseCard key={course.id || String(course.enrollmentId)} course={course} />
                                 ))}
                             </div>
                         )}
+
+                        {/* Phân trang */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center mt-8">
+                                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <button
+                                        onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                                        disabled={currentPage === 0}
+                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    >
+                                        <span className="sr-only">Previous</span>
+                                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Hiển thị trang hiện tại và tổng số trang */}
+                                    <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                        Trang {currentPage + 1} / {totalPages}
+                                    </span>
+
+                                    <button
+                                        onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                                        disabled={currentPage >= totalPages - 1}
+                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage >= totalPages - 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    >
+                                        <span className="sr-only">Next</span>
+                                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </nav>
+                            </div>
+                        )}
                     </>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <div className="text-center py-12 bg-red-50 rounded-lg shadow-sm border border-red-200 text-red-600">
+                        <svg
+                            className="mx-auto h-12 w-12"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            />
+                        </svg>
+                        <h3 className="mt-2 text-lg font-medium">Đã xảy ra lỗi</h3>
+                        <p className="mt-1 text-sm">{error.message}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                            Tải lại trang
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

@@ -12,12 +12,18 @@ export interface EnrollmentResponse {
     courseId: string;
     courseName: string;
     courseImage?: string;
+    courseSlug?: string;
     startAt: string;
     completedAt?: string;
     progressPercentage: number;
     status: 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED';
     enrollmentDate: string;
     lastAccessedAt?: string;
+    instructor?: string;
+    instructorName?: string;
+    completedLessons?: number;
+    totalLessons?: number;
+    category?: string;
 }
 
 /**
@@ -68,7 +74,35 @@ export const getUserEnrollments = async (
             : `/enrollments?page=${page}&size=${size}`;
 
         const response = await apiClient.get(url);
-        return response.data.data;
+
+        // Thêm dữ liệu slug vào mỗi enrollment nếu chưa có
+        const data = response.data.data;
+        if (data && data.content) {
+            // Đảm bảo mỗi enrollment có courseSlug
+            const enrichedContent = await Promise.all(data.content.map(async (enrollment: EnrollmentResponse) => {
+                if (!enrollment.courseSlug && enrollment.courseId) {
+                    try {
+                        // Lấy slug từ API nếu chưa có
+                        const courseResponse = await apiClient.get(`/courses/slug/${enrollment.courseId}`);
+                        return {
+                            ...enrollment,
+                            courseSlug: courseResponse.data.data.slug
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching course slug for course ID ${enrollment.courseId}:`, error);
+                        return enrollment;
+                    }
+                }
+                return enrollment;
+            }));
+
+            return {
+                ...data,
+                content: enrichedContent
+            };
+        }
+
+        return data;
     } catch (error) {
         console.error('Error getting user enrollments:', error);
         throw error;
@@ -86,5 +120,35 @@ export const cancelEnrollment = async (enrollmentId: number): Promise<void> => {
     } catch (error) {
         console.error('Error cancelling enrollment:', error);
         throw error;
+    }
+};
+
+/**
+ * Lấy thông tin chi tiết về một enrollment
+ * @param enrollmentId ID của enrollment
+ * @returns Chi tiết về enrollment và thông tin khóa học
+ */
+export const getEnrollmentDetail = async (enrollmentId: number): Promise<EnrollmentResponse> => {
+    try {
+        const response = await apiClient.get(`/enrollments/${enrollmentId}`);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting enrollment detail:', error);
+        throw error;
+    }
+};
+
+/**
+ * Lấy slug của khóa học từ ID khóa học
+ * @param courseId ID của khóa học
+ * @returns Slug của khóa học
+ */
+export const getCourseSlugById = async (courseId: string): Promise<string | null> => {
+    try {
+        const response = await apiClient.get(`/courses/slug/${courseId}`);
+        return response.data.data.slug;
+    } catch (error) {
+        console.error('Error getting course slug:', error);
+        return null;
     }
 };
