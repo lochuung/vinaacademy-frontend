@@ -18,7 +18,7 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             return sectionTotal + (lesson.videoDuration || 0);
         }, 0) ?? 0);
     }, 0);
-    
+
     // Format duration to hours and minutes
     const formatDuration = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
