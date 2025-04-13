@@ -2,8 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { CourseDetailsResponse, SectionDto, UserDto } from "@/types/course";
-import { Book, Clock, Globe, Play, Share2 } from "lucide-react";
+import { Book, Clock, Globe, Play, Share2, ShoppingCart, CheckCircle } from "lucide-react";
 import Image from 'next/image';
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { enrollInCourse, checkEnrollment, EnrollmentRequest } from "@/services/enrollmentService";
+import { useToast } from "@/hooks/use-toast";
 
 interface PurchaseCardProps {
     course: CourseDetailsResponse;
@@ -12,18 +17,105 @@ interface PurchaseCardProps {
 }
 
 export default function PurchaseCard({ course, instructors, sections }: PurchaseCardProps) {
+    const { user, isAuthenticated } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [isEnrolling, setIsEnrolling] = useState(false);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+
     // Calculate total course duration in seconds
     const totalDuration = course.sections.reduce((total, section) => {
         return total + (section.lessons?.reduce((sectionTotal, lesson) => {
             return sectionTotal + (lesson.videoDuration || 0);
         }, 0) ?? 0);
     }, 0);
-    
+
     // Format duration to hours and minutes
     const formatDuration = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         return `${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`;
+    };
+
+    // Check if user is already enrolled
+    useEffect(() => {
+        const checkUserEnrollment = async () => {
+            if (isAuthenticated && course.id) {
+                try {
+                    const enrolled = await checkEnrollment(course.id.toString());
+                    setIsEnrolled(enrolled);
+                } catch (error) {
+                    console.error("Error checking enrollment:", error);
+                }
+            }
+        };
+
+        checkUserEnrollment();
+    }, [isAuthenticated, course.id]);
+
+    // Handle enrollment
+    const handleEnroll = async () => {
+        if (!isAuthenticated) {
+            toast({
+                title: "Bạn cần đăng nhập",
+                description: "Vui lòng đăng nhập để đăng ký khóa học",
+                variant: "destructive",
+            });
+            router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
+            return;
+        }
+
+        setIsEnrolling(true);
+        try {
+            const enrollmentData: EnrollmentRequest = {
+                courseId: course.id.toString(),
+            };
+
+            await enrollInCourse(enrollmentData);
+            setIsEnrolled(true);
+            toast({
+                title: "Đăng ký thành công!",
+                description: "Bạn đã đăng ký khóa học thành công.",
+            });
+
+            // Redirect to the course learning page
+            router.push(`/learning/${course.id}`);
+        } catch (error) {
+            console.error("Error enrolling:", error);
+            toast({
+                title: "Đăng ký thất bại",
+                description: "Có lỗi xảy ra khi đăng ký khóa học. Vui lòng thử lại sau.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsEnrolling(false);
+        }
+    };
+
+    // Handle add to cart
+    const handleAddToCart = () => {
+        if (!isAuthenticated) {
+            toast({
+                title: "Bạn cần đăng nhập",
+                description: "Vui lòng đăng nhập để thêm khóa học vào giỏ hàng",
+                variant: "destructive",
+            });
+            router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
+            return;
+        }
+
+        setIsAddingToCart(true);
+        // Implement cart functionality or call API here
+
+        // For now, just show a toast
+        setTimeout(() => {
+            toast({
+                title: "Đã thêm vào giỏ hàng",
+                description: "Khóa học đã được thêm vào giỏ hàng của bạn",
+            });
+            setIsAddingToCart(false);
+        }, 500);
     };
 
     return (
@@ -50,11 +142,34 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
                 <div className="mb-6">
                     <p className="text-2xl font-bold mb-2">{course.price.toLocaleString('vi-VN')}₫</p>
                     <div className="space-y-3 mt-4">
-                        <Button variant="default" className="w-full bg-[#a435f0] hover:bg-[#8710d8]">
-                            Đăng ký học ngay
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                            Thêm vào giỏ hàng
+                        {isEnrolled ? (
+                            <Button
+                                variant="default"
+                                className="w-full bg-green-600 hover:bg-green-700 flex items-center justify-center"
+                                onClick={() => router.push(`/learning/${course.id}`)}
+                            >
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Tiếp tục học
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="default"
+                                className="w-full bg-[#a435f0] hover:bg-[#8710d8]"
+                                onClick={handleEnroll}
+                                disabled={isEnrolling}
+                            >
+                                {isEnrolling ? 'Đang xử lý...' : 'Đăng ký học ngay'}
+                            </Button>
+                        )}
+
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={handleAddToCart}
+                            disabled={isAddingToCart || isEnrolled}
+                        >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            {isAddingToCart ? 'Đang xử lý...' : 'Thêm vào giỏ hàng'}
                         </Button>
                     </div>
                     <p className="text-xs text-center text-gray-500 mt-2">Đảm bảo hoàn tiền trong 30 ngày</p>

@@ -6,12 +6,12 @@ export async function fetchCourseBySlug(slug: string): Promise<CourseDetailsResp
     try {
         // Use node-fetch or native fetch in server environment
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/${slug}`);
-        
+
         if (!response.ok) {
             console.error(`Failed to fetch course with slug ${slug}: ${response.status}`);
             return null;
         }
-        
+
         const data = await response.json();
         return data.data;
     } catch (error) {
