@@ -26,11 +26,13 @@ export default function RootLayout({
             <CategoryProvider>
                 <LayoutWrapper>
                     {children}
+                    
                 </LayoutWrapper>
                 <Toaster/>{/* Hiển thị Toaster */}
             </CategoryProvider>
+            
         </AuthProvider>
-
+       
         {/* Use Next.js Script component for client-side scripts */}
         <Script id="navigation-fix">
             {`
@@ -48,7 +50,10 @@ export default function RootLayout({
             });
           `}
         </Script>
+        
         </body>
+        
         </html>
+        
     );
 }
