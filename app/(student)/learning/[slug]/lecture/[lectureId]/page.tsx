@@ -119,7 +119,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                 id: lesson.id,
                 title: lesson.title,
                 type: mapLessonTypeToLectureType(lesson.type),
-                description: lesson.content || '',
+                description: '',
                 duration: lesson.videoDuration ? 
                     `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
                     '0:00',
