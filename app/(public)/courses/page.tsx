@@ -9,12 +9,15 @@ import {HeroSection} from "@/components/courses/all-courses/HeroSection";
 import {SortingControl} from "@/components/courses/all-courses/SortingControl";
 import {MobileFilterDrawer} from "@/components/courses/all-courses/MobileFilterDrawer";
 import {CoursesGrid} from "@/components/courses/all-courses/CoursesGrid";
+import { useDebounce } from "use-debounce";
+
 
 export default function AllCoursesPage() {
     // State cho các khóa học và bộ lọc
     const [courses, setCourses] = useState(mockCourses);
     const [filteredCourses, setFilteredCourses] = useState(mockCourses);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchQueryDebounce, setSearchQueryDebounce] = useDebounce(searchQuery, 600);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedLevel, setSelectedLevel] = useState("");
     const [priceRange, setPriceRange] = useState("");
@@ -36,11 +39,11 @@ export default function AllCoursesPage() {
         let result = [...mockCourses];
 
         // Lọc theo từ khóa tìm kiếm
-        if (searchQuery) {
+        if (searchQueryDebounce) {
             result = result.filter(
                 course =>
-                    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+                    course.title.toLowerCase().includes(searchQueryDebounce.toLowerCase()) ||
+                    course.instructor.toLowerCase().includes(searchQueryDebounce.toLowerCase())
             );
         }
 
@@ -97,7 +100,7 @@ export default function AllCoursesPage() {
 
         setFilteredCourses(result);
         setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi bộ lọc
-    }, [searchQuery, selectedCategory, selectedLevel, priceRange, sortBy]);
+    }, [searchQueryDebounce, selectedCategory, selectedLevel, priceRange, sortBy]);
 
     // Tính toán số trang và các khóa học hiện tại
     const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);

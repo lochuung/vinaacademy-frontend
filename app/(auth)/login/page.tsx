@@ -1,15 +1,15 @@
 'use client';
 
-import LoginForm, {LoginFormValues} from '@/components/ui/loginform';
-import React, {useState} from "react";
-import {LoginCredentials} from "@/types/auth";
-import {useAuth} from "@/context/AuthContext";
-import {useRouter} from "next/navigation";
+import LoginForm, { LoginFormValues } from '@/components/ui/loginform';
+import React, { useState } from "react";
+import { LoginCredentials } from "@/types/auth";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const {login, isAuthenticated} = useAuth();
+    const { login, isAuthenticated } = useAuth();
     const router = useRouter();
 
     if (isAuthenticated) {

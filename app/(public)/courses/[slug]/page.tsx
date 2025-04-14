@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: { slug?: string } }
 
     // Fetch course data from API using server action
     const course = await fetchCourseBySlug(slug);
-    
+
     if (!course) {
         return {
             title: 'Không tìm thấy khóa học | VinaAcademy',
@@ -53,7 +53,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
     try {
         // Fetch course data from API using server action
         const course = await fetchCourseBySlug(params.slug);
-        
+
         // If course not found, return 404
         if (!course) {
             return notFound();
@@ -104,7 +104,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                     <main>
                         {/* Course Header Banner Section */}
                         <section className="bg-[#1c1d1f] text-white" aria-label="Thông tin khóa học">
-                            <CourseHeader course={course}/>
+                            <CourseHeader course={course} />
                         </section>
 
                         {/* Main Content with Sidebar */}
@@ -112,7 +112,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                             <div className="flex flex-col lg:flex-row gap-8">
                                 {/* Main Content - 2/3 width on desktop */}
                                 <article className="lg:w-2/3">
-                                    <CourseDetails course={course}/>
+                                    <CourseDetails course={course} />
                                     <section className="bg-white border rounded-lg p-6 mb-8">
                                         <ReviewsArea
                                             courseId={course.id}
@@ -124,8 +124,8 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                                 {/* Purchase Sidebar - 1/3 width, sticky on desktop, hidden on mobile */}
                                 <aside className="lg:w-1/3 hidden lg:block">
                                     <div className="sticky top-24">
-                                        <PurchaseCard 
-                                            course={course} 
+                                        <PurchaseCard
+                                            course={course}
                                             instructors={course.instructors}
                                             sections={course.sections}
                                         />

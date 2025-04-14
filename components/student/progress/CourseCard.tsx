@@ -1,19 +1,76 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {LearningCourse} from "@/types/navbar";
+import { LearningCourse } from "@/types/navbar";
+import { getCourseSlugById } from "@/services/courseService";
 
 interface CourseCardProps {
     course: LearningCourse;
 }
 
-const CourseCard = ({course}: CourseCardProps) => {
+const CourseCard = ({ course }: CourseCardProps) => {
     const isCompleted = course.progress === 100;
     const title = course.name;
-    const courseSlug = course.slug || course.id.toString();
+    const [courseSlug, setCourseSlug] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Đảm bảo có slug hợp lệ
+    useEffect(() => {
+        const fetchCourseSlug = async () => {
+            // Nếu đã có slug trong dữ liệu khóa học, sử dụng nó
+            if (course.slug) {
+                setCourseSlug(course.slug);
+                return;
+            }
+
+            // Nếu không có slug, nhưng có ID khóa học, lấy slug từ API
+            if (course.id) {
+                setIsLoading(true);
+                try {
+                    const slug = await getCourseSlugById(String(course.id));
+                    if (slug) {
+                        setCourseSlug(slug);
+                    } else {
+                        // Fallback: Tạo slug từ tên nếu API không trả về slug
+                        setCourseSlug(generateSlugFromName(course.name));
+                    }
+                } catch (error) {
+                    console.error("Error fetching course slug:", error);
+                    // Fallback to generating slug from name if API fails
+                    setCourseSlug(generateSlugFromName(course.name));
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                // Fallback nếu không có cả slug và id
+                setCourseSlug(generateSlugFromName(course.name));
+            }
+        };
+
+        fetchCourseSlug();
+    }, [course.id, course.slug, course.name]);
+
+    // Function to generate slug from name if needed (fallback)
+    function generateSlugFromName(name: string): string {
+        if (!name) return '';
+
+        return name
+            .toLowerCase()
+            .replace(/[àáảãạâầấẩẫậăằắẳẵặ]/g, 'a')
+            .replace(/[èéẻẽẹêềếểễệ]/g, 'e')
+            .replace(/[ìíỉĩị]/g, 'i')
+            .replace(/[òóỏõọôồốổỗộơờớởỡợ]/g, 'o')
+            .replace(/[ùúủũụưừứửữự]/g, 'u')
+            .replace(/[ỳýỷỹỵ]/g, 'y')
+            .replace(/đ/g, 'd')
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
+    }
 
     return (
-        <div
-            className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="relative">
                 <img
                     src={course.image}
@@ -21,8 +78,7 @@ const CourseCard = ({course}: CourseCardProps) => {
                     className="w-full h-48 object-cover"
                 />
                 {course.category && (
-                    <div
-                        className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-medium text-gray-700">
+                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-medium text-gray-700">
                         {course.category}
                     </div>
                 )}
@@ -31,10 +87,9 @@ const CourseCard = ({course}: CourseCardProps) => {
                 <h3 className="font-bold text-lg mb-2 text-gray-900">{title}</h3>
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-500">
-                        {course.instructor}
+                        {course.instructor || ""}
                     </span>
-                    <span className={`text-sm font-medium ${isCompleted ? "text-gray-700" : "text-black"
-                    }`}>
+                    <span className={`text-sm font-medium ${isCompleted ? "text-gray-700" : "text-black"}`}>
                         {isCompleted ? "Đã hoàn thành" : `${course.progress}% hoàn thành`}
                     </span>
                 </div>
@@ -53,8 +108,8 @@ const CourseCard = ({course}: CourseCardProps) => {
                                         : course.progress >= 20
                                             ? "bg-gray-400"
                                             : "bg-gray-300"
-                        }`}
-                        style={{width: `${course.progress}%`}}
+                            }`}
+                        style={{ width: `${course.progress}%` }}
                     ></div>
                 </div>
 
@@ -65,19 +120,36 @@ const CourseCard = ({course}: CourseCardProps) => {
                 )}
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
-                    <Link
-                        href={`/learning/${courseSlug}`}
-                        className="text-center py-2 px-3 bg-black hover:bg-gray-900 text-white font-medium rounded-md transition-colors duration-300"
-                    >
-                        {isCompleted ? "Xem lại" : "Tiếp tục học"}
-                    </Link>
+                    {isLoading ? (
+                        // Loading state for buttons
+                        <>
+                            <button disabled className="text-center py-2 px-3 bg-gray-300 text-gray-500 font-medium rounded-md">
+                                Đang tải...
+                            </button>
+                            <button disabled className="text-center py-2 px-3 bg-gray-100 border border-gray-300 text-gray-400 font-medium rounded-md">
+                                Đang tải...
+                            </button>
+                        </>
+                    ) : (
+                        // Loaded state with correct slug
+                        <>
+                            {/* "Continue Learning" button - Use slug for navigation */}
+                            <Link
+                                href={`/learning/${courseSlug}`}
+                                className="text-center py-2 px-3 bg-black hover:bg-gray-900 text-white font-medium rounded-md transition-colors duration-300"
+                            >
+                                {isCompleted ? "Xem lại" : "Tiếp tục học"}
+                            </Link>
 
-                    <Link
-                        href={`/my-courses/${courseSlug}`}
-                        className="text-center py-2 px-3 bg-white border border-gray-900 text-gray-900 font-medium rounded-md hover:bg-gray-100 transition-colors duration-300"
-                    >
-                        Chi tiết tiến độ
-                    </Link>
+                            {/* "Progress Details" button - Also use slug */}
+                            <Link
+                                href={`/my-courses/${courseSlug}`}
+                                className="text-center py-2 px-3 bg-white border border-gray-900 text-gray-900 font-medium rounded-md hover:bg-gray-100 transition-colors duration-300"
+                            >
+                                Chi tiết tiến độ
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

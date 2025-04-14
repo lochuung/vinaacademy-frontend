@@ -77,13 +77,13 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                                     Thư viện nội dung
                                 </div>
                             </Link>
-                            <Link href="/instructor/materials">
+                            {/* <Link href="/instructor/materials">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/materials')}`}>
                                     <FileText className="w-5 h-5 mr-3"/>
                                     Tài liệu
                                 </div>
-                            </Link>
+                            </Link> */}
                             <Link href="/instructor/students">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/students')}`}>

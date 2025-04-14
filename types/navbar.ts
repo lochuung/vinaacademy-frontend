@@ -42,15 +42,15 @@ export interface CartItem {
 
 // Định nghĩa interface LearningCourse cho khoá học đang học, chứa thông tin tiến độ cũng như các chi tiết khác
 export interface LearningCourse {
-    id: number;                // ID khoá học
-    slug?: string;             // Slug của khóa học sử dụng trong URL
-    name: string;              // Tên khoá học
-    progress: number;          // Tiến độ hoàn thành (%)
-    image: string;             // Đường dẫn hình ảnh của khoá học
-    category?: string;         // Danh mục của khoá học
-    instructor?: string;       // Tên giảng viên (tùy chọn)
-    lastAccessed?: string;     // Ngày truy cập cuối cùng (tùy chọn)
-    totalLessons?: number;     // Tổng số bài học trong khoá học (tùy chọn)
-    completedLessons?: number; // Số bài học đã hoàn thành (tùy chọn)
-    certificateAvailable?: boolean; // Cho biết liệu có chứng chỉ sau khi hoàn thành khoá học hay không (tùy chọn)
+    id?: string;
+    name: string;
+    slug?: string;
+    image: string;
+    instructor?: string;
+    progress: number;
+    completedLessons?: number;
+    totalLessons?: number;
+    category?: string;
+    lastAccessed?: string;
+    enrollmentId?: number; // Thêm trường này để khắc phục lỗi
 }

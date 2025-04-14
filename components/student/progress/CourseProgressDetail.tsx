@@ -1,10 +1,12 @@
 "use client";
 
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getCourseSlugById } from "@/services/courseService";
 
 interface CourseModule {
-    id: number;
+    id: string;
     title: string;
     totalLessons: number;
     completedLessons: number;
@@ -13,7 +15,7 @@ interface CourseModule {
 }
 
 interface CourseLesson {
-    id: number;
+    id: string;
     title: string;
     duration: string;
     isCompleted: boolean;
@@ -21,7 +23,7 @@ interface CourseLesson {
 }
 
 interface CourseProgressDetailProps {
-    courseId: number;
+    courseId: string;
     courseSlug?: string;
     courseName: string;
     instructor: string;
@@ -33,24 +35,80 @@ interface CourseProgressDetailProps {
 }
 
 const CourseProgressDetail = ({
-                                  courseId,
-                                  courseSlug,
-                                  courseName: courseTitle,
-                                  instructor,
-                                  totalModules,
-                                  completedModules,
-                                  overallProgress,
-                                  lastAccessed,
-                                  modules,
-                              }: CourseProgressDetailProps) => {
+    courseId,
+    courseSlug,
+    courseName: courseTitle,
+    instructor,
+    totalModules,
+    completedModules,
+    overallProgress,
+    lastAccessed,
+    modules,
+}: CourseProgressDetailProps) => {
     const [expandedModules, setExpandedModules] = useState<number[]>([]);
-    const courseIdentifier = courseSlug || courseId.toString();
+    const [validSlug, setValidSlug] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
+
+    // Make sure we have a valid slug for navigation
+    useEffect(() => {
+        const fetchCourseSlug = async () => {
+            // If we already have a slug from props, use it
+            if (courseSlug) {
+                setValidSlug(courseSlug);
+                setIsLoading(false);
+                return;
+            }
+
+            // If no slug in props, fetch from API using courseId
+            if (courseId) {
+                setIsLoading(true);
+                try {
+                    const slug = await getCourseSlugById(courseId);
+                    if (slug) {
+                        setValidSlug(slug);
+                    } else {
+                        console.error("No slug returned from API for courseId:", courseId);
+                    }
+                } catch (error) {
+                    console.error("Error fetching course slug:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchCourseSlug();
+    }, [courseId, courseSlug]);
+
+    // Log the slug for debugging
+    useEffect(() => {
+        if (validSlug) {
+            console.log(`CourseProgressDetail using slug: ${validSlug} for course: ${courseTitle}`);
+        }
+    }, [validSlug, courseTitle]);
 
     const toggleModule = (moduleId: number) => {
         if (expandedModules.includes(moduleId)) {
             setExpandedModules(expandedModules.filter((id) => id !== moduleId));
         } else {
             setExpandedModules([...expandedModules, moduleId]);
+        }
+    };
+
+    // Handle navigation to learning page
+    const handleContinueLearning = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (validSlug) {
+            router.push(`/learning/${validSlug}`);
+        }
+    };
+
+    // Handle navigation to specific lesson
+    const navigateToLesson = (e: React.MouseEvent, lessonId: string) => {
+        e.preventDefault();
+        if (validSlug) {
+            router.push(`/learning/${validSlug}/lecture/${lessonId}`);
         }
     };
 
@@ -68,7 +126,7 @@ const CourseProgressDetail = ({
                         <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
                             <div
                                 className="h-2.5 rounded-full bg-black"
-                                style={{width: `${overallProgress}%`}}
+                                style={{ width: `${overallProgress}%` }}
                             ></div>
                         </div>
                         <span className="text-gray-800 font-bold">{overallProgress}%</span>
@@ -95,7 +153,7 @@ const CourseProgressDetail = ({
                     {modules.map((module) => (
                         <div key={module.id} className="border border-gray-200 rounded-lg overflow-hidden">
                             <button
-                                onClick={() => toggleModule(module.id)}
+                                onClick={() => toggleModule(Number(module.id))}
                                 className="flex items-center justify-between w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
                             >
                                 <div className="flex items-center">
@@ -114,8 +172,8 @@ const CourseProgressDetail = ({
                                         ></div>
                                     </div>
                                     <svg
-                                        className={`w-5 h-5 text-gray-500 transform transition-transform ${expandedModules.includes(module.id) ? "rotate-180" : ""
-                                        }`}
+                                        className={`w-5 h-5 text-gray-500 transform transition-transform ${expandedModules.includes(Number(module.id)) ? "rotate-180" : ""
+                                            }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -131,20 +189,21 @@ const CourseProgressDetail = ({
                                 </div>
                             </button>
 
-                            {expandedModules.includes(module.id) && (
+                            {expandedModules.includes(Number(module.id)) && (
                                 <div className="p-4 border-t border-gray-200">
                                     <ul className="divide-y divide-gray-200">
                                         {module.lessons.map((lesson) => (
                                             <li key={lesson.id} className="py-3">
-                                                <Link
-                                                    href={`/learning/${courseIdentifier}/lecture/${lesson.id}`}
-                                                    className="flex items-center group"
+                                                <a
+                                                    href="#"
+                                                    onClick={(e) => navigateToLesson(e, lesson.id)}
+                                                    className="flex items-center group cursor-pointer"
                                                 >
                                                     <div
                                                         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-3 ${lesson.isCompleted
                                                             ? "bg-gray-200 text-gray-700"
                                                             : "bg-gray-100 text-gray-400"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {lesson.isCompleted ? (
                                                             <svg
@@ -160,29 +219,40 @@ const CourseProgressDetail = ({
                                                                 ></path>
                                                             </svg>
                                                         ) : (
-                                                            <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                                                            <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
                                                         )}
                                                     </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center justify-between">
-                                                            <span
-                                                                className={`font-medium ${lesson.isCompleted ? "text-gray-600" : "text-gray-900"
-                                                                } group-hover:text-black`}
-                                                            >
-                                                                {lesson.title}
+                                                    <div className="flex-grow">
+                                                        <div className="flex items-center">
+                                                            {/* Lesson type icon */}
+                                                            <span className="mr-2">
+                                                                {lesson.type === 'video' && (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                )}
+                                                                {lesson.type === 'quiz' && (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                                    </svg>
+                                                                )}
+                                                                {lesson.type === 'reading' && (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                                    </svg>
+                                                                )}
+                                                                {lesson.type === 'assignment' && (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                                    </svg>
+                                                                )}
                                                             </span>
-                                                            <span className="text-sm text-gray-500 ml-2">
-                                                                {lesson.duration}
-                                                            </span>
+                                                            <span className="text-gray-900 group-hover:text-blue-600">{lesson.title}</span>
                                                         </div>
-                                                        <div className="flex items-center mt-1">
-                                                            <LessonTypeIcon type={lesson.type}/>
-                                                            <span className="text-xs text-gray-500 ml-1 capitalize">
-                                                                {lesson.type}
-                                                            </span>
-                                                        </div>
+                                                        <span className="text-sm text-gray-500">{lesson.duration}</span>
                                                     </div>
-                                                </Link>
+                                                </a>
                                             </li>
                                         ))}
                                     </ul>
@@ -193,118 +263,26 @@ const CourseProgressDetail = ({
                 </div>
             </div>
 
-            <div className="mt-8 flex justify-between">
-                <Link
-                    href="/my-courses"
-                    className="text-black hover:text-gray-700 font-medium flex items-center"
-                >
-                    <svg
-                        className="w-5 h-5 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+            {/* Continue Learning Button */}
+            <div className="mt-6">
+                {isLoading ? (
+                    <button
+                        disabled
+                        className="w-full sm:w-auto px-6 py-3 bg-gray-300 text-gray-500 rounded-lg"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                        ></path>
-                    </svg>
-                    Trở về danh sách khóa học
-                </Link>
-                <Link
-                    href={`/learning/${courseIdentifier}`}
-                    className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition-colors"
-                >
-                    Tiếp tục học
-                </Link>
+                        Đang tải...
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleContinueLearning}
+                        className="w-full sm:w-auto px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                        Tiếp tục học
+                    </button>
+                )}
             </div>
         </div>
     );
-};
-
-// Component hiển thị biểu tượng tương ứng với loại bài học
-const LessonTypeIcon = ({type}: { type: CourseLesson["type"] }) => {
-    switch (type) {
-        case "video":
-            return (
-                <svg
-                    className="w-4 h-4 text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    ></path>
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                </svg>
-            );
-        case "quiz":
-            return (
-                <svg
-                    className="w-4 h-4 text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                </svg>
-            );
-        case "assignment":
-            return (
-                <svg
-                    className="w-4 h-4 text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    ></path>
-                </svg>
-            );
-        case "reading":
-            return (
-                <svg
-                    className="w-4 h-4 text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    ></path>
-                </svg>
-            );
-        default:
-            return null;
-    }
 };
 
 export default CourseProgressDetail;
