@@ -14,6 +14,8 @@ import FormFooter from '@/components/instructor/courses/new-course/FormFooter';
 import { InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { boolean } from 'zod';
 import { isValid } from 'date-fns';
+import { EditorTextChangeEvent } from 'primereact/editor';
+import { toast } from '@/hooks/use-toast';
 
 export default function CreateCoursePage() {
     const [activeSection, setActiveSection] = useState<CourseSection>('basic');
@@ -44,6 +46,18 @@ export default function CreateCoursePage() {
             [name]: value
         });
     };
+
+    const onEditorChange = (e: EditorTextChangeEvent) => {
+        const htmlValue = e.htmlValue;
+        setCourseData({
+            ...courseData,
+            description: htmlValue || ''
+        });
+        toast({
+            title: 'Mô tả khóa học mô tả',
+            description: courseData.description,
+        });
+    }
 
     const handleNumberChange = (e: InputNumberValueChangeEvent) => {
         const {name, value} = e.target;
@@ -170,6 +184,7 @@ export default function CreateCoursePage() {
                                 <BasicInfoSection
                                     courseData={courseData}
                                     onChange={handleInputChange}
+                                    onEditorChange={onEditorChange}
                                 />
                             )}
 
