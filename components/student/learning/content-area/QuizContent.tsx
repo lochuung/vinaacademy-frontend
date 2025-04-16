@@ -7,14 +7,15 @@ import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
 import QuizTimer from '../quiz/QuizTimer';
+import { getQuiz, submitQuiz } from '@/services/quizService';
+import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest } from '@/types/quiz';
 
 interface QuizContentProps {
     courseId: string;
     lectureId: string;
 }
 
-const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => {
-    // Trong ứng dụng thực, bạn sẽ lấy dữ liệu quiz từ API
+const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -24,104 +25,83 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
     const [showResults, setShowResults] = useState(false);
     const [requireConfirmation, setRequireConfirmation] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [quizResult, setQuizResult] = useState<QuizSubmissionResultDto | null>(null);
 
-    // Mẫu dữ liệu quiz - trong thực tế, bạn sẽ lấy từ API
+    // Fetch quiz data from API
     useEffect(() => {
-        // Giả lập việc tải dữ liệu từ API
         const fetchQuizData = async () => {
             setLoading(true);
-            // Đây là dữ liệu mẫu, trong thực tế, bạn sẽ gọi API
-            const mockQuiz: Quiz = {
-                questions: [
-                    {
-                        id: 'q1',
-                        text: 'Toán tử nào được sử dụng để kiểm tra xem hai đối tượng có cùng giá trị không?',
-                        type: 'single_choice',
-                        options: [
-                            {id: 'q1_a', text: '==', isCorrect: true},
-                            {id: 'q1_b', text: 'is', isCorrect: false},
-                            {id: 'q1_c', text: '===', isCorrect: false},
-                            {id: 'q1_d', text: 'equals()', isCorrect: false}
-                        ],
-                        explanation: 'Toán tử == kiểm tra giá trị bằng nhau, trong khi "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không.',
-                        points: 1,
-                        isRequired: true
+            try {
+                const quizData = await getQuiz(lectureId);
+                
+                if (!quizData) {
+                    setError("Không thể tải bài kiểm tra. Vui lòng thử lại sau.");
+                    setLoading(false);
+                    return;
+                }
+                
+                // Map API response to our Quiz type
+                const mappedQuiz: Quiz = {
+                    title: quizData.title || 'Kiểm tra kiến thức',
+                    questions: quizData.questions.map(q => ({
+                        id: q.id,
+                        text: q.questionText,
+                        type: mapQuestionType(q.questionType),
+                        options: q.answers.map(a => ({
+                            id: a.id,
+                            text: a.answerText,
+                            isCorrect: a.isCorrect || false
+                        })),
+                        explanation: q.explanation,
+                        points: q.point,
+                        isRequired: true // Default to required for now
+                    })),
+                    settings: {
+                        randomizeQuestions: quizData.randomizeQuestions,
+                        showCorrectAnswers: quizData.showCorrectAnswers,
+                        allowRetake: quizData.allowRetake,
+                        requirePassingScore: quizData.requirePassingScore,
+                        passingScore: quizData.passingScore,
+                        timeLimit: quizData.timeLimit
                     },
-                    {
-                        id: 'q2',
-                        text: 'Trong Python, các toán tử nào thực hiện phép tính số học?',
-                        type: 'multiple_choice',
-                        options: [
-                            {id: 'q2_a', text: '+', isCorrect: true},
-                            {id: 'q2_b', text: '**', isCorrect: true},
-                            {id: 'q2_c', text: 'and', isCorrect: false},
-                            {id: 'q2_d', text: '%', isCorrect: true},
-                            {id: 'q2_e', text: 'in', isCorrect: false}
-                        ],
-                        explanation: 'Các toán tử số học trong Python bao gồm +, -, *, /, %, // và **.',
-                        points: 2,
-                        isRequired: true
-                    },
-                    {
-                        id: 'q3',
-                        text: 'True or False: Toán tử "is" trong Python kiểm tra xem hai biến có cùng một giá trị hay không.',
-                        type: 'true_false',
-                        options: [
-                            {id: 'q3_a', text: 'Đúng', isCorrect: false},
-                            {id: 'q3_b', text: 'Sai', isCorrect: true}
-                        ],
-                        explanation: 'Sai. Toán tử "is" kiểm tra xem hai biến có tham chiếu đến cùng một đối tượng trong bộ nhớ không, không phải kiểm tra giá trị bằng nhau.',
-                        points: 1,
-                        isRequired: true
-                    },
-                    {
-                        id: 'q4',
-                        text: 'Giải thích sự khác nhau giữa toán tử "/" và "//" trong Python.',
-                        type: 'text',
-                        options: [],
-                        explanation: 'Toán tử "/" thực hiện phép chia và trả về kết quả là một số thực (float), trong khi "//" thực hiện phép chia lấy phần nguyên và trả về số nguyên được làm tròn xuống.',
-                        points: 3,
-                        isRequired: false
-                    },
-                    {
-                        id: 'q5',
-                        text: 'Đâu là kết quả của biểu thức: 3 ** 2 % 5 trong Python?',
-                        type: 'single_choice',
-                        options: [
-                            {id: 'q5_a', text: '9', isCorrect: false},
-                            {id: 'q5_b', text: '4', isCorrect: true},
-                            {id: 'q5_c', text: '1', isCorrect: false},
-                            {id: 'q5_d', text: '0', isCorrect: false}
-                        ],
-                        explanation: '3 ** 2 = 9, sau đó 9 % 5 = 4 (phần dư khi chia 9 cho 5)',
-                        points: 1,
-                        isRequired: true
-                    }
-                ],
-                settings: {
-                    randomizeQuestions: true,
-                    showCorrectAnswers: true,
-                    allowRetake: true,
-                    requirePassingScore: true,
-                    passingScore: 70,
-                    timeLimit: 10 // thời gian giới hạn tính bằng phút
-                },
-                totalPoints: 8
-            };
-
-            // Nếu cài đặt random câu hỏi, sắp xếp lại
-            if (mockQuiz.settings.randomizeQuestions) {
-                mockQuiz.questions = [...mockQuiz.questions].sort(() => Math.random() - 0.5);
+                    totalPoints: quizData.totalPoint
+                };
+                
+                // If randomization is enabled, randomize the questions
+                if (mappedQuiz.settings.randomizeQuestions) {
+                    mappedQuiz.questions = [...mappedQuiz.questions].sort(() => Math.random() - 0.5);
+                }
+                
+                setQuiz(mappedQuiz);
+                
+                // Initialize timer if there's a time limit
+                if (mappedQuiz.settings.timeLimit) {
+                    setRemainingTime(mappedQuiz.settings.timeLimit * 60); // Convert minutes to seconds
+                }
+                
+                setLoading(false);
+            } catch (err) {
+                console.error("Error fetching quiz:", err);
+                setError("Đã xảy ra lỗi khi tải bài kiểm tra. Vui lòng thử lại sau.");
+                setLoading(false);
             }
-
-            setQuiz(mockQuiz);
-
-            // Khởi tạo thời gian còn lại nếu có giới hạn thời gian
-            if (mockQuiz.settings.timeLimit) {
-                setRemainingTime(mockQuiz.settings.timeLimit * 60); // Chuyển phút thành giây
+        };
+        
+        // Helper function to map API question types to UI types
+        const mapQuestionType = (type: string): 'single_choice' | 'multiple_choice' | 'text' | 'true_false' => {
+            switch (type) {
+                case 'SINGLE_CHOICE':
+                    return 'single_choice';
+                case 'MULTIPLE_CHOICE':
+                    return 'multiple_choice';
+                case 'TEXT':
+                    return 'text';
+                case 'TRUE_FALSE':
+                    return 'true_false';
+                default:
+                    return 'single_choice';
             }
-
-            setLoading(false);
         };
 
         fetchQuizData();
@@ -147,19 +127,64 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
         return () => clearInterval(timer);
     }, [remainingTime, isSubmitted, showResults]);
 
-    if (loading || !quiz) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
+    // Format answers for API submission
+    const formatAnswersForSubmission = (): UserAnswerRequest[] => {
+        return quiz?.questions.map(question => {
+            const selectedIds = selectedAnswers[question.id] || [];
+            const textAnswer = textAnswers[question.id] || '';
+            
+            return {
+                questionId: question.id,
+                selectedAnswerIds: question.type === 'text' ? [] : selectedIds,
+                textAnswer: question.type === 'text' ? textAnswer : undefined
+            };
+        }) || [];
+    };
 
-    const currentQuestion = quiz.questions[currentQuestionIndex];
+    // Submit quiz to API
+    const submitQuizToApi = async () => {
+        if (!quiz) return false;
+        
+        try {
+            const submissionRequest: QuizSubmissionRequest = {
+                quizId: lectureId,
+                answers: formatAnswersForSubmission()
+            };
+            
+            const result = await submitQuiz(submissionRequest);
+            
+            if (!result) {
+                setError("Đã xảy ra lỗi khi nộp bài. Vui lòng thử lại.");
+                return false;
+            }
+            
+            // Store the quiz result for display
+            setQuizResult(result);
+            return true;
+        } catch (err) {
+            console.error("Error submitting quiz:", err);
+            setError("Đã xảy ra lỗi khi nộp bài. Vui lòng thử lại.");
+            return false;
+        }
+    };
+
+    // Updated handleSubmitQuiz to call API and use the results
+    const handleSubmitQuiz = async () => {
+        setIsSubmitted(true);
+        const submitted = await submitQuizToApi();
+        
+        if (submitted) {
+            setShowResults(true);
+            setRequireConfirmation(false);
+        } else {
+            // Keep showing the quiz if submission failed
+            setIsSubmitted(false);
+        }
+    };
 
     // Xử lý khi lựa chọn đáp án
     const handleSelectOption = (questionId: string, optionId: string) => {
-        const question = quiz.questions.find(q => q.id === questionId);
+        const question = quiz?.questions.find(q => q.id === questionId);
 
         if (!question) return;
 
@@ -193,6 +218,8 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
 
     // Kiểm tra xem câu hỏi hiện tại đã được trả lời chưa
     const isCurrentQuestionAnswered = () => {
+        if (!currentQuestion) return false;
+        
         if (currentQuestion.type === 'text') {
             return textAnswers[currentQuestion.id]?.trim().length > 0;
         } else {
@@ -202,6 +229,8 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
 
     // Kiểm tra xem tất cả câu hỏi bắt buộc đã được trả lời chưa
     const areRequiredQuestionsAnswered = () => {
+        if (!quiz) return false;
+        
         return quiz.questions.every(question => {
             if (!question.isRequired) return true;
 
@@ -213,91 +242,71 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
         });
     };
 
-    // Tính điểm và kết quả
-    const calculateResults = () => {
-        let totalScore = 0;
-        let maxScore = 0;
-
+    // Parse API quiz results to UI-friendly format
+    const parseQuizResults = () => {
+        if (!quiz || !quizResult) {
+            return {
+                totalScore: 0,
+                maxScore: 0,
+                percentageScore: 0,
+                passed: false,
+                results: []
+            };
+        }
+        
         const results = quiz.questions.map(question => {
-            maxScore += question.points;
-
-            // Đối với câu hỏi tự luận, không thể tự động chấm điểm
+            // Find corresponding answer from API response
+            const apiAnswer = quizResult.answers.find(a => a.questionId === question.id);
+            
+            if (!apiAnswer) {
+                return {
+                    questionId: question.id,
+                    correct: false,
+                    score: 0,
+                    userAnswer: selectedAnswers[question.id] || []
+                };
+            }
+            
+            // For text questions
             if (question.type === 'text') {
                 return {
                     questionId: question.id,
-                    correct: null, // Không thể xác định tự động
-                    score: 0, // Điểm mặc định là 0
-                    userAnswer: textAnswers[question.id] || ''
+                    correct: apiAnswer.isCorrect,
+                    score: apiAnswer.earnedPoints,
+                    userAnswer: textAnswers[question.id] || '',
+                    explanation: apiAnswer.explanation
                 };
             }
-
-            const selectedOptionIds = selectedAnswers[question.id] || [];
-
-            // Kiểm tra đáp án
-            if (question.type === 'single_choice' || question.type === 'true_false') {
-                // Đối với câu hỏi một lựa chọn
-                const isCorrect = selectedOptionIds.length > 0 &&
-                    question.options.find(o => o.id === selectedOptionIds[0])?.isCorrect === true;
-
-                if (isCorrect) {
-                    totalScore += question.points;
-                }
-
-                return {
-                    questionId: question.id,
-                    correct: isCorrect,
-                    score: isCorrect ? question.points : 0,
-                    userAnswer: selectedOptionIds
-                };
-            } else if (question.type === 'multiple_choice') {
-                // Đối với câu hỏi nhiều lựa chọn
-                const correctOptionIds = question.options
-                    .filter(o => o.isCorrect)
-                    .map(o => o.id);
-
-                const incorrectSelections = selectedOptionIds.filter(id => !correctOptionIds.includes(id));
-                const missedCorrect = correctOptionIds.filter(id => !selectedOptionIds.includes(id));
-
-                const isFullyCorrect = incorrectSelections.length === 0 && missedCorrect.length === 0;
-
-                // Chỉ cho điểm đầy đủ nếu hoàn toàn đúng
-                let score = 0;
-                if (isFullyCorrect) {
-                    score = question.points;
-                    totalScore += question.points;
-                }
-
-                return {
-                    questionId: question.id,
-                    correct: isFullyCorrect,
-                    score,
-                    userAnswer: selectedOptionIds
-                };
-            }
-
+            
+            // For choice questions
+            const userAnswerIds = selectedAnswers[question.id] || [];
+            
             return {
                 questionId: question.id,
-                correct: false,
-                score: 0,
-                userAnswer: []
+                correct: apiAnswer.isCorrect,
+                score: apiAnswer.earnedPoints,
+                userAnswer: userAnswerIds,
+                explanation: apiAnswer.explanation,
+                correctAnswers: apiAnswer.answers
+                    .filter(ans => ans.isCorrect)
+                    .map(ans => ans.id)
             };
         });
-
-        const percentageScore = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-        const passed = !quiz.settings.requirePassingScore || percentageScore >= quiz.settings.passingScore;
-
+        
         return {
-            totalScore,
-            maxScore,
-            percentageScore,
-            passed,
-            results
+            totalScore: quizResult.score,
+            maxScore: quizResult.totalPoints,
+            percentageScore: (quizResult.score / quizResult.totalPoints) * 100,
+            passed: quizResult.isPassed,
+            results,
+            timeSpent: quizResult.startTime && quizResult.endTime ? 
+                new Date(quizResult.endTime).getTime() - new Date(quizResult.startTime).getTime() : 0
         };
     };
 
     // Di chuyển đến câu hỏi tiếp theo
     const goToNextQuestion = () => {
-        if (currentQuestionIndex < quiz.questions.length - 1) {
+        if (currentQuestionIndex < (quiz?.questions.length || 0) - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         }
     };
@@ -319,13 +328,6 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
         }
     };
 
-    // Nộp bài
-    const handleSubmitQuiz = () => {
-        setIsSubmitted(true);
-        setShowResults(true);
-        setRequireConfirmation(false);
-    };
-
     // Quay lại làm bài
     const handleContinueQuiz = () => {
         setRequireConfirmation(false);
@@ -338,21 +340,51 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
         setCurrentQuestionIndex(0);
         setIsSubmitted(false);
         setShowResults(false);
+        setQuizResult(null);
 
         // Đặt lại thời gian nếu có giới hạn thời gian
-        if (quiz.settings.timeLimit) {
+        if (quiz?.settings.timeLimit) {
             setRemainingTime(quiz.settings.timeLimit * 60);
         }
     };
+
+    if (loading || !quiz) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Đã xảy ra lỗi</h3>
+                    <p className="text-gray-600">{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    >
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const currentQuestion = quiz.questions[currentQuestionIndex];
 
     if (showResults) {
         return (
             <QuizResults
                 quiz={quiz}
-                quizResults={calculateResults()}
+                quizResults={parseQuizResults()}
                 selectedAnswers={selectedAnswers}
                 textAnswers={textAnswers}
                 onRetake={quiz.settings.allowRetake ? handleRetakeQuiz : undefined}
+                apiResult={quizResult}
             />
         );
     }
@@ -363,7 +395,7 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId: lectureId}) => 
                 {/* Header */}
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex justify-between items-center">
-                        <h1 className="text-2xl font-bold">Bài kiểm tra: Toán tử trong Python</h1>
+                        <h1 className="text-2xl font-bold">Bài kiểm tra: {quiz.title || 'Kiểm tra kiến thức'}</h1>
 
                         {/* Nếu có thời gian giới hạn, hiển thị đồng hồ đếm ngược */}
                         {remainingTime !== null && (

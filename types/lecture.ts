@@ -37,6 +37,7 @@ export interface QuizSettings {
 }
 
 export interface Quiz {
+    title?: string;
     questions: QuizQuestion[];
     settings: QuizSettings;
     totalPoints: number;
