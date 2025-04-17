@@ -1,310 +1,390 @@
-// pages/admin/course-approvals.tsx
-'use client';
-import { useState, useEffect } from 'react';
-import Head from 'next/head';
+"use client";
+import { useState, useEffect } from "react";
+import DashboardStats from "@/components/staff/ui/DashBoardStats";
+import CourseRequestCard from "@/components/staff/ui/CourseRequestCard";
+import FilterTabs from "@/components/staff/ui/FilterTabs";
+import SearchFilter from "@/components/staff/ui/SearchFilter";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Loader, Search, SortAsc, SortDesc } from "lucide-react";
 import {
-    Search, 
-    Loader} from 'lucide-react';
-import { useDebounce } from 'use-debounce';
-import CourseDetailsPreview from '@/components/staff/DetailCourse';
-import ApprovalCourses from '@/components/staff/ApprovalCourses';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import PaginationLayout from "@/components/staff/ui/Pagination";
+import CourseDetailsPreview from "@/components/staff/ui/DetailCoursePreview";
+import RightCourseDetail from "@/components/staff/ui/RightCourseDetail";
 
-// Shadcn UI Components
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Mock data for the demo - in a real app this would come from an API
+const mockCourseRequests = [
+  {
+    id: "1",
+    title: "Giới Thiệu về Cấu Trúc Dữ Liệu và Giải Thuật",
+    instructor: "TS. Lan Nguyễn",
+    department: "Khoa học Máy tính",
+    createdAt: "2025-04-10",
+    status: "pending" as const,
+    level: "Cơ bản"
+  },
+  {
+    id: "2",
+    title: "Machine Learning Nâng Cao",
+    instructor: "GS. Minh Trần",
+    department: "Khoa học Máy tính",
+    createdAt: "2025-04-08",
+    status: "approved" as const,
+    level: "Nâng cao"
+  },
+  {
+    id: "3",
+    title: "Vật Lý Lượng Tử",
+    instructor: "TS. Hùng Trần",
+    department: "Vật lý",
+    createdAt: "2025-04-12",
+    status: "rejected" as const,
+    level: "Nâng cao"
+  },
+  {
+    id: "4",
+    title: "Sinh Học Tế Bào",
+    instructor: "TS. Mai Lê",
+    department: "Sinh học",
+    createdAt: "2025-04-05",
+    status: "pending" as const,
+    level: "Cơ bản"
+  },
+  {
+    id: "5",
+    title: "Đại Số Tuyến Tính",
+    instructor: "GS. Hải Phạm",
+    department: "Toán học",
+    createdAt: "2025-04-09",
+    status: "approved" as const,
+    level: "Cơ bản"
+  },
+  {
+    id: "6",
+    title: "Hóa Học Hữu Cơ",
+    instructor: "TS. Linh Hoàng",
+    department: "Hóa học",
+    createdAt: "2025-04-11",
+    status: "pending" as const,
+    level: "Nâng cao"
+  },
+  {
+    id: "7",
+    title: "Lịch Sử Thế Giới",
+    instructor: "TS. Thảo Vũ",
+    department: "Lịch sử",
+    createdAt: "2025-04-03",
+    status: "pending" as const,
+    level: "Cơ bản"
+  },
+  {
+    id: "8",
+    title: "Nhập Môn Triết Học",
+    instructor: "GS. Tuấn Nguyễn",
+    department: "Triết học",
+    createdAt: "2025-04-02",
+    status: "approved" as const,
+    level: "Trung cấp"
+  },
+  {
+    id: "9",
+    title: "Kế Toán Tài Chính",
+    instructor: "TS. Hương Trần",
+    department: "Kinh doanh",
+    createdAt: "2025-04-15",
+    status: "pending" as const,
+    level: "Cơ bản"
+  },
+  {
+    id: "10",
+    title: "Chiến Lược Marketing",
+    instructor: "GS. Đức Lê",
+    department: "Kinh doanh",
+    createdAt: "2025-04-14",
+    status: "rejected" as const,
+    level: "Trung cấp"
+  },
+  {
+    id: "11",
+    title: "Văn Học Anh",
+    instructor: "TS. Quỳnh Lê",
+    department: "Ngôn ngữ",
+    createdAt: "2025-04-01",
+    status: "approved" as const,
+    level: "Trung cấp"
+  },
+  {
+    id: "12",
+    title: "Giải Tích II",
+    instructor: "GS. Phương Đỗ",
+    department: "Toán học",
+    createdAt: "2025-04-07",
+    status: "pending" as const,
+    level: "Nâng cao"
+  },
+  {
+    id: "13",
+    title: "Giải Tích III",
+    instructor: "GS. Phương Đỗ",
+    department: "Toán học",
+    createdAt: "2025-04-07",
+    status: "pending" as const,
+    level: "Nâng cao"
+  },
+];
 
-import RightPanel from "@/components/staff/RightPanel";
-import Filter from '@/components/staff/Filter';
-import { Course, CourseLevel, CourseSortOption, CoursesResponse, CourseStatus, CourseStatusOption, PaginationData } from '@/types/new-course';
-import Pagination from '@/components/staff/Pagination';
+const CourseApprovalPage = () => {
+  const { toast } = useToast();
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [department, setDepartment] = useState("all");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-// Define TypeScript interfaces
+  const itemsPerPage = 3;
 
-
-// Sort types
-
-// Mock API call to fetch courses
-const fetchCourses = async (
-    page: number = 1,
-    status: string = 'pending',
-    searchTerm: string = '',
-    sortBy: CourseSortOption = 'normal'
-): Promise<CoursesResponse> => {
-    // Simulating API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // Mock data
-    const allCourses: Course[] = [
-        { id: 1, title: 'Introduction to Machine Learning', instructor: 'Dr. Sarah Johnson', department: 'Computer Science', submittedDate: '2025-04-08', thumbnail: '/placeholder-course-1.jpg', status: 'pending', level: CourseLevel.BEGINNER, slug: 'intro-machine-learning' },
-        { id: 2, title: 'Advanced Python Programming', instructor: 'Prof. Michael Chen', department: 'Computer Science', submittedDate: '2025-04-07', thumbnail: '/placeholder-course-2.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'advanced-python' },
-        { id: 3, title: 'Organic Chemistry Fundamentals', instructor: 'Dr. Emily White', department: 'Chemistry', submittedDate: '2025-04-06', thumbnail: '/placeholder-course-3.jpg', status: 'pending', level: CourseLevel.INTERMEDIATE, slug: 'organic-chemistry' },
-        { id: 4, title: 'Digital Marketing Strategies', instructor: 'Prof. Robert Davis', department: 'Business', submittedDate: '2025-04-05', thumbnail: '/placeholder-course-4.jpg', status: 'pending', level: CourseLevel.BEGINNER, slug: 'digital-marketing' },
-        { id: 5, title: 'Introduction to Psychology', instructor: 'Dr. Lisa Brown', department: 'Psychology', submittedDate: '2025-04-04', thumbnail: '/placeholder-course-5.jpg', status: 'pending', level: CourseLevel.BEGINNER, slug: 'intro-psychology' },
-        { id: 6, title: 'Calculus for Engineers', instructor: 'Prof. David Wilson', department: 'Mathematics', submittedDate: '2025-04-03', thumbnail: '/placeholder-course-6.jpg', status: 'approved', level: CourseLevel.ADVANCED, slug: 'calculus-engineers' },
-        { id: 7, title: 'Modern World History', instructor: 'Dr. Jennifer Lee', department: 'History', submittedDate: '2025-04-02', thumbnail: '/placeholder-course-7.jpg', status: 'approved', level: CourseLevel.INTERMEDIATE, slug: 'modern-world-history' },
-        { id: 8, title: 'Creative Writing Workshop', instructor: 'Prof. James Smith', department: 'English', submittedDate: '2025-04-01', thumbnail: '/placeholder-course-8.jpg', status: 'rejected', level: CourseLevel.BEGINNER, slug: 'creative-writing' },
-        { id: 9, title: 'Environmental Science', instructor: 'Dr. Mark Johnson', department: 'Biology', submittedDate: '2025-03-31', thumbnail: '/placeholder-course-9.jpg', status: 'pending', level: CourseLevel.INTERMEDIATE, slug: 'environmental-science' },
-        { id: 10, title: 'Public Speaking', instructor: 'Prof. Sarah Miller', department: 'Communications', submittedDate: '2025-03-30', thumbnail: '/placeholder-course-10.jpg', status: 'pending', level: CourseLevel.BEGINNER, slug: 'public-speaking' },
-        { id: 11, title: 'Financial Accounting', instructor: 'Dr. Andrew Clark', department: 'Business', submittedDate: '2025-03-29', thumbnail: '/placeholder-course-11.jpg', status: 'pending', level: CourseLevel.INTERMEDIATE, slug: 'financial-accounting' },
-        { id: 12, title: 'Human Anatomy 12', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 13, title: 'Human Anatomy 13', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 14, title: 'Human Anatomy 14', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 15, title: 'Human Anatomy 15', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 16, title: 'Human Anatomy 16', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 17, title: 'Human Anatomy 17', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 18, title: 'Human Anatomy 18', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-        { id: 19, title: 'Human Anatomy 19', instructor: 'Prof. Rebecca Martin', department: 'Biology', submittedDate: '2025-03-28', thumbnail: '/placeholder-course-12.jpg', status: 'pending', level: CourseLevel.ADVANCED, slug: 'human-anatomy' },
-    ];
-
-    // Filter by status
-    const filteredByStatus = status === 'all'
-        ? allCourses
-        : allCourses.filter(course => course.status === status);
-
-    // Apply search if provided
-    const filtered = searchTerm
-        ? filteredByStatus.filter(course =>
-            course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            course.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            course.department.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : filteredByStatus;
-
-    // Apply sorting
-    let sortedCourses = [...filtered];
-    if (sortBy === 'newest') {
-        sortedCourses.sort((a, b) => new Date(b.submittedDate).getTime() - new Date(a.submittedDate).getTime());
-    } else if (sortBy === 'oldest') {
-        sortedCourses.sort((a, b) => new Date(a.submittedDate).getTime() - new Date(b.submittedDate).getTime());
-    }
-
-    // Calculate pagination
-    const itemsPerPage = 5;
-    const totalItems = sortedCourses.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const start = (page - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const paginatedCourses = sortedCourses.slice(start, end);
-
-    return {
-        courses: paginatedCourses,
-        pagination: {
-            currentPage: page,
-            totalPages,
-            totalItems,
-            hasMore: page < totalPages
-        }
-    };
-};
-
-
-
-export default function CourseApprovalPage() {
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-    const [status, setStatus] = useState<CourseStatusOption>(CourseStatus.PENDING);
-    const [page, setPage] = useState<number>(1);
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
-    const [pagination, setPagination] = useState<PaginationData>({
-        currentPage: 1,
-        totalPages: 1,
-        totalItems: 0,
-        hasMore: false
+  // Apply filters, sorting and search
+  const filteredRequests = [...mockCourseRequests]
+    .filter((request) => {
+      const matchesFilter = filter === "all" || request.status === filter;
+      const matchesSearch =
+        request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.instructor.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDepartment =
+        department === "all" ||
+        request.department.toLowerCase().replace(/\s+/g, "-") === department;
+      return matchesFilter && matchesSearch && matchesDepartment;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
     });
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [sortOption, setSortOption] = useState<CourseSortOption>('normal');
-    const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
 
-    const loadCourses = async (): Promise<void> => {
-        setIsLoading(true);
-        try {
-            const data = await fetchCourses(page, status, debouncedSearchTerm, sortOption);
-            setCourses(data.courses);
-            setPagination(data.pagination);
-        } catch (error) {
-            console.error("Failed to fetch courses:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  // Calculate pagination
+  const totalItems = filteredRequests.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  const currentItems = filteredRequests.slice(startIndex, endIndex);
 
-    useEffect(() => {
-        loadCourses();
-    }, [page, status, debouncedSearchTerm, sortOption]);
+  // Calculate counts for stats and filters
+  const counts = {
+    all: mockCourseRequests.length,
+    pending: mockCourseRequests.filter((req) => req.status === "pending")
+      .length,
+    approved: mockCourseRequests.filter((req) => req.status === "approved")
+      .length,
+    rejected: mockCourseRequests.filter((req) => req.status === "rejected")
+      .length,
+  };
 
-    const handleStatusChange = (newStatus: string): void => {
-        setStatus(newStatus);
-        setPage(1); // Reset to first page when changing filters
-        setSelectedCourse(null);
-    };
+  const handleApprove = (id: string) => {
+    toast({
+      title: "Khóa học đã được phê duyệt",
+      description: `Yêu cầu khóa học #${id} đã được phê duyệt.`,
+    });
+  };
 
-    const handlePageChange = (newPage: number): void => {
-        if (newPage > 0 && newPage <= pagination.totalPages) {
-            setPage(newPage);
-            window.scrollTo(0, 0);
-        }
-    };
+  const handleReject = (id: string) => {
+    toast({
+      title: "Khóa học đã bị từ chối",
+      description: `Yêu cầu khóa học #${id} đã bị từ chối.`,
+    });
+  };
 
-    const handleCourseSelect = (course: Course): void => {
-        setSelectedCourse(course);
-    };
+  const handleViewDetails = (id: string) => {
+    setSelectedCourseId(id);
+  };
 
-    const handleApprove = async (id: number): Promise<void> => {
-        // In a real application, this would make an API call
-        setCourses(courses.map(course =>
-            course.id === id ? { ...course, status: 'approved' } : course
-        ));
-        if (selectedCourse?.id === id) {
-            setSelectedCourse({ ...selectedCourse, status: 'approved' });
-        }
-    };
+  const handlePreview = (id: string) => {
+    setPreviewCourseId(id);
+    setIsPreviewOpen(true);
+  };
 
-    const handleReject = async (id: number): Promise<void> => {
-        // In a real application, this would make an API call
-        setCourses(courses.map(course =>
-            course.id === id ? { ...course, status: 'rejected' } : course
-        ));
-        if (selectedCourse?.id === id) {
-            setSelectedCourse({ ...selectedCourse, status: 'rejected' });
-        }
-    };
+  const handlePageChange = (page: number) => {
+    setIsLoading(true);
+    // Simulate loading for better UX
+    setTimeout(() => {
+      setCurrentPage(page);
+      setIsLoading(false);
+    }, 300);
+  };
 
-    // Generate pagination range
-    const getPaginationRange = () => {
-        const totalPages = pagination.totalPages;
-        const currentPage = pagination.currentPage;
-        const range = [];
+  // Simulate loading effect when filter changes
+  useEffect(() => {
+    setIsLoading(true);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [filter, searchTerm, department, sortDirection]);
 
-        // Always show the first page
-        if (currentPage > 2) {
-            range.push(1);
-            // Add ellipsis if there are pages between first page and 3 pages before current
-            if (currentPage > 3) {
-                range.push('...');
-            }
-        }
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1 container mx-auto px-8 py-8">
+        <div className="space-y-8 max-w-7xl mx-auto">
+          <DashboardStats
+            totalRequests={counts.all}
+            pendingRequests={counts.pending}
+            approvedRequests={counts.approved}
+            rejectedRequests={counts.rejected}
+          />
 
-        // Calculate the range around current page (3 before, current, 3 after)
-        const start = Math.max(1, currentPage - 1);
-        const end = Math.min(totalPages, currentPage + 1);
-
-        for (let i = start; i <= end; i++) {
-            range.push(i);
-        }
-
-        // Always show the last page
-        if (currentPage < totalPages - 1) {
-            // Add ellipsis if there are pages between 3 pages after current and last page
-            if (currentPage < totalPages - 2) {
-                range.push('...');
-            }
-            range.push(totalPages);
-        }
-
-        return range;
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <Head>
-                <title>Course Approval Dashboard | Staff Admin Panel</title>
-                <meta name="description" content="Admin dashboard for approving new course upload requests" />
-            </Head>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Danh sách phê duyệt khóa học</h1>
-                    <p className="mt-2 text-sm text-gray-600">Kiểm duyệt khóa học</p>
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Left panel - Course List */}
-                    <div className="w-full lg:w-2/3 bg-white rounded-lg shadow">
-                        {/* Search and filters */}
-                        <div className="p-4 border-b">
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-grow">
-                                    <div className="relative rounded-md shadow-sm">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Search size={16} className="text-gray-400" />
-                                        </div>
-                                        <Input
-                                            placeholder="Tìm kiếm tên khóa học, giảng viên..."
-                                            className="pl-10"
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Sort/Filter dropdown menu */}
-                                <Filter
-                                    sortOption={sortOption}
-                                    status={status}
-                                    handleStatusChange={handleStatusChange}
-                                    setSortOption={setSortOption}
-                                />
-                            </div>
-
-                            {/* Status tabs */}
-                            <Tabs value={status} onValueChange={handleStatusChange} className="mt-4">
-                                <TabsList className="grid grid-cols-4">
-                                    <TabsTrigger value="pending">Hàng chờ</TabsTrigger>
-                                    <TabsTrigger value="approved">Đã phê duyệt</TabsTrigger>
-                                    <TabsTrigger value="rejected">Đã từ chối</TabsTrigger>
-                                    <TabsTrigger value="all">Tất cả</TabsTrigger>
-                                </TabsList>
-                            </Tabs>
-                        </div>
-
-                        {/* Course list with lazy loading */}
-                        <div className="overflow-hidden">
-                            {isLoading ? (
-                                <div className="flex justify-center items-center p-12">
-                                    <Loader className="animate-spin h-8 w-8 text-blue-500" />
-                                </div>
-                            ) : courses.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <p className="text-gray-500">Không tìm thấy khóa học nào được upload</p>
-                                </div>
-                            ) : (
-                                <ApprovalCourses
-                                    courses={courses}
-                                    selectedCourse={selectedCourse}
-                                    handleCourseSelect={handleCourseSelect}
-                                    handleApprove={handleApprove}
-                                    handleReject={handleReject}
-                                />
-                            )}
-
-                            {/* Pagination controls */}
-                            <Pagination
-                                pagination={pagination}
-                                handlePageChange={handlePageChange}
-                                paginationRange={getPaginationRange()}
-                                page={page}
-                                courses={courses}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Right panel - Course Details Small */}
-                    <RightPanel
-                        selectedCourse={selectedCourse}
-                        handleApprove={handleApprove}
-                        handleReject={handleReject}
-                        setIsPreviewOpen={setIsPreviewOpen}
-                    />
-                </div>
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <h2 className="text-xl font-semibold">Yêu Cầu Khóa Học</h2>
+              <div className="w-full md:w-auto">
+                <FilterTabs
+                  filter={filter}
+                  onFilterChange={setFilter}
+                  counts={counts}
+                />
+              </div>
             </div>
 
-            {/* Course Detail Preview Dialog */}
-            <CourseDetailsPreview
-                courseId={selectedCourse?.id || null}
-                isOpen={isPreviewOpen}
-                onClose={() => setIsPreviewOpen(false)}
-            />
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-end">
+              <div className="flex-1">
+                <SearchFilter
+                  onSearchChange={setSearchTerm}
+                  onDepartmentChange={setDepartment}
+                  oldValue={searchTerm}
+                />
+              </div>
+              <DropdownMenu >
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-3 h-9 text-sm"
+                  >
+                    Sắp xếp theo ngày
+                    {sortDirection === "asc" ? (
+                      <SortAsc className="h-4 w-4" />
+                    ) : (
+                      <SortDesc className="h-4 w-4" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem onClick={() => setSortDirection("desc")}>
+                    <SortDesc className="h-4 w-4 mr-2" /> Mới nhất trước
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortDirection("asc")}>
+                    <SortAsc className="h-4 w-4 mr-2" /> Cũ nhất trước
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-full">
+              <div className="md:col-span-5 space-y-4">
+                {isLoading ? (
+                  <div className="flex justify-center items-center py-20">
+                    <Loader className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div>
+                    {currentItems.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-1 gap-4">
+                          {currentItems.map((request) => (
+                            <div
+                              key={request.id}
+                              className={`border rounded-lg p-4 hover:bg-accent/10 transition-colors cursor-pointer ${
+                                selectedCourseId === request.id
+                                  ? "border-primary"
+                                  : ""
+                              }`}
+                              onClick={() => handleViewDetails(request.id)}
+                            >
+                              <CourseRequestCard
+                                {...request}
+                                createdAt={format(
+                                  new Date(request.createdAt),
+                                  "dd/MM/yyyy"
+                                )}
+                                
+                                onApprove={handleApprove}
+                                onReject={handleReject}
+                                onViewDetails={() =>
+                                  handleViewDetails(request.id)
+                                }
+                              />
+                            </div>
+                          ))}
+                        </div>
+
+                        {totalPages > 1 && (
+                          <PaginationLayout
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            handlePageChange={handlePageChange}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-10 text-center">
+                        <div className="mb-4 rounded-full bg-accent p-3">
+                          <Search className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-semibold">
+                          Không tìm thấy yêu cầu khóa học nào
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1 mb-4">
+                          Không có yêu cầu nào phù hợp với bộ lọc hiện tại.
+                        </p>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setFilter("all");
+                            setSearchTerm("");
+                            setDepartment("all");
+                          }}
+                        >
+                          Xóa bộ lọc
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Course details column - now using the CourseDetail component */}
+              <div className="md:col-span-7">
+                <RightCourseDetail
+                  selectedCourseId={selectedCourseId}
+                  courseRequests={currentItems}
+                  onPreview={handlePreview}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-    );
-}
+      </main>
+
+      <CourseDetailsPreview
+        courseId={previewCourseId}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default CourseApprovalPage;
