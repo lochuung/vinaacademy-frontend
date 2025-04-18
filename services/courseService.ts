@@ -43,6 +43,21 @@ export async function getCourseBySlug(slug: string): Promise<CourseDetailsRespon
     }
 }
 
+export async function existCourseBySlug(slug: string): Promise<Boolean> {
+    try {
+        const response: AxiosResponse = await apiClient.get(`/courses/check/${slug}`);
+        if (response.status === 200) {
+            console.log(`Course with slug ${slug} data=`+response.data.data);
+            return response.data.data; 
+        }
+    } catch (error) {
+        console.error(`getCourseBySlug error for slug ${slug}:`, error);
+        return false;
+    } finally {
+    }
+    return false;
+}
+
 // 🔍 GET /courses/search
 export async function searchCourses(
     search: CourseSearchRequest,

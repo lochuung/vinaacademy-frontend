@@ -26,12 +26,10 @@ export default function CreateCoursePage() {
         category: '',
         level: '',
         language: 'vietnamese',
+        slug: '',
         price: 0,
-        oldPrice: 0,
         thumbnail: null,
-        promo_video: null,
-        discounted: false,
-        subscription: false
+
     });
 
     // Thêm state để theo dõi tiến trình
@@ -135,16 +133,16 @@ export default function CreateCoursePage() {
 
     // Check xem section hiện tại có đầy đủ thông tin chưa
     const isBasicSectionComplete = () => {
-        return courseData.title !== '' && courseData.description !== '' &&
-            courseData.category !== '' && courseData.level !== '';
+        return courseData.title != '' && courseData.description != '' &&
+            courseData.category != '' && courseData.level != '';
     };
 
     const isPriceSectionComplete = () => {
-        var isOk = courseData.price > 0;
+        var isOk = courseData.price >= 10000 && courseData.price <= 5000000;
         
-        if (courseData.discounted) {
-            isOk = courseData.oldPrice > 0 && courseData.price < courseData.oldPrice;
-        }
+        // if (courseData.discounted) {
+        //     isOk = courseData.oldPrice > 0 && courseData.price < courseData.oldPrice;
+        // }
 
        return isOk;
     }
@@ -161,7 +159,7 @@ export default function CreateCoursePage() {
 
     const handleVideoRemove = () => {
         setPreviewVideo(null);
-        setCourseData({...courseData, promo_video: null});
+        setCourseData({...courseData});
     };
 
     return (
