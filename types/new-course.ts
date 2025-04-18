@@ -8,11 +8,12 @@ export interface CourseData {
     level: string;
     language: string;
     price: number;
-    oldPrice: number;
+    // oldPrice: number;
     thumbnail: CourseFile;
-    promo_video: CourseFile;
-    discounted: boolean;
-    subscription: boolean;
+    // promo_video: CourseFile;
+    slug: string;
+    // discounted: boolean;
+    // subscription: boolean;
 }
 
 export interface Course {
@@ -49,10 +50,9 @@ export interface CoursesResponse {
 
 export enum CourseStatus {
     PENDING = 'PENDING',
-    APPROVED = 'APPROVED',
     REJECTED = 'REJECTED',
     DRAFT = 'DRAFT',
-    PUBLISHED = 'PUBLISHED'
+    PUBLISHED = 'PUBLISHED',
 }
 
 export interface UserDto {
