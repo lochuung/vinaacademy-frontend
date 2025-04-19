@@ -1,11 +1,12 @@
-import {Button} from '@/components/ui/button';
-import {useState} from 'react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface PromoCodeInputProps {
     onApply: (code: string) => void;
+    isDisabled?: boolean;
 }
 
-export default function PromoCodeInput({onApply}: PromoCodeInputProps) {
+export default function PromoCodeInput({ onApply, isDisabled = false }: PromoCodeInputProps) {
     const [promoCode, setPromoCode] = useState('');
 
     const handleApply = () => {
@@ -25,12 +26,14 @@ export default function PromoCodeInput({onApply}: PromoCodeInputProps) {
                     focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
+                    disabled={isDisabled}
                 />
                 <Button
                     className="w-full bg-white hover:bg-gray-50 text-black border border-black text-sm py-2"
                     onClick={handleApply}
+                    disabled={isDisabled || !promoCode.trim()}
                 >
-                    Áp dụng
+                    {isDisabled ? 'Đang xử lý...' : 'Áp dụng'}
                 </Button>
             </div>
         </div>

@@ -5,6 +5,7 @@ import { ApiResponse, PaginatedResponse } from "@/types/api-response";
 import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest } from "@/types/course";
 import { CourseData, CourseLevel, CourseStatus } from "@/types/new-course";
 import { AxiosResponse } from "axios";
+import { UserDto } from "@/types/course";
 import { uploadImage } from "./imageService";
 
 // 📌 GET /courses/pagination
@@ -49,8 +50,8 @@ export async function existCourseBySlug(slug: string): Promise<Boolean> {
     try {
         const response: AxiosResponse = await apiClient.get(`/courses/check/${slug}`);
         if (response.status === 200) {
-            console.log(`Course with slug ${slug} data=`+response.data.data);
-            return response.data.data; 
+            console.log(`Course with slug ${slug} data=` + response.data.data);
+            return response.data.data;
         }
     } catch (error) {
         console.error(`getCourseBySlug error for slug ${slug}:`, error);
@@ -161,6 +162,80 @@ export const getCourseSlugById = async (id: string): Promise<string | null> => {
     }
 };
 
+
+/**
+ * Giao diện mở rộng từ CourseDto để bao gồm thông tin instructor
+ * Sử dụng cho các tính năng cần thông tin instructor mà không muốn lấy toàn bộ CourseDetailsResponse
+ */
+export interface CourseWithInstructorDto extends CourseDto {
+    instructorName?: string;
+    instructorId?: string;
+    instructorAvatar?: string;
+}
+
+/**
+ * Lấy thông tin khóa học kèm thông tin giảng viên
+ * @param courseId ID của khóa học
+ * @returns Thông tin khóa học kèm theo thông tin giảng viên
+ */
+export const getCourseWithInstructor = async (courseId: string): Promise<CourseWithInstructorDto | null> => {
+    try {
+        // Trước tiên, lấy thông tin cơ bản của khóa học
+        const courseBasicInfo = await getCourseById(courseId);
+        if (!courseBasicInfo) {
+            return null;
+        }
+
+        // Sau đó, lấy thông tin chi tiết (có instructor) bằng slug
+        // Điều này hiệu quả hơn vì chúng ta đã biết slug từ thông tin cơ bản
+        const courseDetailInfo = await getCourseBySlug(courseBasicInfo.slug);
+
+        if (courseDetailInfo) {
+            // Kết hợp thông tin từ cả hai nguồn
+            return {
+                ...courseBasicInfo,
+                instructorName: courseDetailInfo.ownerInstructor?.fullName,
+                instructorId: courseDetailInfo.ownerInstructor?.id,
+                instructorAvatar: courseDetailInfo.ownerInstructor?.avatarUrl
+            };
+        }
+
+        // Nếu không lấy được thông tin chi tiết, thử gọi API riêng
+        const response: AxiosResponse<ApiResponse<UserDto[]>> = await apiClient.get(`/courses/${courseId}/instructors`);
+        const instructors = response.data.data;
+
+        if (instructors && instructors.length > 0) {
+            return {
+                ...courseBasicInfo,
+                instructorName: instructors[0].fullName,
+                instructorId: instructors[0].id,
+                instructorAvatar: instructors[0].avatarUrl
+            };
+        }
+
+        // Nếu không có thông tin instructor, trả về thông tin cơ bản
+        return courseBasicInfo;
+    } catch (error) {
+        console.error(`Error fetching course with instructor for ID ${courseId}:`, error);
+        return null;
+    }
+};
+
+/**
+ * Lấy danh sách giảng viên của một khóa học
+ * @param courseId ID của khóa học
+ * @returns Danh sách các giảng viên của khóa học
+ */
+export const getCourseInstructors = async (courseId: string): Promise<UserDto[] | null> => {
+    try {
+        const response: AxiosResponse<ApiResponse<UserDto[]>> = await apiClient.get(`/courses/${courseId}/instructors`);
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching instructors for course ID ${courseId}:`, error);
+        return null;
+    }
+};
+
 export const uploadImageAndCreateCourse = async(courseData: CourseData): Promise<CourseDto | null> => {
     // Upload image first
     if (!courseData.thumbnail) {
@@ -202,4 +277,5 @@ export const uploadImageAndCreateCourse = async(courseData: CourseData): Promise
   
     return createdCourse;
   }
+
 
