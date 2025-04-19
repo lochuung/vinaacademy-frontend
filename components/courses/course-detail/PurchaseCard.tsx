@@ -110,7 +110,8 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
         setIsAddingToCart(true);
         try {
             // Sử dụng CartContext để thêm vào giỏ hàng
-            const success = await addToCart(course.id.toString(), course.price);
+            const cartItemRequest = { courseId: course.id.toString(), price: course.price };
+            const success = await addToCart(cartItemRequest);
 
             if (success) {
                 toast({
