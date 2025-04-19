@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { enrollInCourse, checkEnrollment, EnrollmentRequest } from "@/services/enrollmentService";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/context/CartContext";
 
 interface PurchaseCardProps {
     course: CourseDetailsResponse;
@@ -18,6 +19,7 @@ interface PurchaseCardProps {
 
 export default function PurchaseCard({ course, instructors, sections }: PurchaseCardProps) {
     const { user, isAuthenticated } = useAuth();
+    const { addToCart } = useCart();
     const router = useRouter();
     const { toast } = useToast();
     const [isEnrolled, setIsEnrolled] = useState(false);
@@ -94,7 +96,7 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
     };
 
     // Handle add to cart
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!isAuthenticated) {
             toast({
                 title: "Bạn cần đăng nhập",
@@ -106,16 +108,32 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
         }
 
         setIsAddingToCart(true);
-        // Implement cart functionality or call API here
+        try {
+            // Sử dụng CartContext để thêm vào giỏ hàng
+            const success = await addToCart(course.id.toString(), course.price);
 
-        // For now, just show a toast
-        setTimeout(() => {
+            if (success) {
+                toast({
+                    title: "Đã thêm vào giỏ hàng",
+                    description: "Khóa học đã được thêm vào giỏ hàng của bạn",
+                });
+            } else {
+                toast({
+                    title: "Không thể thêm vào giỏ hàng",
+                    description: "Có lỗi xảy ra khi thêm khóa học vào giỏ hàng",
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
             toast({
-                title: "Đã thêm vào giỏ hàng",
-                description: "Khóa học đã được thêm vào giỏ hàng của bạn",
+                title: "Không thể thêm vào giỏ hàng",
+                description: "Có lỗi xảy ra khi thêm khóa học vào giỏ hàng",
+                variant: "destructive",
             });
+        } finally {
             setIsAddingToCart(false);
-        }, 500);
+        }
     };
 
     return (

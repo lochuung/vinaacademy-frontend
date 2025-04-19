@@ -1,73 +1,95 @@
 'use client';
 
-import {CartItem} from '@/types/cart-courses';
+import { useEffect, useState, useRef } from 'react';
+import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import EmptyCartMessage from '@/components/cart/EmptyCartMessage';
 import CartItemCard from '@/components/cart/CartItemCard';
 import CheckoutSummary from '@/components/cart/CheckoutSummary';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Cart() {
-    // Trong thực tế, dữ liệu này nên được lấy từ API hoặc global state
-    const cartItems: CartItem[] = [
-        {
-            id: 1,
-            name: "ReactJS cùng Hữu Lộc",
-            price: 250000,
-            originalPrice: 500000,
-            instructor: "Hữu Lộc",
-            rating: 4.5,
-            totalStudents: 1234,
-            totalHours: 12.5,
-            lectures: 120,
-            level: "Trung cấp",
-            image: "/images/courses/react.jpg"
-        },
-        {
-            id: 2,
-            name: "NextJS cùng Trí Hùng",
-            price: 450000,
-            originalPrice: 900000,
-            instructor: "Trí Hùng",
-            rating: 4.7,
-            totalStudents: 2345,
-            totalHours: 15,
-            lectures: 150,
-            level: "Nâng cao",
-            image: "/images/courses/react.jpg"
-        },
-        {
-            id: 3,
-            name: "Spring cùng Mỹ Linh",
-            price: 650000,
-            originalPrice: 1300000,
-            instructor: "Mỹ Linh",
-            rating: 4.8,
-            totalStudents: 3456,
-            totalHours: 20,
-            lectures: 200,
-            level: "Sơ cấp",
-            image: "/images/courses/react.jpg"
-        }
-    ];
+    const { cartItems, isLoading, removeFromCart, refreshCart } = useCart();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [localLoading, setLocalLoading] = useState(false);
 
-    // Handlers có thể được chuyển vào các component con
-    const handleRemoveItem = (id: number) => {
-        console.log(`Remove item ${id}`);
+    // Theo dõi nếu đã gọi refreshCart() để tránh gọi nhiều lần
+    const hasRefreshedRef = useRef(false);
+
+    useEffect(() => {
+        // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+        if (!isAuthenticated && !authLoading) {
+            router.push('/login?redirect=/cart');
+            return;
+        }
+
+        // Chỉ tải lại giỏ hàng một lần khi component được mount
+        // và nếu người dùng đã đăng nhập và chưa refresh trước đó
+        if (isAuthenticated && !hasRefreshedRef.current) {
+            const loadCart = async () => {
+                setLocalLoading(true);
+                await refreshCart();
+                setLocalLoading(false);
+                hasRefreshedRef.current = true;
+            };
+
+            loadCart();
+        }
+
+        // Cleanup function
+        return () => {
+            hasRefreshedRef.current = false;
+        };
+    }, [isAuthenticated, authLoading]);
+
+    const handleRemoveItem = async (id: number) => {
+        setLocalLoading(true);
+        const success = await removeFromCart(id);
+        if (!success) {
+            toast({
+                title: 'Không thể xóa khóa học',
+                description: 'Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.',
+                variant: 'destructive'
+            });
+        }
+        setLocalLoading(false);
     };
 
     const handleSaveForLater = (id: number) => {
-        console.log(`Save item ${id} for later`);
+        toast({
+            title: 'Tính năng đang phát triển',
+            description: 'Tính năng lưu khóa học sẽ sớm được ra mắt.',
+        });
     };
 
     const handleAddToFavorites = (id: number) => {
-        console.log(`Add item ${id} to favorites`);
+        toast({
+            title: 'Tính năng đang phát triển',
+            description: 'Tính năng thêm vào danh sách yêu thích sẽ sớm được ra mắt.',
+        });
     };
+
+    // Hiển thị trạng thái đang tải
+    if (isLoading || localLoading || authLoading) {
+        return (
+            <div className="container mx-auto py-6 px-4 flex justify-center items-center min-h-[60vh]">
+                <div className="inline-block animate-spin rounded-full border-4 border-solid border-current border-r-transparent w-6 h-6" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+                <span className="ml-2">Đang tải giỏ hàng...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto py-6 px-4">
             <h1 className="text-2xl font-bold mb-6">Giỏ hàng</h1>
 
             {cartItems.length === 0 ? (
-                <EmptyCartMessage/>
+                <EmptyCartMessage />
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Cart Content */}
@@ -87,7 +109,7 @@ export default function Cart() {
 
                     {/* Checkout Summary */}
                     <div className="lg:col-span-1">
-                        <CheckoutSummary cartItems={cartItems}/>
+                        <CheckoutSummary cartItems={cartItems} />
                     </div>
                 </div>
             )}
