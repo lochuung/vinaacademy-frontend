@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { NotificationDTO, NotificationType } from "@/types/notification-type";
+import { useRouter } from "next/navigation";
 
 // Type icon mapper
 export const getTypeIcon = (type: NotificationType) => {
@@ -58,6 +59,7 @@ interface NotificationCardProps {
 }
 
 const NotificationCard = ({ notification, onMarkAsRead, onDelete }: NotificationCardProps) => {
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = () => {
@@ -80,7 +82,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDelete }: Notification
                   {formatDate(notification.createdAt)}
                 </p>
               </div>
-              <Badge variant="outline" className="ml-auto">
+              <Badge variant="outline" className="ml-auto bg-gray-400/40">
                 {notification.type.replace(/_/g, ' ')}
               </Badge>
             </div>
@@ -90,7 +92,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDelete }: Notification
                 <Button 
                   variant="link" 
                   className="p-0 h-auto"
-                  onClick={() => window.location.href = notification.targetUrl}
+                  onClick={() => router.push(notification.targetUrl)}
                 >
                     Xem chi tiết
                 </Button>
@@ -100,6 +102,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDelete }: Notification
                   <Button 
                     variant="outline" 
                     size="sm" 
+                    className="bg-white/70"
                     onClick={() => onMarkAsRead(notification.id)}
                   >
                     Đánh dấu đã đọc
@@ -113,7 +116,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDelete }: Notification
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Notification</AlertDialogTitle>
+                      <AlertDialogTitle>Xóa thông báo</AlertDialogTitle>
                       <AlertDialogDescription>
                         Bạn có chắc chắn muốn xóa thông báo này? Sau khi thực hiện không thể hoàn tác.
                       </AlertDialogDescription>

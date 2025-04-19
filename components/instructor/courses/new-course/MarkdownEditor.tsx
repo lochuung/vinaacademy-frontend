@@ -6,10 +6,11 @@ import { CustomImg } from "@/components/ui/markdownMD";
 
 type MarkdownEditorProps = {
   setDescription: (value: string) => void;
+  description?: string;
 };
 
-const MarkdownEditorSection = ({ setDescription }: MarkdownEditorProps) => {
-  const [markdown, setMarkdown] = useState(
+const MarkdownEditorSection = ({ setDescription, description }: MarkdownEditorProps) => {
+  const [markdown, setMarkdown] = useState(description ||
     "## Đây là mô tả! Sử dụng markdown để trình bày nội dung của bạn."
   );
   const [mounted, setMounted] = useState(false);

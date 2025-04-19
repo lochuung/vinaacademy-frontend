@@ -37,7 +37,7 @@ const NotificationsPage = () => {
     currentPage: 0,
     totalPages: 0,
     totalElements: 0,
-    size: 8,
+    size: 4,
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<NotificationFiltersType>({
@@ -64,18 +64,20 @@ const NotificationsPage = () => {
       });
 
       setNotifications(result.content);
+      console.log("Notifications:", result.content);
       setPagination({
         currentPage: result.number,
         totalPages: result.totalPages,
         totalElements: result.totalElements,
         size: result.size,
       });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       //console.error("Error loading notifications:", error);
       toast({
         title: "Đã có lỗi xảy ra khi tải thông báo",
         description: "Vui lòng thử lại sau.",
-        className: "bg-red-600/50 text-white border-none",
+        className: "bg-red-500 text-white border-none",
       });
     } finally {
       setLoading(false);
@@ -83,6 +85,7 @@ const NotificationsPage = () => {
   };
 
   const handlePageChange = (page: number) => {
+    
     setPagination({ ...pagination, currentPage: page });
   };
 
@@ -107,13 +110,14 @@ const NotificationsPage = () => {
       toast({
         title: "Đã đánh dấu thông báo này là đã đọc",
         description: "Bạn có thể xem lại thông báo này trong phần đã đọc",
-        className: "bg-green-400/50 text-white border-none",
+        className: "bg-green-500 text-white border-none",
+        variant: "default"
       });
     } catch (error) {
       //console.error("Error marking notification as read:", error);
       toast({
         title: "Đã có lỗi xảy ra",
-        className: "bg-red-600/50 text-white border-none",
+        className: "bg-red-500 text-white border-none",
       });
     }
   };
@@ -127,13 +131,13 @@ const NotificationsPage = () => {
       );
       toast({
         title: "Đã xóa thông báo này",
-        className: "bg-green-400/50 text-white border-none",
+        className: "bg-green-500 text-white border-none",
       });
     } catch (error) {
       //console.error("Error deleting notification:", error);
       toast({
         title: "Đã có lỗi xảy ra",
-        className: "bg-red-600/50 text-white border-none",
+        className: "bg-red-500 text-white border-none",
       });
     }
   };
@@ -154,13 +158,13 @@ const NotificationsPage = () => {
       );
       toast({
         title: "Đã đánh dấu tất cả các thông báo là đã đọc",
-        className: "bg-green-400/50 text-white border-none",
+        className: "bg-green-500 text-white border-none",
       });
     } catch (error) {
       //console.error("Error marking all notifications as read:", error);
       toast({
         title: "Đã có lỗi xảy ra",
-        className: "bg-red-600/50 text-white border-none",
+        className: "bg-red-500 text-white border-none",
       });
     }
   };
@@ -190,7 +194,7 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="container py-20 w-[75%] mx-auto">
+    <div className="container pt-16 pb-32 w-[75%] mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Thông báo</h1>
         <div className="flex flex-col sm:flex-row gap-4">
@@ -239,13 +243,15 @@ const NotificationsPage = () => {
         )}
 
         {!loading && pagination.totalPages > 1 && (
-          <Pagination className="mt-6">
+          <Pagination className="mt-6 ">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
+                  
                   onClick={() =>
                     pagination.currentPage > 0 &&
                     handlePageChange(pagination.currentPage - 1)
+                    
                   }
                   className={
                     pagination.currentPage === 0
@@ -268,6 +274,7 @@ const NotificationsPage = () => {
                       <PaginationItem key={page}>
                         <PaginationLink
                           isActive={page === pagination.currentPage}
+                          className={page === pagination.currentPage?"bg-slate-400/60 cursor-pointer hover:bg-slate-400/90":"cursor-pointer"}
                           onClick={() => handlePageChange(page)}
                         >
                           {page + 1}

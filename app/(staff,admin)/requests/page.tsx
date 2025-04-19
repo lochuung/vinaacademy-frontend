@@ -229,6 +229,7 @@ const CourseApprovalPage = () => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return () => clearTimeout(timer);
   }, [filter, searchTerm, department, sortDirection]);
 

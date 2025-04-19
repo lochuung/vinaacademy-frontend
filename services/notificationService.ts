@@ -1,5 +1,5 @@
 // services/notificationService.ts
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   NotificationCreateDTO,
   NotificationDTO,
@@ -8,6 +8,7 @@ import {
   NotificationPageResponse,
 } from "@/types/notification-type";
 import apiClient from "@/lib/apiClient";
+import { ApiResponse } from "@/types/api-response";
 
 export const createNotification = async (notificationData: {
   title: string;
@@ -17,7 +18,7 @@ export const createNotification = async (notificationData: {
   userId: string;
 }): Promise<NotificationCreateDTO> => {
   try {
-    const response = await apiClient.post<NotificationCreateDTO>(
+    const response: AxiosResponse = await apiClient.post<NotificationCreateDTO>(
       "/notifications",
       notificationData
     );
@@ -46,13 +47,14 @@ export const fetchUserNotifications = async ({
     params.append("size", size.toString());
     params.append("sortBy", sortBy);
     params.append("direction", direction);
-    const response = await apiClient.get<NotificationPageResponse>(
+    const response = await apiClient.get<AxiosResponse<NotificationPageResponse>>(
       `/notifications/paginated?${params.toString()}`
     );
     // const response = await axios.get<NotificationPageResponse>(
     //   `${API_URL}/notifications/user/${userId}/paginated?${params.toString()}`
     // );
-    return response.data;
+    console.log("Response data:", response.data.data.content);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return {} as NotificationPageResponse; // Return an empty object with error
