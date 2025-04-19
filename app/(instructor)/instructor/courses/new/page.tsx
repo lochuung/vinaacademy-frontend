@@ -16,8 +16,15 @@ import { boolean } from 'zod';
 import { isValid } from 'date-fns';
 import { EditorTextChangeEvent } from 'primereact/editor';
 import { toast } from '@/hooks/use-toast';
+import { uploadImageAndCreateCourse } from '@/services/courseService';
+import { createNotification } from '@/services/notificationService';
+import { getCurrentUser } from '@/services/authService';
+import { NotificationType } from '@/types/notification-type';
+import { title } from 'process';
+import { useRouter } from 'next/navigation';
 
 export default function CreateCoursePage() {
+    const router = useRouter(); 
     const [activeSection, setActiveSection] = useState<CourseSection>('basic');
     const [courseData, setCourseData] = useState<CourseData>({
         title: '',
@@ -25,7 +32,7 @@ export default function CreateCoursePage() {
         description: '',
         category: '',
         level: '',
-        language: 'vietnamese',
+        language: 'Tiếng việt',
         slug: '',
         price: 0,
         thumbnail: null,
@@ -97,19 +104,72 @@ export default function CreateCoursePage() {
         // Xử lý tạo khóa học
         if (!isBasicSectionComplete()) {
             updateSection('basic');
+            toast({
+                title: 'Thông tin chưa đầy đủ',
+                description: 'Vui lòng điền đầy đủ thông tin trong phần thông tin cơ bản',
+                variant: 'destructive',
+                className: "bg-red-500 text-white",
+            });
             return;
         }
         if (!isMediaSectionComplete()) {
             updateSection('media');
+            toast({
+                title: 'Thông tin chưa đầy đủ',
+                description: 'Vui lòng upload ảnh thumbnail cho khóa học',
+                variant: 'destructive',
+                className: "bg-red-500 text-white",
+            });
             return;
         }
         if (!isPriceSectionComplete()) {
             updateSection('pricing');
+            toast({
+                title: 'Thông tin chưa đầy đủ',
+                description: 'Vui lòng chọn giá cho khóa học đúng quy định',
+                variant: 'destructive',
+                className: "bg-red-500 text-white",
+            });
             return;
         }
-        console.log(courseData);
+        // console.log(courseData);
         // Sau khi tạo, chuyển hướng đến trang chỉnh sửa chi tiết
+        createCourse();
+        
     };
+
+    const createCourse = async () => {
+        const data = await uploadImageAndCreateCourse(courseData);
+        if (!data) {
+            toast({
+                title: 'Lỗi',
+                description: 'Có lỗi xảy ra trong quá trình tạo khóa học. Vui lòng thử lại sau.',
+                variant: 'destructive',
+                className: "bg-red-500 text-white",
+            });
+            return;
+        }
+        
+        
+        // Chuyển hướng đến trang chỉnh sửa khóa học
+        sessionStorage.setItem("createdCourse", JSON.stringify({
+            title : courseData.title,
+            id : data.id,
+        }));
+        const user = await getCurrentUser();
+        const userId = user?.id || "";
+        const notificationData = {
+            title: `Khóa học "${courseData.title}" đã được tạo thành công`,
+            content: `Bấm vào đây để chuyển đến trang chỉnh sửa khóa học. \n  Tại đây bạn sẽ điều chỉnh bài học của mình và xuất bản để chờ duyệt`,
+            targetUrl: `/instructor/courses/${data.id}/content`,
+            userId: userId,
+            type: NotificationType.SYSTEM
+        }
+        createNotification(notificationData)
+        router.push(`/instructor/courses`);
+
+        
+    }
 
     const updateSection = (section: CourseSection) => {
         setActiveSection(section);
@@ -138,7 +198,7 @@ export default function CreateCoursePage() {
     };
 
     const isPriceSectionComplete = () => {
-        var isOk = courseData.price >= 10000 && courseData.price <= 5000000;
+        var isOk = courseData.price >= 0 && courseData.price <= 5000000;
         
         // if (courseData.discounted) {
         //     isOk = courseData.oldPrice > 0 && courseData.price < courseData.oldPrice;

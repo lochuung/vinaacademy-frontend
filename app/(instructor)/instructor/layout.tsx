@@ -13,6 +13,7 @@ import {
     Plus,
     MessageSquare
 } from 'lucide-react';
+import { Toaster } from '@/components/ui/toaster';
 
 interface InstructorLayoutProps {
     children: ReactNode;
@@ -156,6 +157,7 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                 {/* Main content area */}
                 <main className="flex-1 relative overflow-y-auto focus:outline-none">
                     {children}
+                     <Toaster/>
                 </main>
             </div>
         </div>

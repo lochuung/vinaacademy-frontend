@@ -5,16 +5,14 @@ import { Toast } from "@radix-ui/react-toast";
 import { Divide } from "lucide-react";
 
 export default function ProfileLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <div className="min-h-screen flex w-full bg-white border-t border-black">
-      <div className="flex-1 flex flex-col">
-        <main className={"flex-1 p-6"}>{children}</main>
-        <Toaster/>
-      </div>
-    </div>
-  );
+    return (
+            <main>
+                {children}
+                <Toaster/>
+            </main>
+    )
 }
