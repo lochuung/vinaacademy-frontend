@@ -27,9 +27,9 @@ export default function PricingSection({
   // Validate prices whenever courseData changes
   useEffect(() => {
     
-    if (courseData.price < 10000 || courseData.price > 5000000) {
+    if (courseData.price < 0 || courseData.price > 5000000) {
       setPriceRealError(
-        "Giá khóa học cần phải trong khoảng từ 10.000 VNĐ (miễn phí) đến 5.000.000 VNĐ"
+        "Giá khóa học cần phải trong khoảng từ 0.000 VNĐ (miễn phí) đến 5.000.000 VNĐ"
       );
     } else {
       setPriceRealError("");

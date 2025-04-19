@@ -3,8 +3,10 @@
 import apiClient from "@/lib/apiClient";
 import { ApiResponse, PaginatedResponse } from "@/types/api-response";
 import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest } from "@/types/course";
+import { CourseData, CourseLevel, CourseStatus } from "@/types/new-course";
 import { AxiosResponse } from "axios";
 import { UserDto } from "@/types/course";
+import { uploadImage } from "./imageService";
 
 // 📌 GET /courses/pagination
 export async function getCoursesPaginated(
@@ -160,6 +162,7 @@ export const getCourseSlugById = async (id: string): Promise<string | null> => {
     }
 };
 
+
 /**
  * Giao diện mở rộng từ CourseDto để bao gồm thông tin instructor
  * Sử dụng cho các tính năng cần thông tin instructor mà không muốn lấy toàn bộ CourseDetailsResponse
@@ -232,3 +235,47 @@ export const getCourseInstructors = async (courseId: string): Promise<UserDto[] 
         return null;
     }
 };
+
+export const uploadImageAndCreateCourse = async(courseData: CourseData): Promise<CourseDto | null> => {
+    // Upload image first
+    if (!courseData.thumbnail) {
+    //   toast({
+    //     title: 'Lỗi',
+    //     description: 'Vui lòng chọn hình ảnh thumbnail cho khóa học',
+    //     variant: 'destructive',
+    //   });
+      return null;
+    }
+  
+    const uploadedImage = await uploadImage(courseData.thumbnail);
+    
+    if (!uploadedImage) {
+      
+      return null;
+    }
+  
+    // Prepare course request with the uploaded image
+    const courseRequest: CourseRequest = {
+      name: courseData.title,
+      description: courseData.description,
+      slug: courseData.slug || courseData.slug,
+      price: courseData.price,
+      level: courseData.level as CourseLevel,
+      language: courseData.language,
+      categoryId: Number(courseData.category), // Convert string to number if needed
+      image: uploadedImage.id, // Use the image ID from the upload response
+      status: CourseStatus.DRAFT, // Set initial status as DRAFT
+    };
+  
+    // Create the course
+    const createdCourse = await createCourse(courseRequest);
+    
+    if (!createdCourse) {
+     
+      return null;
+    }
+  
+    return createdCourse;
+  }
+
+

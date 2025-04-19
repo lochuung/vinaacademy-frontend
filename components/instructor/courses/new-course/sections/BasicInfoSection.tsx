@@ -9,6 +9,8 @@ import MarkdownMD from "@/components/ui/markdownMD";
 import { existCourseBySlug } from "@/services/courseService";
 import MarkdownEditorSection from "@/components/instructor/courses/new-course/MarkdownEditor";
 import { Input } from "@/components/ui/input";
+import { getCategories } from "@/services/categoryService";
+import { CategoryDto } from "@/types/category";
 
 interface BasicInfoSectionProps {
   courseData: CourseData;
@@ -36,6 +38,7 @@ export default function BasicInfoSection({
 }: BasicInfoSectionProps) {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isCheckingSlug, setIsCheckingSlug] = useState(false);
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [slugDebounceTimeout, setSlugDebounceTimeout] =
     useState<NodeJS.Timeout | null>(null);
 
@@ -44,6 +47,18 @@ export default function BasicInfoSection({
     courseData.description = value;
   };
 
+  const loadCategories = async () => {
+    try {
+      const categories = await getCategories();
+      setCategories(categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
   // Function to validate form fields
   const validateField = (name: string, value: string) => {
     const newErrors = { ...errors };
@@ -195,7 +210,7 @@ export default function BasicInfoSection({
         </p>
       </div>
 
-      <div>
+      {/* <div>
         <label
           htmlFor="subtitle"
           className="block text-sm font-medium text-gray-700 mb-1"
@@ -220,7 +235,7 @@ export default function BasicInfoSection({
         <p className="mt-2 text-sm text-gray-500">
           Mô tả ngắn gọn về những gì học viên sẽ học được (tối đa 160 ký tự)
         </p>
-      </div>
+      </div> */}
 
       <div>
         <label
@@ -231,7 +246,7 @@ export default function BasicInfoSection({
         </label>
 
         {/* Client-side only Markdown editor section */}
-        <MarkdownEditorSection setDescription={handleDescriptionChange} />
+        <MarkdownEditorSection description={courseData.description||undefined} setDescription={handleDescriptionChange} />
         {errors.description && (
           <p className="mt-1 text-sm text-red-600">{errors.description}</p>
         )}
@@ -256,11 +271,18 @@ export default function BasicInfoSection({
             onChange={handleChange}
           >
             <option value="">Chọn danh mục khóa học</option>
-            <option value="web-development">Lập trình Web</option>
+            {categories && categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+            {/* <option value="programming">Lập trình</option>
+            
+            {/* <option value="web-development">Lập trình Web</option>
             <option value="mobile-development">Lập trình Mobile</option>
             <option value="data-science">Data Science</option>
             <option value="ui-ux">UI/UX Design</option>
-            <option value="marketing">Marketing</option>
+            <option value="marketing">Marketing</option> */}
           </select>
           {errors.category && (
             <p className="mt-1 text-sm text-red-600">{errors.category}</p>
@@ -285,9 +307,9 @@ export default function BasicInfoSection({
             onChange={handleChange}
           >
             <option value="">Chọn trình độ khóa học</option>
-            <option value="beginner">Người mới bắt đầu</option>
-            <option value="intermediate">Trung cấp</option>
-            <option value="advanced">Nâng cao</option>
+            <option value="BEGINNER">Người mới bắt đầu</option>
+            <option value="INTERMEDIATE">Trung cấp</option>
+            <option value="ADVANCED">Nâng cao</option>
           </select>
           {errors.level && (
             <p className="mt-1 text-sm text-red-600">{errors.level}</p>

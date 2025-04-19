@@ -45,7 +45,7 @@ export default function CourseCard({course}: CourseCardProps) {
 
                 <div className="text-sm text-gray-500 flex justify-between items-center">
                     <div>Cập nhật: {new Date(course.lastUpdated).toLocaleDateString('vi-VN')}</div>
-                    {course.income > 0 && <div>{course.income.toLocaleString()}k đ</div>}
+                    {course.income > 0 && <div>{course.income}k đ</div>}
                 </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
