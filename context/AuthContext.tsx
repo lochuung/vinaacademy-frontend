@@ -4,6 +4,8 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import {AuthContextType, LoginCredentials, RegisterRequest, User} from "@/types/auth";
 import {usePathname, useRouter} from "next/navigation";
 import * as authService from "@/services/authService";
+import { toast } from "react-toastify";
+import { getAccessToken } from "@/lib/apiClient";
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
@@ -26,15 +28,21 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     useEffect(() => {
         const checkAuthentication = async () => {
             try {
-                const currentUser: User | null = await authService.getCurrentUser();
+                // Skip check if no user and no token
+                if (!user && !getAccessToken()) {
+                    return;
+                }
+                
+                // Try to get current user first
+                const currentUser = await authService.getCurrentUser();
                 if (currentUser) {
                     setUser(currentUser);
                     return;
                 }
+                
+                // If failed, try refresh token as fallback
                 const refreshUser = await authService.refreshToken();
-                if (refreshUser) {
-                    setUser(refreshUser);
-                }
+                setUser(refreshUser);
             } catch (error) {
                 console.error("Error checking authentication:", error);
             } finally {
@@ -51,11 +59,13 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             const loggedInUser = await authService.login(credentials);
             if (loggedInUser) {
                 setUser(loggedInUser);
+                toast.success(`Welcome back, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`);
                 return true;
             }
             return false;
         } catch (error) {
             console.error('Login failed:', error);
+            toast.error('Login failed. Please check your credentials and try again.');
             return false;
         } finally {
             setIsLoading(false);
@@ -66,9 +76,14 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const register = async (data: RegisterRequest): Promise<boolean> => {
         setIsLoading(true);
         try {
-            return await authService.register(data);
+            const success = await authService.register(data);
+            if (success) {
+                toast.success('Registration successful! Please login with your new account.');
+            }
+            return success;
         } catch (error) {
             console.error('Registration failed:', error);
+            toast.error('Registration failed. Please try again later.');
             return false;
         } finally {
             setIsLoading(false);
@@ -81,7 +96,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const logout = async () => {
         await authService.logout();
         setUser(null);
-        router.push(`login?redirect=${currentPath}`);
+        toast.info('You have been logged out.');
+        router.push(`/login?redirect=${currentPath}`);
     };
 
     // Refresh authentication function

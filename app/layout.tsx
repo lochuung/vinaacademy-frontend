@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CategoryProvider } from '@/context/CategoryContext';
 import { CartProvider } from '@/context/CartContext'; // Thêm import này
 import { Toaster } from "@/components/ui/sonner";
+import ToastProvider from '@/providers/ToastProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,16 +24,18 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={inter.className}>
-        <AuthProvider>
-          <CategoryProvider>
-            <CartProvider> {/* Thêm CartProvider bao quanh LayoutWrapper */}
-              <LayoutWrapper>
-                {children}
-              </LayoutWrapper>
-              <Toaster />{/* Hiển thị Toaster */}
-            </CartProvider>
-          </CategoryProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <CategoryProvider>
+              <CartProvider> {/* Thêm CartProvider bao quanh LayoutWrapper */}
+                <LayoutWrapper>
+                  {children}
+                </LayoutWrapper>
+                <Toaster />{/* Hiển thị Toaster */}
+              </CartProvider>
+            </CategoryProvider>
+          </AuthProvider>
+        </ToastProvider>
 
         {/* Use Next.js Script component for client-side scripts */}
         <Script id="navigation-fix">
