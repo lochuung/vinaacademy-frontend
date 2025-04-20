@@ -8,7 +8,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Form, FormField, FormItem, FormControl, FormMessage} from "@/components/ui/form";
-import {toast} from "sonner";
+import {toast} from "react-toastify";
 
 // Icons
 import {FcGoogle} from "react-icons/fc";
@@ -90,9 +90,7 @@ export default function RegisterForm({
             const success = await onSubmit(registerData);
 
             if (success) {
-                toast.success("Registration successful", {
-                    description: "Your account has been created. You can now log in.",
-                });
+                toast.success("Registration successful. Your account has been created. You can now log in.");
                 // Optionally redirect to login page
             }
         } catch (error) {

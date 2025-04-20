@@ -2,6 +2,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 const ACCESS_TOKEN_NAME = 'access_token';
 const REFRESH_TOKEN_NAME = 'refresh_token';
@@ -49,7 +50,14 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
+        const errorMessage = error.response?.data?.message || 'Something went wrong';
         console.error(`❌ Response error: ${error.response?.status || 'NETWORK ERROR'}`, error.response?.data || error.message);
+        
+        // Don't show toast for authentication errors (will be handled by auth flow)
+        if (error.response?.status !== 401) {
+            toast.error(errorMessage);
+        }
+        
         const originalRequest = error.config;
         if (error.response?.status === 401 &&
             originalRequest &&
@@ -60,7 +68,7 @@ apiClient.interceptors.response.use(
             const currentUrl = window.location.href;
 
             if (currentUrl.includes('/login')) {
-                console.warn('⚠️ Already on login page, not redirecting again');
+                toast.error(errorMessage);
                 return Promise.reject(error);
             }
             if (currentUrl.includes('/register')) {
@@ -97,6 +105,7 @@ apiClient.interceptors.response.use(
                 removeStorageItem(ACCESS_TOKEN_NAME);
                 removeStorageItem(REFRESH_TOKEN_NAME);
                 console.warn('⚠️ Tokens removed, redirecting to login');
+                toast.error('Your session has expired. Please log in again.');
                 window.location.href = '/login';
                 return Promise.reject(error);
             }

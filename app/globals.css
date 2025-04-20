@@ -167,3 +167,28 @@ input[type="checkbox"]:focus {
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* Toast animations */
+.Toastify__toast {
+  border-radius: 12px;
+}
+
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast--default,
+.Toastify__toast--info,
+.Toastify__toast--success,
+.Toastify__toast--warning,
+.Toastify__toast--error {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.Toastify__bounce-enter--top-center {
+  animation: Toastify__bounceInDown 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.Toastify__bounce-exit--top-center {
+  animation: Toastify__bounceOutUp 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
