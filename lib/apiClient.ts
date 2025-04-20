@@ -44,6 +44,53 @@ apiClient.interceptors.request.use(
     }
 )
 
+function handleMissingRefreshToken(currentUrl: string, errorMessage: string, error: any) {
+    console.warn('⚠️ No refresh token found, redirecting to login');
+    window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+    removeStorageItem(ACCESS_TOKEN_NAME);
+    return Promise.reject(error);
+}
+
+async function refreshAuthToken(error: any, originalRequest: any): Promise<any> {
+    console.log('🔄 Token expired, attempting to refresh...');
+    const refreshToken = getStorageItem(REFRESH_TOKEN_NAME);
+    const currentUrl = window.location.href;
+
+    if (currentUrl.includes('/login')) {
+        toast.error(error.response?.data?.message || 'Something went wrong');
+        return Promise.reject(error);
+    }
+
+    if (currentUrl.includes('/register')) {
+        console.warn('⚠️ Already on register page, not redirecting again');
+        return Promise.reject(error);
+    }
+
+    if (!refreshToken) {
+        return handleMissingRefreshToken(currentUrl, error.response?.data?.message, error);
+    }
+
+    try {
+        console.log('🔄 Sending refresh token request');
+        const { data } = await axios.post('/api/auth/refresh', { refreshToken });
+        console.log('✅ Token refreshed successfully');
+        const { access_token, refresh_token } = data['data'];
+        setStorageItem(ACCESS_TOKEN_NAME, access_token);
+        originalRequest.headers['X-Retry'] = 'true';
+        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+        console.log('🔁 Retrying original request');
+        return apiClient(originalRequest);
+    } catch (refreshError) {
+        console.error('❌ Error refreshing token:', refreshError);
+        removeStorageItem(ACCESS_TOKEN_NAME);
+        removeStorageItem(REFRESH_TOKEN_NAME);
+        console.warn('⚠️ Tokens removed, redirecting to login');
+        toast.error('Your session has expired. Please log in again.');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+    }
+}
+
 apiClient.interceptors.response.use(
     (response) => {
         console.log(`✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data);
@@ -52,63 +99,15 @@ apiClient.interceptors.response.use(
     async (error) => {
         const errorMessage = error.response?.data?.message || 'Something went wrong';
         console.error(`❌ Response error: ${error.response?.status || 'NETWORK ERROR'}`, error.response?.data || error.message);
-        
+
         // Don't show toast for authentication errors (will be handled by auth flow)
         if (error.response?.status !== 401) {
             toast.error(errorMessage);
         }
-        
+
         const originalRequest = error.config;
-        if (error.response?.status === 401 &&
-            originalRequest &&
-            !originalRequest.headers['X-Retry']) {
-            console.log('🔄 Token expired, attempting to refresh...');
-            const refreshToken = getStorageItem(REFRESH_TOKEN_NAME);
-
-            const currentUrl = window.location.href;
-
-            if (currentUrl.includes('/login')) {
-                toast.error(errorMessage);
-                return Promise.reject(error);
-            }
-            if (currentUrl.includes('/register')) {
-                console.warn('⚠️ Already on register page, not redirecting again');
-                return Promise.reject(error);
-            }
-
-                
-            if (!refreshToken) {
-                console.warn('⚠️ No refresh token found, redirecting to login');
-                window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-                removeStorageItem(ACCESS_TOKEN_NAME);
-                return Promise.reject(error);
-            }
-            try {
-                console.log('🔄 Sending refresh token request');
-                const requestTokenResponse: AxiosResponse = await axios.post('/api/auth/refresh', { refreshToken });
-                console.log('✅ Token refreshed successfully');
-
-                const { access_token, refresh_token } = requestTokenResponse.data['data'];
-
-                setStorageItem(ACCESS_TOKEN_NAME, access_token);
-                setStorageItem(REFRESH_TOKEN_NAME, refresh_token);
-                console.log('💾 New tokens stored in cookies');
-
-                if (originalRequest.headers) {
-                    originalRequest.headers['X-Retry'] = 'true';
-                    originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
-                }
-                console.log('🔁 Retrying original request');
-                return apiClient(originalRequest);
-            } catch (error) {
-                console.error('❌ Error refreshing token:', error);
-                removeStorageItem(ACCESS_TOKEN_NAME);
-                removeStorageItem(REFRESH_TOKEN_NAME);
-                console.warn('⚠️ Tokens removed, redirecting to login');
-                toast.error('Your session has expired. Please log in again.');
-                window.location.href = '/login';
-                return Promise.reject(error);
-            }
+        if (error.response?.status === 401 && originalRequest && !originalRequest.headers['X-Retry']) {
+            return refreshAuthToken(error, originalRequest);
         }
 
         return Promise.reject(error);
