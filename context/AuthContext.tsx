@@ -16,6 +16,7 @@ const AuthContext = createContext<AuthContextType>({
     },
     refreshAuth: async () => false,
     register: async () => false,
+    resendVerificationEmail: async () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -90,6 +91,24 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         }
     };
 
+    // Resend verification email function
+    const resendVerificationEmail = async (email: string): Promise<boolean> => {
+        setIsLoading(true);
+        try {
+            const success = await authService.resendVerificationEmail(email);
+            if (success) {
+                toast.success('Email xác thực đã được gửi lại. Vui lòng kiểm tra hộp thư của bạn.');
+            }
+            return success;
+        } catch (error) {
+            console.error('Resend verification email failed:', error);
+            toast.error('Không thể gửi lại email xác thực. Vui lòng thử lại sau.');
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const currentPath = usePathname();
 
     // Logout function
@@ -128,7 +147,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             login,
             logout,
             refreshAuth,
-            register
+            register,
+            resendVerificationEmail
         }}>
             {children}
         </AuthContext.Provider>

@@ -12,6 +12,22 @@ export interface RegisterRequest {
     retypedPassword: string;
 }
 
+export interface VerifyAccountRequest {
+    token: string;
+    signature: string;
+}
+
+export interface EmailRequest {
+    email: string;
+}
+
+export interface ResetPasswordRequest {
+    token: string;
+    signature: string;
+    password: string;
+    retypedPassword?: string;
+}
+
 export interface RefreshTokenRequest {
     refreshToken: string;
 }
@@ -59,4 +75,5 @@ export interface AuthContextType {
     logout: () => void;
     refreshAuth: () => Promise<boolean>;
     register: (data: RegisterRequest) => Promise<boolean>;
+    resendVerificationEmail: (email: string) => Promise<boolean>;
 }
