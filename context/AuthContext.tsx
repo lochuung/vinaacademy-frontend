@@ -97,7 +97,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         await authService.logout();
         setUser(null);
         toast.info('You have been logged out.');
-        router.push(`/login?redirect=${currentPath}`);
+        router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
     };
 
     // Refresh authentication function
