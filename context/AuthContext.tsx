@@ -2,7 +2,7 @@
 
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {AuthContextType, LoginCredentials, RegisterRequest, User} from "@/types/auth";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import * as authService from "@/services/authService";
 
 const AuthContext = createContext<AuthContextType>({
@@ -75,11 +75,13 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         }
     };
 
+    const currentPath = usePathname();
+
     // Logout function
     const logout = async () => {
         await authService.logout();
         setUser(null);
-        router.push('/login');
+        router.push(`login?redirect=${currentPath}`);
     };
 
     // Refresh authentication function

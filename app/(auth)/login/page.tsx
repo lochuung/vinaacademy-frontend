@@ -1,21 +1,29 @@
 'use client';
 
 import LoginForm, { LoginFormValues } from '@/components/ui/loginform';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LoginCredentials } from "@/types/auth";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { login, isAuthenticated } = useAuth();
-    const router = useRouter();
 
-    if (isAuthenticated) {
-        router.push('/');
-        return null;
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const redirectToTarget = () => {
+        const redirectUrl = searchParams.get('redirect');
+        router.push(redirectUrl || document.referrer || '/');
     }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            redirectToTarget();
+        }
+    }, [isAuthenticated]);
 
     const handleSubmit = async (data: LoginFormValues) => {
         setError(null);
@@ -30,7 +38,7 @@ export default function LoginPage() {
             const success = await login(credentials);
 
             if (success) {
-                router.push('/');
+                redirectToTarget();
             } else {
                 setError('Email hoặc mật khẩu không đúng');
             }
