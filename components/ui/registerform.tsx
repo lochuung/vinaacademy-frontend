@@ -1,21 +1,21 @@
 "use client";
 
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
-import {useState} from "react";
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
-import {Form, FormField, FormItem, FormControl, FormMessage} from "@/components/ui/form";
-import {toast} from "react-toastify";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import { toast } from "react-toastify";
 
 // Icons
-import {FcGoogle} from "react-icons/fc";
-import {FaUserShield} from "react-icons/fa";
-import {IoMdLock} from "react-icons/io";
-import {MdOutlineDriveFileRenameOutline, MdEmail} from "react-icons/md";
-import {RegisterRequest} from "@/types/auth";
+import { FcGoogle } from "react-icons/fc";
+import { FaUserShield } from "react-icons/fa";
+import { IoMdLock } from "react-icons/io";
+import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
+import { RegisterRequest } from "@/types/auth";
 
 // Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -50,17 +50,17 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({
-                                         heading = "VN Academy",
-                                         subheading = "Tạo ngay cho mình một tài khoản",
-                                         imageUrl = "https://source.unsplash.com/600x600/?education,technology",
-                                         registerText = "Đăng ký",
-                                         googleText = "Đăng nhập bằng Google",
-                                         signinText = "Đã có tài khoản?",
-                                         signinUrl = "/login",
-                                         onSubmit,
-                                         isSubmitting = false,
-                                         error = null,
-                                     }: RegisterFormProps) {
+    heading = "VN Academy",
+    subheading = "Tạo ngay cho mình một tài khoản",
+    imageUrl = "https://source.unsplash.com/600x600/?education,technology",
+    registerText = "Đăng ký",
+    googleText = "Đăng nhập bằng Google",
+    signinText = "Đã có tài khoản?",
+    signinUrl = "/login",
+    onSubmit,
+    isSubmitting = false,
+    error = null,
+}: RegisterFormProps) {
     const [submitError, setSubmitError] = useState<string | null>(error);
 
     const form = useForm<RegisterFormValues>({
@@ -90,12 +90,13 @@ export default function RegisterForm({
             const success = await onSubmit(registerData);
 
             if (success) {
-                toast.success("Registration successful. Your account has been created. You can now log in.");
+                toast.success("Đăng ký thành công. Hãy kiểm tra email để xác thực tài khoản.");
                 // Optionally redirect to login page
             }
         } catch (error) {
             console.error("Form submission error:", error);
-            setSubmitError("Registration failed. Please try again later.");
+            setSubmitError("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.");
+            toast.error("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.");
         }
     }
 
@@ -113,7 +114,7 @@ export default function RegisterForm({
                         <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4">
                             {submitError && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
-                                     role="alert">
+                                    role="alert">
                                     <span className="block sm:inline">{submitError}</span>
                                 </div>
                             )}
@@ -121,70 +122,70 @@ export default function RegisterForm({
                             <FormField
                                 control={form.control}
                                 name="username"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <Label>Tên đăng nhập</Label>
                                         <FormControl>
                                             <Input type="text" placeholder="Nhập tên đăng nhập của bạn"
-                                                   iconLeft={<FaUserShield/>} {...field} />
+                                                iconLeft={<FaUserShield />} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="fullname"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <Label>Họ và tên</Label>
                                         <FormControl>
                                             <Input type="text" placeholder="Nhập tên đầy đủ của bạn"
-                                                   iconLeft={<MdOutlineDriveFileRenameOutline/>} {...field} />
+                                                iconLeft={<MdOutlineDriveFileRenameOutline />} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="email"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <Label>Email</Label>
                                         <FormControl>
                                             <Input type="email" placeholder="Nhập email của bạn"
-                                                   iconLeft={<MdEmail/>} {...field} />
+                                                iconLeft={<MdEmail />} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="password"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <Label>Mật khẩu</Label>
                                         <FormControl>
                                             <Input type="password" placeholder="Nhập mật khẩu của bạn"
-                                                   iconLeft={<IoMdLock/>} passwordEye={true} {...field} />
+                                                iconLeft={<IoMdLock />} passwordEye={true} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="confirmPassword"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <Label>Xác nhận mật khẩu</Label>
                                         <FormControl>
                                             <Input type="password" placeholder="Xác nhận mật khẩu"
-                                                   iconLeft={<IoMdLock/>} passwordEye={true} {...field} />
+                                                iconLeft={<IoMdLock />} passwordEye={true} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -199,8 +200,8 @@ export default function RegisterForm({
                             </div>
 
                             <Button type="button" variant="outline" className="w-full border-gray-400"
-                                    disabled={isSubmitting}>
-                                <FcGoogle className="mr-2 size-5"/>
+                                disabled={isSubmitting}>
+                                <FcGoogle className="mr-2 size-5" />
                                 {googleText}
                             </Button>
                         </form>
@@ -217,7 +218,7 @@ export default function RegisterForm({
                 {/* Right Side - Image */}
                 <div className="hidden md:block md:w-1/2 bg-gray-200 items-center justify-center">
                     <img src={imageUrl} alt="Register Illustration"
-                         className="h-full w-full object-cover flex items-center justify-center"/>
+                        className="h-full w-full object-cover flex items-center justify-center" />
                 </div>
             </div>
 

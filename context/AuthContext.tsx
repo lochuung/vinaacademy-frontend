@@ -59,13 +59,13 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             const loggedInUser = await authService.login(credentials);
             if (loggedInUser) {
                 setUser(loggedInUser);
-                toast.success(`Welcome back, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`);
+                toast.success(`Chào bạn, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`);
                 return true;
             }
             return false;
         } catch (error) {
+            toast.error('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             console.error('Login failed:', error);
-            toast.error('Login failed. Please check your credentials and try again.');
             return false;
         } finally {
             setIsLoading(false);
@@ -78,12 +78,12 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         try {
             const success = await authService.register(data);
             if (success) {
-                toast.success('Registration successful! Please login with your new account.');
+                toast.success('Đăng ký thành công! Vui lòng đăng nhập với tài khoản mới của bạn.');
             }
             return success;
         } catch (error) {
             console.error('Registration failed:', error);
-            toast.error('Registration failed. Please try again later.');
+            toast.error('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             return false;
         } finally {
             setIsLoading(false);
@@ -96,7 +96,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const logout = async () => {
         await authService.logout();
         setUser(null);
-        toast.info('You have been logged out.');
+        toast.success('Đăng xuất thành công!');
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
     };
 
