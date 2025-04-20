@@ -57,7 +57,7 @@ async function refreshAuthToken(error: any, originalRequest: any): Promise<any> 
     const currentUrl = window.location.href;
 
     if (currentUrl.includes('/login')) {
-        toast.error(error.response?.data?.message || 'Something went wrong');
+        toast.error(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau');
         return Promise.reject(error);
     }
 
@@ -85,7 +85,6 @@ async function refreshAuthToken(error: any, originalRequest: any): Promise<any> 
         removeStorageItem(ACCESS_TOKEN_NAME);
         removeStorageItem(REFRESH_TOKEN_NAME);
         console.warn('⚠️ Tokens removed, redirecting to login');
-        toast.error('Your session has expired. Please log in again.');
         window.location.href = '/login';
         return Promise.reject(refreshError);
     }
@@ -97,12 +96,12 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        const errorMessage = error.response?.data?.message || 'Something went wrong';
+        const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau';
         console.error(`❌ Response error: ${error.response?.status || 'NETWORK ERROR'}`, error.response?.data || error.message);
 
         // Don't show toast for authentication errors (will be handled by auth flow)
         if (error.response?.status !== 401) {
-            toast.error(errorMessage);
+            toast.error(errorMessage || 'Có lỗi xảy ra, vui lòng thử lại sau');
         }
 
         const originalRequest = error.config;

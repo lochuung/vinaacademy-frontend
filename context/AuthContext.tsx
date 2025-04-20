@@ -16,6 +16,7 @@ const AuthContext = createContext<AuthContextType>({
     },
     refreshAuth: async () => false,
     register: async () => false,
+    resendVerificationEmail: async () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -59,11 +60,12 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             const loggedInUser = await authService.login(credentials);
             if (loggedInUser) {
                 setUser(loggedInUser);
-                toast.success(`Welcome back, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`);
+                toast.success(`Chào bạn, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`);
                 return true;
             }
             return false;
         } catch (error) {
+            toast.error('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             console.error('Login failed:', error);
             toast.error('Login failed. Please check your credentials and try again.');
             return false;
@@ -78,12 +80,30 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         try {
             const success = await authService.register(data);
             if (success) {
-                toast.success('Registration successful! Please login with your new account.');
+                toast.success('Đăng ký thành công! Vui lòng đăng nhập với tài khoản mới của bạn.');
             }
             return success;
         } catch (error) {
             console.error('Registration failed:', error);
-            toast.error('Registration failed. Please try again later.');
+            toast.error('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Resend verification email function
+    const resendVerificationEmail = async (email: string): Promise<boolean> => {
+        setIsLoading(true);
+        try {
+            const success = await authService.resendVerificationEmail(email);
+            if (success) {
+                toast.success('Email xác thực đã được gửi lại. Vui lòng kiểm tra hộp thư của bạn.');
+            }
+            return success;
+        } catch (error) {
+            console.error('Resend verification email failed:', error);
+            toast.error('Không thể gửi lại email xác thực. Vui lòng thử lại sau.');
             return false;
         } finally {
             setIsLoading(false);
@@ -96,7 +116,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const logout = async () => {
         await authService.logout();
         setUser(null);
-        toast.info('You have been logged out.');
+        toast.success('Đăng xuất thành công!');
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
     };
 
@@ -128,7 +148,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             login,
             logout,
             refreshAuth,
-            register
+            register,
+            resendVerificationEmail
         }}>
             {children}
         </AuthContext.Provider>

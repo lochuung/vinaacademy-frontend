@@ -17,7 +17,7 @@ import {FcGoogle} from "react-icons/fc";
 import {FaUserShield} from "react-icons/fa";
 import {IoMdLock} from "react-icons/io";
 
-import DialogOTP from "./otp-dialog";
+import DialogForgotPassword from "./otp-dialog";
 
 const formSchema = z.object({
     email: z
@@ -177,7 +177,7 @@ export default function LoginForm({
                                        onClick={() => setDialogOpen(true)}>
                                         Quên mật khẩu
                                     </a>
-                                    <DialogOTP open={dialogOpen} onClose={() => setDialogOpen(false)}/>
+                                    <DialogForgotPassword open={dialogOpen} onClose={() => setDialogOpen(false)}/>
 
                                 </div>
                                 <Button type="submit" className="mt-2 w-full" disabled={isSubmitting}>
