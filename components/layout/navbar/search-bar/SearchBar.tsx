@@ -3,8 +3,6 @@
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {FaSearch} from "react-icons/fa";
-import {categoriesData} from "@/data/categories";
-import {useCategories} from "@/context/CategoryContext";
 
 const SearchBar = () => {
     const router = useRouter();
@@ -15,41 +13,6 @@ const SearchBar = () => {
     const [priceRange, setPriceRange] = useState({min: "", max: ""});
     const [level, setLevel] = useState<string[]>([]);
 
-    // Use shared categories context instead of fetching directly
-    const {categories, isLoading} = useCategories();
-
-    const levels = ["Cơ bản", "Trung cấp", "Nâng cao"];
-
-    // Lấy danh sách danh mục con dựa trên danh mục đã chọn
-    const getSubCategories = () => {
-        if (selectedCategories.length === 0) return [];
-
-        // If using API data
-        if (categories.length > 0) {
-            let allSubCategories: any[] = [];
-
-            selectedCategories.forEach(catSlug => {
-                const category = categories.find(cat => cat.slug === catSlug);
-                if (category && category.subCategories) {
-                    allSubCategories = [...allSubCategories, ...category.subCategories];
-                }
-            });
-
-            return allSubCategories;
-        }
-
-        // Fallback to mock data
-        let allSubCategories: { name: string; link: string; trendingTopics: any[] }[] = [];
-
-        selectedCategories.forEach(catName => {
-            const category = categoriesData.find(cat => cat.name === catName);
-            if (category) {
-                allSubCategories = [...allSubCategories, ...category.subCategories];
-            }
-        });
-
-        return allSubCategories;
-    };
 
     // Reset danh mục con khi thay đổi danh mục
     useEffect(() => {
@@ -99,6 +62,8 @@ const SearchBar = () => {
             <input
                 type="text"
                 value={searchTerm}
+                required
+                minLength={3}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Tìm kiếm bất cứ thứ gì..."
                 className="w-full px-4 py-2 border border-black bg-white text-black rounded-full focus:outline-none focus:ring-2 focus:ring-black pr-16"
