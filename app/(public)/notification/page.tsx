@@ -29,6 +29,8 @@ import {
 } from "@/types/notification-type";
 import { toast } from "@/hooks/use-toast";
 
+import renderSkeletons from "@/components/notifications/NotificationSkeleton";
+
 const NotificationsPage = () => {
   // User ID would normally come from auth context or similar
 
@@ -42,7 +44,7 @@ const NotificationsPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<NotificationFiltersType>({
     type: null,
-    isRead: null,
+    isRead: false,
     sortBy: "createdAt",
     direction: "desc",
   });
@@ -169,29 +171,7 @@ const NotificationsPage = () => {
     }
   };
 
-  // Render loading skeletons fake loading state
-  const renderSkeletons = () => {
-    return Array(2)
-      .fill(0)
-      .map((_, index) => (
-        <Card key={index} className="w-full">
-          <CardContent className="p-4">
-            <div className="flex gap-4">
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-5 w-1/3" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-4 w-full" />
-                <div className="flex justify-between pt-2">
-                  <Skeleton className="h-8 w-24" />
-                  <Skeleton className="h-8 w-24" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ));
-  };
+  
 
   return (
     <div className="container pt-16 pb-32 w-[75%] mx-auto">
