@@ -56,9 +56,23 @@ apiClient.interceptors.response.use(
             !originalRequest.headers['X-Retry']) {
             console.log('🔄 Token expired, attempting to refresh...');
             const refreshToken = getStorageItem(REFRESH_TOKEN_NAME);
+
+            const currentUrl = window.location.href;
+
+            if (currentUrl.includes('/login')) {
+                console.warn('⚠️ Already on login page, not redirecting again');
+                return Promise.reject(error);
+            }
+            if (currentUrl.includes('/register')) {
+                console.warn('⚠️ Already on register page, not redirecting again');
+                return Promise.reject(error);
+            }
+
+                
             if (!refreshToken) {
                 console.warn('⚠️ No refresh token found, redirecting to login');
-                window.location.href = '/login';
+                window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+                removeStorageItem(ACCESS_TOKEN_NAME);
                 return Promise.reject(error);
             }
             try {
