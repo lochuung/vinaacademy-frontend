@@ -67,6 +67,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         } catch (error) {
             toast.error('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             console.error('Login failed:', error);
+            toast.error('Login failed. Please check your credentials and try again.');
             return false;
         } finally {
             setIsLoading(false);
