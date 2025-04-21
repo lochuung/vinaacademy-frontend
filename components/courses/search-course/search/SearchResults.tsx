@@ -22,8 +22,6 @@ const SearchResults = ({coursesData}: SearchResultsProps) => {
     // Use pagination data from API response
     const {content: courses, totalPages, totalElements} = coursesData;
 
-    console.log("Courses data:", coursesData);
-
     // Initialize sort value from URL on component mount
     useEffect(() => {
         const sortBy = searchParams.get("sortBy") || "name";
