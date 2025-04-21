@@ -66,7 +66,7 @@ export default function QuizResults({
                 <div className="space-y-6">
                     {questions.map((question, index) => {
                         const result = quizResults.results.find(r => r.questionId === question.id);
-                        const isCorrect = result?.correct;
+                        const isCorrect = result ? result.correct : null;
 
                         return (
                             <div key={question.id} className="border border-gray-200 rounded-lg overflow-hidden">

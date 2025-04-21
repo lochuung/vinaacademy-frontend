@@ -1,5 +1,7 @@
-import {useState} from 'react';
-import {Quiz} from '@/types/lecture';
+'use client';
+
+import { useState } from 'react';
+import { Quiz } from '@/types/lecture';
 import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
 
@@ -8,7 +10,7 @@ interface QuizPreviewProps {
     onClose: () => void;
 }
 
-export default function QuizPreview({quiz, onClose}: QuizPreviewProps) {
+export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
     const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string[]>>({});
     const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
     const [showResults, setShowResults] = useState(false);
@@ -130,7 +132,6 @@ export default function QuizPreview({quiz, onClose}: QuizPreviewProps) {
     };
 
     const quizResults = calculateResults();
-
     // Submit quiz
     const handleSubmit = () => {
         setShowResults(true);

@@ -14,11 +14,9 @@
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
-        "webpack://_N_E/*": "${webRoot}/*"
-      },
-      "skipFiles": [
-        "chrome-error://*"
-      ]
+        "webpack://_N_E/*": "${webRoot}/*",
+        "webpack-internal:///*": "${webRoot}/*"
+      }
     },
     {
       "name": "Next.js: debug client-side (Firefox)",
