@@ -257,8 +257,6 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
         const results = quiz.questions.map(question => {
             // Find corresponding answer from API response
             const apiAnswer = quizResult.answers.find(a => a.questionId === question.id);
-            
-            console.log('API Answer:', apiAnswer);
 
             if (!apiAnswer) {
                 return {
