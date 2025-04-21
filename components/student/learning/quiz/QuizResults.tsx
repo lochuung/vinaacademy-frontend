@@ -25,6 +25,7 @@ interface QuizResultsProps {
     textAnswers: Record<string, string>;
     onRetake?: () => void;
     apiResult?: QuizSubmissionResultDto | null;
+    showCorrectAnswers?: boolean;  // Add this prop
 }
 
 const QuizResults: FC<QuizResultsProps> = ({
@@ -33,7 +34,8 @@ const QuizResults: FC<QuizResultsProps> = ({
                                                selectedAnswers,
                                                textAnswers,
                                                onRetake,
-                                               apiResult
+                                               apiResult,
+                                               showCorrectAnswers = false  // Add default value
                                            }) => {
     const [expandedQuestions, setExpandedQuestions] = useState<string[]>([]);
 
@@ -224,12 +226,12 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             textAnswer={textAnswers[question.id] || ''}
                                             onSelectOption={() => {}} // No-op as quiz is submitted
                                             onTextChange={() => {}} // No-op as quiz is submitted
-                                            showCorrectAnswers={quiz.settings.showCorrectAnswers}
+                                            showCorrectAnswers={showCorrectAnswers}
                                             isSubmitted={true}
                                         />
                                         
                                         {/* Show explanation if available */}
-                                        {quiz.settings.showCorrectAnswers && (apiAnswer?.explanation || question.explanation) && (
+                                        {showCorrectAnswers && (apiAnswer?.explanation || question.explanation) && (
                                             <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
                                                 <h4 className="text-sm font-semibold text-blue-800 mb-1">Giải thích:</h4>
                                                 <p className="text-blue-700">{apiAnswer?.explanation || question.explanation}</p>

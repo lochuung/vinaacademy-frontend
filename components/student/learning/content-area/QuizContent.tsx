@@ -258,6 +258,8 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
             // Find corresponding answer from API response
             const apiAnswer = quizResult.answers.find(a => a.questionId === question.id);
             
+            console.log('API Answer:', apiAnswer);
+
             if (!apiAnswer) {
                 return {
                     questionId: question.id,
@@ -288,8 +290,10 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                 userAnswer: userAnswerIds,
                 explanation: apiAnswer.explanation,
                 correctAnswers: apiAnswer.answers
-                    .filter(ans => ans.isCorrect)
-                    .map(ans => ans.id)
+                    ? apiAnswer.answers
+                        .filter(ans => ans.isCorrect)
+                        .map(ans => ans.id)
+                    : []
             };
         });
         
