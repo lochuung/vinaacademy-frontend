@@ -228,6 +228,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             onTextChange={() => {}} // No-op as quiz is submitted
                                             showCorrectAnswers={showCorrectAnswers}
                                             isSubmitted={true}
+                                            quizResults={result}
                                         />
                                         
                                         {/* Show explanation if available */}

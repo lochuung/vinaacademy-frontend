@@ -380,6 +380,8 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
 
     const currentQuestion = quiz.questions[currentQuestionIndex];
 
+    console.log("Quiz Result:", quiz);
+
     if (showResults) {
         return (
             <QuizResults
@@ -389,6 +391,7 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                 textAnswers={textAnswers}
                 onRetake={quiz.settings.allowRetake ? handleRetakeQuiz : undefined}
                 apiResult={quizResult}
+                showCorrectAnswers={quiz.settings.showCorrectAnswers}
             />
         );
     }
