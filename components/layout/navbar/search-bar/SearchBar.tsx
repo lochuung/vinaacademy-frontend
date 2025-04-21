@@ -12,7 +12,8 @@ const SearchBar = () => {
     const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState({min: "", max: ""});
     const [level, setLevel] = useState<string[]>([]);
-
+  
+    const [inputError, setInputError] = useState("");
 
     // Reset danh mục con khi thay đổi danh mục
     useEffect(() => {
@@ -25,14 +26,35 @@ const SearchBar = () => {
         setSelectedTopics([]);
     }, [selectedSubCategories]);
 
+    // Clear error when search term changes
+    useEffect(() => {
+        if (searchTerm) {
+            setInputError("");
+        }
+    }, [searchTerm]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate searchTerm
+        if (!searchTerm.trim()) {
+            setInputError("Vui lòng nhập từ khóa tìm kiếm");
+            return;
+        }
+
+        if (searchTerm.trim().length < 2) {
+            setInputError("Từ khóa tìm kiếm phải có ít nhất 2 ký tự");
+            return;
+        }
 
         // Xây dựng URL query params
         const params = new URLSearchParams();
 
-        if (searchTerm) params.append("q", searchTerm);
-        if (selectedCategories.length > 0) params.append("categories", selectedCategories.join(","));
+        params.append("q", searchTerm.trim());
+        
+        if (selectedCategories.length > 0) {
+            params.append("categories", selectedCategories.join(","));
+        }
 
         if (selectedSubCategories.length === 1) {
             params.append("subCategory", selectedSubCategories[0]);
@@ -46,9 +68,15 @@ const SearchBar = () => {
             params.append("topics", selectedTopics.join(","));
         }
 
-        if (priceRange.min) params.append("minPrice", priceRange.min);
-        if (priceRange.max) params.append("maxPrice", priceRange.max);
-        if (level.length > 0) params.append("level", level.join(","));
+        if (priceRange.min) {
+            params.append("minPrice", priceRange.min);
+        }
+        if (priceRange.max) {
+            params.append("maxPrice", priceRange.max);
+        }
+        if (level.length > 0) {
+            params.append("level", level.join(","));
+        }
 
         // Add default page parameter
         params.append("page", "1");
@@ -66,7 +94,9 @@ const SearchBar = () => {
                 minLength={3}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Tìm kiếm bất cứ thứ gì..."
-                className="w-full px-4 py-2 border border-black bg-white text-black rounded-full focus:outline-none focus:ring-2 focus:ring-black pr-16"
+                className={`w-full px-4 py-2 border ${inputError ? 'border-red-500' : 'border-black'} bg-white text-black rounded-full focus:outline-none focus:ring-2 focus:ring-black pr-16`}
+                aria-invalid={!!inputError}
+                aria-describedby={inputError ? "search-error" : undefined}
             />
             <button
                 type="submit"
@@ -75,6 +105,11 @@ const SearchBar = () => {
             >
                 <FaSearch/>
             </button>
+            {inputError && (
+                <p id="search-error" className="absolute -bottom-6 left-0 text-xs text-white bg-red-500 p-1 rounded">
+                    {inputError}
+                </p>
+            )}
         </form>
     );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CourseDto, CourseSearchRequest, CourseLevel } from "@/types/course";
 import { searchCourses } from "@/services/courseService";
 import { useCategories } from "@/context/CategoryContext";
@@ -21,6 +21,7 @@ export default function SearchPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { categories: allCategories, getCategoryPath } = useCategories();
+    const isFirstLoad = useRef(true);
 
     // State for search and filter params
     const [query, setQuery] = useState("");
@@ -83,9 +84,15 @@ export default function SearchPage() {
 
     // Fetch courses when filters change
     useEffect(() => {
+        // Skip initial fetch if no search parameters exist
+        if (isFirstLoad.current) {
+            isFirstLoad.current = false;
+            if (searchParams.toString() === '') return;
+        }
+        
+        setIsLoading(true);
+        
         const fetchCourses = async () => {
-            setIsLoading(true);
-            
             try {
                 // Convert UI filters to CourseSearchRequest
                 const searchRequest: CourseSearchRequest = {
@@ -108,6 +115,7 @@ export default function SearchPage() {
                 
                 if (data) {
                     setCoursesData(data);
+                    console.log("Courses data response:", data);
                 } else {
                     // Handle API error with empty state
                     setCoursesData({
@@ -138,7 +146,7 @@ export default function SearchPage() {
         };
 
         fetchCourses();
-    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection]);
+    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection, searchParams]);
 
     // Map UI level strings to API CourseLevel enum
     const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
@@ -272,7 +280,12 @@ export default function SearchPage() {
                             <div className="flex justify-center items-center py-20">
                                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
                             </div>
-                        ) : coursesData.size > 0 && coursesData.content.length > 0 ? (
+                        ) : searchParams.toString() === '' ? (
+                            <div className="text-center py-20">
+                                <h2 className="text-xl font-semibold mb-2">Bắt đầu tìm kiếm</h2>
+                                <p className="text-gray-600">Nhập từ khóa hoặc chọn bộ lọc để tìm khóa học phù hợp</p>
+                            </div>
+                        ) : coursesData.content.length > 0 ? (
                             <SearchResults
                                 coursesData={coursesData}
                             />
