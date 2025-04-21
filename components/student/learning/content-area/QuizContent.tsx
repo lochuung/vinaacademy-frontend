@@ -1,14 +1,14 @@
 "use client";
 
-import {FC, useState, useEffect} from 'react';
+import {FC, useState, useEffect, useRef} from 'react';
 import {ChevronLeft, ChevronRight, Check, Clock, AlertCircle} from 'lucide-react';
 import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
 import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
 import QuizTimer from '../quiz/QuizTimer';
-import { getQuiz, submitQuiz } from '@/services/quizService';
-import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest } from '@/types/quiz';
+import { getQuiz, startQuiz, submitQuiz, getLatestSubmission } from '@/services/quizService';
+import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest, QuizSession } from '@/types/quiz';
 
 interface QuizContentProps {
     courseId: string;
@@ -27,12 +27,24 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
     const [requireConfirmation, setRequireConfirmation] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [quizResult, setQuizResult] = useState<QuizSubmissionResultDto | null>(null);
+    const [previousSubmission, setPreviousSubmission] = useState<QuizSubmissionResultDto | null>(null);
+    const [quizSession, setQuizSession] = useState<QuizSession | null>(null);
+    const [sessionExpired, setSessionExpired] = useState(false);
+    const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Fetch quiz data from API
+    // Fetch quiz data and previous submissions from API
     useEffect(() => {
         const fetchQuizData = async () => {
             setLoading(true);
             try {
+                // First check if user has already submitted this quiz
+                const latestSubmission = await getLatestSubmission(lectureId);
+                
+                if (latestSubmission) {
+                    setPreviousSubmission(latestSubmission);
+                }
+                
+                // Then fetch quiz data
                 const quizData = await getQuiz(lectureId);
                 
                 if (!quizData) {
@@ -75,9 +87,49 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                 
                 setQuiz(mappedQuiz);
                 
-                // Initialize timer if there's a time limit
-                if (mappedQuiz.settings.timeLimit) {
-                    setRemainingTime(mappedQuiz.settings.timeLimit * 60); // Convert minutes to seconds
+                // Show previous results if quiz doesn't allow retakes and user has already taken it
+                if (latestSubmission && !mappedQuiz.settings.allowRetake) {
+                    setQuizResult(latestSubmission);
+                    setShowResults(true);
+                    setLoading(false);
+                    return;
+                }
+
+                // If the quiz allows retakes and the user wishes to see their previous results
+                if (latestSubmission && mappedQuiz.settings.allowRetake) {
+                    // Optional: show a button to view previous results or continue to new attempt
+                    // For now, we'll just continue with a new attempt
+                }
+                
+                // Start quiz session
+                const session = await startQuiz(lectureId);
+                
+                if (session) {
+                    setQuizSession(session);
+                    
+                    // Initialize timer based on session expiry time if available
+                    if (session.expiryTime) {
+                        const now = new Date();
+                        const expiryTime = new Date(session.expiryTime);
+                        const diffInSeconds = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
+                        
+                        // If the session has already expired
+                        if (diffInSeconds <= 0) {
+                            setSessionExpired(true);
+                            setError("Phiên làm bài đã hết hạn. Vui lòng bắt đầu lại.");
+                        } else {
+                            setRemainingTime(diffInSeconds);
+                        }
+                    } else if (mappedQuiz.settings.timeLimit) {
+                        // If server doesn't provide expiry time but quiz has time limit
+                        setRemainingTime(mappedQuiz.settings.timeLimit * 60); // Convert minutes to seconds
+                    }
+                } else {
+                    // Couldn't create a session, but still allow the quiz to proceed with client-side timer
+                    if (mappedQuiz.settings.timeLimit) {
+                        setRemainingTime(mappedQuiz.settings.timeLimit * 60);
+                    }
+                    console.warn("Failed to start quiz session. Using client-side timer instead.");
                 }
                 
                 setLoading(false);
@@ -105,26 +157,43 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
         };
 
         fetchQuizData();
+        
+        // Clean up timer on unmount
+        return () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+        };
     }, [lectureId]);
 
     // Xử lý đếm ngược nếu có giới hạn thời gian
     useEffect(() => {
         if (!remainingTime || isSubmitted || showResults) return;
 
-        const timer = setInterval(() => {
+        // Clear any existing timer
+        if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+        }
+
+        timerIntervalRef.current = setInterval(() => {
             setRemainingTime(prev => {
                 if (prev && prev > 0) {
                     return prev - 1;
                 } else {
                     // Hết thời gian, tự động submit
-                    clearInterval(timer);
+                    clearInterval(timerIntervalRef.current!);
+                    setSessionExpired(true);
                     handleSubmitQuiz();
                     return 0;
                 }
             });
         }, 1000);
 
-        return () => clearInterval(timer);
+        return () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+        };
     }, [remainingTime, isSubmitted, showResults]);
 
     // Format answers for API submission
@@ -176,6 +245,11 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
         if (submitted) {
             setShowResults(true);
             setRequireConfirmation(false);
+            
+            // Clear the timer
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
         } else {
             // Keep showing the quiz if submission failed
             setIsSubmitted(false);
@@ -336,16 +410,37 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
     };
 
     // Bắt đầu làm lại bài
-    const handleRetakeQuiz = () => {
+    const handleRetakeQuiz = async () => {
         setSelectedAnswers({});
         setTextAnswers({});
         setCurrentQuestionIndex(0);
         setIsSubmitted(false);
         setShowResults(false);
         setQuizResult(null);
-
-        // Đặt lại thời gian nếu có giới hạn thời gian
-        if (quiz?.settings.timeLimit) {
+        setSessionExpired(false);
+        
+        // Start a new quiz session
+        const session = await startQuiz(lectureId);
+        
+        if (session) {
+            setQuizSession(session);
+            
+            // Initialize timer based on session expiry time if available
+            if (session.expiryTime) {
+                const now = new Date();
+                const expiryTime = new Date(session.expiryTime);
+                const diffInSeconds = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
+                
+                if (diffInSeconds <= 0) {
+                    setSessionExpired(true);
+                    setError("Phiên làm bài đã hết hạn. Vui lòng thử lại sau.");
+                } else {
+                    setRemainingTime(diffInSeconds);
+                }
+            } else if (quiz?.settings.timeLimit) {
+                setRemainingTime(quiz.settings.timeLimit * 60);
+            }
+        } else if (quiz?.settings.timeLimit) {
             setRemainingTime(quiz.settings.timeLimit * 60);
         }
     };
@@ -371,6 +466,33 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                     >
                         Thử lại
                     </button>
+                </div>
+            </div>
+        );
+    }
+    
+    if (sessionExpired) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="text-center p-8 bg-white shadow-lg rounded-lg max-w-md">
+                    <Clock className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Phiên làm bài đã hết hạn</h3>
+                    <p className="text-gray-600 mb-4">Thời gian làm bài đã kết thúc.</p>
+                    {quiz.settings.allowRetake ? (
+                        <button 
+                            onClick={handleRetakeQuiz} 
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
+                            Làm lại bài kiểm tra
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => window.history.back()}
+                            className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                        >
+                            Quay lại bài học
+                        </button>
+                    )}
                 </div>
             </div>
         );

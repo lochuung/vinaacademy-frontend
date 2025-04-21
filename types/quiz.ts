@@ -52,6 +52,16 @@ export interface QuizDto extends BaseDto {
   questions: QuestionDto[];
 }
 
+export interface QuizSession {
+  id: string; // UUID
+  quiz: {
+    id: string;
+  };
+  startTime: string; // ISO date string
+  active: boolean;
+  expiryTime: string | null; // ISO date string, can be null if no time limit
+}
+
 export interface QuizCreateRequest extends LessonRequest {
   questions: QuestionDto[];
 }

@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/api-response";
-import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto } from "@/types/quiz";
+import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, QuizSession } from "@/types/quiz";
 import { AxiosResponse } from "axios";
 
 /**
@@ -16,6 +16,23 @@ export async function getQuiz(id: string): Promise<QuizDto | null> {
         return response.data.data;
     } catch (error) {
         console.error(`Error fetching quiz with ID ${id}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Start a quiz session to track student's progress
+ * @param quizId UUID of the quiz
+ * @returns Quiz session data or null if startup fails
+ */
+export async function startQuiz(quizId: string): Promise<QuizSession | null> {
+    try {
+        const response: AxiosResponse<ApiResponse<QuizSession>> = await apiClient.post(
+            `/quiz/${quizId}/start`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error starting quiz session for quiz ${quizId}:`, error);
         return null;
     }
 }

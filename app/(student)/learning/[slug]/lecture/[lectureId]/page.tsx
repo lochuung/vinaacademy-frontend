@@ -5,6 +5,7 @@ import {use} from 'react';
 import VideoPlayer from '@/components/student/learning/content-area/VideoPlayer';
 import ReadingContent from '@/components/student/learning/content-area/ReadingContent';
 import QuizContent from '@/components/student/learning/content-area/QuizContent';
+import QuizLanding from '@/components/student/learning/content-area/QuizLanding';
 import CourseContent from '@/components/student/learning/CourseContent';
 import LearningHeader from '@/components/student/learning/LearningHeader';
 import LearningTabs from '@/components/student/learning/LearningTabs';
@@ -33,6 +34,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
     const [currentLecture, setCurrentLecture] = useState<Lecture | null>(null);
     const [courseData, setCourseData] = useState<LearningCourse | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showQuizContent, setShowQuizContent] = useState(false);
 
     // Fetch course and lecture data
     useEffect(() => {
@@ -145,6 +147,9 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
         };
 
         fetchData();
+        
+        // Reset quiz display state when changing lectures
+        setShowQuizContent(false);
     }, [slug, lectureId, router]);
 
     const handleTimeUpdate = (time: number) => {
@@ -153,6 +158,10 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
+    };
+    
+    const handleStartQuiz = () => {
+        setShowQuizContent(true);
     };
 
     if (loading) {
@@ -296,10 +305,17 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                         {/* Hiển thị nội dung học tập dựa theo loại bài học */}
                         {isQuizLecture ? (
                             <div className="w-full flex-1 bg-gray-50">
-                                <QuizContent
-                                    lectureId={currentLecture.id}
-                                    courseId={slug}
-                                />
+                                {showQuizContent ? (
+                                    <QuizContent
+                                        lectureId={currentLecture.id}
+                                        courseId={slug}
+                                    />
+                                ) : (
+                                    <QuizLanding
+                                        quizId={currentLecture.id}
+                                        onStartQuiz={handleStartQuiz}
+                                    />
+                                )}
                             </div>
                         ) : isReadingLecture ? (
                             <div className="w-full p-4 bg-white">
