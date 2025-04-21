@@ -380,8 +380,6 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
 
     const currentQuestion = quiz.questions[currentQuestionIndex];
 
-    console.log("Quiz Result:", quiz);
-
     if (showResults) {
         return (
             <QuizResults
