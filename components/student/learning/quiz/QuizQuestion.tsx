@@ -30,6 +30,33 @@ const QuizQuestion: FC<QuizQuestionProps> = ({
     isSubmitted,
     quizResults
 }) => {
+    // Helper function for option container classes
+    const getOptionClasses = (isSelected: boolean, isOptionCorrect: boolean, showCorrectness: boolean) => {
+        let classes = 'p-4 border rounded-md cursor-pointer transition-all';
+        classes += isSubmitted ? ' cursor-default' : ' hover:border-blue-300 hover:bg-blue-50';
+        classes += isSelected ? ' border-blue-500 bg-blue-50' : ' border-gray-200';
+        
+        if (showCorrectness) {
+            classes += isOptionCorrect
+                ? ' bg-green-50 border-green-500'
+                : isSelected ? ' bg-red-50 border-red-500' : '';
+        }
+        
+        return classes;
+    };
+
+    // Helper function for checkbox/radio button classes
+    const getSelectionIndicatorClasses = (isSelected: boolean, isOptionCorrect: boolean, showCorrectness: boolean, isMultipleChoice: boolean) => {
+        let classes = `w-5 h-5 ${isMultipleChoice ? 'rounded' : 'rounded-full'} border flex items-center justify-center`;
+        
+        classes += isSelected ? ' bg-blue-500 border-blue-500' : ' border-gray-300';
+        if (showCorrectness && isOptionCorrect) {
+            classes += ' bg-green-500 border-green-500';
+        }
+        
+        return classes;
+    };
+
     return (
         <div className="space-y-4">
             <h3 className="text-xl font-semibold text-gray-800">{question.text}</h3>
@@ -51,57 +78,28 @@ const QuizQuestion: FC<QuizQuestionProps> = ({
                         const isSelected = selectedAnswers.includes(option.id);
                         const showCorrectness = showCorrectAnswers && isSubmitted;
                         const isCorrectAnswer = quizResults?.correctAnswers?.includes(option.id);
+                        const isOptionCorrect = isCorrectAnswer || option.isCorrect;
+                        const isMultipleChoice = question.type === 'multiple_choice';
 
                         return (
                             <div
                                 key={option.id}
-                                className={`p-4 border rounded-md cursor-pointer transition-all ${isSubmitted ? 'cursor-default' : 'hover:border-blue-300 hover:bg-blue-50'
-                                    } ${isSelected
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-200'
-                                    } ${showCorrectness && (isCorrectAnswer || option.isCorrect)
-                                        ? 'bg-green-50 border-green-500'
-                                        : showCorrectness && isSelected && !(isCorrectAnswer || option.isCorrect)
-                                            ? 'bg-red-50 border-red-500'
-                                            : ''
-                                    }`}
+                                className={getOptionClasses(isSelected, isOptionCorrect, showCorrectness)}
                                 onClick={() => !isSubmitted && onSelectOption(option.id)}
                             >
                                 <div className="flex items-center">
                                     <div className="mr-3">
-                                        {question.type === 'multiple_choice' ? (
-                                            <div
-                                                className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected
-                                                    ? 'bg-blue-500 border-blue-500'
-                                                    : 'border-gray-300'
-                                                    } ${showCorrectness && (isCorrectAnswer || option.isCorrect)
-                                                        ? 'bg-green-500 border-green-500'
-                                                        : ''
-                                                    }`}
-                                            >
-                                                {isSelected && <div className="w-3 h-3 bg-white"></div>}
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected
-                                                    ? 'bg-blue-500 border-blue-500'
-                                                    : 'border-gray-300'
-                                                    } ${showCorrectness && (isCorrectAnswer || option.isCorrect)
-                                                        ? 'bg-green-500 border-green-500'
-                                                        : ''
-                                                    }`}
-                                            >
-                                                {isSelected && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                            </div>
-                                        )}
+                                        <div className={getSelectionIndicatorClasses(isSelected, isOptionCorrect, showCorrectness, isMultipleChoice)}>
+                                            {isSelected && <div className={`${isMultipleChoice ? 'w-3 h-3' : 'w-2 h-2 rounded-full'} bg-white`}></div>}
+                                        </div>
                                     </div>
                                     <div className="flex-grow text-gray-800">{option.text}</div>
 
                                     {showCorrectness && (
                                         <div className="ml-3">
-                                            {(isCorrectAnswer || option.isCorrect) ? (
+                                            {isOptionCorrect ? (
                                                 <CheckCircle size={20} className="text-green-500" />
-                                            ) : isSelected && !(isCorrectAnswer || option.isCorrect) ? (
+                                            ) : isSelected ? (
                                                 <XCircle size={20} className="text-red-500" />
                                             ) : null}
                                         </div>
