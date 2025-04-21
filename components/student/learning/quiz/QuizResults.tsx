@@ -1,8 +1,10 @@
-import {FC, useState} from 'react';
+import {FC, useState, useEffect} from 'react';
 import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
-import {CheckCircle, XCircle, ArrowRight, RefreshCw, ChevronDown, ChevronUp} from 'lucide-react';
+import {CheckCircle, XCircle, ArrowRight, RefreshCw, ChevronDown, ChevronUp, History, X} from 'lucide-react';
 import QuizQuestion from './QuizQuestion';
 import { QuizSubmissionResultDto, UserAnswerResultDto } from '@/types/quiz';
+import QuizSubmissionHistory from './QuizSubmissionHistory';
+import { getSubmissionHistory } from '@/services/quizService';
 
 interface QuizResultsProps {
     quiz: Quiz;
@@ -25,19 +27,23 @@ interface QuizResultsProps {
     textAnswers: Record<string, string>;
     onRetake?: () => void;
     apiResult?: QuizSubmissionResultDto | null;
-    showCorrectAnswers?: boolean;  // Add this prop
+    showCorrectAnswers?: boolean;
 }
 
 const QuizResults: FC<QuizResultsProps> = ({
-                                               quiz,
-                                               quizResults,
-                                               selectedAnswers,
-                                               textAnswers,
-                                               onRetake,
-                                               apiResult,
-                                               showCorrectAnswers = false  // Add default value
-                                           }) => {
+    quiz,
+    quizResults,
+    selectedAnswers,
+    textAnswers,
+    onRetake,
+    apiResult,
+    showCorrectAnswers = false
+}) => {
     const [expandedQuestions, setExpandedQuestions] = useState<string[]>([]);
+    const [showHistory, setShowHistory] = useState(false);
+    const [submissions, setSubmissions] = useState<QuizSubmissionResultDto[] | null>(null);
+    const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+    const [viewingSubmission, setViewingSubmission] = useState<QuizSubmissionResultDto | null>(null);
 
     // Toggle question expansion
     const toggleExpandQuestion = (questionId: string) => {
@@ -71,8 +77,61 @@ const QuizResults: FC<QuizResultsProps> = ({
         return apiResult.answers.find(a => a.questionId === questionId);
     };
 
+    // Fetch submission history when the modal is opened
+    const handleOpenHistory = async () => {
+        if (!apiResult) return;
+        
+        setShowHistory(true);
+        setLoadingSubmissions(true);
+        
+        try {
+            const history = await getSubmissionHistory(apiResult.quizId);
+            setSubmissions(history);
+        } catch (error) {
+            console.error("Failed to fetch submission history:", error);
+        } finally {
+            setLoadingSubmissions(false);
+        }
+    };
+
+    const handleCloseHistory = () => {
+        setShowHistory(false);
+    };
+
+    const handleSelectSubmission = (submission: QuizSubmissionResultDto) => {
+        setViewingSubmission(submission);
+        setShowHistory(false);
+    };
+
+    // Reset to current submission
+    const handleResetToCurrentSubmission = () => {
+        setViewingSubmission(null);
+    };
+
+    // Use viewing submission if available, otherwise use the apiResult
+    const displayedResult = viewingSubmission || apiResult;
+
     return (
         <div className="container mx-auto max-w-4xl p-4">
+            {viewingSubmission && (
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-md">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <div className="text-blue-800 font-medium">Đang xem lịch sử làm bài</div>
+                            <div className="text-sm text-blue-600">
+                                Lần làm bài ngày {new Date(viewingSubmission.startTime).toLocaleDateString('vi-VN')}
+                            </div>
+                        </div>
+                        <button 
+                            onClick={handleResetToCurrentSubmission} 
+                            className="text-blue-700 hover:text-blue-900 px-2 py-1 text-sm"
+                        >
+                            Quay lại kết quả hiện tại
+                        </button>
+                    </div>
+                </div>
+            )}
+        
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 {/* Results header */}
                 <div className="p-8 bg-gray-50 border-b border-gray-200">
@@ -80,21 +139,21 @@ const QuizResults: FC<QuizResultsProps> = ({
 
                     <div className="flex flex-col items-center">
                         <div className="text-5xl font-bold mb-2 text-blue-700">
-                            {apiResult ? apiResult.score : quizResults.totalScore}/{apiResult ? apiResult.totalPoints : quizResults.maxScore}
+                            {displayedResult ? displayedResult.score : quizResults.totalScore}/{displayedResult ? displayedResult.totalPoints : quizResults.maxScore}
                         </div>
                         <div className="text-xl text-gray-600 mb-4">
-                            {apiResult 
-                                ? ((apiResult.score / apiResult.totalPoints) * 100).toFixed(1) 
+                            {displayedResult 
+                                ? ((displayedResult.score / displayedResult.totalPoints) * 100).toFixed(1) 
                                 : quizResults.percentageScore.toFixed(1)}%
                         </div>
 
                         {quiz.settings.requirePassingScore && (
                             <div className={`py-2 px-4 rounded-full font-medium ${
-                                (apiResult ? apiResult.isPassed : quizResults.passed)
+                                (displayedResult ? displayedResult.isPassed : quizResults.passed)
                                     ? 'bg-green-100 text-green-800'
                                     : 'bg-red-100 text-red-800'
                             }`}>
-                                {(apiResult ? apiResult.isPassed : quizResults.passed)
+                                {(displayedResult ? displayedResult.isPassed : quizResults.passed)
                                     ? <span className="flex items-center">
                                         <CheckCircle size={18} className="mr-1"/> 
                                         Bạn đã đạt điểm tối thiểu {quiz.settings.passingScore}%
@@ -107,12 +166,12 @@ const QuizResults: FC<QuizResultsProps> = ({
                             </div>
                         )}
                         
-                        {apiResult && apiResult.startTime && apiResult.endTime && (
+                        {displayedResult && displayedResult.startTime && displayedResult.endTime && (
                             <div className="mt-3 text-sm text-gray-600">
                                 Thời gian làm bài: {
-                                    new Date(apiResult.endTime).getTime() - new Date(apiResult.startTime).getTime() > 0
-                                        ? Math.floor((new Date(apiResult.endTime).getTime() - new Date(apiResult.startTime).getTime()) / 1000 / 60) + ' phút ' +
-                                          Math.floor(((new Date(apiResult.endTime).getTime() - new Date(apiResult.startTime).getTime()) / 1000) % 60) + ' giây'
+                                    new Date(displayedResult.endTime).getTime() - new Date(displayedResult.startTime).getTime() > 0
+                                        ? Math.floor((new Date(displayedResult.endTime).getTime() - new Date(displayedResult.startTime).getTime()) / 1000 / 60) + ' phút ' +
+                                          Math.floor(((new Date(displayedResult.endTime).getTime() - new Date(displayedResult.startTime).getTime()) / 1000) % 60) + ' giây'
                                         : '-'
                                 }
                             </div>
@@ -130,16 +189,16 @@ const QuizResults: FC<QuizResultsProps> = ({
                         <div className="bg-green-50 p-4 rounded-lg">
                             <div className="text-xs text-green-700 uppercase font-semibold">Đúng</div>
                             <div className="text-2xl font-bold">
-                                {apiResult 
-                                    ? apiResult.answers.filter(a => a.isCorrect).length 
+                                {displayedResult 
+                                    ? displayedResult.answers.filter(a => a.isCorrect).length 
                                     : quizResults.results.filter(r => r.correct === true).length}
                             </div>
                         </div>
                         <div className="bg-red-50 p-4 rounded-lg">
                             <div className="text-xs text-red-700 uppercase font-semibold">Sai</div>
                             <div className="text-2xl font-bold">
-                                {apiResult 
-                                    ? apiResult.answers.filter(a => !a.isCorrect).length 
+                                {displayedResult 
+                                    ? displayedResult.answers.filter(a => !a.isCorrect).length 
                                     : quizResults.results.filter(r => r.correct === false).length}
                             </div>
                         </div>
@@ -175,7 +234,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                 <div className="divide-y divide-gray-200">
                     {quiz.questions.map((question, index) => {
                         const result = quizResults.results.find(r => r.questionId === question.id);
-                        const apiAnswer = apiResult?.answers.find(a => a.questionId === question.id);
+                        const apiAnswer = displayedResult?.answers.find(a => a.questionId === question.id);
                         const isExpanded = expandedQuestions.includes(question.id);
 
                         // Use API result if available, fallback to client-side result
@@ -246,13 +305,23 @@ const QuizResults: FC<QuizResultsProps> = ({
                 </div>
 
                 {/* Footer buttons */}
-                <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between">
+                <div className="p-6 bg-gray-50 border-t border-gray-200 flex flex-wrap justify-between gap-2">
                     <button
                         onClick={() => window.history.back()}
                         className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                     >
                         Quay lại bài học
                     </button>
+
+                    {/* History button - only show if apiResult exists */}
+                    {apiResult && (
+                        <button
+                            onClick={handleOpenHistory}
+                            className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 flex items-center"
+                        >
+                            <History size={16} className="mr-2"/> Xem lịch sử làm bài
+                        </button>
+                    )}
 
                     {onRetake && (
                         <button
@@ -274,6 +343,39 @@ const QuizResults: FC<QuizResultsProps> = ({
                     </button>
                 </div>
             </div>
+
+            {/* Quiz History Modal */}
+            {showHistory && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+                        <div className="flex items-center justify-between border-b px-6 py-4">
+                            <h3 className="text-lg font-medium">Lịch sử làm bài</h3>
+                            <button 
+                                onClick={handleCloseHistory}
+                                className="text-gray-400 hover:text-gray-500"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <QuizSubmissionHistory
+                                quizId={apiResult?.quizId || ""}
+                                submissions={submissions}
+                                isLoading={loadingSubmissions}
+                                onSelectSubmission={handleSelectSubmission}
+                            />
+                        </div>
+                        <div className="bg-gray-50 px-6 py-4 flex justify-end">
+                            <button
+                                onClick={handleCloseHistory}
+                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                            >
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
