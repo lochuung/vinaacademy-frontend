@@ -49,9 +49,18 @@ export default function SearchPage() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [hasSearched, setHasSearched] = useState(false);
 
     // Initialize state from URL params
     useEffect(() => {
+        const searchParamExists = searchParams.toString() !== '' && 
+            (searchParams.has('q') || searchParams.has('categories') || 
+             searchParams.has('subCategories') || searchParams.has('topics') || 
+             searchParams.has('level') || searchParams.has('minPrice') || 
+             searchParams.has('maxPrice') || searchParams.has('minRating'));
+        
+        setHasSearched(searchParamExists);
         setQuery(searchParams.get("q") || "");
 
         const categoriesParam = searchParams.get("categories") || "";
@@ -84,6 +93,12 @@ export default function SearchPage() {
     // Fetch courses when filters change
     useEffect(() => {
         const fetchCourses = async () => {
+            // Don't fetch courses if no search parameters are present on initial load
+            if (isInitialLoad && !hasSearched) {
+                setIsInitialLoad(false);
+                return;
+            }
+            
             setIsLoading(true);
             
             try {
@@ -108,6 +123,7 @@ export default function SearchPage() {
                 
                 if (data) {
                     setCoursesData(data);
+                    console.log("Courses data response:", data);
                 } else {
                     // Handle API error with empty state
                     setCoursesData({
@@ -134,11 +150,12 @@ export default function SearchPage() {
                 });
             } finally {
                 setIsLoading(false);
+                setIsInitialLoad(false);
             }
         };
 
         fetchCourses();
-    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection]);
+    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection, hasSearched, isInitialLoad]);
 
     // Map UI level strings to API CourseLevel enum
     const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
@@ -272,7 +289,12 @@ export default function SearchPage() {
                             <div className="flex justify-center items-center py-20">
                                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
                             </div>
-                        ) : coursesData.size > 0 && coursesData.content.length > 0 ? (
+                        ) : !hasSearched ? (
+                            <div className="text-center py-20">
+                                <h2 className="text-xl font-semibold mb-2">Bắt đầu tìm kiếm</h2>
+                                <p className="text-gray-600">Nhập từ khóa hoặc chọn bộ lọc để tìm khóa học phù hợp</p>
+                            </div>
+                        ) : coursesData.content.length > 0 ? (
                             <SearchResults
                                 coursesData={coursesData}
                             />
