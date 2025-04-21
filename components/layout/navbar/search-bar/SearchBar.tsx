@@ -12,6 +12,7 @@ const SearchBar = () => {
     const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState({min: "", max: ""});
     const [level, setLevel] = useState<string[]>([]);
+  
     const [inputError, setInputError] = useState("");
 
     // Reset danh mục con khi thay đổi danh mục
@@ -89,6 +90,8 @@ const SearchBar = () => {
             <input
                 type="text"
                 value={searchTerm}
+                required
+                minLength={3}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Tìm kiếm bất cứ thứ gì..."
                 className={`w-full px-4 py-2 border ${inputError ? 'border-red-500' : 'border-black'} bg-white text-black rounded-full focus:outline-none focus:ring-2 focus:ring-black pr-16`}
