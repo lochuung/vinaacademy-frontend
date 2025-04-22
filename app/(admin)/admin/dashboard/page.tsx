@@ -7,6 +7,7 @@ import PlatformStats from '@/components/admin/dashboard/platform-stats';
 import RevenueOverview from '@/components/admin/dashboard/revenue-overview';
 import ActiveUsers from '@/components/admin/dashboard/active-users';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
     const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
@@ -193,10 +194,10 @@ export default function AdminDashboard() {
                     <h3 className="font-medium text-gray-900">Khóa học chờ phê duyệt</h3>
                     <p className="mt-1 text-3xl font-semibold text-black">5</p>
                     <div className="mt-2">
-                        <a href="/admin/courses/pending"
+                        <Link href="/admin/courses/pending"
                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                             Xem ngay →
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="p-4 bg-white rounded-lg shadow">
@@ -223,9 +224,9 @@ export default function AdminDashboard() {
                     <h3 className="font-medium text-gray-900">Hỗ trợ chưa giải đáp</h3>
                     <p className="mt-1 text-3xl font-semibold text-black">12</p>
                     <div className="mt-2">
-                        <a href="/admin/supports" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        <Link href="/admin/supports" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                             Xem ngay →
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
