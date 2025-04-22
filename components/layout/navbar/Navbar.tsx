@@ -59,8 +59,10 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
   };
 
   useEffect(() => {
-    load2notifications();
-  }, []);
+    if (isAuthenticated) {
+      load2notifications();
+    }
+  }, [isAuthenticated]);
 
   return (
     <div>
