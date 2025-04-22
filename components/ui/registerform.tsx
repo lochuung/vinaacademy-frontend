@@ -16,6 +16,7 @@ import { FaUserShield } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
 import { RegisterRequest } from "@/types/auth";
+import { createErrorToast, createSuccessToast } from "./toast-cus";
 
 // Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -90,13 +91,13 @@ export default function RegisterForm({
             const success = await onSubmit(registerData);
 
             if (success) {
-                toast.success("Đăng ký thành công. Hãy kiểm tra email để xác thực tài khoản.");
+                createSuccessToast("Đăng ký thành công. Hãy kiểm tra email để xác thực tài khoản.");
                 // Optionally redirect to login page
             }
         } catch (error) {
             console.error("Form submission error:", error);
             setSubmitError("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.");
-            toast.error("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.");
+            createErrorToast("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.");
         }
     }
 

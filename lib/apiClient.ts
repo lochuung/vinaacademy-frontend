@@ -1,5 +1,6 @@
 'use client';
 
+import { createErrorToast } from '@/components/ui/toast-cus';
 import axios, { AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
@@ -57,7 +58,7 @@ async function refreshAuthToken(error: any, originalRequest: any): Promise<any> 
     const currentUrl = window.location.href;
 
     if (currentUrl.includes('/login')) {
-        toast.error(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau');
+        createErrorToast(error.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau');
         return Promise.reject(error);
     }
 
@@ -101,7 +102,7 @@ apiClient.interceptors.response.use(
 
         // Don't show toast for authentication errors (will be handled by auth flow)
         if (error.response?.status !== 401) {
-            toast.error(errorMessage || 'Có lỗi xảy ra, vui lòng thử lại sau');
+            createErrorToast(errorMessage || 'Có lỗi xảy ra, vui lòng thử lại sau');
         }
 
         const originalRequest = error.config;
