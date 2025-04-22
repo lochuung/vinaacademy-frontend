@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/api-response";
-import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, QuizSession } from "@/types/quiz";
+import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, QuizSession, UserAnswerRequest } from "@/types/quiz";
 import { AxiosResponse } from "axios";
 
 /**
@@ -85,6 +85,40 @@ export async function getSubmissionHistory(quizId: string): Promise<QuizSubmissi
         return response.data.data;
     } catch (error) {
         console.error(`Error fetching submission history for quiz ${quizId}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Cache a question answer during quiz attempt
+ * @param quizId UUID of the quiz
+ * @param answer Answer data to cache
+ * @returns True if caching was successful, false otherwise
+ */
+export async function cacheQuizAnswer(quizId: string, answer: UserAnswerRequest): Promise<boolean> {
+    try {
+        await apiClient.post(`/quiz/${quizId}/cache-answer`, answer);
+        return true;
+    } catch (error) {
+        console.error(`Error caching answer for quiz ${quizId}:`, error);
+        return false;
+    }
+}
+
+/**
+ * Get all cached answers for a quiz session
+ * @param quizId UUID of the quiz
+ * @param sessionId UUID of the quiz session
+ * @returns Map of questionId to answer data, or null if retrieval fails
+ */
+export async function getCachedAnswers(quizId: string, sessionId: string): Promise<Record<string, UserAnswerRequest> | null> {
+    try {
+        const response: AxiosResponse<ApiResponse<Record<string, UserAnswerRequest>>> = await apiClient.get(
+            `/quiz/${quizId}/cached-answers?sessionId=${sessionId}`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching cached answers for quiz ${quizId}:`, error);
         return null;
     }
 }
