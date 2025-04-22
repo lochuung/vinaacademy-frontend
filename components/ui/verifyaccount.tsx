@@ -6,6 +6,7 @@ import { Loader2, CheckCircle2, XCircle, MailCheck } from "lucide-react";
 import Link from "next/link";
 import { verifyAccount, resendVerificationEmail } from "@/services/authService";
 import { toast } from 'react-toastify';
+import { createErrorToast, createSuccessToast } from './toast-cus';
 
 interface VerifyAccountProps {
     token: string;
@@ -29,13 +30,13 @@ export default function VerifyAccount({ token, signature, email }: VerifyAccount
                 const success = await verifyAccount(token, signature);
                 setIsVerified(success);
                 if (success) {
-                    toast.success("Xác thực tài khoản thành công!");
+                    createSuccessToast("Xác thực tài khoản thành công!");
                 } else {
-                    toast.error("Xác thực tài khoản thất bại. Liên kết có thể đã hết hạn.");
+                    createErrorToast("Xác thực tài khoản thất bại. Liên kết có thể đã hết hạn.");
                 }
             } catch (error) {
                 console.error("Verification error:", error);
-                toast.error("Có lỗi xảy ra khi xác thực tài khoản.");
+                createErrorToast("Có lỗi xảy ra khi xác thực tài khoản.");
             } finally {
                 setIsVerifying(false);
             }
@@ -46,7 +47,7 @@ export default function VerifyAccount({ token, signature, email }: VerifyAccount
 
     const handleResendEmail = async () => {
         if (!email) {
-            toast.error("Không có email để gửi lại xác thực.");
+            createErrorToast("Không có email để gửi lại xác thực.");
             return;
         }
 
@@ -54,13 +55,13 @@ export default function VerifyAccount({ token, signature, email }: VerifyAccount
         try {
             const success = await resendVerificationEmail(email);
             if (success) {
-                toast.success("Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư của bạn.");
+                createSuccessToast("Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư của bạn.");
             } else {
-                toast.error("Không thể gửi lại email xác thực. Vui lòng thử lại sau.");
+                createErrorToast("Không thể gửi lại email xác thực. Vui lòng thử lại sau.");
             }
         } catch (error) {
             console.error("Resend verification email error:", error);
-            toast.error("Có lỗi xảy ra khi gửi lại email xác thực.");
+            createErrorToast("Có lỗi xảy ra khi gửi lại email xác thực.");
         } finally {
             setIsResendingEmail(false);
         }
