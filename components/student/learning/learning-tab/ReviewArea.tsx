@@ -17,6 +17,7 @@ import {
     canUserReviewCourse,
     ReviewStatistics
 } from '@/services/courseReviewService';
+import { useAuth } from '@/context/AuthContext';
 
 // Lazy load components that aren't needed on initial render
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
@@ -67,6 +68,8 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     const [hasMoreReviews, setHasMoreReviews] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
 
+    const { isAuthenticated } = useAuth();
+
     // Kiểm tra khả năng đánh giá của người dùng
     // Thêm vào useEffect kiểm tra canReview
     useEffect(() => {
@@ -91,14 +94,19 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             }
         };
 
-        checkReviewEligibility();
-    }, [courseId, currentUserId]);
+        if (isAuthenticated) {
+            checkReviewEligibility();
+        } else {
+            setCanReview(false); // Nếu không đăng nhập, không cho phép đánh giá
+        }
+    }, [courseId, currentUserId, isAuthenticated]);
 
     // Load reviews data
     useEffect(() => {
         // Use an immediately-invoked async function to avoid "top-level await"
         (async () => {
             if (!isLoading) return; // Prevent duplicate loading
+            if (!courseId) return; // Ensure courseId is valid
 
             try {
                 // Lấy thống kê đánh giá
@@ -127,10 +135,27 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                     setTotalPages(Math.ceil(reviewStats.totalReviews / reviewsPerPage));
                 }
 
+                // Lấy danh sách đánh giá trang đầu tiên
+                const reviewsPage = await getCourseReviews(courseId, 0, reviewsPerPage);
+
+                if (reviewsPage && reviewsPage.content) {
+                    // Cập nhật danh sách đánh giá
+                    setAllReviews(reviewsPage.content);
+                    setDisplayedReviews(reviewsPage.content);
+
+                    // Cập nhật thông tin phân trang
+                    setHasMoreReviews(reviewsPage.totalPages > 1);
+                    setTotalPages(reviewsPage.totalPages);
+                }
+
+                if (!isAuthenticated) {
+                    setCanReview(false); // Nếu không đăng nhập, không cho phép đánh giá
+                    return;
+                }
                 // Lấy đánh giá của người dùng hiện tại nếu đã đánh giá
                 const hasReviewed = await hasUserReviewedCourse(courseId);
                 if (hasReviewed) {
-                    const userReview = await getUserReviewForCourse(courseId);
+                    const userReview: CourseReviewDto | null = await getUserReviewForCourse(courseId);
                     if (userReview) {
                         // Đánh dấu review của người dùng
                         setAllReviews(prev => {
@@ -148,19 +173,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                     }
                 }
 
-                // Lấy danh sách đánh giá trang đầu tiên
-                const reviewsPage = await getCourseReviews(courseId, 0, reviewsPerPage);
-
-                if (reviewsPage && reviewsPage.content) {
-                    // Cập nhật danh sách đánh giá
-                    setAllReviews(reviewsPage.content);
-                    setDisplayedReviews(reviewsPage.content);
-
-                    // Cập nhật thông tin phân trang
-                    setHasMoreReviews(reviewsPage.totalPages > 1);
-                    setTotalPages(reviewsPage.totalPages);
-                }
-
             } catch (error) {
                 console.error('Error loading reviews:', error);
                 toast.error('Không thể tải đánh giá, vui lòng thử lại sau');
@@ -168,7 +180,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                 setIsLoading(false);
             }
         })();
-    }, [courseId, currentUserId, isLoading]);
+    }, [courseId, currentUserId, isLoading, isAuthenticated, reviewsPerPage]);
 
     // Update displayed reviews when loading more pages
     useEffect(() => {
@@ -530,7 +542,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                         </div>
 
                                         {/* Review actions (only show for current user) */}
-                                        {review.userId === currentUserId && !mainPage && (
+                                        {isAuthenticated && review.userId === currentUserId && !mainPage && (
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => handleEditReview(review)}
@@ -581,7 +593,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             </div>
 
             {/* Only render dialog when open */}
-            {renderDialog}
+            {isAuthenticated && renderDialog}
         </div>
     );
 };
