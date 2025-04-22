@@ -7,7 +7,7 @@ import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
 import QuizTimer from '../quiz/QuizTimer';
-import { getQuiz, startQuiz, submitQuiz, getLatestSubmission } from '@/services/quizService';
+import { getQuiz, startQuiz, submitQuiz, getLatestSubmission, cacheQuizAnswer, getCachedAnswers } from '@/services/quizService';
 import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest, QuizSession } from '@/types/quiz';
 
 interface QuizContentProps {
@@ -123,6 +123,37 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                     } else if (mappedQuiz.settings.timeLimit) {
                         // If server doesn't provide expiry time but quiz has time limit
                         setRemainingTime(mappedQuiz.settings.timeLimit * 60); // Convert minutes to seconds
+                    }
+                    
+                    // Retrieve cached answers if any
+                    try {
+                        const cachedAnswers = await getCachedAnswers(lectureId, session.id);
+                        
+                        if (cachedAnswers && Object.keys(cachedAnswers).length > 0) {
+                            // Process and apply cached answers to current state
+                            const newSelectedAnswers: Record<string, string[]> = {};
+                            const newTextAnswers: Record<string, string> = {};
+                            
+                            // Iterate through cached answers to separate selection and text answers
+                            Object.values(cachedAnswers).forEach(answer => {
+                                if (answer.textAnswer && answer.textAnswer.trim().length > 0) {
+                                    newTextAnswers[answer.questionId] = answer.textAnswer;
+                                }
+                                
+                                if (answer.selectedAnswerIds && answer.selectedAnswerIds.length > 0) {
+                                    newSelectedAnswers[answer.questionId] = answer.selectedAnswerIds;
+                                }
+                            });
+                            
+                            // Update state with cached answers
+                            setSelectedAnswers(newSelectedAnswers);
+                            setTextAnswers(newTextAnswers);
+                            
+                            console.log("Loaded cached answers:", Object.keys(cachedAnswers).length);
+                        }
+                    } catch (err) {
+                        console.error("Error loading cached answers:", err);
+                        // Non-fatal error, continue with the quiz
                     }
                 } else {
                     // Couldn't create a session, but still allow the quiz to proceed with client-side timer
@@ -262,16 +293,19 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
 
         if (!question) return;
 
+        let newSelections: string[] = [];
+
         if (question.type === 'single_choice' || question.type === 'true_false') {
             // Đối với câu hỏi một lựa chọn, chỉ chọn một đáp án
+            newSelections = [optionId];
             setSelectedAnswers({
                 ...selectedAnswers,
-                [questionId]: [optionId]
+                [questionId]: newSelections
             });
         } else if (question.type === 'multiple_choice') {
             // Đối với câu hỏi nhiều lựa chọn, toggle lựa chọn
             const currentSelections = selectedAnswers[questionId] || [];
-            const newSelections = currentSelections.includes(optionId)
+            newSelections = currentSelections.includes(optionId)
                 ? currentSelections.filter(id => id !== optionId)
                 : [...currentSelections, optionId];
 
@@ -279,6 +313,17 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
                 ...selectedAnswers,
                 [questionId]: newSelections
             });
+        }
+
+        // Cache the answer selection if we have an active quiz session
+        if (quizSession && lectureId) {
+            const answerRequest: UserAnswerRequest = {
+                questionId: questionId,
+                selectedAnswerIds: newSelections,
+            };
+            
+            cacheQuizAnswer(lectureId, answerRequest)
+                .catch(error => console.error("Failed to cache answer:", error));
         }
     };
 
@@ -288,6 +333,18 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
             ...textAnswers,
             [questionId]: text
         });
+
+        // Cache the text answer if we have an active quiz session
+        if (quizSession && lectureId) {
+            const answerRequest: UserAnswerRequest = {
+                questionId: questionId,
+                selectedAnswerIds: [],
+                textAnswer: text
+            };
+            
+            cacheQuizAnswer(lectureId, answerRequest)
+                .catch(error => console.error("Failed to cache text answer:", error));
+        }
     };
 
     // Kiểm tra xem câu hỏi hiện tại đã được trả lời chưa
