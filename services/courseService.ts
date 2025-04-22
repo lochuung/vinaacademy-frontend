@@ -236,46 +236,63 @@ export const getCourseInstructors = async (courseId: string): Promise<UserDto[] 
     }
 };
 
-export const uploadImageAndCreateCourse = async(courseData: CourseData): Promise<CourseDto | null> => {
+export const uploadImageAndCreateCourse = async (courseData: CourseData): Promise<CourseDto | null> => {
     // Upload image first
     if (!courseData.thumbnail) {
-    //   toast({
-    //     title: 'Lỗi',
-    //     description: 'Vui lòng chọn hình ảnh thumbnail cho khóa học',
-    //     variant: 'destructive',
-    //   });
-      return null;
+        //   toast({
+        //     title: 'Lỗi',
+        //     description: 'Vui lòng chọn hình ảnh thumbnail cho khóa học',
+        //     variant: 'destructive',
+        //   });
+        return null;
     }
-  
+
     const uploadedImage = await uploadImage(courseData.thumbnail);
-    
+
     if (!uploadedImage) {
-      
-      return null;
+
+        return null;
     }
-  
+
     // Prepare course request with the uploaded image
     const courseRequest: CourseRequest = {
-      name: courseData.title,
-      description: courseData.description,
-      slug: courseData.slug || courseData.slug,
-      price: courseData.price,
-      level: courseData.level as CourseLevel,
-      language: courseData.language,
-      categoryId: Number(courseData.category), // Convert string to number if needed
-      image: uploadedImage.id, // Use the image ID from the upload response
-      status: CourseStatus.DRAFT, // Set initial status as DRAFT
+        name: courseData.title,
+        description: courseData.description,
+        slug: courseData.slug || courseData.slug,
+        price: courseData.price,
+        level: courseData.level as CourseLevel,
+        language: courseData.language,
+        categoryId: Number(courseData.category), // Convert string to number if needed
+        image: uploadedImage.id, // Use the image ID from the upload response
+        status: CourseStatus.DRAFT, // Set initial status as DRAFT
     };
-  
+
     // Create the course
     const createdCourse = await createCourse(courseRequest);
-    
+
     if (!createdCourse) {
-     
-      return null;
+
+        return null;
     }
-  
+
     return createdCourse;
-  }
+}
 
 
+/**
+ * Lấy ID khóa học từ slug
+ * @param slug Slug của khóa học
+ * @returns ID của khóa học hoặc null nếu không tìm thấy
+ */
+export const getCourseIdBySlug = async (slug: string): Promise<string | null> => {
+    try {
+        const response = await apiClient.get(`/courses/id-by-slug/${slug}`);
+        if (response.data && response.data.data && response.data.data.id) {
+            return response.data.data.id;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting course ID by slug:', error);
+        return null;
+    }
+};

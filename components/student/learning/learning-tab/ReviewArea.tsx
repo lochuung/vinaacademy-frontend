@@ -1,13 +1,22 @@
 'use client';
-import {Avatar} from "@/components/ui/avatar";
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Star, Edit2, Trash2, Plus } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import Image from 'next/image';
 import { CourseReviewDto } from '@/types/course';
+import { toast } from 'react-toastify';
+import {
+    createOrUpdateReview,
+    getUserReviewForCourse,
+    getCourseReviews,
+    getCourseReviewStatistics,
+    hasUserReviewedCourse,
+    deleteReview,
+    canUserReviewCourse,
+    ReviewStatistics
+} from '@/services/courseReviewService';
 
 // Lazy load components that aren't needed on initial render
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
@@ -18,8 +27,8 @@ const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => 
 
 // Lazy load spinner with a simple fallback
 const BeautifulSpinner = dynamic(
-  () => import('@/components/ui/spinner'),
-  { ssr: false, loading: () => <div className="flex justify-center p-8">Loading...</div> }
+    () => import('@/components/ui/spinner'),
+    { ssr: false, loading: () => <div className="flex justify-center p-8">Loading...</div> }
 );
 
 interface ReviewsAreaProps {
@@ -34,105 +43,162 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     currentUserId = '1'
 }) => {
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState<number | null>(null);
     const [allReviews, setAllReviews] = useState<CourseReviewDto[]>([]);
     const [displayedReviews, setDisplayedReviews] = useState<CourseReviewDto[]>([]);
     const [averageRating, setAverageRating] = useState(0);
+    const [totalReviews, setTotalReviews] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingReview, setEditingReview] = useState<CourseReviewDto | null>(null);
     const [newReview, setNewReview] = useState({
         rating: 5,
         review: '',
-
+    });
+    const [canReview, setCanReview] = useState(false);
+    const [ratingDistribution, setRatingDistribution] = useState({
+        counts: [0, 0, 0, 0, 0], // 5, 4, 3, 2, 1 stars
+        percentages: [0, 0, 0, 0, 0]
     });
 
     // Pagination settings
     const reviewsPerPage = 3;
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreReviews, setHasMoreReviews] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
 
+    // Kiểm tra khả năng đánh giá của người dùng
+    // Thêm vào useEffect kiểm tra canReview
+    useEffect(() => {
+        const checkReviewEligibility = async () => {
+            console.log("Checking review eligibility, currentUserId:", currentUserId);
+
+            if (!currentUserId) {
+                setCanReview(false);
+                return;
+            }
+
+            try {
+                // Kiểm tra người dùng đã đánh giá chưa
+                const hasReviewed = await hasUserReviewedCourse(courseId);
+                console.log("Has user reviewed course:", hasReviewed);
+
+                // Mặc định cho phép đánh giá nếu chưa đánh giá
+                setCanReview(!hasReviewed);
+            } catch (error) {
+                console.error('Error checking review eligibility:', error);
+                setCanReview(false);
+            }
+        };
+
+        checkReviewEligibility();
+    }, [courseId, currentUserId]);
 
     // Load reviews data
     useEffect(() => {
         // Use an immediately-invoked async function to avoid "top-level await"
         (async () => {
             if (!isLoading) return; // Prevent duplicate loading
-            
+
             try {
-                // Use initialReviews if available or prepare for mock data
-                //WHEN USE API: Reviews data fetched from server /courses/[ID]/reviews/page=1&limit=3
-                let reviewsData = [] as CourseReviewDto[];
+                // Lấy thống kê đánh giá
+                const reviewStats = await getCourseReviewStatistics(courseId);
 
-                // Call api from server backend to get reviews data
-                // Use it here to have lazy loading instead put data outsite from this component
+                if (reviewStats) {
+                    setAverageRating(reviewStats.averageRating);
+                    setTotalReviews(reviewStats.totalReviews);
 
-                // If no reviews provided as props, use mock data in development
-                if (reviewsData.length === 0 && process.env.NODE_ENV === 'development') {
-                    // Simulate network delay only in development
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    // Create mock data using Array.from for better performance
-                    reviewsData = Array.from({ length: 10 }, (_, index) => ({
-                        id: index + 1,
-                        courseId: courseId,
-                        courseName: 'Khóa học mẫu',
-                        userId: index === 0 ? currentUserId : `${index + 100}`,
-                        rating: Math.floor(Math.random() * 3) + 3, // Random rating 3-5
-                        review: `Đây là đánh giá mẫu ${index + 1} cho khóa học. Nội dung này chỉ hiển thị trong môi trường phát triển.`,
-                        userFullName: index === 0 ? 'Bạn' : `Học viên ${index + 1}`,
-                        createdDate: new Date(Date.now() - index * 86400000).toISOString(),
-                        updatedDate: new Date(Date.now() - index * 86400000).toISOString(),
-                    }));
-                }
+                    // Chuyển đổi dữ liệu phân phối đánh giá từ API
+                    const counts = [
+                        reviewStats.ratingDistribution[5] || 0,
+                        reviewStats.ratingDistribution[4] || 0,
+                        reviewStats.ratingDistribution[3] || 0,
+                        reviewStats.ratingDistribution[2] || 0,
+                        reviewStats.ratingDistribution[1] || 0
+                    ];
 
-                // Process reviews data only if we have data to process
-                if (reviewsData.length > 0) {
-                    // Sort reviews by date (newest first)
-                    const sortedReviews = [...reviewsData].sort((a, b) =>
-                        new Date(b.updatedDate || b.createdDate).getTime() -
-                        new Date(a.updatedDate || a.createdDate).getTime()
+                    const percentages = counts.map(count =>
+                        reviewStats.totalReviews > 0 ? (count / reviewStats.totalReviews) * 100 : 0
                     );
 
-                    // Calculate average rating
-                    const totalRating = sortedReviews.reduce((sum, review) => sum + review.rating, 0);
-                    const avgRating = sortedReviews.length > 0 ? totalRating / sortedReviews.length : 0;
+                    setRatingDistribution({ counts, percentages });
 
-                    setAllReviews(sortedReviews);
-                    setAverageRating(avgRating);
+                    // Tính tổng số trang
+                    setTotalPages(Math.ceil(reviewStats.totalReviews / reviewsPerPage));
                 }
+
+                // Lấy đánh giá của người dùng hiện tại nếu đã đánh giá
+                const hasReviewed = await hasUserReviewedCourse(courseId);
+                if (hasReviewed) {
+                    const userReview = await getUserReviewForCourse(courseId);
+                    if (userReview) {
+                        // Đánh dấu review của người dùng
+                        setAllReviews(prev => {
+                            // Nếu danh sách rỗng, tạo mới với review của user
+                            if (prev.length === 0) return [userReview];
+
+                            // Nếu đã có trong danh sách, cập nhật
+                            const exists = prev.some(r => r.id === userReview.id);
+                            if (exists) {
+                                return prev.map(r => r.id === userReview.id ? userReview : r);
+                            } else {
+                                return [userReview, ...prev];
+                            }
+                        });
+                    }
+                }
+
+                // Lấy danh sách đánh giá trang đầu tiên
+                const reviewsPage = await getCourseReviews(courseId, 0, reviewsPerPage);
+
+                if (reviewsPage && reviewsPage.content) {
+                    // Cập nhật danh sách đánh giá
+                    setAllReviews(reviewsPage.content);
+                    setDisplayedReviews(reviewsPage.content);
+
+                    // Cập nhật thông tin phân trang
+                    setHasMoreReviews(reviewsPage.totalPages > 1);
+                    setTotalPages(reviewsPage.totalPages);
+                }
+
             } catch (error) {
                 console.error('Error loading reviews:', error);
+                toast.error('Không thể tải đánh giá, vui lòng thử lại sau');
             } finally {
                 setIsLoading(false);
             }
         })();
     }, [courseId, currentUserId, isLoading]);
 
-    // Update displayed reviews when allReviews or currentPage changes
+    // Update displayed reviews when loading more pages
     useEffect(() => {
-        const endIndex = currentPage * reviewsPerPage;
-        //replace the setDisplayedReviews with FETCH DATA from server CALL /courses/[ID]/reviews?page=currentpage&limit=3
-        // below demo with FAKE DATA
-        setDisplayedReviews(allReviews.slice(0, endIndex));
-        setHasMoreReviews(endIndex < allReviews.length);
-    }, [allReviews, currentPage]);
-
-    // Memoize rating distribution calculation to avoid recalculating on every render
-    const ratingDistribution = React.useMemo(() => {
-        const ratingCounts = [0, 0, 0, 0, 0]; // 5, 4, 3, 2, 1 stars
-
-        allReviews.forEach(review => {
-            if (review.rating >= 1 && review.rating <= 5) {
-                ratingCounts[5 - review.rating] += 1;
+        const fetchPageData = async () => {
+            if (currentPage === 1) {
+                // Trang đầu tiên đã được tải trong useEffect trước
+                return;
             }
-        });
 
-        return {
-            counts: ratingCounts,
-            percentages: ratingCounts.map(count =>
-                allReviews.length > 0 ? (count / allReviews.length) * 100 : 0
-            )
+            try {
+                // Tải trang mới từ API
+                const reviewsPage = await getCourseReviews(courseId, currentPage - 1, reviewsPerPage);
+
+                if (reviewsPage && reviewsPage.content) {
+                    // Cập nhật danh sách hiển thị
+                    setDisplayedReviews(prev => [...prev, ...reviewsPage.content]);
+
+                    // Cập nhật trạng thái "có thêm đánh giá"
+                    setHasMoreReviews(currentPage < reviewsPage.totalPages);
+                }
+            } catch (error) {
+                console.error('Error loading more reviews:', error);
+                toast.error('Không thể tải thêm đánh giá');
+            }
         };
-    }, [allReviews]);
+
+        if (currentPage > 1) {
+            fetchPageData();
+        }
+    }, [currentPage, courseId, reviewsPerPage]);
 
     // Handle load more reviews
     const handleLoadMoreReviews = () => {
@@ -155,51 +221,70 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 
     // Add or update review
     const handleSaveReview = async () => {
+        setIsSaving(true);
         try {
-            // In a real app, you would call an API endpoint to save the review
-            let updatedReviews: CourseReviewDto[];
+            const reviewData = {
+                courseId: courseId,
+                rating: newReview.rating,
+                review: newReview.review
+            };
 
+            // Gọi API để tạo/cập nhật đánh giá
+            const savedReview = await createOrUpdateReview(reviewData);
+
+            // Cập nhật UI dựa trên kết quả
             if (editingReview) {
-                // Update existing review
-                updatedReviews = allReviews.map(review =>
-                    review.id === editingReview.id
-                        ? {
-                            ...review,
-                            rating: newReview.rating,
-                            review: newReview.review,
-                            updatedDate: new Date().toISOString()
-                        }
-                        : review
+                // Cập nhật đánh giá trong danh sách
+                setAllReviews(prev =>
+                    prev.map(review =>
+                        review.id === editingReview.id ? savedReview : review
+                    )
                 );
+                setDisplayedReviews(prev =>
+                    prev.map(review =>
+                        review.id === editingReview.id ? savedReview : review
+                    )
+                );
+                toast.success('Đánh giá đã được cập nhật');
             } else {
-                // Add new review
-                const newReviewObject: CourseReviewDto = {
-                    id: Math.max(...allReviews.map(r => r.id), 0) + 1,
-                    courseId: courseId,
-                    courseName: allReviews.length > 0 ? allReviews[0].courseName : 'Khóa học',
-                    userId: currentUserId,
-                    rating: newReview.rating,
-                    review: newReview.review,
-                    userFullName: 'Bạn',
-                    createdDate: new Date().toISOString(),
-                    updatedDate: new Date().toISOString(),
-                };
-
-                updatedReviews = [newReviewObject, ...allReviews];
+                // Thêm đánh giá mới vào đầu danh sách
+                setAllReviews(prev => [savedReview, ...prev]);
+                setDisplayedReviews(prev => [savedReview, ...prev]);
+                setCanReview(false);
+                toast.success('Đánh giá đã được đăng');
             }
 
-            // Recalculate average rating
-            const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
-            const newAvgRating = updatedReviews.length > 0 ? newTotalRating / updatedReviews.length : 0;
+            // Cập nhật thống kê sau khi đánh giá
+            const newStats = await getCourseReviewStatistics(courseId);
+            if (newStats) {
+                setAverageRating(newStats.averageRating);
+                setTotalReviews(newStats.totalReviews);
 
-            setAllReviews(updatedReviews);
-            setAverageRating(newAvgRating);
+                // Cập nhật phân phối đánh giá
+                const counts = [
+                    newStats.ratingDistribution[5] || 0,
+                    newStats.ratingDistribution[4] || 0,
+                    newStats.ratingDistribution[3] || 0,
+                    newStats.ratingDistribution[2] || 0,
+                    newStats.ratingDistribution[1] || 0
+                ];
+
+                const percentages = counts.map(count =>
+                    newStats.totalReviews > 0 ? (count / newStats.totalReviews) * 100 : 0
+                );
+
+                setRatingDistribution({ counts, percentages });
+            }
+
+            // Đóng dialog và reset form
             setEditingReview(null);
             setNewReview({ rating: 5, review: '' });
             setDialogOpen(false);
         } catch (error) {
             console.error('Error saving review:', error);
-            // Handle error (show notification, etc.)
+            toast.error('Không thể lưu đánh giá, vui lòng thử lại sau');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -209,21 +294,50 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             return;
         }
 
+        setIsDeleting(id);
         try {
-            // In a real app, you would call an API endpoint to delete the review
-            const updatedReviews = allReviews.filter(review => review.id !== id);
+            // Gọi API để xóa đánh giá
+            const success = await deleteReview(id);
 
-            // Recalculate average rating
-            const newTotalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0);
-            const newAvgRating = updatedReviews.length > 0
-                ? newTotalRating / updatedReviews.length
-                : 0;
+            if (success) {
+                // Cập nhật UI sau khi xóa
+                setAllReviews(prev => prev.filter(review => review.id !== id));
+                setDisplayedReviews(prev => prev.filter(review => review.id !== id));
 
-            setAllReviews(updatedReviews);
-            setAverageRating(newAvgRating);
+                // Cập nhật thống kê sau khi xóa
+                const newStats = await getCourseReviewStatistics(courseId);
+                if (newStats) {
+                    setAverageRating(newStats.averageRating);
+                    setTotalReviews(newStats.totalReviews);
+
+                    // Cập nhật phân phối đánh giá
+                    const counts = [
+                        newStats.ratingDistribution[5] || 0,
+                        newStats.ratingDistribution[4] || 0,
+                        newStats.ratingDistribution[3] || 0,
+                        newStats.ratingDistribution[2] || 0,
+                        newStats.ratingDistribution[1] || 0
+                    ];
+
+                    const percentages = counts.map(count =>
+                        newStats.totalReviews > 0 ? (count / newStats.totalReviews) * 100 : 0
+                    );
+
+                    setRatingDistribution({ counts, percentages });
+                }
+
+                // Sau khi xóa, người dùng có thể đánh giá lại
+                setCanReview(true);
+
+                toast.success('Đánh giá đã được xóa');
+            } else {
+                toast.error('Không thể xóa đánh giá');
+            }
         } catch (error) {
             console.error('Error deleting review:', error);
-            // Handle error (show notification, etc.)
+            toast.error('Không thể xóa đánh giá, vui lòng thử lại sau');
+        } finally {
+            setIsDeleting(null);
         }
     };
 
@@ -237,16 +351,11 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
         setDialogOpen(true);
     };
 
-
-    // Check if current user has already submitted a review
-    const userHasReview = allReviews.some(review => review.userId === currentUserId);
-
     // Show loading state
     if (isLoading) {
         return (
             <div className="p-6 flex justify-center items-center h-64">
                 <BeautifulSpinner name='Đang tải đánh giá...' />
-
             </div>
         );
     }
@@ -317,14 +426,22 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                     <Button
                         variant="outline"
                         onClick={() => setDialogOpen(false)}
+                        disabled={isSaving}
                     >
                         Hủy
                     </Button>
                     <Button
                         onClick={handleSaveReview}
-                        disabled={newReview.review.trim() === ''}
+                        disabled={newReview.review.trim() === '' || isSaving}
                     >
-                        {editingReview ? 'Cập nhật' : 'Đăng'}
+                        {isSaving ? (
+                            <span className="flex items-center gap-2">
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                {editingReview ? 'Đang cập nhật...' : 'Đang đăng...'}
+                            </span>
+                        ) : (
+                            editingReview ? 'Cập nhật' : 'Đăng'
+                        )}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -336,7 +453,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Đánh giá từ học viên</h2>
-                {!userHasReview && (
+                {canReview && (
                     <Button
                         onClick={() => {
                             setEditingReview(null);
@@ -362,7 +479,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                         <div className="flex text-[#f69c08] my-2" aria-hidden="true">
                             {renderStarRating(Math.floor(averageRating))}
                         </div>
-                        <div className="text-sm text-gray-600">{allReviews.length} đánh giá</div>
+                        <div className="text-sm text-gray-600">{totalReviews} đánh giá</div>
                     </div>
 
                     {/* Rating breakdown */}
@@ -400,7 +517,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                         </div>
                                         <div className="flex-1">
                                             <div className="font-medium">
-                                                {review.userFullName} {review.userId === currentUserId ? "(Bạn)" : ""}
+                                                {review.userFullName || 'Người dùng ẩn danh'} {review.userId === currentUserId ? "(Bạn)" : ""}
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <div className="flex text-[#f69c08]" aria-label={`Đánh giá ${review.rating} sao`}>
@@ -409,7 +526,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                                 <time className="text-xs text-gray-600" dateTime={review.updatedDate || review.createdDate}>
                                                     {formatDate(review.updatedDate || review.createdDate)}
                                                 </time>
-
                                             </div>
                                         </div>
 
@@ -420,6 +536,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                                     onClick={() => handleEditReview(review)}
                                                     className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
                                                     aria-label="Chỉnh sửa đánh giá"
+                                                    disabled={isDeleting === review.id}
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>
@@ -427,8 +544,13 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                                                     onClick={() => handleDeleteReview(review.id)}
                                                     className="p-1 text-gray-500 hover:text-red-600 transition-colors"
                                                     aria-label="Xóa đánh giá"
+                                                    disabled={isDeleting === review.id}
                                                 >
-                                                    <Trash2 size={16} />
+                                                    {isDeleting === review.id ? (
+                                                        <div className="h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        <Trash2 size={16} />
+                                                    )}
                                                 </button>
                                             </div>
                                         )}
@@ -465,4 +587,3 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 };
 
 export default ReviewsArea;
-

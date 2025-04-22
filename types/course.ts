@@ -1,4 +1,4 @@
-import {BaseDto} from "./api-response";
+import { BaseDto } from "./api-response";
 import { EnrollmentProgressDto, LessonProgress } from "./learning";
 
 export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
@@ -58,7 +58,7 @@ export interface LessonDto extends BaseDto {
     authorName: string;
     courseId: string;
     courseName: string;
-    
+
     // Fields specific to lesson types
 
     // progress
@@ -69,10 +69,10 @@ export interface LessonDto extends BaseDto {
     status?: VideoStatus;
     videoUrl?: string;
     videoDuration?: number;
-    
+
     // For Reading lessons
     content?: string;
-    
+
     // For Quiz lessons
     passPoint?: number;
     totalPoint?: number;
@@ -118,7 +118,7 @@ export interface CourseDetailsResponse extends BaseDto {
     totalStudent: number;
     totalSection: number;
     totalLesson: number;
-    
+
     // Additional fields for detailed view
     instructors: UserDto[];
     ownerInstructor: UserDto;

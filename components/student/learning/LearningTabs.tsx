@@ -1,4 +1,4 @@
-import {FC, useState} from 'react';
+import { FC, useState, useEffect } from 'react';
 import {
     BookOpen,
     PenSquare,
@@ -15,7 +15,11 @@ import {
 import NotesArea from './learning-tab/NotesArea';
 import QuestionsArea from './learning-tab/QuestionsArea';
 import DiscussionArea from './learning-tab/DiscussionArea';
-import {Lecture} from '@/types/lecture';
+import ReviewsArea from './learning-tab/ReviewArea';
+import { Lecture } from '@/types/lecture';
+import { useAuth } from '@/context/AuthContext';
+import { getCourseIdBySlug } from '@/services/courseService';
+
 
 interface LearningTabsProps {
     lecture: Lecture;
@@ -23,8 +27,34 @@ interface LearningTabsProps {
     currentTimestamp?: number;
 }
 
-const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, currentTimestamp = 0}) => {
+const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseSlug, currentTimestamp = 0 }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'q&a' | 'discussion' | 'announcements' | 'reviews' | 'tools'>('overview');
+    const { user } = useAuth();
+    const [courseId, setCourseId] = useState<string>("");
+    const [isLoadingCourseId, setIsLoadingCourseId] = useState(true);
+
+
+    useEffect(() => {
+        const fetchCourseId = async () => {
+            setIsLoadingCourseId(true);
+            try {
+                const id = await getCourseIdBySlug(courseSlug);
+                if (id) {
+                    setCourseId(id);
+                } else {
+                    console.error(`Could not find ID for course slug: ${courseSlug}`);
+                }
+            } catch (error) {
+                console.error("Error fetching course ID:", error);
+            } finally {
+                setIsLoadingCourseId(false);
+            }
+        };
+
+        if (courseSlug) {
+            fetchCourseId();
+        }
+    }, [courseSlug]);
 
     // Xử lý mở tab transcript khi nó được yêu cầu
     const handleTranscriptTab = () => {
@@ -34,7 +64,7 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
         setTimeout(() => {
             const transcriptElement = document.getElementById('transcript-section');
             if (transcriptElement) {
-                transcriptElement.scrollIntoView({behavior: 'smooth'});
+                transcriptElement.scrollIntoView({ behavior: 'smooth' });
             }
         }, 100);
     };
@@ -58,12 +88,12 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
             <div className="space-y-3">
                 {resources.map(resource => (
                     <div key={resource.id}
-                         className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                        className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
                         <div
                             className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg mr-3">
-                            {resource.type === 'pdf' && <FileText size={20}/>}
-                            {resource.type === 'zip' && <Download size={20}/>}
-                            {resource.type === 'video' && <BookOpen size={20}/>}
+                            {resource.type === 'pdf' && <FileText size={20} />}
+                            {resource.type === 'zip' && <Download size={20} />}
+                            {resource.type === 'video' && <BookOpen size={20} />}
                         </div>
                         <div className="flex-1">
                             <h3 className="font-medium text-gray-800">{resource.title}</h3>
@@ -93,9 +123,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'overview'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <Search size={16} className="mr-2"/>
+                        <Search size={16} className="mr-2" />
                         Tổng quan
                     </button>
                     <button
@@ -103,9 +133,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'q&a'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <MessageSquare size={16} className="mr-2"/>
+                        <MessageSquare size={16} className="mr-2" />
                         Hỏi đáp
                     </button>
                     <button
@@ -113,9 +143,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'discussion'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <Users size={16} className="mr-2"/>
+                        <Users size={16} className="mr-2" />
                         Thảo luận
                     </button>
                     <button
@@ -123,9 +153,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'notes'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <PenSquare size={16} className="mr-2"/>
+                        <PenSquare size={16} className="mr-2" />
                         Ghi chú
                     </button>
                     <button
@@ -133,9 +163,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'announcements'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <Bell size={16} className="mr-2"/>
+                        <Bell size={16} className="mr-2" />
                         Thông báo
                     </button>
                     <button
@@ -143,9 +173,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'reviews'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <Star size={16} className="mr-2"/>
+                        <Star size={16} className="mr-2" />
                         Đánh giá
                     </button>
                     <button
@@ -153,9 +183,9 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                         className={`px-4 py-3 flex items-center text-sm font-medium whitespace-nowrap ${activeTab === 'tools'
                             ? 'border-b-2 border-indigo-600 text-indigo-600'
                             : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                            }`}
                     >
-                        <Wrench size={16} className="mr-2"/>
+                        <Wrench size={16} className="mr-2" />
                         Công cụ học tập
                     </button>
                 </div>
@@ -229,7 +259,7 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Thông Báo</h2>
                         <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 text-center">
-                            <Bell className="w-16 h-16 text-blue-500 mx-auto mb-3"/>
+                            <Bell className="w-16 h-16 text-blue-500 mx-auto mb-3" />
                             <h3 className="text-lg font-medium text-blue-800 mb-2">Không có thông báo mới</h3>
                             <p className="text-blue-600">Các thông báo từ giảng viên sẽ xuất hiện ở đây.</p>
                         </div>
@@ -237,60 +267,11 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                 )}
 
                 {activeTab === 'reviews' && (
-                    <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-4">Đánh Giá Khóa Học</h2>
-                        <div className="mb-6 bg-gray-50 p-6 rounded-lg">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <div className="flex items-center">
-                                        {Array(5).fill(0).map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                className={`w-5 h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                                            />
-                                        ))}
-                                        <span className="ml-2 text-gray-700 font-medium">4.2/5</span>
-                                    </div>
-                                    <p className="text-gray-500 mt-1">Dựa trên 256 lượt đánh giá</p>
-                                </div>
-                                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                    Viết đánh giá
-                                </button>
-                            </div>
-
-                            <div className="space-y-2">
-                                {['5', '4', '3', '2', '1'].map((rating) => (
-                                    <div key={rating} className="flex items-center">
-                                        <span className="w-4">{rating}</span>
-                                        <Star className="w-4 h-4 text-yellow-400 mx-1"/>
-                                        <div className="flex-1 h-2 mx-2 bg-gray-200 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-yellow-400"
-                                                style={{
-                                                    width: rating === '5' ? '65%' :
-                                                        rating === '4' ? '25%' :
-                                                            rating === '3' ? '8%' :
-                                                                rating === '2' ? '2%' : '0%'
-                                                }}
-                                            ></div>
-                                        </div>
-                                        <span className="text-xs text-gray-500">
-                                            {
-                                                rating === '5' ? '65%' :
-                                                    rating === '4' ? '25%' :
-                                                        rating === '3' ? '8%' :
-                                                            rating === '2' ? '2%' : '0%'
-                                            }
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="border-t border-gray-200 pt-6">
-                            <p className="text-center text-gray-500">Đánh giá của người học khác sẽ xuất hiện ở đây.</p>
-                        </div>
-                    </div>
+                    <ReviewsArea
+                        courseId={courseId}
+                        currentUserId={user?.id} // Truyền ID người dùng từ context
+                        mainPage={false}
+                    />
                 )}
 
                 {activeTab === 'tools' && (
@@ -301,7 +282,7 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                                 className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition text-center">
                                 <div
                                     className="mx-auto w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mb-4">
-                                    <FileText className="w-6 h-6 text-blue-600"/>
+                                    <FileText className="w-6 h-6 text-blue-600" />
                                 </div>
                                 <h3 className="font-medium text-lg mb-2">Flashcards</h3>
                                 <p className="text-gray-600 mb-4">Tạo thẻ ghi nhớ để học hiệu quả hơn.</p>
@@ -315,7 +296,7 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                                 className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition text-center">
                                 <div
                                     className="mx-auto w-12 h-12 flex items-center justify-center bg-green-100 rounded-full mb-4">
-                                    <PenSquare className="w-6 h-6 text-green-600"/>
+                                    <PenSquare className="w-6 h-6 text-green-600" />
                                 </div>
                                 <h3 className="font-medium text-lg mb-2">Ghi chú nâng cao</h3>
                                 <p className="text-gray-600 mb-4">Ghi chú với các tính năng phong phú.</p>
@@ -329,7 +310,7 @@ const LearningTabs: FC<LearningTabsProps> = ({lecture: lecture, courseSlug, curr
                                 className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition text-center">
                                 <div
                                     className="mx-auto w-12 h-12 flex items-center justify-center bg-purple-100 rounded-full mb-4">
-                                    <Wrench className="w-6 h-6 text-purple-600"/>
+                                    <Wrench className="w-6 h-6 text-purple-600" />
                                 </div>
                                 <h3 className="font-medium text-lg mb-2">Môi trường thực hành</h3>
                                 <p className="text-gray-600 mb-4">Môi trường thực hành code trực tuyến.</p>
