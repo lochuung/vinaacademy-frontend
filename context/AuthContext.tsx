@@ -1,8 +1,8 @@
 'use client';
 
-import React, {createContext, useContext, useEffect, useState} from "react";
-import {AuthContextType, LoginCredentials, RegisterRequest, User} from "@/types/auth";
-import {usePathname, useRouter} from "next/navigation";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { AuthContextType, LoginCredentials, RegisterRequest, User } from "@/types/auth";
+import { usePathname, useRouter } from "next/navigation";
 import * as authService from "@/services/authService";
 import { toast } from "react-toastify";
 import { getAccessToken } from "@/lib/apiClient";
@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({children}: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
@@ -33,14 +33,14 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
                 if (!user && !getAccessToken()) {
                     return;
                 }
-                
+
                 // Try to get current user first
                 const currentUser = await authService.getCurrentUser();
                 if (currentUser) {
                     setUser(currentUser);
                     return;
                 }
-                
+
                 // If failed, try refresh token as fallback
                 const refreshUser = await authService.refreshToken();
                 setUser(refreshUser);
