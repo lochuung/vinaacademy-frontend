@@ -17,190 +17,127 @@ import {
 import PaginationLayout from "@/components/staff/ui/Pagination";
 import CourseDetailsPreview from "@/components/staff/ui/DetailCoursePreview";
 import RightCourseDetail from "@/components/staff/ui/RightCourseDetail";
-
-// Mock data for the demo - in a real app this would come from an API
-const mockCourseRequests = [
-  {
-    id: "1",
-    title: "Giới Thiệu về Cấu Trúc Dữ Liệu và Giải Thuật",
-    instructor: "TS. Lan Nguyễn",
-    department: "Khoa học Máy tính",
-    createdAt: "2025-04-10",
-    status: "pending" as const,
-    level: "Cơ bản"
-  },
-  {
-    id: "2",
-    title: "Machine Learning Nâng Cao",
-    instructor: "GS. Minh Trần",
-    department: "Khoa học Máy tính",
-    createdAt: "2025-04-08",
-    status: "approved" as const,
-    level: "Nâng cao"
-  },
-  {
-    id: "3",
-    title: "Vật Lý Lượng Tử",
-    instructor: "TS. Hùng Trần",
-    department: "Vật lý",
-    createdAt: "2025-04-12",
-    status: "rejected" as const,
-    level: "Nâng cao"
-  },
-  {
-    id: "4",
-    title: "Sinh Học Tế Bào",
-    instructor: "TS. Mai Lê",
-    department: "Sinh học",
-    createdAt: "2025-04-05",
-    status: "pending" as const,
-    level: "Cơ bản"
-  },
-  {
-    id: "5",
-    title: "Đại Số Tuyến Tính",
-    instructor: "GS. Hải Phạm",
-    department: "Toán học",
-    createdAt: "2025-04-09",
-    status: "approved" as const,
-    level: "Cơ bản"
-  },
-  {
-    id: "6",
-    title: "Hóa Học Hữu Cơ",
-    instructor: "TS. Linh Hoàng",
-    department: "Hóa học",
-    createdAt: "2025-04-11",
-    status: "pending" as const,
-    level: "Nâng cao"
-  },
-  {
-    id: "7",
-    title: "Lịch Sử Thế Giới",
-    instructor: "TS. Thảo Vũ",
-    department: "Lịch sử",
-    createdAt: "2025-04-03",
-    status: "pending" as const,
-    level: "Cơ bản"
-  },
-  {
-    id: "8",
-    title: "Nhập Môn Triết Học",
-    instructor: "GS. Tuấn Nguyễn",
-    department: "Triết học",
-    createdAt: "2025-04-02",
-    status: "approved" as const,
-    level: "Trung cấp"
-  },
-  {
-    id: "9",
-    title: "Kế Toán Tài Chính",
-    instructor: "TS. Hương Trần",
-    department: "Kinh doanh",
-    createdAt: "2025-04-15",
-    status: "pending" as const,
-    level: "Cơ bản"
-  },
-  {
-    id: "10",
-    title: "Chiến Lược Marketing",
-    instructor: "GS. Đức Lê",
-    department: "Kinh doanh",
-    createdAt: "2025-04-14",
-    status: "rejected" as const,
-    level: "Trung cấp"
-  },
-  {
-    id: "11",
-    title: "Văn Học Anh",
-    instructor: "TS. Quỳnh Lê",
-    department: "Ngôn ngữ",
-    createdAt: "2025-04-01",
-    status: "approved" as const,
-    level: "Trung cấp"
-  },
-  {
-    id: "12",
-    title: "Giải Tích II",
-    instructor: "GS. Phương Đỗ",
-    department: "Toán học",
-    createdAt: "2025-04-07",
-    status: "pending" as const,
-    level: "Nâng cao"
-  },
-  {
-    id: "13",
-    title: "Giải Tích III",
-    instructor: "GS. Phương Đỗ",
-    department: "Toán học",
-    createdAt: "2025-04-07",
-    status: "pending" as const,
-    level: "Nâng cao"
-  },
-];
+import { searchCourses } from "@/services/courseService";
+import { CourseSearchRequest, CourseDto } from "@/types/course";
+import { PaginatedResponse } from "@/types/api-response";
 
 const CourseApprovalPage = () => {
   const { toast } = useToast();
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [department, setDepartment] = useState("all");
+  const [category, setCategory] = useState("all");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0); // API uses 0-based pagination
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [courseData, setCourseData] =
+    useState<PaginatedResponse<CourseDto> | null>(null);
 
   const itemsPerPage = 3;
 
-  // Apply filters, sorting and search
-  const filteredRequests = [...mockCourseRequests]
-    .filter((request) => {
-      const matchesFilter = filter === "all" || request.status === filter;
-      const matchesSearch =
-        request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.instructor.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesDepartment =
-        department === "all" ||
-        request.department.toLowerCase().replace(/\s+/g, "-") === department;
-      return matchesFilter && matchesSearch && matchesDepartment;
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
-    });
+  // Function to fetch courses with current filters
+  const fetchCourses = async () => {
+    setIsLoading(true);
 
-  // Calculate pagination
-  const totalItems = filteredRequests.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  const currentItems = filteredRequests.slice(startIndex, endIndex);
+    // Map UI filter to API status
+    const statusMap: Record<string, string | undefined> = {
+      all: undefined,
+      pending: "PENDING",
+      approved: "PUBLISHED",
+      rejected: "REJECTED",
+    };
+
+    // Prepare search request
+    const searchRequest: CourseSearchRequest = {
+      keyword: searchTerm || undefined,
+      categorySlug: category !== "all" ? category : undefined,
+      status: statusMap[filter] as any,
+    };
+
+    try {
+      const result = await searchCourses(
+        searchRequest,
+        currentPage,
+        itemsPerPage,
+        "createdDate",
+        sortDirection
+      );
+
+      setCourseData(result);
+      // Select first course by default if available
+      if (result?.content.length && !selectedCourseId) {
+        setSelectedCourseId(result.content[0].id);
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      toast({
+        title: "Lỗi tải dữ liệu",
+        description: "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Effect to fetch courses when filters change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCourses();
+    }, 500); // Debounce API calls
+
+    return () => clearTimeout(timer);
+  }, [filter, searchTerm, category, sortDirection, currentPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filter, searchTerm, category, sortDirection]);
 
   // Calculate counts for stats and filters
   const counts = {
-    all: mockCourseRequests.length,
-    pending: mockCourseRequests.filter((req) => req.status === "pending")
-      .length,
-    approved: mockCourseRequests.filter((req) => req.status === "approved")
-      .length,
-    rejected: mockCourseRequests.filter((req) => req.status === "rejected")
-      .length,
+    all: courseData?.totalElements || 0,
+    pending:
+      courseData?.content.filter((course) => course.status === "PENDING")
+        .length || 0,
+    approved:
+      courseData?.content.filter((course) => course.status === "PUBLISHED")
+        .length || 0,
+    rejected:
+      courseData?.content.filter((course) => course.status === "REJECTED")
+        .length || 0,
   };
 
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
+    setIsLoading(true);
+
+    // Here you would make an API call to update the course status
+    // For example: await updateCourseStatus(id, "PUBLISHED");
+
     toast({
-      title: "Khóa học đã được phê duyệt",
-      description: `Yêu cầu khóa học #${id} đã được phê duyệt.`,
+      title: "Khóa học đã được xuất bản",
+      description: `Khóa học #${id} đã được xuất bản thành công.`,
     });
+
+    // Refresh data after action
+    await fetchCourses();
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
+    setIsLoading(true);
+
+    // Here you would make an API call to update the course status
+    // For example: await updateCourseStatus(id, "REJECTED");
+
     toast({
       title: "Khóa học đã bị từ chối",
-      description: `Yêu cầu khóa học #${id} đã bị từ chối.`,
+      description: `Khóa học #${id} đã bị từ chối.`,
     });
+
+    // Refresh data after action
+    await fetchCourses();
   };
 
   const handleViewDetails = (id: string) => {
@@ -214,24 +151,31 @@ const CourseApprovalPage = () => {
 
   const handlePageChange = (page: number) => {
     setIsLoading(true);
-    // Simulate loading for better UX
-    setTimeout(() => {
-      setCurrentPage(page);
-      setIsLoading(false);
-    }, 300);
+    // Convert from 1-based UI pagination to 0-based API pagination
+    setCurrentPage(page - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Simulate loading effect when filter changes
-  useEffect(() => {
-    setIsLoading(true);
-    // Reset to first page when filters change
-    setCurrentPage(1);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return () => clearTimeout(timer);
-  }, [filter, searchTerm, department, sortDirection]);
+  // Map API data to UI format
+  const mappedCourses =
+    courseData?.content.map((course) => ({
+      id: course.id,
+      title: course.name,
+      instructor: course.createdBy || "Không xác định",
+      category: course.categoryName,
+      createdAt: course.createdDate,
+      status:
+        course.status.toLowerCase() === "published"
+          ? "approved"
+          : course.status.toLowerCase(),
+      level: course.level,
+      image: course.image,
+      description: course.description,
+      price: course.price,
+      rating: course.rating,
+      totalStudent: course.totalStudent,
+      slug: course.slug,
+    })) || [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -260,11 +204,11 @@ const CourseApprovalPage = () => {
               <div className="flex-1">
                 <SearchFilter
                   onSearchChange={setSearchTerm}
-                  onDepartmentChange={setDepartment}
+                  onDepartmentChange={setCategory}
                   oldValue={searchTerm}
                 />
               </div>
-              <DropdownMenu >
+              <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
@@ -288,7 +232,6 @@ const CourseApprovalPage = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-full">
@@ -299,40 +242,41 @@ const CourseApprovalPage = () => {
                   </div>
                 ) : (
                   <div>
-                    {currentItems.length > 0 ? (
+                    {mappedCourses.length > 0 ? (
                       <>
                         <div className="grid grid-cols-1 gap-4">
-                          {currentItems.map((request) => (
+                          {mappedCourses.map((course) => (
                             <div
-                              key={request.id}
+                              key={course.id}
                               className={`border rounded-lg p-4 hover:bg-accent/10 transition-colors cursor-pointer ${
-                                selectedCourseId === request.id
+                                selectedCourseId === course.id
                                   ? "border-primary"
                                   : ""
                               }`}
-                              onClick={() => handleViewDetails(request.id)}
+                              onClick={() => handleViewDetails(course.id)}
                             >
                               <CourseRequestCard
-                                {...request}
+                                {...course}
+                                // Format date properly
                                 createdAt={format(
-                                  new Date(request.createdAt),
+                                  new Date(course.createdAt),
                                   "dd/MM/yyyy"
                                 )}
-                                
+                                department={course.category} // Map category to department prop
                                 onApprove={handleApprove}
                                 onReject={handleReject}
                                 onViewDetails={() =>
-                                  handleViewDetails(request.id)
+                                  handleViewDetails(course.id)
                                 }
                               />
                             </div>
                           ))}
                         </div>
 
-                        {totalPages > 1 && (
+                        {(courseData?.totalPages || 0) > 1 && (
                           <PaginationLayout
-                            currentPage={currentPage}
-                            totalPages={totalPages}
+                            currentPage={currentPage + 1} // Convert back to 1-based for UI
+                            totalPages={courseData?.totalPages || 1}
                             handlePageChange={handlePageChange}
                           />
                         )}
@@ -353,7 +297,7 @@ const CourseApprovalPage = () => {
                           onClick={() => {
                             setFilter("all");
                             setSearchTerm("");
-                            setDepartment("all");
+                            setCategory("all");
                           }}
                         >
                           Xóa bộ lọc
@@ -364,14 +308,22 @@ const CourseApprovalPage = () => {
                 )}
               </div>
 
-              {/* Course details column - now using the CourseDetail component */}
               <div className="md:col-span-7">
                 <RightCourseDetail
                   selectedCourseId={selectedCourseId}
-                  courseRequests={currentItems}
+                  courseRequests={mappedCourses}
                   onPreview={handlePreview}
                   onApprove={handleApprove}
                   onReject={handleReject}
+                  statusLabels={{
+                    approved: "Đã xuất bản", // Updated from "approved" to "published" in Vietnamese
+                    pending: "Chờ duyệt",
+                    rejected: "Từ chối",
+                  }}
+                  actionLabels={{
+                    approve: "Xuất bản", // Updated from "approve" to "publish" in Vietnamese
+                    reject: "Từ chối",
+                  }}
                 />
               </div>
             </div>
