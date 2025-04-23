@@ -52,6 +52,7 @@ export default function SearchPage() {
     const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     // Initialize state from URL params
+    const isParamsReady = useRef(false);
     useEffect(() => {
         setQuery(searchParams.get("q") || "");
 
@@ -80,14 +81,19 @@ export default function SearchPage() {
 
         const sortDirParam = searchParams.get("sortDirection") || "asc";
         setSortDirection(sortDirParam as "asc" | "desc");
+
+        setPageSize(9);
+
+        isParamsReady.current = true;
     }, [searchParams]);
 
     // Fetch courses when filters change
     useEffect(() => {
-        // Skip initial fetch if no search parameters exist
+        if (!isParamsReady.current) return;
+
         if (isFirstLoad.current) {
             isFirstLoad.current = false;
-            if (searchParams.toString() === '') return;
+            return;
         }
         
         setIsLoading(true);
