@@ -1,8 +1,8 @@
 "use client";
 
-import React, {ReactNode} from 'react';
+import React, { ReactNode } from 'react';
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
     Layers,
     Video,
@@ -19,7 +19,7 @@ interface InstructorLayoutProps {
     children: ReactNode;
 }
 
-export default function InstructorLayout({children}: InstructorLayoutProps) {
+export default function InstructorLayout({ children }: InstructorLayoutProps) {
     const pathname = usePathname();
 
     const isActive = (path: string) => {
@@ -46,35 +46,35 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                             <Link href="/instructor/dashboard">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/dashboard')}`}>
-                                    <BarChart2 className="w-5 h-5 mr-3"/>
+                                    <BarChart2 className="w-5 h-5 mr-3" />
                                     Dashboard
                                 </div>
                             </Link>
                             <Link href="/instructor/courses">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/courses')}`}>
-                                    <Layers className="w-5 h-5 mr-3"/>
+                                    <Layers className="w-5 h-5 mr-3" />
                                     Khóa học của tôi
                                 </div>
                             </Link>
                             <Link href="/instructor/courses/new">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/courses/new')}`}>
-                                    <Plus className="w-5 h-5 mr-3"/>
+                                    <Plus className="w-5 h-5 mr-3" />
                                     Tạo khóa học mới
                                 </div>
                             </Link>
                             <Link href="/instructor/communication">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/communication')}`}>
-                                    <MessageSquare className="w-5 h-5 mr-3"/>
+                                    <MessageSquare className="w-5 h-5 mr-3" />
                                     Tin nhắn
                                 </div>
                             </Link>
                             <Link href="/instructor/content">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/content')}`}>
-                                    <Video className="w-5 h-5 mr-3"/>
+                                    <Video className="w-5 h-5 mr-3" />
                                     Thư viện nội dung
                                 </div>
                             </Link>
@@ -88,14 +88,14 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                             <Link href="/instructor/students">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/students')}`}>
-                                    <Users className="w-5 h-5 mr-3"/>
+                                    <Users className="w-5 h-5 mr-3" />
                                     Học viên
                                 </div>
                             </Link>
                             <Link href="/instructor/settings">
                                 <div
                                     className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${isActive('/instructor/settings')}`}>
-                                    <Settings className="w-5 h-5 mr-3"/>
+                                    <Settings className="w-5 h-5 mr-3" />
                                     Cài đặt
                                 </div>
                             </Link>
@@ -117,9 +117,9 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                                     >
                                         <span className="sr-only">Open main menu</span>
                                         <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                            viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                  d="M4 6h16M4 12h16M4 18h16"/>
+                                                d="M4 6h16M4 12h16M4 18h16" />
                                         </svg>
                                     </button>
                                 </div>
@@ -157,7 +157,7 @@ export default function InstructorLayout({children}: InstructorLayoutProps) {
                 {/* Main content area */}
                 <main className="flex-1 relative overflow-y-auto focus:outline-none">
                     {children}
-                     <Toaster/>
+                    <Toaster />
                 </main>
             </div>
         </div>
