@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { CategoryDto } from "@/types/category";
 import { Check, Eye, X } from "lucide-react";
 
 type CourseRequestStatus = "pending" | "approved" | "rejected";
@@ -9,7 +10,7 @@ type CourseRequestProps = {
   id: string;
   title: string;
   instructor: string;
-  department: string;
+  category: CategoryDto;
   createdAt: string;
   level: string;
   status: CourseRequestStatus;
@@ -22,7 +23,7 @@ const CourseRequestCard = ({
   id,
   title,
   instructor,
-  department,
+  category,
   createdAt,
   status,
   level,
@@ -53,7 +54,7 @@ const CourseRequestCard = ({
          
           <div className="space-y-1">
             <p className="text-sm"><span className="text-muted-foreground">Giảng viên:</span> {instructor}</p>
-            <p className="text-sm"><span className="text-muted-foreground">Danh mục:</span> {department}</p>
+            <p className="text-sm"><span className="text-muted-foreground">Danh mục:</span> {category.name}</p>
             <div className="flex justify-between items-center">
               <p className="text-sm"><span className="text-muted-foreground">Ngày tạo:</span> {createdAt}</p>
               <Badge variant="outline" className="rounded-md px-3 bg-slate-300">

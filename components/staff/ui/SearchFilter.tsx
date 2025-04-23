@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import { getCategories } from "@/services/categoryService";
+import { CategoryDto } from "@/types/category";
 
 type SearchFilterProps = {
   onSearchChange: (search: string) => void;
@@ -19,19 +21,32 @@ type SearchFilterProps = {
 const SearchFilter = ({
   onSearchChange,
   onDepartmentChange,
-  oldValue
+  oldValue,
 }: SearchFilterProps) => {
-  const [searchTerm, setSearchTerm] = useState(oldValue || ""); 
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 500); 
+  const [searchTerm, setSearchTerm] = useState(oldValue || "");
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
 
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
   useEffect(() => {
     onSearchChange(debouncedSearchTerm); // Call the search change handler with the debounced value
   }, [debouncedSearchTerm]);
 
-    useEffect(() => {
-        setSearchTerm(oldValue); // Update the search term when oldValue changes
-    }, [oldValue]);
-  
+  useEffect(() => {
+    setSearchTerm(oldValue); // Update the search term when oldValue changes
+  }, [oldValue]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -56,8 +71,15 @@ const SearchFilter = ({
         <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Tất cả danh mục" />
         </SelectTrigger>
+        
         <SelectContent>
           <SelectItem value="all">Tất cả danh mục</SelectItem>
+          {categories.map((category) => (
+            <SelectItem key={category.id} value={category.id.toLocaleString()}>
+              {category.name}
+            </SelectItem>
+          ))}
+          {/* <SelectItem value="all">Tất cả danh mục</SelectItem>
           <SelectItem value="computer-science">Computer Science</SelectItem>
           <SelectItem value="mathematics">Mathematics</SelectItem>
           <SelectItem value="physics">Physics</SelectItem>
@@ -66,12 +88,10 @@ const SearchFilter = ({
           <SelectItem value="business">Business</SelectItem>
           <SelectItem value="history">History</SelectItem>
           <SelectItem value="philosophy">Philosophy</SelectItem>
-          <SelectItem value="english">English</SelectItem>
+          <SelectItem value="english">English</SelectItem> */}
         </SelectContent>
       </Select>
-      
     </div>
-    
   );
 };
 
