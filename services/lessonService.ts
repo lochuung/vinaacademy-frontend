@@ -88,11 +88,23 @@ export function mapLessonTypeToDisplay(type: LessonType | string): string {
   }
 }
 
-export const markLessonComplete = async (lessonId: string, completed: boolean): Promise<boolean> => {
+// 🔍 GET /lesson-progress/{courseId}
+export const getLessonProgressByCourse = async (courseId: string): Promise<any[]> => {
+  try {
+    const response: AxiosResponse<ApiResponse<any[]>> = await apiClient.get(
+      `/lesson-progress/${courseId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("getLessonProgressByCourse error:", error);
+    return [];
+  }
+};
+
+export const markLessonComplete = async (lessonId: string): Promise<boolean> => {
   try {
     const response: AxiosResponse = await apiClient.post(
-      `/lessons/${lessonId}/progress`,
-      { completed }
+      `/lessons/${lessonId}/complete`
     );
     return response.data.success;
   } catch (error) {

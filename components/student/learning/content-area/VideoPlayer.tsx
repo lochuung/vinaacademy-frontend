@@ -3,11 +3,13 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Settings, ChevronLeft, Chevron
 import Hls from 'hls.js';
 import { getAccessToken } from '@/lib/apiClient';
 import { getMasterPlaylistUrl } from '@/services/videoService';
+import { getVideoProgress, saveVideoProgress } from '@/services/videoProgressService';
+import { markLessonComplete } from '@/services/lessonService';
 
 interface VideoPlayerProps {
-    // videoUrl: string;
-    videoId: string;
+    lessonId: string;
     title: string;
+    isCompleted?: boolean;
     onTimeUpdate?: (currentTime: number) => void;
 }
 
@@ -16,7 +18,7 @@ interface QualityOption {
     label: string;
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => {
+const VideoPlayer: FC<VideoPlayerProps> = ({ lessonId, title, onTimeUpdate, isCompleted }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -26,18 +28,99 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
     const [showControls, setShowControls] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showResumePrompt, setShowResumePrompt] = useState(false);
+    const [savedProgress, setSavedProgress] = useState<number | null>(null);
+    const [hasProgressLoaded, setHasProgressLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
     const playerRef = useRef<HTMLDivElement>(null);
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const progressSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [qualities, setQualities] = useState<QualityOption[]>([]);
     const [currentQuality, setCurrentQuality] = useState<number>(-1);
     const [showQualityMenu, setShowQualityMenu] = useState(false);
+    const hasMarkedComplete = useRef(false);
+    const markCompleteInProgress = useRef(false);
+
+
 
     // HLS Configuration
     const hlsRef = useRef<Hls | null>(null);
     const token = getAccessToken();
-    const masterPlaylistUrl = getMasterPlaylistUrl(videoId);
+    const masterPlaylistUrl = getMasterPlaylistUrl(lessonId);
     const playPromiseRef = useRef<Promise<void> | null>(null);
+
+    // Load saved video progress
+    useEffect(() => {
+        const loadVideoProgress = async () => {
+            try {
+                const progress = await getVideoProgress(lessonId);
+                if (progress && progress > 0) {
+                    setSavedProgress(progress);
+                    // Only show resume prompt if the saved position is not at the beginning 
+                    // and not too close to the end (e.g., within 10 seconds of the end)
+                    if (progress > 5 && (!duration || progress < duration - 10)) {
+                        setShowResumePrompt(true);
+                    }
+                }
+                setHasProgressLoaded(true);
+            } catch (error) {
+                console.error("Error loading video progress:", error);
+                setHasProgressLoaded(true);
+            }
+        };
+
+        loadVideoProgress();
+    }, [lessonId, duration]);
+
+    // Setup interval to save video progress
+    useEffect(() => {
+        // Start a single interval when the component mounts
+        const saveProgressInterval = setInterval(() => {
+            if (videoRef.current &&
+                videoRef.current.currentTime > 0 &&
+                videoRef.current.duration > 0 &&
+                !videoRef.current.paused) {
+
+                const currentVideoTime = videoRef.current.currentTime;
+                const videoDuration = videoRef.current.duration;
+
+                // Save progress if we're not at the beginning and not at the very end
+                if (currentVideoTime > 10 && videoDuration - currentVideoTime > 5) {
+                    console.log(`Saving video progress: ${currentVideoTime}s / ${videoDuration}s`);
+                    saveVideoProgress(lessonId, currentVideoTime)
+                        .then(success => {
+                            if (!success) {
+                                console.error("Failed to save video progress");
+                            }
+                        });
+                }
+            }
+        }, 10000); // Save every 10 seconds
+
+        // Clean up interval when component unmounts
+        return () => {
+            clearInterval(saveProgressInterval);
+        };
+    }, [lessonId]); // Only depend on lessonId to avoid recreating the interval too often
+
+    // Save progress when user leaves the page
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (videoRef.current && videoRef.current.currentTime > 0) {
+                saveVideoProgress(lessonId, videoRef.current.currentTime);
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            // Also save progress when component unmounts
+            if (videoRef.current && videoRef.current.currentTime > 0) {
+                saveVideoProgress(lessonId, videoRef.current.currentTime);
+            }
+        };
+    }, [lessonId]);
 
     // Initialize HLS
     useEffect(() => {
@@ -50,7 +133,6 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
             if (Hls.isSupported()) {
                 const hls = new Hls();
                 hlsRef.current = hls;
-
 
                 // Setup request headers for authorization
                 hls.config.xhrSetup = function (xhr: XMLHttpRequest): void {
@@ -122,7 +204,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                 video.removeEventListener('loadedmetadata', () => { });
             }
         };
-    }, [videoId]);
+    }, [lessonId]);
 
     // Handle quality change
     const handleQualityChange = (level: number): void => {
@@ -162,14 +244,92 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
         };
     }, [isPlaying]);
 
+    const checkAndMarkComplete = () => {
+        const videoElement = videoRef.current;
+        if (!videoElement) return;
+
+        // Chỉ mark complete nếu:
+        // 1. Video đạt 95% thời lượng
+        // 2. Chưa được đánh dấu hoàn thành (isCompleted === false)
+        // 3. hasMarkedComplete.current === false (chưa đánh dấu trong session này)
+        // 4. Không có mark complete request nào đang xử lý
+        if (videoElement.duration > 0 &&
+            videoElement.currentTime > 0 &&
+            !isCompleted &&
+            !hasMarkedComplete.current &&
+            !markCompleteInProgress.current &&
+            (videoElement.currentTime / videoElement.duration > 0.95)) {
+
+            // Đánh dấu đang xử lý để tránh gửi request trùng lặp
+            markCompleteInProgress.current = true;
+
+            console.log('Video at 95% completion, marking lesson as complete');
+            markLessonComplete(lessonId)
+                .then(success => {
+                    if (success) {
+                        console.log('Lesson marked as complete successfully');
+                        hasMarkedComplete.current = true;
+                    } else {
+                        console.error('Failed to mark lesson as complete');
+                    }
+                    // Dù thành công hay thất bại, reset trạng thái đang xử lý
+                    markCompleteInProgress.current = false;
+                })
+                .catch(error => {
+                    console.error('Error marking lesson as complete:', error);
+                    markCompleteInProgress.current = false;
+                });
+        }
+    };
+
+    // Cập nhật thời gian hiện tại và tổng thời gian
     // Cập nhật thời gian hiện tại và tổng thời gian
     useEffect(() => {
+        let isMounted = true;
+        const checkAndMarkComplete = () => {
+            const videoElement = videoRef.current;
+            if (!videoElement || !isMounted) return;
+    
+            if (
+                videoElement.duration > 0 &&
+                videoElement.currentTime > 0 &&
+                !isCompleted &&
+                !hasMarkedComplete.current &&
+                !markCompleteInProgress.current &&
+                (videoElement.currentTime / videoElement.duration > 0.95)
+            ) {
+                markCompleteInProgress.current = true;
+    
+                console.log('Video at 95% completion, marking lesson as complete');
+                markLessonComplete(lessonId)
+                    .then(success => {
+                        if (!isMounted) return;
+                        if (success) {
+                            console.log('Lesson marked as complete successfully');
+                            hasMarkedComplete.current = true;
+                        } else {
+                            console.error('Failed to mark lesson as complete');
+                        }
+                    })
+                    .catch(error => {
+                        if (!isMounted) return;
+                        console.error('Error marking lesson as complete:', error);
+                    })
+                    .finally(() => {
+                        if (isMounted) {
+                            markCompleteInProgress.current = false;
+                        }
+                    });
+            }
+        };
+
         const videoElement = videoRef.current;
         if (!videoElement) return;
 
         const handleTimeUpdate = () => {
             setCurrentTime(videoElement.currentTime);
             if (onTimeUpdate) onTimeUpdate(videoElement.currentTime);
+            checkAndMarkComplete();
         };
 
         const handleDurationChange = () => {
@@ -198,19 +358,26 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
         videoElement.addEventListener('error', handleError);
 
         return () => {
+            isMounted = false;
             videoElement.removeEventListener('timeupdate', handleTimeUpdate);
             videoElement.removeEventListener('durationchange', handleDurationChange);
             videoElement.removeEventListener('ended', handleEnded);
             videoElement.removeEventListener('loadeddata', handleLoadedData);
             videoElement.removeEventListener('error', handleError);
         };
-    }, [onTimeUpdate]);
+    }, [onTimeUpdate, lessonId, isCompleted]); // Đã loại bỏ hasMarkedComplete khỏi dependencies vì nó là ref
+
+    // Reset hasMarkedComplete when video ID or isCompleted changes
+    useEffect(() => {
+        hasMarkedComplete.current = isCompleted || false;
+        markCompleteInProgress.current = false;
+    }, [lessonId, isCompleted]);
 
     // Ensure video state matches isPlaying state
     useEffect(() => {
         const videoElement = videoRef.current;
         if (!videoElement) return;
-        
+
         // Only synchronize the video state with isPlaying when needed
         // Don't attempt to call play() here to avoid conflicts with togglePlay
         if (!isPlaying && !videoElement.paused) {
@@ -225,6 +392,26 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
         }
     }, [volume, isMuted]);
 
+    // Resume playback from saved position
+    const handleResumePlayback = () => {
+        if (savedProgress && videoRef.current) {
+            videoRef.current.currentTime = savedProgress;
+            setCurrentTime(savedProgress);
+            togglePlay();
+        }
+        setShowResumePrompt(false);
+    };
+
+    // Start from beginning
+    const handleStartFromBeginning = () => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+            setCurrentTime(0);
+            togglePlay();
+        }
+        setShowResumePrompt(false);
+    };
+
     const togglePlay = () => {
         if (videoRef.current) {
             if (isPlaying) {
@@ -232,7 +419,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
             } else {
                 // Store the play promise so we can handle it properly
                 playPromiseRef.current = videoRef.current.play();
-                
+
                 // Handle any errors from the play promise
                 if (playPromiseRef.current) {
                     playPromiseRef.current.catch((error) => {
@@ -264,6 +451,11 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
         setCurrentTime(newTime);
         if (videoRef.current) {
             videoRef.current.currentTime = newTime;
+
+            // Save progress when manually seeking
+            if (newTime > 10 && duration - newTime > 10) {
+                saveVideoProgress(lessonId, newTime);
+            }
         }
     };
 
@@ -330,7 +522,32 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                 </div>
             )}
 
-            {/* Lớp phủ lỗi */}
+            {/* Resume playback prompt */}
+            {hasProgressLoaded && showResumePrompt && !isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 z-10">
+                    <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-xl max-w-md text-white">
+                        <h3 className="text-xl font-semibold mb-4">Tiếp tục xem?</h3>
+                        <p className="mb-5 text-gray-300">
+                            Bạn đã xem video này đến {formatTime(savedProgress || 0)}. Bạn muốn tiếp tục xem từ vị trí đó?
+                        </p>
+                        <div className="flex space-x-3">
+                            <button
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition flex-1"
+                                onClick={handleResumePlayback}
+                            >
+                                Tiếp tục xem
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition"
+                                onClick={handleStartFromBeginning}
+                            >
+                                Xem từ đầu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Lớp phủ lỗi */}
             {error && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
@@ -361,7 +578,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
             )}
 
             {/* Nút phát lớn ở giữa khi đang tạm dừng */}
-            {!isPlaying && !isLoading && !error && (
+            {!isPlaying && !isLoading && !error && !showResumePrompt && (
                 <button
                     onClick={togglePlay}
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-4 hover:bg-opacity-90 transition"
@@ -466,11 +683,10 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ videoId, title, onTimeUpdate }) => 
                                         {qualities.map((quality) => (
                                             <button
                                                 key={quality.value}
-                                                className={`group flex items-center justify-between w-full text-left px-3 py-1.5 text-sm rounded-md transition-all duration-150 ${
-                                                    currentQuality === quality.value
+                                                className={`group flex items-center justify-between w-full text-left px-3 py-1.5 text-sm rounded-md transition-all duration-150 ${currentQuality === quality.value
                                                     ? 'bg-blue-600/80 text-white font-medium'
                                                     : 'text-gray-200 hover:bg-gray-700/70 hover:text-white'
-                                                }`}
+                                                    }`}
                                                 onClick={() => handleQualityChange(quality.value)}
                                             >
                                                 <span>{quality.label}</span>
