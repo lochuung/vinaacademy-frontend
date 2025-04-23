@@ -24,9 +24,21 @@ import {
 import { CourseSearchRequest, CourseStatusCountDto } from "@/types/course";
 import { PaginatedResponse } from "@/types/api-response";
 import { CourseDetailsResponse } from "@/types/course";
+import { set } from "date-fns";
+import RejectCourseDialog from "@/components/staff/ui/RejectCourse";
+import { getCurrentUser } from "@/services/authService";
+import { NotificationType } from "@/types/notification-type";
+import { createNotification } from "@/services/notificationService";
 
 const CourseApprovalPage = () => {
   const { toast } = useToast();
+
+  const [slugOpen, setSlugOpen] = useState<string | null>(null);
+  const [nameOpen, setNameOpen] = useState<string | null>(null);
+  const [idOpen, setIdOpen] = useState<string | null>(null);
+  const [recipid, setRecipid] = useState<string | null>(null);
+
+  const [isDialogOpenReject, setIsDialogOpenReject] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
@@ -146,7 +158,7 @@ const CourseApprovalPage = () => {
     await fetchCourses();
   };
 
-  const handleReject = async (slug: string) => {
+  const handleReject = async (slug: string, comment: string, name: string, id: string, recipid: string) => {
     setIsLoading(true);
 
     const check = await updateStatusCourse({
@@ -160,10 +172,20 @@ const CourseApprovalPage = () => {
         description: `Khóa học #${slug} đã bị từ chối.`,
         className: "bg-green-500 text-white",
       });
+
+      const notificationData = {
+        title: `Khóa học "${name}" của bạn đã bị từ chối`,
+        content: `Lí do: ${comment}`,
+        targetUrl: `/instructor/courses/${id}/content`,
+        userId: recipid,
+        type: NotificationType.COURSE_APPROVAL,
+      };
+
+      createNotification(notificationData);
     } else {
       toast({
         title: "Lỗi",
-        description: `Có lỗi xảy ra khi TỪ chôi khóa học #${slug}. Vui lòng thử lại.`,
+        description: `Có lỗi xảy ra khi Từ chôi khóa học #${slug}. Vui lòng thử lại.`,
         variant: "destructive",
         className: "bg-red-500 text-white",
       });
@@ -171,6 +193,14 @@ const CourseApprovalPage = () => {
     await fetchCoursesCount();
     // Refresh data after action
     await fetchCourses();
+  };
+
+  const openRejectDialog = (slug: string, name: string, id: string, recipid: string) => {
+    setSlugOpen(slug);
+    setNameOpen(name);
+    setIdOpen(id);
+    setRecipid(recipid);
+    setIsDialogOpenReject(true);
   };
 
   const handleViewDetails = (id: string) => {
@@ -197,6 +227,16 @@ const CourseApprovalPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 container mx-auto px-8 py-8">
+        <RejectCourseDialog
+          slug={slugOpen || ""}
+          handleSubmitReject={handleReject}
+          setDialogOpen={setIsDialogOpenReject}
+          isDialogOpen={isDialogOpenReject}
+          nameg={nameOpen || ""}
+          id={idOpen || ""}
+          recipid={recipid || ""}
+        />
+
         <div className="space-y-8 max-w-7xl mx-auto">
           <DashboardStats
             totalRequests={total}
@@ -286,7 +326,7 @@ const CourseApprovalPage = () => {
                               <CourseRequestCard
                                 courseDto={course}
                                 onApprove={handleApprove}
-                                onReject={handleReject}
+                                onReject={openRejectDialog}
                                 onViewDetails={() =>
                                   handleViewDetails(course.id)
                                 }
@@ -336,7 +376,7 @@ const CourseApprovalPage = () => {
                   courseRequests={mappedCourses}
                   onPreview={handlePreview}
                   onApprove={handleApprove}
-                  onReject={handleReject}
+                  onReject={openRejectDialog}
                 />
               </div>
             </div>

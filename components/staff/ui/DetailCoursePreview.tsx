@@ -87,7 +87,7 @@ const CourseDetailsPreview = ({
   courseDetails: CourseDetailsResponse | null;
   isOpen: boolean;
   onClose: () => void;
-  onLessonClick: (lessonId: string) => void;
+  onLessonClick: (lessonId: string, lessonType: LessonType) => void;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -124,7 +124,7 @@ const CourseDetailsPreview = ({
                         <li
                           key={lesson.id}
                           className="p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                          onClick={() => onLessonClick(lesson.id)}
+                          onClick={() => onLessonClick(lesson.id, lesson.type)}
                         >
                           <div className="flex items-center">
                             {lesson.type === "VIDEO" && (
@@ -199,10 +199,13 @@ const CourseDetailsPreview = ({
                           )}
                           {lesson.type === "QUIZ" && lesson.duration && (
                             <span className="text-sm text-gray-500">
-                              {Math.floor(lesson.duration / 60)}:
+                                yêu cầu {lesson.passPoint}/{lesson.totalPoint} điểm -{" "}
+                             
                               {(lesson.duration % 60)
                                 .toString()
                                 .padStart(2, "0")}
+                                 {" giây"}
+                                 
                             </span>
                           )}
                           

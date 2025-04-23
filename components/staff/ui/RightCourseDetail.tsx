@@ -22,7 +22,7 @@ interface CourseDetailProps {
   courseRequests: CourseDetailsResponse[];
   onPreview: (id: string) => void;
   onApprove: (slug: string) => void;
-  onReject: (slug: string) => void;
+  onReject: (slug: string, nameg: string, id: string, recipid: string) => void;
 }
 
 const RightCourseDetail = ({
@@ -81,7 +81,7 @@ const RightCourseDetail = ({
       <div className="flex-1 overflow-auto p-6 border rounded-lg bg-accent/5">
         <div className="flex justify-between items-start mb-4">
           <h3 className="font-medium text-xl">Chi tiết khóa học</h3>
-          {/* {courseDto.status === "PENDING" && (
+          {courseDto.status === "PENDING" && (
             <div className="flex items-center gap-2">
             <Button
               className="bg-green-600 hover:bg-green-700 text-white w-fit"
@@ -92,12 +92,12 @@ const RightCourseDetail = ({
             <Button
               variant="outline"
               className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 w-fit"
-              onClick={() => onReject(courseDto.slug)}
+              onClick={() => onReject(courseDto.slug, courseDto.name, courseDto.id, courseDto.ownerInstructor?.id || "")}
             >
               Từ chối
             </Button>
           </div>
-          )} */}
+          )}
           
           <div className="flex gap-2">
             <Button

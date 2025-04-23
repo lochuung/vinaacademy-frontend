@@ -65,12 +65,12 @@ const NotificationFilterFunction = ({ filters, onFilterChange }: NotificationFil
             <DropdownMenuRadioItem value="ALL">Tất cả</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.SYSTEM}>Hệ thống</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.PAYMENT_SUCCESS}>Thanh toán thành công</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={NotificationType.COURSE_REVIEW}>Course Review</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={NotificationType.COURSE_APPROVAL}>Khóa học được duyệt</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={NotificationType.SUPPORT_REPLY}>Phản hồi hỗ trợ</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={NotificationType.PROMOTION}>Promotion</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value={NotificationType.COURSE_REVIEW}>Đánh giá khóa học</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value={NotificationType.COURSE_APPROVAL}>Phản hồi phê duyệt khóa học</DropdownMenuRadioItem>
+            {/*<DropdownMenuRadioItem value={NotificationType.SUPPORT_REPLY}>Phản hồi hỗ trợ</DropdownMenuRadioItem>
+             <DropdownMenuRadioItem value={NotificationType.PROMOTION}>Promotion</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.FINANCIAL_ALERT}>Cảnh báo thanh toán</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={NotificationType.STAFF_REQUEST}>Staff Request</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value={NotificationType.STAFF_REQUEST}>Staff Request</DropdownMenuRadioItem> */}
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>

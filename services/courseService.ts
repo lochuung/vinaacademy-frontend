@@ -278,7 +278,6 @@ export const uploadImageAndCreateCourse = async (courseData: CourseData): Promis
 
         return null;
     }
-
     // Prepare course request with the uploaded image
     const courseRequest: CourseRequest = {
         name: courseData.title,
