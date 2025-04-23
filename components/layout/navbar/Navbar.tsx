@@ -35,7 +35,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
   const { isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [totalUnread, setTotalUnread] = useState<number>(0);
-
+  
   const handleRemoveFromCart = (id: number) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };

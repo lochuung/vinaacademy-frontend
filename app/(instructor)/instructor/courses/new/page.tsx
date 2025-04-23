@@ -16,12 +16,14 @@ import { boolean } from 'zod';
 import { isValid } from 'date-fns';
 import { EditorTextChangeEvent } from 'primereact/editor';
 import { toast } from '@/hooks/use-toast';
-import { uploadImageAndCreateCourse } from '@/services/courseService';
+import { createInstructorCourse, uploadImageAndCreateCourse } from '@/services/courseService';
 import { createNotification } from '@/services/notificationService';
 import { getCurrentUser } from '@/services/authService';
 import { NotificationType } from '@/types/notification-type';
 import { title } from 'process';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { CourseInstructorDtoRequest } from '@/types/instructor-course';
 
 export default function CreateCoursePage() {
     const router = useRouter(); 
@@ -38,6 +40,8 @@ export default function CreateCoursePage() {
         thumbnail: null,
 
     });
+    const { isAuthenticated, user } = useAuth();
+    
 
     // Thêm state để theo dõi tiến trình
     const [progress, setProgress] = useState(33);
@@ -138,6 +142,30 @@ export default function CreateCoursePage() {
         
     };
 
+    const createCourseInstructorFunc = async (idc: string, uid: string)=> {
+        if (isAuthenticated){
+            const ci : CourseInstructorDtoRequest = {
+                userId : uid,
+                courseId : idc,
+                isOwner : true
+            }
+            const data = await createInstructorCourse(ci);
+            if (!data){
+                toast({
+                    title: 'Lỗi',
+                    description: 'Có lỗi xảy ra trong quá trình tạo instructor cho khóa học. Vui lòng thử lại sau.',
+                    variant: 'destructive',
+                    className: "bg-red-500 text-white",
+                });
+                console.error("Lỗi khi tạo instructor cho khóa học:", data);
+                return false;
+            }
+            return true;
+        }
+        return false;
+        
+    }
+
     const createCourse = async () => {
         const data = await uploadImageAndCreateCourse(courseData);
         if (!data) {
@@ -149,7 +177,7 @@ export default function CreateCoursePage() {
             });
             return;
         }
-        
+       
         
         // Chuyển hướng đến trang chỉnh sửa khóa học
         sessionStorage.setItem("createdCourse", JSON.stringify({
@@ -158,6 +186,8 @@ export default function CreateCoursePage() {
         }));
         const user = await getCurrentUser();
         const userId = user?.id || "";
+        createCourseInstructorFunc(data.id, user?.id || '');
+        
         const notificationData = {
             title: `Khóa học "${courseData.title}" đã được tạo thành công`,
             content: `Bấm vào đây để chuyển đến trang chỉnh sửa khóa học. \n  Tại đây bạn sẽ điều chỉnh bài học của mình và xuất bản để chờ duyệt`,
@@ -165,6 +195,7 @@ export default function CreateCoursePage() {
             userId: userId,
             type: NotificationType.SYSTEM
         }
+        
         createNotification(notificationData)
         router.push(`/instructor/courses`);
 

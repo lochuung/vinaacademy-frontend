@@ -7,6 +7,7 @@ import { CourseData, CourseLevel, CourseStatus } from "@/types/new-course";
 import { AxiosResponse } from "axios";
 import { UserDto } from "@/types/course";
 import { uploadImage } from "./imageService";
+import { CourseInstructorDto, CourseInstructorDtoRequest } from "@/types/instructor-course";
 
 // 📌 GET /courses/pagination
 export async function getCoursesPaginated(
@@ -325,6 +326,16 @@ export async function getInstructorCourses(
         return response.data.data;
     } catch (error) {
         console.error("getInstructorCourses error:", error);
+        return null;
+    }
+}
+
+export async function createInstructorCourse(course: CourseInstructorDtoRequest): Promise<CourseInstructorDto | null> {
+    try {
+        const response: AxiosResponse = await apiClient.post('/courseinstructor', course);
+        return response.data.data;
+    } catch (error) {
+        console.error("createCourseInstructor error:", error);
         return null;
     }
 }

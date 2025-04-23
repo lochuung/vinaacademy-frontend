@@ -10,7 +10,7 @@ type CourseRequestProps = {
   id: string;
   title: string;
   instructor: string;
-  category: CategoryDto;
+  category: string;
   createdAt: string;
   level: string;
   status: CourseRequestStatus;
@@ -54,7 +54,7 @@ const CourseRequestCard = ({
          
           <div className="space-y-1">
             <p className="text-sm"><span className="text-muted-foreground">Giảng viên:</span> {instructor}</p>
-            <p className="text-sm"><span className="text-muted-foreground">Danh mục:</span> {category.name}</p>
+            <p className="text-sm"><span className="text-muted-foreground">Danh mục:</span> {category}</p>
             <div className="flex justify-between items-center">
               <p className="text-sm"><span className="text-muted-foreground">Ngày tạo:</span> {createdAt}</p>
               <Badge variant="outline" className="rounded-md px-3 bg-slate-300">
