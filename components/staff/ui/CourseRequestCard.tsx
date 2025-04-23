@@ -7,7 +7,7 @@ import { Check, Eye, X } from "lucide-react";
 
 type CourseRequestProps = {
   onApprove?: (slug: string) => void;
-  onReject?: (slug: string) => void;
+  onReject?: (slug: string, nameg: string, id: string, recipid: string) => void;
   onViewDetails?: (id: string) => void;
   courseDto: CourseDetailsResponse;
 };
@@ -99,7 +99,7 @@ const CourseRequestCard = ({
                   size="sm"
                   variant="outline"
                   className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                  onClick={() => onReject?.(courseDto.slug)}
+                  onClick={() => onReject?.(courseDto.slug, courseDto.name, courseDto.id, courseDto.ownerInstructor?.id || "")}
                 >
                   <X className="h-4 w-4 mr-1" />
                   Từ chối
