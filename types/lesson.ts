@@ -14,6 +14,9 @@ export interface LessonDto extends BaseDto {
     courseId: string; // UUID
     courseName: string;
 
+    // progress
+    currentUserProgress ?: LessonProgressDto;
+
     // For Video lessons
     thumbnailUrl?: string;
     status?: VideoStatus;
@@ -46,4 +49,9 @@ export interface LessonRequest {
     passPoint?: number;
     totalPoint?: number;
     duration?: number;
+}
+
+export interface LessonProgressDto {
+    lessonId: string; // UUID
+    completed: boolean;
 }

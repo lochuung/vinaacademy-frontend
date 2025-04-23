@@ -11,8 +11,10 @@ import LearningHeader from '@/components/student/learning/LearningHeader';
 import LearningTabs from '@/components/student/learning/LearningTabs';
 import { getCourseLearning } from '@/services/courseService';
 import { getLessonById } from '@/services/lessonService';
+import { getAllLessonProgressByCourse } from '@/services/progressService';
 import { CourseDto, LessonDto, LessonType } from '@/types/course';
 import { Lecture, Section, LearningCourse, LectureType } from '@/types/lecture';
+import { LessonProgressDto } from '@/types/lesson';
 import { useRouter } from 'next/navigation';
 
 interface LecturePageProps {
@@ -61,6 +63,15 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                     currentLecture: null
                 };
                 
+                // Fetch lesson progress data for the course
+                const lessonProgressData = await getAllLessonProgressByCourse(courseResponse.id);
+                const progressMap = new Map<string, boolean>();
+                
+                // Create a map of lesson ID to completion status for quick lookup
+                lessonProgressData.forEach(progress => {
+                    progressMap.set(progress.lessonId, progress.completed);
+                });
+                
                 // Process sections and lessons
                 const sectionsWithLessons: Section[] = [];
                 
@@ -70,7 +81,14 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                     const mappedSection: Section = {
                         id: section.id,
                         title: section.title,
-                        lectures: lessons.map(lesson => mapLessonToLecture(lesson))
+                        lectures: lessons.map(lesson => {
+                            // Use the progress map to determine completion status
+                            const isCompleted = progressMap.has(lesson.id) ? 
+                                progressMap.get(lesson.id) : 
+                                lesson.currentUserProgress?.completed || false;
+                            
+                            return mapLessonToLecture(lesson, isCompleted);
+                        })
                     };
                     
                     sectionsWithLessons.push(mappedSection);
@@ -95,7 +113,12 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                 if (!foundLecture) {
                     const lessonResponse = await getLessonById(lectureId);
                     if (lessonResponse) {
-                        foundLecture = mapLessonToLecture(lessonResponse);
+                        // Check if we have progress information for this lesson
+                        const isCompleted = progressMap.has(lessonResponse.id) ? 
+                            progressMap.get(lessonResponse.id) : 
+                            lessonResponse.currentUserProgress?.completed || false;
+                            
+                        foundLecture = mapLessonToLecture(lessonResponse, isCompleted);
                         foundLecture.isCurrent = true;
                     } else {
                         console.error('Lecture not found');
@@ -116,7 +139,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
         };
         
         // Helper function to map LessonDto to Lecture
-        const mapLessonToLecture = (lesson: LessonDto): Lecture => {
+        const mapLessonToLecture = (lesson: LessonDto, isCompleted: boolean = false): Lecture => {
             return {
                 id: lesson.id,
                 title: lesson.title,
@@ -125,7 +148,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                 duration: lesson.videoDuration ? 
                     `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
                     '0:00',
-                isCompleted: lesson.currentUserProgress?.completed || false,
+                isCompleted: isCompleted,
                 isCurrent: false,
                 videoUrl: lesson.videoUrl,
                 textContent: lesson.content
@@ -332,7 +355,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                             <div className="w-full bg-black">
                                 {currentLecture.id && (
                                     <VideoPlayer
-                                        videoId={currentLecture.id}
+                                        isCompleted={currentLecture.isCompleted}
+                                        lessonId={lectureId}
                                         title={currentLecture.title}
                                         onTimeUpdate={handleTimeUpdate}
                                     />
@@ -361,6 +385,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                             title={courseData.title}
                             sections={courseData.sections}
                             courseSlug={slug}
+                            courseId={courseData.id}
                         />
                     )}
                 </div>

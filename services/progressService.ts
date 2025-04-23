@@ -2,6 +2,8 @@
 
 import apiClient from "@/lib/apiClient";
 import { AxiosResponse } from "axios";
+import { ApiResponse } from "@/types/api-response";
+import { LessonProgressDto } from "@/types/lesson";
 
 /**
  * Lấy tiến độ học tập cho một khóa học
@@ -51,5 +53,22 @@ export const markCourseAsCompleted = async (enrollmentId: number): Promise<boole
     } catch (error) {
         console.error("markCourseAsCompleted error:", error);
         return false;
+    }
+};
+
+/**
+ * Lấy danh sách tiến độ của tất cả bài học trong một khóa học
+ * @param courseId ID của khóa học
+ * @returns Danh sách tiến độ của các bài học
+ */
+export const getAllLessonProgressByCourse = async (courseId: string): Promise<LessonProgressDto[]> => {
+    try {
+        const response: AxiosResponse<ApiResponse<LessonProgressDto[]>> = await apiClient.get(
+            `/lesson-progress/${courseId}`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error("getAllLessonProgressByCourse error:", error);
+        return [];
     }
 };

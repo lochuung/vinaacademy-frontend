@@ -6,14 +6,16 @@ import {useRouter} from 'next/navigation';
 import {Lecture, LectureType, Section} from '@/types/lecture';
 import { LessonType } from '@/types/course';
 import { mapLessonTypeToDisplay, markLessonComplete } from '@/services/lessonService';
+import { updateLessonProgress, getAllLessonProgressByCourse } from '@/services/progressService';
 
 interface CourseContentProps {
     title: string;
     sections: Section[];
     courseSlug: string;
+    courseId?: string;
 }
 
-const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections, courseSlug}) => {
+const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections, courseSlug, courseId}) => {
     const router = useRouter();
     const [sections, setSections] = useState<Section[]>(initialSections);
     const [expandedSections, setExpandedSections] = useState<string[]>(
@@ -27,11 +29,47 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
         router.push(`/learning/${courseSlug}/lecture/${lectureId}`);
     };
 
-    // Cập nhật trạng thái hoàn thành từ API và localStorage khi khởi tạo
+    // Cập nhật trạng thái hoàn thành từ API khi khởi tạo
     useEffect(() => {
         // Cập nhật sections state khi initialSections thay đổi
         setSections(initialSections);
-    }, [initialSections]);
+        
+        // Nếu có courseId, chúng ta có thể refresh trạng thái hoàn thành từ API
+        if (courseId) {
+            const refreshProgressStatus = async () => {
+                try {
+                    const progressData = await getAllLessonProgressByCourse(courseId);
+                    if (progressData && progressData.length > 0) {
+                        // Tạo map từ lessonId đến completion status để tìm kiếm nhanh
+                        const progressMap = new Map();
+                        progressData.forEach(item => {
+                            progressMap.set(item.lessonId, item.completed);
+                        });
+                        
+                        // Cập nhật trạng thái hoàn thành cho các bài học
+                        const updatedSections = initialSections.map(section => ({
+                            ...section,
+                            lectures: section.lectures.map(lecture => {
+                                if (progressMap.has(lecture.id)) {
+                                    return {
+                                        ...lecture,
+                                        isCompleted: progressMap.get(lecture.id)
+                                    };
+                                }
+                                return lecture;
+                            })
+                        }));
+                        
+                        setSections(updatedSections);
+                    }
+                } catch (error) {
+                    console.error("Failed to refresh progress status:", error);
+                }
+            };
+            
+            refreshProgressStatus();
+        }
+    }, [initialSections, courseId]);
 
     const toggleSection = (sectionId: string) => {
         setExpandedSections(prevExpanded =>
@@ -41,9 +79,14 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
         );
     };
 
-    const toggleLectureCompletion = async (e: React.MouseEvent, lectureId: string, isCompleted: boolean) => {
+    const markLectureCompletion = async (e: React.MouseEvent, lectureId: string, isCompleted: boolean) => {
         // Ngăn chặn sự kiện lan tỏa để không kích hoạt handleLectureSelect
         e.stopPropagation();
+
+        if (isCompleted) {
+            // Nếu bài học đã hoàn thành, không cần làm gì thêm
+            return;
+        }
 
         // Optimistic update trước khi gọi API
         const updatedSections = sections.map(section => ({
@@ -59,22 +102,12 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
 
         // Gọi API để cập nhật server
         try {
-            const success = await markLessonComplete(lectureId, isCompleted);
+            const success = await markLessonComplete(lectureId);
             
             if (!success) {
                 // Nếu API thất bại, hoàn tác thay đổi UI
                 console.error("Failed to update completion status on server");
                 setSections(sections); // Revert to original state
-            } else {
-                // Lưu vào localStorage làm cache
-                const savedCompletionStatus = localStorage.getItem(`course-${courseSlug}-completion`) || '{}';
-                try {
-                    const completionData = JSON.parse(savedCompletionStatus);
-                    completionData[lectureId] = isCompleted;
-                    localStorage.setItem(`course-${courseSlug}-completion`, JSON.stringify(completionData));
-                } catch (error) {
-                    console.error("Lỗi khi lưu trạng thái hoàn thành vào localStorage:", error);
-                }
             }
         } catch (error) {
             console.error("Error updating completion status:", error);
@@ -178,8 +211,8 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
                                         {/* Ô đánh dấu trạng thái hoàn thành */}
                                         <button
                                             className="flex-none ml-4 mr-1 focus:outline-none"
-                                            onClick={(e) => toggleLectureCompletion(e, lecture.id, !lecture.isCompleted)}
-                                            aria-label={lecture.isCompleted ? "Đánh dấu chưa hoàn thành" : "Đánh dấu đã hoàn thành"}
+                                            onClick={(e) => markLectureCompletion(e, lecture.id, !!lecture.isCompleted)}
+                                            aria-label={"Đánh dấu đã hoàn thành"}
                                         >
                                             {lecture.isCompleted ? (
                                                 <CheckCircle className="w-5 h-5 text-green-500"/>
