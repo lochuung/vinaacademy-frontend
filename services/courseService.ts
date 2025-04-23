@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/apiClient";
 import { ApiResponse, PaginatedResponse } from "@/types/api-response";
-import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest } from "@/types/course";
+import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest, CourseStatusCountDto, CourseStatusRequest} from "@/types/course";
 import { CourseData, CourseLevel, CourseStatus } from "@/types/new-course";
 import { AxiosResponse } from "axios";
 import { UserDto } from "@/types/course";
@@ -83,6 +83,30 @@ export async function searchCourses(
         return response.data.data;
     } catch (error) {
         console.error("searchCourses error:", error);
+        return null;
+    }
+}
+
+export async function searchCoursesDetail(
+    search: CourseSearchRequest,
+    page = 0,
+    size = 10,
+    sortBy = 'name',
+    sortDirection: 'asc' | 'desc' = 'asc'
+): Promise<PaginatedResponse<CourseDetailsResponse> | null> {
+    try {
+        const response: AxiosResponse = await apiClient.get('/courses/searchdetails', {
+            params: {
+                ...search,
+                page,
+                size,
+                sortBy,
+                sortDirection
+            }
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error("searchCoursesDetail error:", error);
         return null;
     }
 }
@@ -336,6 +360,28 @@ export async function createInstructorCourse(course: CourseInstructorDtoRequest)
         return response.data.data;
     } catch (error) {
         console.error("createCourseInstructor error:", error);
+        return null;
+    }
+}
+
+export async function getStatusCourse(): Promise<CourseStatusCountDto | null> {
+    try {
+        const response: AxiosResponse = await apiClient.get('/courses/statuscount');
+        console.log("getCountStatus of course complete:", response.data.data);
+        return response.data.data;
+    } catch (error) {
+        console.error("getCountStatus of course error:", error);
+        return null;
+    }
+}
+
+export async function updateStatusCourse(statusRequest : CourseStatusRequest): Promise<Boolean | null> {
+    try {
+        const response: AxiosResponse = await apiClient.put('/courses/statuschange', statusRequest);
+        console.log("update course Status of course complete:", response.data.data);
+        return response.data.data;
+    } catch (error) {
+        console.error("update course Status of course error:", error);
         return null;
     }
 }
