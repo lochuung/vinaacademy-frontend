@@ -4,7 +4,7 @@ import { PaginatedResponse } from '@/types/api-response';
 import { CourseDto } from '@/types/course';
 import { CourseType } from '@/types/instructor-course';
 import { useAuth } from '@/context/AuthContext';
-import { adaptCoursesToUi } from '@/utils/courseAdapter';
+import { mapCoursesToUiModels } from '@/utils/courseMapper';
 
 export function useInstructorCourses(initialPage = 0, initialSize = 10) {
     const { isAuthenticated } = useAuth();
@@ -30,11 +30,11 @@ export function useInstructorCourses(initialPage = 0, initialSize = 10) {
             const response = await getInstructorCourses(page, size, sortBy, sortDirection);
 
             if (response) {
-                // Chuyển đổi dữ liệu CourseDto sang CourseType
-                const adaptedCourses = adaptCoursesToUi(response.content);
-                setCourses(adaptedCourses);
+                // Use the mapper to transform CourseDto to CourseType
+                const transformedCourses = mapCoursesToUiModels(response.content);
+                setCourses(transformedCourses);
 
-                // Lưu thông tin phân trang
+                // Save pagination info
                 const { content, ...paginationInfo } = response;
                 setPagination(paginationInfo);
             } else {
@@ -60,7 +60,7 @@ export function useInstructorCourses(initialPage = 0, initialSize = 10) {
 
     const handleSizeChange = (newSize: number) => {
         setSize(newSize);
-        setPage(0); // Reset về trang đầu tiên khi thay đổi kích thước trang
+        setPage(0); // Reset to first page when changing page size
     };
 
     const handleSortChange = (newSortBy: string, newSortDirection: 'asc' | 'desc') => {

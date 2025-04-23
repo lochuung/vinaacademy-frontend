@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MoreVertical } from 'lucide-react';
 import { CourseType } from '@/types/instructor-course';
+import CourseImage from '@/services/CourseImage';
 
 interface CourseCardProps {
     course: CourseType;
@@ -10,7 +11,11 @@ export default function CourseCard({ course }: CourseCardProps) {
     return (
         <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="relative">
-                <img className="h-48 w-full object-cover" src={course.thumbnail} alt={course.title} />
+                <CourseImage
+                    className="h-48 w-full object-cover"
+                    src={course.thumbnail}
+                    alt={course.title}
+                />
                 <div className="absolute top-2 right-2">
                     <button className="p-1 rounded-full bg-white shadow">
                         <MoreVertical className="h-5 w-5 text-gray-500" />
