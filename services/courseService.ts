@@ -296,3 +296,35 @@ export const getCourseIdBySlug = async (slug: string): Promise<string | null> =>
         return null;
     }
 };
+
+// Thêm vào courseService.ts
+
+/**
+ * Lấy danh sách khóa học của giảng viên đăng nhập
+ * @param page Số trang (bắt đầu từ 0)
+ * @param size Số lượng bản ghi mỗi trang
+ * @param sortBy Trường để sắp xếp
+ * @param sortDirection Hướng sắp xếp (asc/desc)
+ * @returns Danh sách khóa học của giảng viên theo trang
+ */
+export async function getInstructorCourses(
+    page = 0,
+    size = 10,
+    sortBy = 'createdDate',
+    sortDirection: 'asc' | 'desc' = 'desc'
+): Promise<PaginatedResponse<CourseDto> | null> {
+    try {
+        const response: AxiosResponse = await apiClient.get('/courses/instructor/courses', {
+            params: {
+                page,
+                size,
+                sortBy,
+                sortDirection
+            }
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error("getInstructorCourses error:", error);
+        return null;
+    }
+}

@@ -4,7 +4,7 @@ interface BeautifulSpinnerProps {
     name: string;
 }
 
-const BeautifulSpinner = ({name}: BeautifulSpinnerProps) => {
+const BeautifulSpinner = ({ name }: BeautifulSpinnerProps) => {
     return (
         <div className="p-6 flex justify-center items-center h-64 bg-transparent">
             <div className="flex flex-col items-center">
