@@ -13,8 +13,8 @@ export function mapCourseToUiModel(courseDto: CourseDto): CourseType {
         students: courseDto.totalStudent || 0,
         rating: courseDto.rating || 0,
         income: 0, // This may need to come from another source
+        status: courseDto.status,
         lastUpdated: courseDto.updatedDate || courseDto.createdDate,
-        published: courseDto.status === 'PUBLISHED',
         thumbnail: courseDto.image // This is the key field we need to map
     };
 }

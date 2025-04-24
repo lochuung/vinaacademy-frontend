@@ -15,7 +15,7 @@ export interface LessonDto extends BaseDto {
     courseName: string;
 
     // progress
-    currentUserProgress ?: LessonProgressDto;
+    currentUserProgress?: LessonProgressDto;
 
     // For Video lessons
     thumbnailUrl?: string;
@@ -36,11 +36,15 @@ export interface LessonRequest {
     title: string;
     sectionId: string; // UUID
     type: LessonType;
-    free: boolean;
-    orderIndex: number;
+    description?: string;
+    free?: boolean;
+    orderIndex?: number; // Thêm orderIndex
 
     // For Video lessons
     thumbnailUrl?: string;
+    videoUrl?: string;
+    videoDuration?: number;
+    status?: VideoStatus;
 
     // For Reading lessons
     content?: string;

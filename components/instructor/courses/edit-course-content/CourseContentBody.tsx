@@ -1,6 +1,6 @@
 // components/CourseContentBody.tsx
-import {Section} from '@/types/instructor-course-edit';
-import {SectionItem} from './SectionItem';
+import { Section } from '@/types/instructor-course-edit';
+import { SectionItem } from './SectionItem';
 
 interface CourseContentBodyProps {
     sections: Section[];
@@ -13,20 +13,24 @@ interface CourseContentBodyProps {
     deleteSection: (sectionId: string) => void;
     addLecture: (sectionId: string) => void;
     deleteLecture: (sectionId: string, lectureId: string) => void;
+    onSectionUpdated: () => void;
+    onLectureUpdated: () => void;
 }
 
 export const CourseContentBody = ({
-                                      sections,
-                                      courseId,
-                                      expandedSections,
-                                      isDragging,
-                                      onDragStart,
-                                      onDragEnd,
-                                      toggleSection,
-                                      deleteSection,
-                                      addLecture,
-                                      deleteLecture
-                                  }: CourseContentBodyProps) => {
+    sections,
+    courseId,
+    expandedSections,
+    isDragging,
+    onDragStart,
+    onDragEnd,
+    toggleSection,
+    deleteSection,
+    addLecture,
+    deleteLecture,
+    onSectionUpdated,
+    onLectureUpdated
+}: CourseContentBodyProps) => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
             <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -48,6 +52,8 @@ export const CourseContentBody = ({
                                 onDelete={deleteSection}
                                 onAddLecture={addLecture}
                                 onDeleteLecture={deleteLecture}
+                                onSectionUpdated={onSectionUpdated}
+                                onLectureUpdated={onLectureUpdated}
                             />
                         ))
                     )}

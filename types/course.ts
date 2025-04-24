@@ -6,13 +6,13 @@ export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED';
 export type LessonType = 'VIDEO' | 'READING' | 'QUIZ';
 export type VideoStatus = 'PROCESSING' | 'READY' | 'FAILED';
 
-export interface CourseStatusCountDto{
+export interface CourseStatusCountDto {
     totalPublished: number;
     totalPending: number;
     totalRejected: number;
 }
 
-export interface CourseStatusRequest{
+export interface CourseStatusRequest {
     slug: string;
     status: CourseStatus;
 }
@@ -164,3 +164,4 @@ export interface CourseSearchRequest {
     minRating?: number;
     status?: CourseStatus;
 }
+

@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/apiClient";
 import { ApiResponse, PaginatedResponse } from "@/types/api-response";
-import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest, CourseStatusCountDto, CourseStatusRequest} from "@/types/course";
+import { CourseDetailsResponse, CourseDto, CourseRequest, CourseSearchRequest, CourseStatusCountDto, CourseStatusRequest } from "@/types/course";
 import { CourseData, CourseLevel, CourseStatus } from "@/types/new-course";
 import { AxiosResponse } from "axios";
 import { UserDto } from "@/types/course";
@@ -375,7 +375,7 @@ export async function getStatusCourse(): Promise<CourseStatusCountDto | null> {
     }
 }
 
-export async function updateStatusCourse(statusRequest : CourseStatusRequest): Promise<Boolean | null> {
+export async function updateStatusCourse(statusRequest: CourseStatusRequest): Promise<Boolean | null> {
     try {
         const response: AxiosResponse = await apiClient.put('/courses/statuschange', statusRequest);
         console.log("update course Status of course complete:", response.data.data);
@@ -383,5 +383,22 @@ export async function updateStatusCourse(statusRequest : CourseStatusRequest): P
     } catch (error) {
         console.error("update course Status of course error:", error);
         return null;
+    }
+}
+
+/**
+ * Gửi khóa học đi duyệt (chuyển sang trạng thái PENDING)
+ * @param courseId ID của khóa học
+ * @returns true nếu thành công, false nếu thất bại
+ */
+export async function submitCourseForReview(courseId: string): Promise<boolean> {
+    try {
+        const response: AxiosResponse<ApiResponse<boolean>> = await apiClient.put(
+            `/courses/submit-for-review/${courseId}`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error("Lỗi khi gửi khóa học đi duyệt:", error);
+        return false;
     }
 }
