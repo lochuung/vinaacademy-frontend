@@ -3,7 +3,6 @@
 import React from "react";
 import Carousel from "@/components/layout/Carousel";
 import { CourseDto } from "@/types/course";
-import { mockCourses } from "@/data/mockCourses";
 import { getImageUrl } from "@/utils/imageUtils";
 
 interface CourseCarouselAdapterProps {

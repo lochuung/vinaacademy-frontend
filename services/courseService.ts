@@ -338,6 +338,10 @@ export async function getInstructorCourses(
     sortDirection: 'asc' | 'desc' = 'desc'
 ): Promise<PaginatedResponse<CourseDto> | null> {
     try {
+        console.log(`Gửi request lấy khóa học của giảng viên với params:`, {
+            page, size, sortBy, sortDirection
+        });
+
         const response: AxiosResponse = await apiClient.get('/courses/instructor/courses', {
             params: {
                 page,
@@ -346,6 +350,8 @@ export async function getInstructorCourses(
                 sortDirection
             }
         });
+
+        console.log('Kết quả từ API:', response.data);
         return response.data.data;
     } catch (error) {
         console.error("getInstructorCourses error:", error);
