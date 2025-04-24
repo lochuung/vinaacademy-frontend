@@ -16,9 +16,10 @@ interface QuizLandingProps {
   onStartQuiz: () => void;
   onLessonCompleted?: () => void;
   courseSlug?: string;
+  isCompleted?: boolean; // New prop to track if the lesson is already completed
 }
 
-const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonCompleted, courseSlug }) => {
+const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonCompleted, courseSlug, isCompleted = false }) => {
   const queryClient = useQueryClient();
   const [quiz, setQuiz] = useState<QuizDto | null>(null);
   const [latestSubmission, setLatestSubmission] = useState<QuizSubmissionResultDto | null>(null);
@@ -68,10 +69,12 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
           setMappedQuiz(mapped);
         }
         
-        // Fetch latest submission
-        const latestSub = await getLatestSubmission(quizId);
-        if (latestSub) {
-          setLatestSubmission(latestSub);
+        // Only fetch latest submission if the lesson is completed
+        if (isCompleted) {
+          const latestSub = await getLatestSubmission(quizId);
+          if (latestSub) {
+            setLatestSubmission(latestSub);
+          }
         }
         
       } catch (error) {
@@ -98,7 +101,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
     };
     
     fetchQuizData();
-  }, [quizId]);
+  }, [quizId, isCompleted]);
 
   const handleViewHistory = async () => {
     setLoadingHistory(true);

@@ -195,11 +195,15 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                                         courseId={slug}
                                         onLessonCompleted={refetchLectureData}
                                         courseSlug={slug}
+                                        isCompleted={currentLecture.isCompleted}
                                     />
                                 ) : (
                                     <QuizLanding
                                         quizId={currentLecture.id}
                                         onStartQuiz={handleStartQuiz}
+                                        onLessonCompleted={refetchLectureData}
+                                        courseSlug={slug}
+                                        isCompleted={currentLecture.isCompleted}
                                     />
                                 )}
                             </div>

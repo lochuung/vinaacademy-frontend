@@ -1,8 +1,8 @@
 "use client";
 
-import {FC, useState, useEffect, useRef} from 'react';
-import {ChevronLeft, ChevronRight, Check, Clock, AlertCircle} from 'lucide-react';
-import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
+import { FC, useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Check, Clock, AlertCircle } from 'lucide-react';
+import { Quiz, QuizQuestion as QuizQuestionType } from '@/types/lecture';
 import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
@@ -16,9 +16,10 @@ interface QuizContentProps {
     lectureId: string;
     onLessonCompleted?: () => void;
     courseSlug?: string;
+    isCompleted?: boolean;
 }
 
-const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonCompleted, courseSlug }) => {
+const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonCompleted, courseSlug, isCompleted }) => {
     const queryClient = useQueryClient();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -41,22 +42,16 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         const fetchQuizData = async () => {
             setLoading(true);
             try {
-                // First check if user has already submitted this quiz
-                const latestSubmission = await getLatestSubmission(lectureId);
-                
-                if (latestSubmission) {
-                    setPreviousSubmission(latestSubmission);
-                }
-                
+
                 // Then fetch quiz data
                 const quizData = await getQuiz(lectureId);
-                
+
                 if (!quizData) {
                     setError("Không thể tải bài kiểm tra. Vui lòng thử lại sau.");
                     setLoading(false);
                     return;
                 }
-                
+
                 // Map API response to our Quiz type
                 const mappedQuiz: Quiz = {
                     title: quizData.title || 'Kiểm tra kiến thức',
@@ -83,14 +78,24 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     },
                     totalPoints: quizData.totalPoint
                 };
-                
+
                 // If randomization is enabled, randomize the questions
                 if (mappedQuiz.settings.randomizeQuestions) {
                     mappedQuiz.questions = [...mappedQuiz.questions].sort(() => Math.random() - 0.5);
                 }
-                
+
                 setQuiz(mappedQuiz);
-                
+
+                let latestSubmission = null;
+                // First check if user has already submitted this quiz
+                if (isCompleted) {
+                    latestSubmission = await getLatestSubmission(lectureId);
+
+                    if (latestSubmission) {
+                        setPreviousSubmission(latestSubmission);
+                    }
+                }
+
                 // Show previous results if quiz doesn't allow retakes and user has already taken it
                 if (latestSubmission && !mappedQuiz.settings.allowRetake) {
                     setQuizResult(latestSubmission);
@@ -104,19 +109,19 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     // Optional: show a button to view previous results or continue to new attempt
                     // For now, we'll just continue with a new attempt
                 }
-                
+
                 // Start quiz session
                 const session = await startQuiz(lectureId);
-                
+
                 if (session) {
                     setQuizSession(session);
-                    
+
                     // Initialize timer based on session expiry time if available
                     if (session.expiryTime) {
                         const now = new Date();
                         const expiryTime = new Date(session.expiryTime);
                         const diffInSeconds = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
-                        
+
                         // If the session has already expired
                         if (diffInSeconds <= 0) {
                             setSessionExpired(true);
@@ -128,31 +133,31 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                         // If server doesn't provide expiry time but quiz has time limit
                         setRemainingTime(mappedQuiz.settings.timeLimit * 60); // Convert minutes to seconds
                     }
-                    
+
                     // Retrieve cached answers if any
                     try {
                         const cachedAnswers = await getCachedAnswers(lectureId, session.id);
-                        
+
                         if (cachedAnswers && Object.keys(cachedAnswers).length > 0) {
                             // Process and apply cached answers to current state
                             const newSelectedAnswers: Record<string, string[]> = {};
                             const newTextAnswers: Record<string, string> = {};
-                            
+
                             // Iterate through cached answers to separate selection and text answers
                             Object.values(cachedAnswers).forEach(answer => {
                                 if (answer.textAnswer && answer.textAnswer.trim().length > 0) {
                                     newTextAnswers[answer.questionId] = answer.textAnswer;
                                 }
-                                
+
                                 if (answer.selectedAnswerIds && answer.selectedAnswerIds.length > 0) {
                                     newSelectedAnswers[answer.questionId] = answer.selectedAnswerIds;
                                 }
                             });
-                            
+
                             // Update state with cached answers
                             setSelectedAnswers(newSelectedAnswers);
                             setTextAnswers(newTextAnswers);
-                            
+
                             console.log("Loaded cached answers:", Object.keys(cachedAnswers).length);
                         }
                     } catch (err) {
@@ -166,7 +171,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     }
                     console.warn("Failed to start quiz session. Using client-side timer instead.");
                 }
-                
+
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching quiz:", err);
@@ -174,7 +179,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                 setLoading(false);
             }
         };
-        
+
         // Helper function to map API question types to UI types
         const mapQuestionType = (type: string): 'single_choice' | 'multiple_choice' | 'text' | 'true_false' => {
             switch (type) {
@@ -192,7 +197,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         };
 
         fetchQuizData();
-        
+
         // Clean up timer on unmount
         return () => {
             if (timerIntervalRef.current) {
@@ -236,7 +241,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         return quiz?.questions.map(question => {
             const selectedIds = selectedAnswers[question.id] || [];
             const textAnswer = textAnswers[question.id] || '';
-            
+
             return {
                 questionId: question.id,
                 selectedAnswerIds: question.type === 'text' ? [] : selectedIds,
@@ -248,23 +253,23 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
     // Submit quiz to API
     const submitQuizToApi = async () => {
         if (!quiz) return false;
-        
+
         try {
             const submissionRequest: QuizSubmissionRequest = {
                 quizId: lectureId,
                 answers: formatAnswersForSubmission()
             };
-            
+
             const result = await submitQuiz(submissionRequest);
-            
+
             if (!result) {
                 setError("Đã xảy ra lỗi khi nộp bài. Vui lòng thử lại.");
                 return false;
             }
-            
+
             // Store the quiz result for display
             setQuizResult(result);
-            
+
             // If quiz is passed, invalidate the course data to refresh progress
             if (result.isPassed) {
                 // Invalidate React Query cache
@@ -273,13 +278,13 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                         queryKey: ['lecture', courseSlug]
                     });
                 }
-                
+
                 // Notify parent component
                 if (onLessonCompleted) {
                     onLessonCompleted();
                 }
             }
-            
+
             return true;
         } catch (err) {
             console.error("Error submitting quiz:", err);
@@ -292,11 +297,11 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
     const handleSubmitQuiz = async () => {
         setIsSubmitted(true);
         const submitted = await submitQuizToApi();
-        
+
         if (submitted) {
             setShowResults(true);
             setRequireConfirmation(false);
-            
+
             // Clear the timer
             if (timerIntervalRef.current) {
                 clearInterval(timerIntervalRef.current);
@@ -341,7 +346,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                 questionId: questionId,
                 selectedAnswerIds: newSelections,
             };
-            
+
             cacheQuizAnswer(lectureId, answerRequest)
                 .catch(error => console.error("Failed to cache answer:", error));
         }
@@ -361,7 +366,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                 selectedAnswerIds: [],
                 textAnswer: text
             };
-            
+
             cacheQuizAnswer(lectureId, answerRequest)
                 .catch(error => console.error("Failed to cache text answer:", error));
         }
@@ -370,7 +375,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
     // Kiểm tra xem câu hỏi hiện tại đã được trả lời chưa
     const isCurrentQuestionAnswered = () => {
         if (!currentQuestion) return false;
-        
+
         if (currentQuestion.type === 'text') {
             return textAnswers[currentQuestion.id]?.trim().length > 0;
         } else {
@@ -381,7 +386,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
     // Kiểm tra xem tất cả câu hỏi bắt buộc đã được trả lời chưa
     const areRequiredQuestionsAnswered = () => {
         if (!quiz) return false;
-        
+
         return quiz.questions.every(question => {
             if (!question.isRequired) return true;
 
@@ -404,7 +409,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                 results: []
             };
         }
-        
+
         const results = quiz.questions.map(question => {
             // Find corresponding answer from API response
             const apiAnswer = quizResult.answers.find(a => a.questionId === question.id);
@@ -417,7 +422,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     userAnswer: selectedAnswers[question.id] || []
                 };
             }
-            
+
             // For text questions
             if (question.type === 'text') {
                 return {
@@ -428,10 +433,10 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     explanation: apiAnswer.explanation
                 };
             }
-            
+
             // For choice questions
             const userAnswerIds = selectedAnswers[question.id] || [];
-            
+
             return {
                 questionId: question.id,
                 correct: apiAnswer.isCorrect,
@@ -445,14 +450,14 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     : []
             };
         });
-        
+
         return {
             totalScore: quizResult.score,
             maxScore: quizResult.totalPoints,
             percentageScore: (quizResult.score / quizResult.totalPoints) * 100,
             passed: quizResult.isPassed,
             results,
-            timeSpent: quizResult.startTime && quizResult.endTime ? 
+            timeSpent: quizResult.startTime && quizResult.endTime ?
                 new Date(quizResult.endTime).getTime() - new Date(quizResult.startTime).getTime() : 0
         };
     };
@@ -495,19 +500,19 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         setShowResults(false);
         setQuizResult(null);
         setSessionExpired(false);
-        
+
         // Start a new quiz session
         const session = await startQuiz(lectureId);
-        
+
         if (session) {
             setQuizSession(session);
-            
+
             // Initialize timer based on session expiry time if available
             if (session.expiryTime) {
                 const now = new Date();
                 const expiryTime = new Date(session.expiryTime);
                 const diffInSeconds = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
-                
+
                 if (diffInSeconds <= 0) {
                     setSessionExpired(true);
                     setError("Phiên làm bài đã hết hạn. Vui lòng thử lại sau.");
@@ -529,7 +534,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
             </div>
         );
     }
-    
+
     if (error) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -537,8 +542,8 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Đã xảy ra lỗi</h3>
                     <p className="text-gray-600">{error}</p>
-                    <button 
-                        onClick={() => window.location.reload()} 
+                    <button
+                        onClick={() => window.location.reload()}
                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     >
                         Thử lại
@@ -547,7 +552,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
             </div>
         );
     }
-    
+
     if (sessionExpired) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -556,14 +561,14 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Phiên làm bài đã hết hạn</h3>
                     <p className="text-gray-600 mb-4">Thời gian làm bài đã kết thúc.</p>
                     {quiz.settings.allowRetake ? (
-                        <button 
-                            onClick={handleRetakeQuiz} 
+                        <button
+                            onClick={handleRetakeQuiz}
                             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                         >
                             Làm lại bài kiểm tra
                         </button>
                     ) : (
-                        <button 
+                        <button
                             onClick={() => window.history.back()}
                             className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
                         >
@@ -601,7 +606,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
 
                         {/* Nếu có thời gian giới hạn, hiển thị đồng hồ đếm ngược */}
                         {remainingTime !== null && (
-                            <QuizTimer remainingTime={remainingTime}/>
+                            <QuizTimer remainingTime={remainingTime} />
                         )}
                     </div>
 
@@ -646,9 +651,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                             className={`flex items-center px-4 py-2 border rounded-md ${currentQuestionIndex === 0
                                 ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                                 : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
+                                }`}
                         >
-                            <ChevronLeft size={16} className="mr-1"/> Câu hỏi trước
+                            <ChevronLeft size={16} className="mr-1" /> Câu hỏi trước
                         </button>
 
                         {currentQuestionIndex < quiz.questions.length - 1 ? (
@@ -656,14 +661,14 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                                 onClick={goToNextQuestion}
                                 className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                             >
-                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1"/>
+                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1" />
                             </button>
                         ) : (
                             <button
                                 onClick={handleConfirmSubmit}
                                 className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                             >
-                                <Check size={16} className="mr-1"/> Nộp bài
+                                <Check size={16} className="mr-1" /> Nộp bài
                             </button>
                         )}
                     </div>
@@ -676,7 +681,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
                         <div className="flex items-start mb-4">
                             <div className="flex-shrink-0">
-                                <AlertCircle className="h-6 w-6 text-yellow-500"/>
+                                <AlertCircle className="h-6 w-6 text-yellow-500" />
                             </div>
                             <div className="ml-3">
                                 <h3 className="text-lg font-medium text-gray-900">Có câu hỏi bắt buộc chưa trả lời</h3>
