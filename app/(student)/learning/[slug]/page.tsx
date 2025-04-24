@@ -34,7 +34,8 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
             return total + section.lectures.reduce((sectionTotal, lecture) => {
                 // Extract minutes and seconds from duration string (e.g., "5:30")
                 const [minutes, seconds] = lecture.duration.split(':').map(Number);
-                return sectionTotal + (minutes * 60) + (seconds || 0);
+                const totalTime = (minutes * 60) + (seconds || 0);
+                return sectionTotal + (totalTime || 3 * 60);
             }, 0);
         }, 0);
 
