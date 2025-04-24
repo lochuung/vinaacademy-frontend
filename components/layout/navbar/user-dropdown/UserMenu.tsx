@@ -3,25 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { FaUserCircle } from "react-icons/fa";
 import UserDropdown from "./UserDropdown";
-import { getCurrentUser } from "@/services/authService";
-import { User } from "@/types/auth";
+import { useAuth } from "@/context/AuthContext";
 
-interface UserMenuProps {
-  isLoggedIn: boolean;
-}
-
-const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
+const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const handleUser = async () => {
-    const user = await getCurrentUser();
-    setUser(user);
-  };
-  useEffect(() => {
-    handleUser();
-  }, []);
+  const { isAuthenticated, user } = useAuth();
 
   // Mở dropdown với độ trễ nhỏ để tránh hiệu ứng flicker
   const handleMouseEnter = () => {
@@ -63,11 +51,10 @@ const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {isLoggedIn ? (
+      {isAuthenticated ? (
         <div
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-full transition-colors duration-200 ${
-            isOpen ? "bg-gray-100" : "hover:bg-gray-50"
-          }`}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-full transition-colors duration-200 ${isOpen ? "bg-gray-100" : "hover:bg-gray-50"
+            }`}
           onClick={toggleDropdown}
           aria-expanded={isOpen}
           aria-haspopup="true"
@@ -107,7 +94,7 @@ const UserMenu = ({ isLoggedIn }: UserMenuProps) => {
         </div>
       )}
 
-      {isLoggedIn && (
+      {isAuthenticated && (
         <UserDropdown isVisible={isOpen} onClose={() => setIsOpen(false)} />
       )}
     </div>
