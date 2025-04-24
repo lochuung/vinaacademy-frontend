@@ -10,7 +10,7 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen flex w-full bg-white border-t border-black">
+    <div className="min-h-screen flex w-full bg-white border-t border-black my-[-22px] mb-[-15px]">
       <div className="flex-1 flex flex-col">
         <main className={"flex-1 p-6"}>{children}</main>
         <Toaster/>

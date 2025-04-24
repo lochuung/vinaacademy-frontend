@@ -40,25 +40,25 @@ const DashboardStats = ({
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
-        title="Total Courses"
+        title="Tổng số khóa học"
         value={totalRequests}
         icon={<BookOpen className="h-4 w-4 text-muted-foreground" />}
         className="bg-accent"
       />
       <StatCard
-        title="Pending Approval"
+        title="Đang chờ duyệt"
         value={pendingRequests}
         icon={<Clock className="h-4 w-4 text-yellow-600" />}
         className="bg-yellow-50"
       />
       <StatCard
-        title="Approved"
+        title="Đã phê duyệt"
         value={approvedRequests}
         icon={<CheckCircle className="h-4 w-4 text-green-600" />}
         className="bg-green-50"
       />
       <StatCard
-        title="Rejected"
+        title="Đã từ chối"
         value={rejectedRequests}
         icon={<XCircle className="h-4 w-4 text-red-600" />}
         className="bg-red-50"

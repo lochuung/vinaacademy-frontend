@@ -1,23 +1,28 @@
-// CourseDetail.tsx
-'use client'
+"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import {
+  Eye,
+  BookOpen,
+  DollarSign,
+  User,
+  Calendar,
+  Tag,
+  BarChart3,
+  Layers,
+  FileText,
+  Globe,
+} from "lucide-react";
 import { format } from "date-fns";
+import { CourseDetailsResponse } from "@/types/course";
+import MarkdownMD from "@/components/ui/markdownMD";
 
 interface CourseDetailProps {
   selectedCourseId: string | null;
-  courseRequests: {
-    id: string;
-    title: string;
-    instructor: string;
-    department: string;
-    createdAt: string;
-    status: "pending" | "approved" | "rejected";
-  }[];
+  courseRequests: CourseDetailsResponse[];
   onPreview: (id: string) => void;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
+  onApprove: (slug: string) => void;
+  onReject: (slug: string, nameg: string, id: string, recipid: string) => void;
 }
 
 const RightCourseDetail = ({
@@ -37,9 +42,7 @@ const RightCourseDetail = ({
         <div className="mb-4 rounded-full bg-accent p-3">
           <Eye className="h-6 w-6 text-muted-foreground" />
         </div>
-        <h3 className="font-medium text-lg">
-          Chưa chọn khóa học
-        </h3>
+        <h3 className="font-medium text-lg">Chưa chọn khóa học</h3>
         <p className="text-center text-muted-foreground mt-2">
           Chọn một yêu cầu khóa học từ danh sách để xem chi tiết
         </p>
@@ -47,104 +50,179 @@ const RightCourseDetail = ({
     );
   }
 
+  const courseDto = selectedCourse;
+  const instructor = courseDto.ownerInstructor?.fullName || "Không xác định";
+  const category = courseDto.categoryName;
+  const statusColor: Record<string, string> = {
+    DRAFT: "bg-gray-100 text-gray-800 border-gray-200",
+    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    PUBLISHED: "bg-green-100 text-green-800 border-green-200",
+    REJECTED: "bg-red-100 text-red-800 border-red-200",
+  };
+  const statusText: Record<string, string> = {
+    DRAFT: "Bản nháp",
+    PENDING: "Đang chờ",
+    PUBLISHED: "Đã duyệt",
+    REJECTED: "Từ chối",
+  };
+  const levelText: Record<string, string> = {
+    BEGINNER: "Mới bắt đầu",
+    INTERMEDIATE: "Trung cấp",
+    ADVANCED: "Cao cấp",
+  };
+
+  const formattedPrice = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(courseDto.price);
+
   return (
-    <div className="p-6 border rounded-lg bg-accent/5 h-full">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="font-medium text-xl">
-          Chi tiết khóa học
-        </h3>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          onClick={() => onPreview(selectedCourseId)}
-        >
-          <Eye className="h-4 w-4" />
-          Xem chi tiết đầy đủ
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-2xl font-semibold">
-              {selectedCourse.title}
-            </h2>
-            <p className="text-muted-foreground mt-1">
-              Đã tạo vào ngày{" "}
-              {format(
-                new Date(selectedCourse.createdAt),
-                "dd/MM/yyyy"
-              )}
-            </p>
+    <div className="flex flex-col h-full overflow-auto">
+      <div className="flex-1 overflow-auto p-6 border rounded-lg bg-accent/5">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="font-medium text-xl">Chi tiết khóa học</h3>
+          {courseDto.status === "PENDING" && (
+            <div className="flex items-center gap-2">
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white w-fit"
+              onClick={() => onApprove(courseDto.slug)}
+            >
+              Phê duyệt
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 w-fit"
+              onClick={() => onReject(courseDto.slug, courseDto.name, courseDto.id, courseDto.ownerInstructor?.id || "")}
+            >
+              Từ chối
+            </Button>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground">
-                Thông tin giảng viên
-              </h4>
-              <p className="font-medium">
-                {selectedCourse.instructor}
-              </p>
-              <p className="text-sm">
-                Khoa: {selectedCourse.department}
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground">
-                Trạng thái yêu cầu
-              </h4>
-              <div className="space-x-2">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                  ${
-                    selectedCourse.status === "pending"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : selectedCourse.status === "approved"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {selectedCourse.status === "pending"
-                    ? "Đang chờ"
-                    : selectedCourse.status === "approved"
-                    ? "Đã duyệt"
-                    : "Đã từ chối"}
-                </span>
-              </div>
-
-              {selectedCourse.status === "pending" && (
-                <div className="flex gap-3 mt-4">
-                  <Button
-                    variant="outline"
-                    className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    onClick={() => onReject(selectedCourse.id)}
-                  >
-                    Từ chối
-                  </Button>
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                    onClick={() => onApprove(selectedCourse.id)}
-                  >
-                    Phê duyệt
-                  </Button>
-                </div>
-              )}
-            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => onPreview(selectedCourseId)}
+            >
+              <BookOpen className="h-4 w-4" />
+              Xem chi tiết bài học
+            </Button>
           </div>
         </div>
 
-        <div className="border-t pt-4">
-          <h4 className="font-medium mb-2">Giới thiệu</h4>
-          <p className="text-muted-foreground">
-            Đề xuất khóa học này tập trung vào{" "}
-            {selectedCourse.title} và sẽ được giảng dạy
-            bởi {selectedCourse.instructor} từ khoa{" "}
-            {selectedCourse.department}. Các tài liệu
-            khóa học và đề cương đã được nộp để xem xét.
-          </p>
+        <div className="space-y-6">
+          {courseDto.image && (
+            <div className="relative w-full h-64 rounded-lg overflow-hidden">
+              <img
+                src={courseDto.image}
+                alt={courseDto.name}
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute top-3 right-3">
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                    statusColor[courseDto.status] || "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {statusText[courseDto.status] || courseDto.status}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <h2 className="text-2xl font-semibold mb-2">{courseDto.name}</h2>
+            <div className="flex items-center text-muted-foreground text-sm gap-2 mb-4">
+              <Calendar className="h-4 w-4" />
+              <span>
+                Đã tạo: {format(new Date(courseDto.createdDate), "dd/MM/yyyy")}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white rounded-md border shadow-sm">
+            <h4 className="font-medium text-base mb-3 pb-2 border-b">
+              Thông tin cơ bản
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <User className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Giảng viên</p>
+                  <p className="text-muted-foreground">{instructor}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Tag className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Danh mục</p>
+                  <p className="text-muted-foreground">{category}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <DollarSign className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Giá khóa học</p>
+                  <p className="text-muted-foreground">{formattedPrice}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <BarChart3 className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Cấp độ</p>
+                  <p className="text-muted-foreground">
+                    {levelText[courseDto.level] || courseDto.level}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <BookOpen className="h-5 w-5 text-indigo-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Slug</p>
+                  <p className="text-muted-foreground">{courseDto.slug}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Layers className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Số phần học</p>
+                  <p className="text-muted-foreground">
+                    {courseDto.totalSection} phần
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FileText className="h-5 w-5 text-cyan-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Số bài học</p>
+                  <p className="text-muted-foreground">
+                    {courseDto.totalLesson} bài
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Globe className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Ngôn ngữ</p>
+                  <p className="text-muted-foreground">{courseDto.language}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white rounded-md border shadow-sm">
+            <h4 className="font-medium text-base mb-3">Mô tả khóa học</h4>
+            <MarkdownMD markdown={courseDto.description} />
+          </div>
         </div>
       </div>
     </div>

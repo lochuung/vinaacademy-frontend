@@ -1,5 +1,9 @@
 import {useAuth} from "@/context/AuthContext";
+import { getCurrentUser } from "@/services/authService";
+import { User } from "@/types/auth";
+import { set } from "date-fns";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface UserDropdownProps {
     onClose?: () => void;
@@ -7,10 +11,18 @@ interface UserDropdownProps {
 }
 
 const UserDropdown = ({isVisible}: UserDropdownProps) => {
-    const {logout} = useAuth();
+    const { logout } = useAuth();
+    const [user, setUser] = useState<User | null>(null);
+    const handleUser = async ()=> {
+        const user = await getCurrentUser();
+        setUser(user);
+    }
+    useEffect(() => {
+        handleUser();
+    }, []);
     return (
         <div
-            className={`absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isVisible
+            className={`absolute right-0 top-12 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200 ${isVisible
                 ? "transform-none opacity-100 visible"
                 : "transform translate-y-2 opacity-0 invisible pointer-events-none"
             }`}
@@ -18,7 +30,15 @@ const UserDropdown = ({isVisible}: UserDropdownProps) => {
         >
             {/* Mũi tên chỉ hướng */}
             <div className="absolute -top-2 right-3 h-4 w-4 rotate-45 bg-white border-t border-l border-gray-200"></div>
-
+            
+            {/* User name display */}
+            {user && (
+                <div className="px-4 py-3 border-b border-gray-200">
+                    <p className="text-sm font-medium text-gray-900 truncate">{user.fullName}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                </div>
+            )}
+            
             <ul className="py-2">
                 <li>
                     <Link

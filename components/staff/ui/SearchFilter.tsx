@@ -14,13 +14,13 @@ import { CategoryDto } from "@/types/category";
 
 type SearchFilterProps = {
   onSearchChange: (search: string) => void;
-  onDepartmentChange: (department: string) => void;
+  onCategoryChange: (slugcate: string) => void;
   oldValue: string;
 };
 
 const SearchFilter = ({
   onSearchChange,
-  onDepartmentChange,
+  onCategoryChange,
   oldValue,
 }: SearchFilterProps) => {
   const [searchTerm, setSearchTerm] = useState(oldValue || "");
@@ -52,8 +52,8 @@ const SearchFilter = ({
     setSearchTerm(value);
   };
 
-  const handleDepartmentChange = (value: string) => {
-    onDepartmentChange(value);
+  const handleCategoryChange = (value: string) => {
+    onCategoryChange(value);
   };
 
   return (
@@ -61,13 +61,13 @@ const SearchFilter = ({
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
-          placeholder="Tìm kiếm theo tên khóa học hoặc giảng viên..."
+          placeholder="Tìm kiếm theo tên khóa học..."
           value={searchTerm}
           onChange={handleSearch}
           className="pl-10"
         />
       </div>
-      <Select onValueChange={handleDepartmentChange}>
+      <Select onValueChange={handleCategoryChange}>
         <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Tất cả danh mục" />
         </SelectTrigger>
@@ -75,7 +75,7 @@ const SearchFilter = ({
         <SelectContent>
           <SelectItem value="all">Tất cả danh mục</SelectItem>
           {categories.map((category) => (
-            <SelectItem key={category.id} value={category.id.toLocaleString()}>
+            <SelectItem key={category.id} value={category.slug}>
               {category.name}
             </SelectItem>
           ))}

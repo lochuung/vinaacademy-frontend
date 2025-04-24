@@ -6,8 +6,7 @@ import FilterTabs from "@/components/staff/ui/FilterTabs";
 import SearchFilter from "@/components/staff/ui/SearchFilter";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { Loader, Search, SortAsc, SortDesc } from "lucide-react";
+import { Check, Loader, Search, SortAsc, SortDesc } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +16,29 @@ import {
 import PaginationLayout from "@/components/staff/ui/Pagination";
 import CourseDetailsPreview from "@/components/staff/ui/DetailCoursePreview";
 import RightCourseDetail from "@/components/staff/ui/RightCourseDetail";
-import { searchCourses } from "@/services/courseService";
-import { CourseSearchRequest, CourseDto } from "@/types/course";
+import {
+  getStatusCourse,
+  searchCoursesDetail,
+  updateStatusCourse,
+} from "@/services/courseService";
+import { CourseSearchRequest, CourseStatusCountDto } from "@/types/course";
 import { PaginatedResponse } from "@/types/api-response";
+import { CourseDetailsResponse } from "@/types/course";
+import { set } from "date-fns";
+import RejectCourseDialog from "@/components/staff/ui/RejectCourse";
+import { getCurrentUser } from "@/services/authService";
+import { NotificationType } from "@/types/notification-type";
+import { createNotification } from "@/services/notificationService";
 
 const CourseApprovalPage = () => {
   const { toast } = useToast();
+
+  const [slugOpen, setSlugOpen] = useState<string | null>(null);
+  const [nameOpen, setNameOpen] = useState<string | null>(null);
+  const [idOpen, setIdOpen] = useState<string | null>(null);
+  const [recipid, setRecipid] = useState<string | null>(null);
+
+  const [isDialogOpenReject, setIsDialogOpenReject] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
@@ -32,8 +48,13 @@ const CourseApprovalPage = () => {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [coursesCount, setCoursesCount] = useState<CourseStatusCountDto | null>(
+    null
+  );
+  const [total, setTotal] = useState(0);
+
   const [courseData, setCourseData] =
-    useState<PaginatedResponse<CourseDto> | null>(null);
+    useState<PaginatedResponse<CourseDetailsResponse> | null>(null);
 
   const itemsPerPage = 3;
 
@@ -57,7 +78,7 @@ const CourseApprovalPage = () => {
     };
 
     try {
-      const result = await searchCourses(
+      const result = await searchCoursesDetail(
         searchRequest,
         currentPage,
         itemsPerPage,
@@ -80,15 +101,27 @@ const CourseApprovalPage = () => {
     } finally {
       setIsLoading(false);
     }
+    //delay 100ms
+    //only delay 100ms with code below
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
   };
 
+  // Effect to fetch course counts for stats
+  const fetchCoursesCount = async () => {
+    setIsLoading(true);
+    const data = await getStatusCourse();
+    setCoursesCount(data);
+    if (data) {
+      setTotal(data.totalPending + data.totalPublished + data.totalRejected);
+    }
+    setIsLoading(false);
+  };
   // Effect to fetch courses when filters change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchCourses();
-    }, 500); // Debounce API calls
-
-    return () => clearTimeout(timer);
+    fetchCoursesCount();
+    fetchCourses();
   }, [filter, searchTerm, category, sortDirection, currentPage]);
 
   // Reset page when filters change
@@ -97,47 +130,77 @@ const CourseApprovalPage = () => {
   }, [filter, searchTerm, category, sortDirection]);
 
   // Calculate counts for stats and filters
-  const counts = {
-    all: courseData?.totalElements || 0,
-    pending:
-      courseData?.content.filter((course) => course.status === "PENDING")
-        .length || 0,
-    approved:
-      courseData?.content.filter((course) => course.status === "PUBLISHED")
-        .length || 0,
-    rejected:
-      courseData?.content.filter((course) => course.status === "REJECTED")
-        .length || 0,
-  };
 
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (slug: string) => {
     setIsLoading(true);
 
-    // Here you would make an API call to update the course status
-    // For example: await updateCourseStatus(id, "PUBLISHED");
-
-    toast({
-      title: "Khóa học đã được xuất bản",
-      description: `Khóa học #${id} đã được xuất bản thành công.`,
+    const check = await updateStatusCourse({
+      slug: slug,
+      status: "PUBLISHED",
     });
 
+    if (check) {
+      toast({
+        title: "Khóa học đã được xuất bản",
+        description: `Khóa học #${slug} đã được xuất bản thành công.`,
+        className: "bg-green-500 text-white",
+      });
+    } else {
+      toast({
+        title: "Lỗi",
+        description: `Có lỗi xảy ra khi xuất bản khóa học #${slug}. Vui lòng thử lại.`,
+        variant: "destructive",
+        className: "bg-red-500 text-white",
+      });
+    }
+    await fetchCoursesCount();
     // Refresh data after action
     await fetchCourses();
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (slug: string, comment: string, name: string, id: string, recipid: string) => {
     setIsLoading(true);
 
-    // Here you would make an API call to update the course status
-    // For example: await updateCourseStatus(id, "REJECTED");
-
-    toast({
-      title: "Khóa học đã bị từ chối",
-      description: `Khóa học #${id} đã bị từ chối.`,
+    const check = await updateStatusCourse({
+      slug: slug,
+      status: "REJECTED",
     });
 
+    if (check) {
+      toast({
+        title: "Khóa học đã bị từ chối",
+        description: `Khóa học #${slug} đã bị từ chối.`,
+        className: "bg-green-500 text-white",
+      });
+
+      const notificationData = {
+        title: `Khóa học "${name}" của bạn đã bị từ chối`,
+        content: `Lí do: ${comment}`,
+        targetUrl: `/instructor/courses/${id}/content`,
+        userId: recipid,
+        type: NotificationType.COURSE_APPROVAL,
+      };
+
+      createNotification(notificationData);
+    } else {
+      toast({
+        title: "Lỗi",
+        description: `Có lỗi xảy ra khi Từ chôi khóa học #${slug}. Vui lòng thử lại.`,
+        variant: "destructive",
+        className: "bg-red-500 text-white",
+      });
+    }
+    await fetchCoursesCount();
     // Refresh data after action
     await fetchCourses();
+  };
+
+  const openRejectDialog = (slug: string, name: string, id: string, recipid: string) => {
+    setSlugOpen(slug);
+    setNameOpen(name);
+    setIdOpen(id);
+    setRecipid(recipid);
+    setIsDialogOpenReject(true);
   };
 
   const handleViewDetails = (id: string) => {
@@ -153,39 +216,33 @@ const CourseApprovalPage = () => {
     setIsLoading(true);
     // Convert from 1-based UI pagination to 0-based API pagination
     setCurrentPage(page - 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Map API data to UI format
-  const mappedCourses =
+  const mappedCourses: CourseDetailsResponse[] =
     courseData?.content.map((course) => ({
-      id: course.id,
-      title: course.name,
-      instructor: course.createdBy || "Không xác định",
-      category: course.categoryName,
-      createdAt: course.createdDate,
-      status:
-        course.status.toLowerCase() === "published"
-          ? "approved"
-          : course.status.toLowerCase(),
-      level: course.level,
-      image: course.image,
-      description: course.description,
-      price: course.price,
-      rating: course.rating,
-      totalStudent: course.totalStudent,
-      slug: course.slug,
+      ...course,
     })) || [];
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 container mx-auto px-8 py-8">
+        <RejectCourseDialog
+          slug={slugOpen || ""}
+          handleSubmitReject={handleReject}
+          setDialogOpen={setIsDialogOpenReject}
+          isDialogOpen={isDialogOpenReject}
+          nameg={nameOpen || ""}
+          id={idOpen || ""}
+          recipid={recipid || ""}
+        />
+
         <div className="space-y-8 max-w-7xl mx-auto">
           <DashboardStats
-            totalRequests={counts.all}
-            pendingRequests={counts.pending}
-            approvedRequests={counts.approved}
-            rejectedRequests={counts.rejected}
+            totalRequests={total}
+            pendingRequests={coursesCount?.totalPending || 0}
+            approvedRequests={coursesCount?.totalPublished || 0}
+            rejectedRequests={coursesCount?.totalRejected || 0}
           />
 
           <div className="space-y-6">
@@ -195,7 +252,12 @@ const CourseApprovalPage = () => {
                 <FilterTabs
                   filter={filter}
                   onFilterChange={setFilter}
-                  counts={counts}
+                  counts={{
+                    all: total,
+                    pending: coursesCount?.totalPending || 0,
+                    approved: coursesCount?.totalPublished || 0,
+                    rejected: coursesCount?.totalRejected || 0,
+                  }}
                 />
               </div>
             </div>
@@ -204,7 +266,7 @@ const CourseApprovalPage = () => {
               <div className="flex-1">
                 <SearchFilter
                   onSearchChange={setSearchTerm}
-                  onDepartmentChange={setCategory}
+                  onCategoryChange={setCategory}
                   oldValue={searchTerm}
                 />
               </div>
@@ -226,9 +288,15 @@ const CourseApprovalPage = () => {
                 <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuItem onClick={() => setSortDirection("desc")}>
                     <SortDesc className="h-4 w-4 mr-2" /> Mới nhất trước
+                    {sortDirection === "desc" ? (
+                      <Check size={18} className="ml-3" />
+                    ) : null}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSortDirection("asc")}>
                     <SortAsc className="h-4 w-4 mr-2" /> Cũ nhất trước
+                    {sortDirection === "asc" ? (
+                      <Check size={18} className="ml-3" />
+                    ) : null}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -256,15 +324,9 @@ const CourseApprovalPage = () => {
                               onClick={() => handleViewDetails(course.id)}
                             >
                               <CourseRequestCard
-                                {...course}
-                                // Format date properly
-                                createdAt={format(
-                                  new Date(course.createdAt),
-                                  "dd/MM/yyyy"
-                                )}
-                                department={course.category} // Map category to department prop
+                                courseDto={course}
                                 onApprove={handleApprove}
-                                onReject={handleReject}
+                                onReject={openRejectDialog}
                                 onViewDetails={() =>
                                   handleViewDetails(course.id)
                                 }
@@ -314,16 +376,7 @@ const CourseApprovalPage = () => {
                   courseRequests={mappedCourses}
                   onPreview={handlePreview}
                   onApprove={handleApprove}
-                  onReject={handleReject}
-                  statusLabels={{
-                    approved: "Đã xuất bản", // Updated from "approved" to "published" in Vietnamese
-                    pending: "Chờ duyệt",
-                    rejected: "Từ chối",
-                  }}
-                  actionLabels={{
-                    approve: "Xuất bản", // Updated from "approve" to "publish" in Vietnamese
-                    reject: "Từ chối",
-                  }}
+                  onReject={openRejectDialog}
                 />
               </div>
             </div>
@@ -332,9 +385,15 @@ const CourseApprovalPage = () => {
       </main>
 
       <CourseDetailsPreview
-        courseId={previewCourseId}
+        courseDetails={
+          mappedCourses.find((course) => course.id === previewCourseId) || null
+        }
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
+        onLessonClick={(lessonId) => {
+          // Handle lesson click here, e.g., navigate to lesson details
+          console.log(`Lesson clicked: ${lessonId}`);
+        }}
       />
     </div>
   );
