@@ -24,10 +24,10 @@ interface ReadingContent {
     sections: ContentSection[];
 }
 
-const ReadingContent: FC<ReadingContentProps> = ({ 
-    lectureId, 
-    courseId, 
-    isCompleted = false, 
+const ReadingContent: FC<ReadingContentProps> = ({
+    lectureId,
+    courseId,
+    isCompleted = false,
     onLessonCompleted,
     courseSlug
 }) => {
@@ -48,7 +48,7 @@ const ReadingContent: FC<ReadingContentProps> = ({
                 const data = await getLessonById(lectureId);
                 if (data) {
                     setLessonData(data);
-                    
+
                     // Parse the content if it exists
                     if (data.content) {
                         try {
@@ -89,20 +89,20 @@ const ReadingContent: FC<ReadingContentProps> = ({
     // Handle mark as complete
     const handleMarkComplete = async () => {
         if (isCompleted || localCompleted || isMarkingComplete) return;
-        
+
         setIsMarkingComplete(true);
         try {
             const success = await markLessonComplete(lectureId);
             if (success) {
                 setLocalCompleted(true);
-                
+
                 // Invalidate React Query cache to refresh course data
                 if (courseSlug) {
                     queryClient.invalidateQueries({
                         queryKey: ['lecture', courseSlug]
                     });
                 }
-                
+
                 // Notify parent component
                 if (onLessonCompleted) {
                     onLessonCompleted();
@@ -162,36 +162,12 @@ const ReadingContent: FC<ReadingContentProps> = ({
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold">{readingContent.title}</h1>
                 <div className="flex items-center space-x-3">
-                    {/* Mark as complete button */}
-                    {!localCompleted ? (
-                        <button
-                            onClick={handleMarkComplete}
-                            disabled={isMarkingComplete}
-                            className={`px-3 py-1 rounded-md text-sm flex items-center ${
-                                isMarkingComplete 
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
-                            }`}
-                        >
-                            {isMarkingComplete ? (
-                                <>
-                                    <span className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin mr-2"></span>
-                                    Đang xử lý...
-                                </>
-                            ) : (
-                                <>
-                                    <CheckCircle size={16} className="mr-1" />
-                                    Đánh dấu đã hoàn thành
-                                </>
-                            )}
-                        </button>
-                    ) : (
-                        <span className="px-3 py-1 rounded-md text-sm bg-green-50 text-green-700 flex items-center">
-                            <CheckCircle size={16} className="mr-1" />
-                            Đã hoàn thành
-                        </span>
+                    {localCompleted && (
+                    <span className="px-4 py-2 rounded-md text-sm bg-green-50 text-green-700 flex items-center">
+                        <CheckCircle size={16} className="mr-1" />
+                        Đã hoàn thành
+                    </span>
                     )}
-                    
                     {/* Font size controls */}
                     <div className="flex space-x-2">
                         <button
@@ -203,7 +179,7 @@ const ReadingContent: FC<ReadingContentProps> = ({
                                 fill="currentColor">
                                 <path fillRule="evenodd"
                                     d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd"/>
+                                    clipRule="evenodd" />
                             </svg>
                         </button>
                         <button
@@ -215,8 +191,8 @@ const ReadingContent: FC<ReadingContentProps> = ({
                                 fill="currentColor">
                                 <path fillRule="evenodd"
                                     d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd"/>
-                        </svg>
+                                    clipRule="evenodd" />
+                            </svg>
                         </button>
                         <button
                             onClick={() => setFontSize('lg')}
@@ -227,8 +203,8 @@ const ReadingContent: FC<ReadingContentProps> = ({
                                 fill="currentColor">
                                 <path fillRule="evenodd"
                                     d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd"/>
-                        </svg>
+                                    clipRule="evenodd" />
+                            </svg>
                         </button>
                         <button
                             onClick={() => setFontSize('xl')}
@@ -239,8 +215,8 @@ const ReadingContent: FC<ReadingContentProps> = ({
                                 fill="currentColor">
                                 <path fillRule="evenodd"
                                     d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd"/>
-                        </svg>
+                                    clipRule="evenodd" />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -282,21 +258,48 @@ const ReadingContent: FC<ReadingContentProps> = ({
             </div>
 
             {/* Điều hướng */}
-            <div className="mt-12 pt-4 border-t border-gray-200 flex justify-between">
+            <div className="mt-12 pt-4 border-t border-gray-200 flex justify-between items-center">
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
                     <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"
-                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                              clipRule="evenodd"/>
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clipRule="evenodd" />
                     </svg>
                     Bài học trước
                 </button>
+
+                {/* Mark as complete button - moved to bottom */}
+                <div className="flex-grow flex justify-center">
+                    {!localCompleted && (
+                        <button
+                            onClick={handleMarkComplete}
+                            disabled={isMarkingComplete}
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${isMarkingComplete
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                }`}
+                        >
+                            {isMarkingComplete ? (
+                                <>
+                                    <span className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin mr-2"></span>
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle size={16} className="mr-1.5 text-green-600 animate-pulse" />
+                                    <span className="font-medium">Đánh dấu hoàn thành</span>
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
+
                 <button className="flex items-center text-blue-600 hover:text-blue-800">
                     Bài học tiếp theo
                     <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clipRule="evenodd"/>
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clipRule="evenodd" />
                     </svg>
                 </button>
             </div>
