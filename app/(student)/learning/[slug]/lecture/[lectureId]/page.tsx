@@ -23,8 +23,7 @@ interface LecturePageProps {
 const LecturePage: FC<LecturePageProps> = ({params}) => {
     // Unwrap the params Promise
     const unwrappedParams = use(params);
-    const slug = unwrappedParams.slug;
-    const lectureId = unwrappedParams.lectureId;
+    const { slug, lectureId } = unwrappedParams;
     const router = useRouter();
 
     const [currentTimestamp, setCurrentTimestamp] = useState<number>(0);
@@ -37,7 +36,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
         loading, 
         error, 
         showQuizContent,
-        handleStartQuiz
+        handleStartQuiz,
+        refetchLectureData
     } = useLecture(slug, lectureId);
 
     const handleTimeUpdate = (time: number) => {
@@ -193,6 +193,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                                     <QuizContent
                                         lectureId={currentLecture.id}
                                         courseId={slug}
+                                        onLessonCompleted={refetchLectureData}
+                                        courseSlug={slug}
                                     />
                                 ) : (
                                     <QuizLanding
@@ -206,6 +208,9 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                                 <ReadingContent
                                     lectureId={currentLecture.id}
                                     courseId={slug}
+                                    isCompleted={currentLecture.isCompleted}
+                                    onLessonCompleted={refetchLectureData}
+                                    courseSlug={slug}
                                 />
                             </div>
                         ) : isAssignmentLecture ? (
@@ -220,6 +225,8 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                                         lessonId={lectureId}
                                         title={currentLecture.title}
                                         onTimeUpdate={handleTimeUpdate}
+                                        onLessonCompleted={refetchLectureData}
+                                        courseSlug={slug}
                                     />
                                 )}
                             </div>
@@ -247,6 +254,7 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                             sections={courseData.sections}
                             courseSlug={slug}
                             courseId={courseData.id}
+                            onProgressUpdate={refetchLectureData} // Add this prop to trigger refresh
                         />
                     )}
                 </div>

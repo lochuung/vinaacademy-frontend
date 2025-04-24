@@ -1,12 +1,17 @@
 "use client";
 
-import {FC, useState, useEffect} from 'react';
-import { getLessonById } from '@/services/lessonService';
+import { FC, useState, useEffect } from 'react';
+import { getLessonById, markLessonComplete } from '@/services/lessonService';
 import { LessonDto } from '@/types/lesson';
+import { useQueryClient } from '@tanstack/react-query';
+import { CheckCircle } from 'lucide-react';
 
 interface ReadingContentProps {
     lectureId: string;
     courseId: string;
+    isCompleted?: boolean;
+    onLessonCompleted?: () => void;
+    courseSlug?: string;
 }
 
 interface ContentSection {
@@ -19,12 +24,21 @@ interface ReadingContent {
     sections: ContentSection[];
 }
 
-const ReadingContent: FC<ReadingContentProps> = ({lectureId, courseId}) => {
+const ReadingContent: FC<ReadingContentProps> = ({ 
+    lectureId, 
+    courseId, 
+    isCompleted = false, 
+    onLessonCompleted,
+    courseSlug
+}) => {
+    const queryClient = useQueryClient();
     const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
     const [isLoading, setIsLoading] = useState(true);
     const [lessonData, setLessonData] = useState<LessonDto | null>(null);
     const [readingContent, setReadingContent] = useState<ReadingContent | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isMarkingComplete, setIsMarkingComplete] = useState(false);
+    const [localCompleted, setLocalCompleted] = useState(isCompleted);
 
     // Fetch lesson data
     useEffect(() => {
@@ -72,6 +86,40 @@ const ReadingContent: FC<ReadingContentProps> = ({lectureId, courseId}) => {
         }
     }, [lectureId]);
 
+    // Handle mark as complete
+    const handleMarkComplete = async () => {
+        if (isCompleted || localCompleted || isMarkingComplete) return;
+        
+        setIsMarkingComplete(true);
+        try {
+            const success = await markLessonComplete(lectureId);
+            if (success) {
+                setLocalCompleted(true);
+                
+                // Invalidate React Query cache to refresh course data
+                if (courseSlug) {
+                    queryClient.invalidateQueries({
+                        queryKey: ['lecture', courseSlug]
+                    });
+                }
+                
+                // Notify parent component
+                if (onLessonCompleted) {
+                    onLessonCompleted();
+                }
+            }
+        } catch (error) {
+            console.error("Failed to mark lesson as complete:", error);
+        } finally {
+            setIsMarkingComplete(false);
+        }
+    };
+
+    // Update local state when prop changes
+    useEffect(() => {
+        setLocalCompleted(isCompleted);
+    }, [isCompleted]);
+
     const getFontSizeClass = () => {
         switch (fontSize) {
             case 'sm':
@@ -113,55 +161,88 @@ const ReadingContent: FC<ReadingContentProps> = ({lectureId, courseId}) => {
             {/* Điều khiển đọc */}
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold">{readingContent.title}</h1>
-                <div className="flex space-x-2">
-                    <button
-                        onClick={() => setFontSize('sm')}
-                        className={`p-1 ${fontSize === 'sm' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Cỡ chữ nhỏ"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fillRule="evenodd"
-                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                  clipRule="evenodd"/>
+                <div className="flex items-center space-x-3">
+                    {/* Mark as complete button */}
+                    {!localCompleted ? (
+                        <button
+                            onClick={handleMarkComplete}
+                            disabled={isMarkingComplete}
+                            className={`px-3 py-1 rounded-md text-sm flex items-center ${
+                                isMarkingComplete 
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            }`}
+                        >
+                            {isMarkingComplete ? (
+                                <>
+                                    <span className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin mr-2"></span>
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle size={16} className="mr-1" />
+                                    Đánh dấu đã hoàn thành
+                                </>
+                            )}
+                        </button>
+                    ) : (
+                        <span className="px-3 py-1 rounded-md text-sm bg-green-50 text-green-700 flex items-center">
+                            <CheckCircle size={16} className="mr-1" />
+                            Đã hoàn thành
+                        </span>
+                    )}
+                    
+                    {/* Font size controls */}
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={() => setFontSize('sm')}
+                            className={`p-1 ${fontSize === 'sm' ? 'text-blue-600' : 'text-gray-500'}`}
+                            title="Cỡ chữ nhỏ"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fillRule="evenodd"
+                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                    clipRule="evenodd"/>
+                            </svg>
+                        </button>
+                        <button
+                            onClick={() => setFontSize('md')}
+                            className={`p-1 ${fontSize === 'md' ? 'text-blue-600' : 'text-gray-500'}`}
+                            title="Cỡ chữ vừa"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fillRule="evenodd"
+                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                    clipRule="evenodd"/>
                         </svg>
-                    </button>
-                    <button
-                        onClick={() => setFontSize('md')}
-                        className={`p-1 ${fontSize === 'md' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Cỡ chữ vừa"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fillRule="evenodd"
-                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                  clipRule="evenodd"/>
+                        </button>
+                        <button
+                            onClick={() => setFontSize('lg')}
+                            className={`p-1 ${fontSize === 'lg' ? 'text-blue-600' : 'text-gray-500'}`}
+                            title="Cỡ chữ lớn"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fillRule="evenodd"
+                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                    clipRule="evenodd"/>
                         </svg>
-                    </button>
-                    <button
-                        onClick={() => setFontSize('lg')}
-                        className={`p-1 ${fontSize === 'lg' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Cỡ chữ lớn"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fillRule="evenodd"
-                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                  clipRule="evenodd"/>
+                        </button>
+                        <button
+                            onClick={() => setFontSize('xl')}
+                            className={`p-1 ${fontSize === 'xl' ? 'text-blue-600' : 'text-gray-500'}`}
+                            title="Cỡ chữ rất lớn"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fillRule="evenodd"
+                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
+                                    clipRule="evenodd"/>
                         </svg>
-                    </button>
-                    <button
-                        onClick={() => setFontSize('xl')}
-                        className={`p-1 ${fontSize === 'xl' ? 'text-blue-600' : 'text-gray-500'}`}
-                        title="Cỡ chữ rất lớn"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fillRule="evenodd"
-                                  d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                  clipRule="evenodd"/>
-                        </svg>
-                    </button>
+                        </button>
+                    </div>
                 </div>
             </div>
 

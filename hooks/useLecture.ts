@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { getCourseLearning } from '@/services/courseService';
 import { getLessonById } from '@/services/lessonService';
 import { getAllLessonProgressByCourse } from '@/services/progressService';
@@ -17,17 +18,18 @@ import {
  * @returns Object containing course data, lecture data, loading state, and error state
  */
 export const useLecture = (slug: string, lectureId: string) => {
-  const [courseData, setCourseData] = useState<LearningCourse | null>(null);
-  const [currentLecture, setCurrentLecture] = useState<Lecture | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
+  const [showQuizContent, setShowQuizContent] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      
+  // Use React Query for data fetching with caching
+  const { 
+    data: result,
+    isLoading: loading, 
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['lecture', slug, lectureId],
+    queryFn: async () => {
       try {
         // Fetch course data
         const courseResponse = await getCourseLearning(slug);
@@ -50,40 +52,44 @@ export const useLecture = (slug: string, lectureId: string) => {
           const lectureFromLesson = await getLectureFromLesson(lessonResponse, progressMap);
           
           if (lectureFromLesson) {
-            setCurrentLecture(lectureFromLesson);
             transformedCourse.currentLecture = lectureFromLesson;
+            return { 
+              courseData: transformedCourse,
+              currentLecture: lectureFromLesson
+            };
           } else {
             throw new Error('Lecture not found');
           }
         } else {
-          setCurrentLecture(foundLecture);
+          return { 
+            courseData: transformedCourse,
+            currentLecture: foundLecture
+          };
         }
-        
-        setCourseData(transformedCourse);
       } catch (error) {
         console.error('Error fetching data:', error);
-        setError(error instanceof Error ? error : new Error('An unknown error occurred'));
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    enabled: !!slug && !!lectureId,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+  });
 
-    if (slug && lectureId) {
-      fetchData();
-    }
-  }, [slug, lectureId]);
+  // Extract course and lecture data from query result
+  const courseData = result?.courseData || null;
+  const currentLecture = result?.currentLecture || null;
 
-  // Add handler for quiz content toggle
-  const [showQuizContent, setShowQuizContent] = useState<boolean>(false);
   const handleStartQuiz = () => setShowQuizContent(true);
 
   return { 
     courseData, 
     currentLecture, 
     loading, 
-    error,
+    error: error as Error | null,
     showQuizContent,
     handleStartQuiz,
-    setShowQuizContent
+    setShowQuizContent,
+    refetchLectureData: refetch // Expose the refetch function
   };
 };

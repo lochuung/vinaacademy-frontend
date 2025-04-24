@@ -5,12 +5,15 @@ import { getAccessToken } from '@/lib/apiClient';
 import { getMasterPlaylistUrl } from '@/services/videoService';
 import { getVideoProgress, saveVideoProgress } from '@/services/videoProgressService';
 import { markLessonComplete } from '@/services/lessonService';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface VideoPlayerProps {
     lessonId: string;
     title: string;
     isCompleted?: boolean;
     onTimeUpdate?: (currentTime: number) => void;
+    onLessonCompleted?: () => void;
+    courseSlug?: string;
 }
 
 interface QualityOption {
@@ -18,7 +21,8 @@ interface QualityOption {
     label: string;
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({ lessonId, title, onTimeUpdate, isCompleted }) => {
+const VideoPlayer: FC<VideoPlayerProps> = ({ lessonId, title, onTimeUpdate, isCompleted, onLessonCompleted, courseSlug }) => {
+    const queryClient = useQueryClient();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -307,6 +311,18 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ lessonId, title, onTimeUpdate, isCo
                         if (success) {
                             console.log('Lesson marked as complete successfully');
                             hasMarkedComplete.current = true;
+                            
+                            // Invalidate React Query cache
+                            if (courseSlug) {
+                                queryClient.invalidateQueries({
+                                    queryKey: ['lecture', courseSlug]
+                                });
+                            }
+                            
+                            // Notify parent component
+                            if (onLessonCompleted) {
+                                onLessonCompleted();
+                            }
                         } else {
                             console.error('Failed to mark lesson as complete');
                         }
@@ -365,7 +381,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({ lessonId, title, onTimeUpdate, isCo
             videoElement.removeEventListener('loadeddata', handleLoadedData);
             videoElement.removeEventListener('error', handleError);
         };
-    }, [onTimeUpdate, lessonId, isCompleted]); // Đã loại bỏ hasMarkedComplete khỏi dependencies vì nó là ref
+    }, [onTimeUpdate, lessonId, isCompleted, onLessonCompleted, courseSlug, queryClient]); // Đã loại bỏ hasMarkedComplete khỏi dependencies vì nó là ref
 
     // Reset hasMarkedComplete when video ID or isCompleted changes
     useEffect(() => {

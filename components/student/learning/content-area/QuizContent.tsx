@@ -9,13 +9,17 @@ import QuizResults from '../quiz/QuizResults';
 import QuizTimer from '../quiz/QuizTimer';
 import { getQuiz, startQuiz, submitQuiz, getLatestSubmission, cacheQuizAnswer, getCachedAnswers } from '@/services/quizService';
 import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest, QuizSession } from '@/types/quiz';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface QuizContentProps {
     courseId: string;
     lectureId: string;
+    onLessonCompleted?: () => void;
+    courseSlug?: string;
 }
 
-const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
+const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonCompleted, courseSlug }) => {
+    const queryClient = useQueryClient();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -260,6 +264,22 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId}) => {
             
             // Store the quiz result for display
             setQuizResult(result);
+            
+            // If quiz is passed, invalidate the course data to refresh progress
+            if (result.isPassed) {
+                // Invalidate React Query cache
+                if (courseSlug) {
+                    queryClient.invalidateQueries({
+                        queryKey: ['lecture', courseSlug]
+                    });
+                }
+                
+                // Notify parent component
+                if (onLessonCompleted) {
+                    onLessonCompleted();
+                }
+            }
+            
             return true;
         } catch (err) {
             console.error("Error submitting quiz:", err);

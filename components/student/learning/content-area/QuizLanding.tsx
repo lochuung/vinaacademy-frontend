@@ -9,13 +9,17 @@ import QuizResults from '../quiz/QuizResults';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { Quiz } from '@/types/lecture';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface QuizLandingProps {
   quizId: string;
   onStartQuiz: () => void;
+  onLessonCompleted?: () => void;
+  courseSlug?: string;
 }
 
-const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz }) => {
+const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonCompleted, courseSlug }) => {
+  const queryClient = useQueryClient();
   const [quiz, setQuiz] = useState<QuizDto | null>(null);
   const [latestSubmission, setLatestSubmission] = useState<QuizSubmissionResultDto | null>(null);
   const [submissions, setSubmissions] = useState<QuizSubmissionResultDto[] | null>(null);
@@ -113,7 +117,17 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz }) => {
 
   const handleSelectSubmission = (submission: QuizSubmissionResultDto) => {
     setSelectedSubmission(submission);
-    setShowHistory(false);
+    
+    // If the selected submission is passed and we have callbacks
+    if (submission.isPassed && onLessonCompleted && courseSlug) {
+      // Invalidate the query
+      queryClient.invalidateQueries({
+        queryKey: ['lecture', courseSlug]
+      });
+      
+      // Call the callback
+      onLessonCompleted();
+    }
   };
 
   const handleBackToHistory = () => {
