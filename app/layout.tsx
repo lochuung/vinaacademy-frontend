@@ -5,9 +5,12 @@ import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import Script from 'next/script';
 import { AuthProvider } from "@/context/AuthContext";
 import { CategoryProvider } from '@/context/CategoryContext';
-import { CartProvider } from '@/context/CartContext'; // Thêm import này
+import { CartProvider } from '@/context/CartContext';
 import { Toaster } from "@/components/ui/sonner";
 import ToastProvider from '@/providers/ToastProvider';
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,11 +30,14 @@ export default function RootLayout({
         <ToastProvider>
           <AuthProvider>
             <CategoryProvider>
-              <CartProvider> {/* Thêm CartProvider bao quanh LayoutWrapper */}
-                <LayoutWrapper>
-                  {children}
-                </LayoutWrapper>
-                <Toaster />{/* Hiển thị Toaster */}
+              <CartProvider>
+                <ReactQueryProvider>
+                  <LayoutWrapper>
+                    {children}
+                  </LayoutWrapper>
+                  <Toaster />
+                  <ToastContainer />
+                </ReactQueryProvider>
               </CartProvider>
             </CategoryProvider>
           </AuthProvider>
