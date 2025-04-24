@@ -125,6 +125,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 section.lessons.forEach((lesson: any) => {
                     if (lesson.videoDuration) {
                         totalSeconds += lesson.videoDuration;
+                    } else {
+                        totalSeconds += lesson.duration || 3;
                     }
                 });
             }

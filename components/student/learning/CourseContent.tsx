@@ -7,16 +7,20 @@ import {Lecture, LectureType, Section} from '@/types/lecture';
 import { LessonType } from '@/types/course';
 import { mapLessonTypeToDisplay, markLessonComplete } from '@/services/lessonService';
 import { updateLessonProgress, getAllLessonProgressByCourse } from '@/services/progressService';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 interface CourseContentProps {
     title: string;
     sections: Section[];
     courseSlug: string;
     courseId?: string;
+    onProgressUpdate?: () => void;
 }
 
-const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections, courseSlug, courseId}) => {
+const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections, courseSlug, courseId, onProgressUpdate}) => {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [sections, setSections] = useState<Section[]>(initialSections);
     const [expandedSections, setExpandedSections] = useState<string[]>(
         // Mặc định, mở rộng tất cả các phần hoặc chỉ phần có bài học hiện tại
@@ -93,7 +97,7 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
             ...section,
             lectures: section.lectures.map(lecture =>
                 lecture.id === lectureId
-                    ? {...lecture, isCompleted}
+                    ? {...lecture, isCompleted: true}
                     : lecture
             )
         }));
@@ -103,14 +107,52 @@ const CourseContent: FC<CourseContentProps> = ({title, sections: initialSections
         // Gọi API để cập nhật server
         try {
             const success = await markLessonComplete(lectureId);
-            
-            if (!success) {
+            if (success) {
+                // If marking complete was successful:
+                
+                // 1. Invalidate the course progress data in the cache
+                if (courseId) {
+                    // Invalidate the specific query for this course's progress
+                    queryClient.invalidateQueries({
+                        queryKey: ['lecture', courseSlug]
+                    });
+                    
+                    // Also refresh the data locally
+                    const refreshData = await getAllLessonProgressByCourse(courseId);
+                    if (refreshData) {
+                        // Update progress map with fresh data
+                        const progressMap = new Map();
+                        refreshData.forEach(item => {
+                            progressMap.set(item.lessonId, item.completed);
+                        });
+                        
+                        // Update sections with fresh data
+                        const refreshedSections = sections.map(section => ({
+                            ...section,
+                            lectures: section.lectures.map(lecture => {
+                                if (progressMap.has(lecture.id)) {
+                                    return {
+                                        ...lecture,
+                                        isCompleted: progressMap.get(lecture.id)
+                                    };
+                                }
+                                return lecture;
+                            })
+                        }));
+                        
+                        setSections(refreshedSections);
+                    }
+                }
+
+                // Call the onProgressUpdate callback if provided
+                if (onProgressUpdate) {
+                    onProgressUpdate();
+                }
+            } else {
                 // Nếu API thất bại, hoàn tác thay đổi UI
-                console.error("Failed to update completion status on server");
                 setSections(sections); // Revert to original state
             }
         } catch (error) {
-            console.error("Error updating completion status:", error);
             setSections(sections); // Revert to original state on error
         }
     };

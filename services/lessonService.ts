@@ -152,7 +152,7 @@ export const markLessonComplete = async (lessonId: string): Promise<boolean> => 
     const response: AxiosResponse = await apiClient.post(
       `/lessons/${lessonId}/complete`
     );
-    return response.data.success;
+    return response.status === 200;
   } catch (error) {
     console.error("markLessonComplete error:", error);
     return false;
