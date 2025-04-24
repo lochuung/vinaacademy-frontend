@@ -14,19 +14,21 @@ interface CarouselProps {
     featured?: boolean;
     bestSeller?: boolean;
     limit?: number;
+    customCourses?: any[]; // Add this prop to accept custom courses
 }
 
 const Carousel = ({
-                      title,
-                      category,
-                      subCategory,
-                      featured,
-                      bestSeller,
-                      limit = 8
-                  }: CarouselProps) => {
+    title,
+    category,
+    subCategory,
+    featured,
+    bestSeller,
+    limit = 8,
+    customCourses, // Accept custom courses from the adapter
+}: CarouselProps) => {
 
-    // Lọc khóa học theo các điều kiện
-    const filteredCourses = mockCourses.filter(course => {
+    // Use either custom courses or filter mock courses
+    const filteredCourses = customCourses || mockCourses.filter(course => {
         if (category && course.category !== category) return false;
         if (subCategory && course.subCategory !== subCategory) return false;
         if (featured === true && !course.featured) return false;
@@ -75,7 +77,7 @@ const Carousel = ({
                         .slice(currentIndex, currentIndex + itemsToShow)
                         .map((course) => (
                             <Link
-                                href={`/course/${course.id}`}
+                                href={`/courses/${course.slug || course.id}`}
                                 key={course.id}
                                 className="flex-1 w-[280px]"
                             >

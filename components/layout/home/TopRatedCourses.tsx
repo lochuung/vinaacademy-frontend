@@ -1,15 +1,24 @@
 "use client";
 
-import Carousel from "@/components/layout/Carousel";
 import { useAuth } from "@/context/AuthContext";
 import { Star } from "lucide-react";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
+import { useCourses } from "@/hooks/useCourses";
+import CourseCarouselAdapter from "@/components/layout/CourseCarouselAdapter";
 
 const TopRatedCourses = () => {
     const { isAuthenticated } = useAuth();
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+    
+    // Fetch top rated courses
+    const { courses, loading, error } = useCourses({
+        // minRating: 4,
+        sortBy: 'rating',
+        sortDirection: 'desc',
+        size: 8
+    });
     
     return (
         <div 
@@ -31,11 +40,12 @@ const TopRatedCourses = () => {
             
             <div className="w-full px-1">
                 <div className="bg-gradient-to-br from-white to-blue-50 rounded-md sm:rounded-lg p-2 sm:p-3 shadow-sm">
-                    <p className="text-xs text-gray-600 mb-2 max-w-xl hidden sm:block">
-                        Khám phá những khóa học chất lượng cao với đánh giá 5 sao từ hàng ngàn học viên.
-                    </p>
                     <div className="carousel-container">
-                        <Carousel/>
+                        <CourseCarouselAdapter 
+                            courses={courses} 
+                            loading={loading} 
+                            error={error}
+                        />
                     </div>
                 </div>
             </div>

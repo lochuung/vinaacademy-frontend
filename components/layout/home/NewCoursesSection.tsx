@@ -1,13 +1,21 @@
 "use client";
 
-import Carousel from "@/components/layout/Carousel";
 import { Sparkles } from "lucide-react";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
+import { useCourses } from "@/hooks/useCourses";
+import CourseCarouselAdapter from "@/components/layout/CourseCarouselAdapter";
 
 const NewCoursesSection = () => {
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+    
+    // Fetch newest courses
+    const { courses, loading, error } = useCourses({
+        sortBy: 'createdDate',
+        sortDirection: 'desc',
+        size: 8
+    });
     
     return (
         <div 
@@ -29,11 +37,12 @@ const NewCoursesSection = () => {
             
             <div className="w-full px-1">
                 <div className="bg-gradient-to-br from-white to-purple-50 rounded-md sm:rounded-lg p-2 sm:p-3 shadow-sm">
-                    <p className="text-xs text-gray-600 mb-2 max-w-xl hidden sm:block">
-                        Cập nhật với những khóa học mới nhất trên nền tảng. Nội dung luôn đổi mới và cập nhật.
-                    </p>
                     <div className="carousel-container">
-                        <Carousel/>
+                        <CourseCarouselAdapter 
+                            courses={courses} 
+                            loading={loading} 
+                            error={error}
+                        />
                     </div>
                 </div>
             </div>

@@ -1,15 +1,24 @@
 "use client";
 
-import Carousel from "@/components/layout/Carousel";
 import { useAuth } from "@/context/AuthContext";
 import { LightbulbIcon } from "lucide-react";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
+import { useCourses } from "@/hooks/useCourses";
+import CourseCarouselAdapter from "@/components/layout/CourseCarouselAdapter";
 
 const LearningRecommendations = () => {
     const { isAuthenticated } = useAuth();
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+    
+    // Fetch courses from API
+    const { courses, loading, error } = useCourses({
+        minRating: 3.5,
+        sortBy: isAuthenticated ? 'rating' : 'createdDate',
+        sortDirection: 'desc',
+        size: 8
+    });
     
     return (
         <div 
@@ -31,13 +40,12 @@ const LearningRecommendations = () => {
             
             <div className="w-full px-1">
                 <div className="bg-gradient-to-br from-white to-amber-50 rounded-md sm:rounded-lg p-2 sm:p-3 shadow-sm">
-                    <p className="text-xs text-gray-600 mb-2 max-w-xl hidden sm:block">
-                        {isAuthenticated 
-                            ? "Dựa trên hoạt động học tập của bạn, chúng tôi đã chọn lọc những khóa học phù hợp nhất."
-                            : "Khám phá các khóa học được nhiều học viên theo học và đánh giá cao."}
-                    </p>
                     <div className="carousel-container">
-                        <Carousel/>
+                        <CourseCarouselAdapter 
+                            courses={courses} 
+                            loading={loading} 
+                            error={error}
+                        />
                     </div>
                 </div>
             </div>
