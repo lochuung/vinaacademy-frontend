@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CourseType } from '@/types/instructor-course';
+import { CourseStatus } from '@/types/course';
 
 interface CourseListViewProps {
     courses: CourseType[];
@@ -57,20 +58,10 @@ export default function CourseListView({ courses }: CourseListViewProps) {
                                 {course.income > 0 ? `${course.income.toLocaleString()}k đ` : '-'}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {new Date(course.lastUpdated).toLocaleDateString('vi-VN')}
+                                {formatDate(course.lastUpdated)}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm">
-                                {course.published ? (
-                                    <span
-                                        className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                                        Đã xuất bản
-                                    </span>
-                                ) : (
-                                    <span
-                                        className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                        Bản nháp
-                                    </span>
-                                )}
+                                {renderStatusBadge(course.status)}
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                 <Link href={`/instructor/courses/${course.id}/edit`}>
@@ -83,4 +74,52 @@ export default function CourseListView({ courses }: CourseListViewProps) {
             </table>
         </div>
     );
+}
+
+// Định dạng ngày tháng
+function formatDate(dateString: string): string {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
+    } catch (e) {
+        return dateString;
+    }
+}
+
+// Render trạng thái khóa học
+function renderStatusBadge(status: CourseStatus | string | undefined) {
+    if (!status) return null;
+
+    switch (status.toUpperCase()) {
+        case 'DRAFT':
+            return (
+                <span className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
+                    Bản nháp
+                </span>
+            );
+        case 'PENDING':
+            return (
+                <span className="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                    Chờ duyệt
+                </span>
+            );
+        case 'REJECTED':
+            return (
+                <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
+                    Từ chối
+                </span>
+            );
+        case 'PUBLISHED':
+            return (
+                <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                    Đã xuất bản
+                </span>
+            );
+        default:
+            return (
+                <span className="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">
+                    {status}
+                </span>
+            );
+    }
 }

@@ -100,7 +100,7 @@ export default function InstructorCoursesPage() {
             </div>
           ) : (
             <>
-              {viewMode === "grid" ? ( 
+              {viewMode === "grid" ? (
                 <CourseGridView courses={filteredCourses} />
               ) : (
                 <CourseListView courses={filteredCourses} />
