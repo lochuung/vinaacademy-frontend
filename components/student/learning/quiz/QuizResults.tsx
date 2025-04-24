@@ -143,7 +143,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                         </div>
                         <div className="text-xl text-gray-600 mb-4">
                             {displayedResult 
-                                ? ((displayedResult.score / displayedResult.totalPoints) * 100).toFixed(1) 
+                                ? ((displayedResult.score / Math.max(displayedResult.totalPoints, 1)) * 100).toFixed(1) 
                                 : quizResults.percentageScore.toFixed(1)}%
                         </div>
 
