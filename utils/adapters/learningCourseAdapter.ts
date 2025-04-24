@@ -23,7 +23,9 @@ export const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType 
  * Formats duration from seconds to MM:SS format
  */
 export const formatDuration = (seconds?: number): string => {
-  if (!seconds) return "0:00";
+  if (!seconds) {
+    return "";
+  }
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
@@ -65,30 +67,28 @@ export const convertSectionsWithLessons = async (
   progressMap: Map<string, boolean>,
   currentLectureId?: string
 ): Promise<Section[]> => {
-  const sectionsWithLessons: Section[] = [];
+  const sections = courseResponse.sections || [];
   
-  for (const section of courseResponse.sections || []) {
-    const lessons = section.lessons || await getLessonsBySectionId(section.id);
-    
-    const mappedSection: Section = {
-      id: section.id,
-      title: section.title,
-      lectures: lessons.map(lesson => {
-        // Use the progress map to determine completion status
-        const isCompleted = progressMap.has(lesson.id) ? 
-          progressMap.get(lesson.id) : 
-          lesson.currentUserProgress?.completed || false;
-        
-        const isCurrent = lesson.id === currentLectureId;
-        
-        return convertLessonToLecture(lesson, isCompleted, isCurrent);
-      })
-    };
-    
-    sectionsWithLessons.push(mappedSection);
-  }
-  
-  return sectionsWithLessons;
+  return Promise.all(
+    sections.map(async (section) => {
+      const lessons = section.lessons || await getLessonsBySectionId(section.id);
+      
+      return {
+        id: section.id,
+        title: section.title,
+        lectures: lessons.map(lesson => {
+          // Use the progress map to determine completion status
+          const isCompleted = progressMap.has(lesson.id) 
+            ? progressMap.get(lesson.id)! 
+            : lesson.currentUserProgress?.completed || false;
+          
+          const isCurrent = lesson.id === currentLectureId;
+          
+          return convertLessonToLecture(lesson, isCompleted, isCurrent);
+        })
+      };
+    })
+  );
 };
 
 /**
@@ -196,6 +196,5 @@ export const getLectureFromLesson = async (
     progressMap.get(lessonDto.id) : 
     lessonDto.currentUserProgress?.completed || false;
   
-  const lecture = convertLessonToLecture(lessonDto, isCompleted, true);
-  return lecture;
+  return convertLessonToLecture(lessonDto, isCompleted, true);
 };

@@ -16,8 +16,7 @@ export const useLessonProgress = () => {
   const markComplete = async (lessonId: string): Promise<boolean> => {
     setMarkingComplete(true);
     try {
-      const success = await markLessonComplete(lessonId);
-      return success;
+      return await markLessonComplete(lessonId);
     } catch (error) {
       console.error('Error marking lesson as complete:', error);
       return false;
