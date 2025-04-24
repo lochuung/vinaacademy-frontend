@@ -1,16 +1,14 @@
 'use client';
 
-import {FC, useState, useEffect} from 'react';
+import {FC, useState} from 'react';
 import {use} from 'react';
 import Link from 'next/link';
 import {BookOpen, Video, FileText, PenSquare, Clock, Users, ChevronRight, CheckCircle} from 'lucide-react';
 import LearningHeader from '@/components/student/learning/LearningHeader';
 import StatusToast from '@/components/student/learning/shared/StatusToast';
-import {getCourseLearning} from '@/services/courseService';
-import {getLessonsBySectionId} from '@/services/lessonService';
-import {CourseDto, LessonType} from '@/types/course';
 import {LearningCourse, Section, Lecture, LectureType} from '@/types/lecture';
 import { useRouter } from 'next/navigation';
+import { useLearningCourse } from '@/hooks/useLearningCourse';
 
 interface CoursePageProps {
     params: Promise<{
@@ -24,11 +22,11 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
     const slug = unwrappedParams.slug;
     const router = useRouter();
 
-    const [course, setCourse] = useState<LearningCourse | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Use our custom hook to fetch course data
+    const { course, loading, error, apiResponse } = useLearningCourse(slug);
+    
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const [apiResponse, setApiResponse] = useState<CourseDto | null>(null);
 
     // Helper function to format total duration from sections
     const formatTotalDuration = (sections: Section[]) => {
@@ -56,109 +54,6 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
         
         return `T${month}/${year}`;
     };
-
-    // Fetch course and lesson data
-    useEffect(() => {
-        const fetchCourse = async () => {
-            setLoading(true);
-            try {
-                const apiResponse = await getCourseLearning(slug);
-                
-                if (!apiResponse) {
-                    console.error('Failed to fetch course data');
-                    setLoading(false);
-                    return;
-                }
-                
-                // Store the original API response for use in other parts of the component
-                setApiResponse(apiResponse);
-                
-                // Transform API response to match the LearningCourse type structure
-                const transformedCourse: LearningCourse = {
-                    id: apiResponse.id,
-                    slug: apiResponse.slug,
-                    title: apiResponse.name,
-                    progress: apiResponse.progress?.progressPercentage || 0,
-                    sections: [],
-                    // Initialize with empty currentLecture, will be set later
-                    currentLecture: null
-                };
-                
-                // Process sections and lessons
-                const sectionsWithLessons = await Promise.all(
-                    (apiResponse.sections || []).map(async (section) => {
-                        // Fetch lessons for each section if not already included
-                        const lessons = section.lessons || await getLessonsBySectionId(section.id);
-                        
-                        const mappedSection: Section = {
-                            id: section.id,
-                            title: section.title,
-                            lectures: lessons.map(lesson => ({
-                                id: lesson.id,
-                                title: lesson.title,
-                                // Map lesson type to lecture type
-                                type: mapLessonTypeToLectureType(lesson.type),
-                                description: '',
-                                duration: lesson.videoDuration ? 
-                                    `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
-                                    '0:00',
-                                isCompleted: lesson?.currentUserProgress?.completed || false,
-                                isCurrent: false,
-                                videoUrl: lesson.videoUrl,
-                                textContent: lesson.content
-                            }))
-                        };
-                        
-                        return mappedSection;
-                    })
-                );
-                
-                transformedCourse.sections = sectionsWithLessons;
-                
-                // Set current lecture based on progress if available
-                /* if (apiResponse.progress?.currentLessonId) {
-                    const currentLessonId = apiResponse.progress.currentLessonId;
-                    
-                    // Find the current lecture in all sections
-                    for (const section of sectionsWithLessons) {
-                        const currentLecture = section.lectures.find(lecture => lecture.id === currentLessonId);
-                        if (currentLecture) {
-                            transformedCourse.currentLecture = {...currentLecture, isCurrent: true};
-                            break;
-                        }
-                    }
-                }
-                // If no current lesson is set, use the first one
-                else  */if (sectionsWithLessons.length > 0 && sectionsWithLessons[0].lectures.length > 0) {
-                    const firstLecture = {...sectionsWithLessons[0].lectures[0], isCurrent: true};
-                    transformedCourse.currentLecture = firstLecture;
-                }
-                
-                setCourse(transformedCourse);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching course:', error);
-                setLoading(false);
-                router.push('/');
-            }
-        };
-
-        // Function to map backend lesson type to frontend lecture type
-        const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType => {
-            switch (lessonType) {
-                case 'VIDEO':
-                    return 'video';
-                case 'READING':
-                    return 'reading';
-                case 'QUIZ':
-                    return 'quiz';
-                default:
-                    return 'video';
-            }
-        };
-
-        fetchCourse();
-    }, [slug, router]);
 
     const handleContinueLearning = () => {
         setToastMessage('Tiếp tục học tập từ bài học cuối cùng');

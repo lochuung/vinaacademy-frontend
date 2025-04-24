@@ -1,6 +1,6 @@
 'use client';
 
-import {FC, useState, useEffect} from 'react';
+import {FC, useState} from 'react';
 import {use} from 'react';
 import VideoPlayer from '@/components/student/learning/content-area/VideoPlayer';
 import ReadingContent from '@/components/student/learning/content-area/ReadingContent';
@@ -9,13 +9,9 @@ import QuizLanding from '@/components/student/learning/content-area/QuizLanding'
 import CourseContent from '@/components/student/learning/CourseContent';
 import LearningHeader from '@/components/student/learning/LearningHeader';
 import LearningTabs from '@/components/student/learning/LearningTabs';
-import { getCourseLearning } from '@/services/courseService';
-import { getLessonById } from '@/services/lessonService';
-import { getAllLessonProgressByCourse } from '@/services/progressService';
-import { CourseDto, LessonDto, LessonType } from '@/types/course';
-import { Lecture, Section, LearningCourse, LectureType } from '@/types/lecture';
-import { LessonProgressDto } from '@/types/lesson';
+import { Lecture, LectureType } from '@/types/lecture';
 import { useRouter } from 'next/navigation';
+import { useLecture } from '@/hooks/useLecture';
 
 interface LecturePageProps {
     params: Promise<{
@@ -33,147 +29,16 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
 
     const [currentTimestamp, setCurrentTimestamp] = useState<number>(0);
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-    const [currentLecture, setCurrentLecture] = useState<Lecture | null>(null);
-    const [courseData, setCourseData] = useState<LearningCourse | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [showQuizContent, setShowQuizContent] = useState(false);
 
-    // Fetch course and lecture data
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                // Fetch course data
-                const courseResponse = await getCourseLearning(slug);
-                
-                if (!courseResponse) {
-                    console.error('Failed to fetch course data');
-                    setLoading(false);
-                    router.push('/my-courses');
-                    return;
-                }
-                
-                // Transform API response to match the LearningCourse type
-                const transformedCourse: LearningCourse = {
-                    id: courseResponse.id,
-                    slug: courseResponse.slug,
-                    title: courseResponse.name,
-                    progress: courseResponse.progress?.progressPercentage || 0,
-                    sections: [],
-                    currentLecture: null
-                };
-                
-                // Fetch lesson progress data for the course
-                const lessonProgressData = await getAllLessonProgressByCourse(courseResponse.id);
-                const progressMap = new Map<string, boolean>();
-                
-                // Create a map of lesson ID to completion status for quick lookup
-                lessonProgressData.forEach(progress => {
-                    progressMap.set(progress.lessonId, progress.completed);
-                });
-                
-                // Process sections and lessons
-                const sectionsWithLessons: Section[] = [];
-                
-                for (const section of courseResponse.sections || []) {
-                    const lessons = section.lessons || [];
-                    
-                    const mappedSection: Section = {
-                        id: section.id,
-                        title: section.title,
-                        lectures: lessons.map(lesson => {
-                            // Use the progress map to determine completion status
-                            const isCompleted = progressMap.has(lesson.id) ? 
-                                progressMap.get(lesson.id) : 
-                                lesson.currentUserProgress?.completed || false;
-                            
-                            return mapLessonToLecture(lesson, isCompleted);
-                        })
-                    };
-                    
-                    sectionsWithLessons.push(mappedSection);
-                }
-                
-                transformedCourse.sections = sectionsWithLessons;
-                setCourseData(transformedCourse);
-                
-                // Find the current lecture
-                let foundLecture: Lecture | null = null;
-                
-                // Look for the lecture in all sections
-                for (const section of sectionsWithLessons) {
-                    const lecture = section.lectures.find(l => l.id === lectureId);
-                    if (lecture) {
-                        foundLecture = { ...lecture, isCurrent: true };
-                        break;
-                    }
-                }
-                
-                // If lecture is not found in the course data, fetch it directly
-                if (!foundLecture) {
-                    const lessonResponse = await getLessonById(lectureId);
-                    if (lessonResponse) {
-                        // Check if we have progress information for this lesson
-                        const isCompleted = progressMap.has(lessonResponse.id) ? 
-                            progressMap.get(lessonResponse.id) : 
-                            lessonResponse.currentUserProgress?.completed || false;
-                            
-                        foundLecture = mapLessonToLecture(lessonResponse, isCompleted);
-                        foundLecture.isCurrent = true;
-                    } else {
-                        console.error('Lecture not found');
-                        router.push(`/learning/${slug}`);
-                        return;
-                    }
-                }
-                
-                setCurrentLecture(foundLecture);
-                transformedCourse.currentLecture = foundLecture;
-                
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-                router.push('/my-courses');
-            }
-        };
-        
-        // Helper function to map LessonDto to Lecture
-        const mapLessonToLecture = (lesson: LessonDto, isCompleted: boolean = false): Lecture => {
-            return {
-                id: lesson.id,
-                title: lesson.title,
-                type: mapLessonTypeToLectureType(lesson.type),
-                description: '',
-                duration: lesson.videoDuration ? 
-                    `${Math.floor(lesson.videoDuration / 60)}:${(lesson.videoDuration % 60).toString().padStart(2, '0')}` : 
-                    '0:00',
-                isCompleted: isCompleted,
-                isCurrent: false,
-                videoUrl: lesson.videoUrl,
-                textContent: lesson.content
-            };
-        };
-        
-        // Function to map backend lesson type to frontend lecture type
-        const mapLessonTypeToLectureType = (lessonType: LessonType): LectureType => {
-            switch (lessonType) {
-                case 'VIDEO':
-                    return 'video';
-                case 'READING':
-                    return 'reading';
-                case 'QUIZ':
-                    return 'quiz';
-                default:
-                    return 'video';
-            }
-        };
-
-        fetchData();
-        
-        // Reset quiz display state when changing lectures
-        setShowQuizContent(false);
-    }, [slug, lectureId, router]);
+    // Use our custom hook to fetch lecture data
+    const { 
+        courseData, 
+        currentLecture, 
+        loading, 
+        error, 
+        showQuizContent,
+        handleStartQuiz
+    } = useLecture(slug, lectureId);
 
     const handleTimeUpdate = (time: number) => {
         setCurrentTimestamp(time);
@@ -181,10 +46,6 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
-    };
-    
-    const handleStartQuiz = () => {
-        setShowQuizContent(true);
     };
 
     if (loading) {
