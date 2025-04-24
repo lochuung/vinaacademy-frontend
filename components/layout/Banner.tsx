@@ -1,68 +1,147 @@
 "use client";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Mảng chứa đường dẫn các hình ảnh banner
+// Enhanced banner images with better quality and relevant content
 const slides = [
-    "https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp",
-    "https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp",
-    "https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp",
-    "https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp"
+    {
+        image: "https://img.freepik.com/free-photo/e-learning-education-student-university-concept_31965-6535.jpg",
+        title: "Trở thành chuyên gia với khóa học trực tuyến",
+        description: "Tiếp cận kiến thức mới từ các giảng viên hàng đầu"
+    },
+    {
+        image: "https://img.freepik.com/free-photo/modern-equipped-computer-lab_23-2149241213.jpg",
+        title: "Học từ mọi nơi với nền tảng học tập hiện đại",
+        description: "Truy cập không giới hạn với các khóa học đa dạng"
+    },
+    {
+        image: "https://img.freepik.com/free-photo/concentrated-young-student-taking-online-course_23-2149239437.jpg",
+        title: "Phát triển sự nghiệp của bạn",
+        description: "Nâng cao kỹ năng với các chứng chỉ được công nhận"
+    },
+    {
+        image: "https://img.freepik.com/free-photo/group-diverse-people-having-business-meeting_53876-25060.jpg",
+        title: "Học cùng cộng đồng",
+        description: "Kết nối với học viên và giảng viên từ khắp nơi"
+    }
 ];
 
 const Banner: React.FC = () => {
-    // State quản lý slide hiện tại
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [isAuto, setIsAuto] = useState(true);
 
-    // Effect tự động chuyển slide mỗi 4 giây
+    // Auto-advance slides when isAuto is true
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 4000);
-        // Dọn dẹp interval khi component unmount
+        let interval: NodeJS.Timeout;
+        if (isAuto) {
+            interval = setInterval(() => {
+                setCurrentSlide((prev) => (prev + 1) % slides.length);
+            }, 6000); // Longer duration for better readability
+        }
         return () => clearInterval(interval);
-    }, []);
+    }, [isAuto]);
 
-    // Xử lý sự kiện khi click nút Previous
+    // Pause auto-rotation when hovering
+    const handleMouseEnter = () => setIsAuto(false);
+    const handleMouseLeave = () => setIsAuto(true);
+
     const handlePrevClick = () => {
         setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+        setIsAuto(false);
+        setTimeout(() => setIsAuto(true), 5000); // Resume auto after interaction
     };
 
-    // Xử lý sự kiện khi click nút Next
     const handleNextClick = () => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setIsAuto(false);
+        setTimeout(() => setIsAuto(true), 5000); // Resume auto after interaction
+    };
+
+    const goToSlide = (index: number) => {
+        setCurrentSlide(index);
+        setIsAuto(false);
+        setTimeout(() => setIsAuto(true), 5000); // Resume auto after interaction
     };
 
     return (
-        // Container chính của banner
-        <div className="relative w-full overflow-hidden">
-            {/* Phần hiển thị các slides */}
-            <div className="flex transition-transform duration-700 ease-in-out"
-                 style={{transform: `translateX(-${currentSlide * 100}%)`}}
-            >
-                {/* Render từng slide */}
-                {slides.map((src, index) => (
-                    <div key={index} className="min-w-full">
-                        <img src={src} className="w-full" alt={`Banner ${index + 1}`}/>
+        <div 
+            className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden rounded-lg shadow-md"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            {/* Slides */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={currentSlide}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="absolute inset-0"
+                >
+                    <div className="relative w-full h-full">
+                        {/* Image */}
+                        <img 
+                            src={slides[currentSlide].image} 
+                            className="w-full h-full object-cover object-center" 
+                            alt={`Banner ${currentSlide + 1}`}
+                        />
+                        
+                        {/* Gradient overlay for better text visibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                        
+                        {/* Text content */}
+                        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white">
+                            <motion.h2 
+                                initial={{ y: 15, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.1 }}
+                                className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2"
+                            >
+                                {slides[currentSlide].title}
+                            </motion.h2>
+                            <motion.p 
+                                initial={{ y: 15, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="text-xs sm:text-sm md:text-base opacity-90 hidden xs:block"
+                            >
+                                {slides[currentSlide].description}
+                            </motion.p>
+                        </div>
                     </div>
-                ))}
-            </div>
+                </motion.div>
+            </AnimatePresence>
 
-            {/* Nút điều hướng Previous và Next */}
-            <button onClick={handlePrevClick}
-                    className="absolute left-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
-                ❮
+            {/* Navigation buttons */}
+            <button 
+                onClick={handlePrevClick}
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-1 sm:p-1.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label="Previous slide"
+            >
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
-            <button onClick={handleNextClick}
-                    className="absolute right-5 top-1/2 transform -translate-y-1/2 btn btn-circle">
-                ❯
+            
+            <button 
+                onClick={handleNextClick}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-1 sm:p-1.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label="Next slide"
+            >
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
 
-            {/* Hiển thị các chấm chỉ mục slide */}
-            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex gap-2">
+            {/* Indicator dots */}
+            <div className="absolute bottom-2 sm:bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2">
                 {slides.map((_, index) => (
-                    <span
+                    <button
                         key={index}
-                        className={`h-2 w-2 rounded-full ${index === currentSlide ? "bg-white" : "bg-gray-400"}`}
+                        onClick={() => goToSlide(index)}
+                        className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all duration-300 
+                            ${index === currentSlide 
+                                ? "bg-white scale-110" 
+                                : "bg-white/40 hover:bg-white/70"}`}
+                        aria-label={`Go to slide ${index + 1}`}
                     />
                 ))}
             </div>

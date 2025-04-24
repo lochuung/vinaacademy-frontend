@@ -1,5 +1,5 @@
 import apiClient from "@/lib/apiClient";
-import { MediaFileDto } from "@/types/mediaFileDto";
+import { MediaFileDto } from "@/types/file-type";
 import { AxiosResponse } from "axios";
 
 export async function uploadImage(file: File): Promise<MediaFileDto | null> {

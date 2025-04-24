@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { 
   Bell, CheckCircle, AlertCircle, FileText, 
-  ShoppingCart, MessageSquare, Tag, DollarSign, Users, Trash2
+  ShoppingCart, MessageSquare, Tag, DollarSign, Users, Trash2,
+  BadgeInfo
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +29,7 @@ export const getTypeIcon = (type: NotificationType) => {
     case NotificationType.SYSTEM: return <Bell className="h-5 w-5" />;
     case NotificationType.PAYMENT_SUCCESS: return <CheckCircle className="h-5 w-5" />;
     case NotificationType.COURSE_REVIEW: return <FileText className="h-5 w-5" />;
-    case NotificationType.COURSE_APPROVAL: return <CheckCircle className="h-5 w-5" />;
+    case NotificationType.COURSE_APPROVAL: return <BadgeInfo className="h-5 w-5" />;
     case NotificationType.SUPPORT_REPLY: return <MessageSquare className="h-5 w-5" />;
     case NotificationType.PROMOTION: return <Tag className="h-5 w-5" />;
     case NotificationType.FINANCIAL_ALERT: return <DollarSign className="h-5 w-5" />;
