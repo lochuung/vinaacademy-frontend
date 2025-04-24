@@ -1,3 +1,5 @@
+export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED';
+
 export interface CourseType {
   id: string;
   title: string;
@@ -5,7 +7,7 @@ export interface CourseType {
   rating: number;
   income: number;
   lastUpdated: string;
-  published: boolean;
+  status: CourseStatus; // Thêm trường này
   thumbnail: string;
 }
 

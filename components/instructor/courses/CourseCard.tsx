@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MoreVertical } from 'lucide-react';
 import { CourseType } from '@/types/instructor-course';
 import CourseImage from '@/services/CourseImage';
+import { CourseStatus } from '@/types/course';
 
 interface CourseCardProps {
     course: CourseType;
@@ -21,12 +22,8 @@ export default function CourseCard({ course }: CourseCardProps) {
                         <MoreVertical className="h-5 w-5 text-gray-500" />
                     </button>
                 </div>
-                {!course.published && (
-                    <div
-                        className="absolute top-2 left-2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">
-                        Bản nháp
-                    </div>
-                )}
+                {/* Sử dụng hàm renderStatus với status từ API */}
+                {renderStatus(course.status)}
             </div>
             <div className="px-4 py-4">
                 <Link href={`/instructor/courses/${course.id}/content`}>
@@ -77,4 +74,37 @@ function formatDate(dateString: string): string {
 // Định dạng tiền VND
 function formatVND(amount: number): string {
     return amount.toLocaleString('vi-VN');
+}
+
+function renderStatus(status: CourseStatus | string | undefined) {
+    if (!status) return null;
+
+    switch (status.toUpperCase()) {
+        case 'DRAFT':
+            return (
+                <div className="absolute top-2 left-2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">
+                    Bản nháp
+                </div>
+            );
+        case 'PENDING':
+            return (
+                <div className="absolute top-2 left-2 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                    Chờ duyệt
+                </div>
+            );
+        case 'REJECTED':
+            return (
+                <div className="absolute top-2 left-2 bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">
+                    Từ chối
+                </div>
+            );
+        case 'PUBLISHED':
+            return (
+                <div className="absolute top-2 left-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                    Duyệt
+                </div>
+            );
+        default:
+            return null;
+    }
 }

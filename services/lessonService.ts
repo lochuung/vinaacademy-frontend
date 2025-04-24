@@ -1,7 +1,6 @@
 'use client';
 
 import apiClient from "@/lib/apiClient";
-import { CategoryDto, CategoryRequest } from "@/types/category";
 import { AxiosResponse } from "axios";
 import { ApiResponse } from "@/types/api-response";
 import { LessonDto, LessonRequest } from "@/types/lesson";
@@ -26,7 +25,9 @@ export const getLessonsBySectionId = async (sectionId: string): Promise<LessonDt
     const response: AxiosResponse<ApiResponse<LessonDto[]>> = await apiClient.get(
       `/lessons/section/${sectionId}`
     );
-    return response.data.data;
+    // Sắp xếp lại theo orderIndex để đảm bảo hiển thị đúng thứ tự
+    const lessons = response.data.data;
+    return lessons.sort((a, b) => a.orderIndex - b.orderIndex);
   } catch (error) {
     console.error("getLessonsBySectionId error:", error);
     return [];
@@ -36,6 +37,7 @@ export const getLessonsBySectionId = async (sectionId: string): Promise<LessonDt
 // ➕ POST /lessons
 export const createLesson = async (lessonData: LessonRequest): Promise<LessonDto | null> => {
   try {
+    // Không cần xử lý orderIndex, backend sẽ luôn đặt ở cuối
     const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.post(
       '/lessons',
       lessonData
@@ -50,6 +52,17 @@ export const createLesson = async (lessonData: LessonRequest): Promise<LessonDto
 // ✏️ PUT /lessons/{id}
 export const updateLesson = async (id: string, lessonData: LessonRequest): Promise<LessonDto | null> => {
   try {
+    // Đảm bảo có orderIndex khi cập nhật
+    if (lessonData.orderIndex === undefined || lessonData.orderIndex === null) {
+      // Lấy lesson hiện tại để lấy orderIndex
+      const currentLesson = await getLessonById(id);
+      if (currentLesson) {
+        lessonData.orderIndex = currentLesson.orderIndex;
+      } else {
+        throw new Error("Cannot update lesson with unknown orderIndex");
+      }
+    }
+
     const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.put(
       `/lessons/${id}`,
       lessonData
@@ -68,6 +81,39 @@ export const deleteLesson = async (id: string): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error("deleteLesson error:", error);
+    return false;
+  }
+};
+
+// Thêm method để hỗ trợ reorder các lessons trong section
+export const reorderLessons = async (sectionId: string, lessonIds: string[]): Promise<boolean> => {
+  try {
+    // Lấy tất cả lessons hiện tại trong section
+    const currentLessons = await getLessonsBySectionId(sectionId);
+
+    // Tạo map để cập nhật dễ dàng
+    const lessonMap = new Map<string, LessonDto>();
+    currentLessons.forEach(lesson => lessonMap.set(lesson.id, lesson));
+
+    // Cập nhật từng lesson với orderIndex mới
+    const updatePromises = lessonIds.map((lessonId, index) => {
+      const lesson = lessonMap.get(lessonId);
+      if (lesson) {
+        return updateLesson(lessonId, {
+          ...lesson,
+          title: lesson.title,
+          sectionId: sectionId,
+          type: lesson.type,
+          orderIndex: index
+        });
+      }
+      return Promise.resolve(null);
+    });
+
+    await Promise.all(updatePromises);
+    return true;
+  } catch (error) {
+    console.error("reorderLessons error:", error);
     return false;
   }
 };
