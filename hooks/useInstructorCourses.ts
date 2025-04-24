@@ -56,6 +56,9 @@ export function useInstructorCourses(initialPage = 0, initialSize = 10) {
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
     };
 
     const handleSizeChange = (newSize: number) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 // You can adjust this based on your environment config
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const DEFAULT_PLACEHOLDER = '/placeholder-course.jpg';
 
 interface CourseImageProps {
     src: string;
@@ -18,11 +19,12 @@ interface CourseImageProps {
  * @param className - Optional CSS class name
  */
 export default function CourseImage({ src, alt, className = '' }: CourseImageProps) {
-    const [imageSrc, setImageSrc] = useState<string>('');
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
 
     useEffect(() => {
+        // Handle empty string case
         if (!src) {
-            setImageSrc('/placeholder-course.jpg');
+            setImageSrc(DEFAULT_PLACEHOLDER);
             return;
         }
 
@@ -41,9 +43,14 @@ export default function CourseImage({ src, alt, className = '' }: CourseImagePro
         }
         // Fallback to placeholder
         else {
-            setImageSrc('/placeholder-course.jpg');
+            setImageSrc(DEFAULT_PLACEHOLDER);
         }
     }, [src]);
+
+    // Don't render the image at all if imageSrc is null
+    if (imageSrc === null) {
+        return null;
+    }
 
     return (
         <img
@@ -52,7 +59,7 @@ export default function CourseImage({ src, alt, className = '' }: CourseImagePro
             alt={alt}
             onError={(e) => {
                 console.error(`Failed to load image: ${imageSrc}`);
-                e.currentTarget.src = '/placeholder-course.jpg';
+                e.currentTarget.src = DEFAULT_PLACEHOLDER;
             }}
         />
     );
