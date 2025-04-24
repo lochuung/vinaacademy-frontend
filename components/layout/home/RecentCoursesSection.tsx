@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {mockEnrolledCourses} from "@/data/mockCourseData";
 import CourseCard from "@/components/layout/home/CourseCard";
+import { useAuth } from "@/context/AuthContext";
+import { Clock } from "lucide-react";
+import { useInView } from "framer-motion";
 
 // Định nghĩa kiểu dữ liệu cho các khóa học
 interface CourseType {
@@ -22,6 +25,14 @@ const RecentCoursesSection = () => {
     // Định nghĩa kiểu dữ liệu cho state
     const [recentCourses, setRecentCourses] = useState<CourseType[]>([]);
 
+    const { isAuthenticated } = useAuth();
+    const sectionRef = useRef(null);
+    const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+    
+    if (!isAuthenticated) {
+        return null;
+    }
+
     useEffect(() => {
         // Lấy 3 khóa học gần nhất dựa trên lastAccessed
         const sortedCourses = [...mockEnrolledCourses]
@@ -37,22 +48,36 @@ const RecentCoursesSection = () => {
     }, []);
 
     return (
-        <>
-            {/* Tiêu đề và liên kết */}
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold text-black px-4">Tiếp tục học</h1>
-                <Link href="/my-courses" className="text-lg font-medium text-blue-600 hover:text-blue-800 pr-4">
-                    Khóa học của tôi
+        <div 
+            ref={sectionRef}
+            className="transform transition-all duration-500 ease-out"
+            style={{
+                opacity: isInView ? 1 : 0,
+                transform: isInView ? "translateY(0)" : "translateY(15px)"
+            }}
+        >
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <div className="flex items-center gap-2 px-1 sm:px-2">
+                    <div className="bg-green-100 p-1.5 rounded-md shadow-sm">
+                        <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">Tiếp tục học</h2>
+                </div>
+                <Link 
+                    href="/my-courses" 
+                    className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium flex items-center gap-1 pr-2 transition-colors duration-200"
+                >
+                    <span>Xem tất cả</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </Link>
             </div>
 
-            {/* 3 khóa học gần nhất từ mockCourseData */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
                 {recentCourses.map((course) => (
                     <CourseCard key={course.id} course={course}/>
                 ))}
             </div>
-        </>
+        </div>
     );
 };
 
