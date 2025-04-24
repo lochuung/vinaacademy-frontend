@@ -89,7 +89,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
               items={cartItems}
               onRemoveItem={handleRemoveFromCart}
             />
-            <UserMenu isLoggedIn={isAuthenticated} />
+            <UserMenu />
           </div>
         </div>
       </nav>
