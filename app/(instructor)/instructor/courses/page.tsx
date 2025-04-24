@@ -6,7 +6,7 @@ import CourseListView from "@/components/instructor/courses/CourseListView";
 import SearchAndFilterBar from "@/components/instructor/courses/SearchAndFilterBar";
 import { Spinner } from "@/components/common/pinner";
 import { useAuth } from "@/context/AuthContext";
-import Pagination from "@/components/common/Paginator";
+import { CoursesPagination } from "@/components/courses/all-courses/CoursesPagination";
 import { useRouter } from "next/navigation";
 import { createSuccessToast } from "@/components/ui/toast-cus";
 import { useInstructorCourses } from "@/hooks/useInstructorCourses";
@@ -108,10 +108,10 @@ export default function InstructorCoursesPage() {
 
               {/* Phân trang */}
               {pagination && pagination.totalPages > 1 && (
-                <Pagination
-                  currentPage={page}
+                <CoursesPagination
+                  currentPage={page + 1}
                   totalPages={pagination.totalPages}
-                  onPageChange={handlePageChange}
+                  onPageChange={(p) => handlePageChange(p - 1)}
                 />
               )}
             </>
