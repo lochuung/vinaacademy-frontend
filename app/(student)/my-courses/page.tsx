@@ -45,7 +45,7 @@ const MyCoursesPage = () => {
                         slug: enrollment.courseSlug, // API provided slug
                         image: enrollment.courseImage || '/images/course-placeholder.jpg',
                         instructor: enrollment.instructorName || enrollment.instructor || '',
-                        progress: enrollment.progressPercentage || 0,
+                        progress: enrollment.progressPercentage?.toFixed(0) || 0,
                         completedLessons: enrollment.completedLessons || 0,
                         totalLessons: enrollment.totalLessons || 0,
                         category: enrollment.category || '',
