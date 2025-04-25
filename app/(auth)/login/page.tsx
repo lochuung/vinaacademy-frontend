@@ -14,16 +14,16 @@ export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const redirectToTarget = () => {
+    const redirectToTarget = React.useCallback(() => {
         const redirectUrl = searchParams.get('redirect');
         router.push(redirectUrl || document.referrer || '/');
-    }
+    }, [router, searchParams]);
 
     useEffect(() => {
         if (isAuthenticated) {
             redirectToTarget();
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, redirectToTarget]);
 
     const handleSubmit = async (data: LoginFormValues) => {
         setError(null);

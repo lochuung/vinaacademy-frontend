@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 
 interface HomeLinkProps {
@@ -20,13 +21,14 @@ export default function HomeLink({className, children}: HomeLinkProps) {
         window.location.href = '/';
     };
 
+    // Using Link component but with the custom click handler
     return (
-        <a
+        <Link
             href="/"
             className={className}
             onClick={handleClick}
         >
             {children}
-        </a>
+        </Link>
     );
 }

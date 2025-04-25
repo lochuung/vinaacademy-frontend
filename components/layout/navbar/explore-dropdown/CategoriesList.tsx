@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { CategoryDto } from "@/types/category";
 import { ChevronRight } from "lucide-react";
 import SubCategoriesList from "./SubCategoriesList";
+import Link from "next/link";
 
 interface CategoriesListProps {
     categories: CategoryDto[];
@@ -39,7 +40,7 @@ const CategoriesList = ({
                     className="relative"
                     onMouseEnter={() => onCategoryHover(index)}
                 >
-                    <a
+                    <Link
                         href={`/categories/${category.slug}`}
                         className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"
                         onClick={(e) => handleCategoryClick(category, e)}
@@ -49,7 +50,7 @@ const CategoriesList = ({
                         {category.children && category.children.length > 0 && (
                             <ChevronRight className="w-4 h-4" />
                         )}
-                    </a>
+                    </Link>
 
                     {activeCategory === index && category.children && category.children.length > 0 && (
                         <SubCategoriesList
@@ -65,12 +66,12 @@ const CategoriesList = ({
 
             <div className="border-t my-1"></div>
 
-            <a
+            <Link
                 href="/categories"
                 className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
             >
                 Xem tất cả danh mục
-            </a>
+            </Link>
         </div>
     );
 };
