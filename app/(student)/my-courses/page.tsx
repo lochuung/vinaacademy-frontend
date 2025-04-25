@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import CourseCard from "@/components/student/progress/CourseCard";
-import { useFetchCourses } from "@/hooks/my-course/useFetchCourses";
-import { useFilterCourses } from "@/hooks/my-course/useFilterCourses";
-import { useSortCourses, SortOption } from "@/hooks/my-course/useSortCourses";
-import { usePagination } from "@/hooks/my-course/usePagination";
+import { useFetchCourses } from "@/hooks/course/useFetchCourses";
+import { useFilterCourses } from "@/hooks/course/useFilterCourses";
+import { useSortCourses, SortOption } from "@/hooks/course/useSortCourses";
+import { usePagination } from "@/hooks/course/usePagination";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MyCoursesPage = () => {
     // State for UI controls
@@ -13,7 +14,10 @@ const MyCoursesPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("newest");
     
-    // Custom hook for pagination - call once at the top level
+    // Access the query client
+    const queryClient = useQueryClient();
+    
+    // Custom hook for pagination
     const { 
         currentPage, 
         setCurrentPage,
@@ -25,20 +29,44 @@ const MyCoursesPage = () => {
         hasNextPage
     } = usePagination();
 
-    // Custom hook for fetching courses
+    // Custom hook for fetching courses with React Query
     const { 
         courses, 
         isLoading, 
+        isError,
         error,
-        totalPages: apiTotalPages 
+        totalPages: apiTotalPages,
+        refetch
     } = useFetchCourses(activeTab, currentPage, 10);
 
-    // Update total pages when API responds - but use the extracted function
+    // Update total pages when API responds
     useEffect(() => {
         if (apiTotalPages !== totalPages) {
             setTotalPages(apiTotalPages);
         }
     }, [apiTotalPages, totalPages, setTotalPages]);
+
+    // Prefetch next page when near end of current page
+    useEffect(() => {
+        if (hasNextPage) {
+            const nextPage = currentPage + 1;
+            const status = activeTab === "inProgress" ? "IN_PROGRESS" : 
+                          activeTab === "completed" ? "COMPLETED" : undefined;
+            
+            queryClient.prefetchQuery({
+                queryKey: ['courses', activeTab, nextPage, 10, status],
+                queryFn: () => {
+                    // Just declare it to trigger prefetching, implementation is in the hook
+                    return Promise.resolve(null);
+                }
+            });
+        }
+    }, [currentPage, activeTab, hasNextPage, queryClient]);
+
+    // Reset to first page when changing tabs
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [activeTab, setCurrentPage]);
 
     // Custom hook for filtering courses
     const { filteredCourses } = useFilterCourses(courses, searchQuery);
@@ -135,6 +163,7 @@ const MyCoursesPage = () => {
                         </div>
                     </div>
                 )}
+                
                 {/* Loading state */}
                 {isLoading ? (
                     <div className="flex justify-center items-center py-12">
@@ -194,7 +223,7 @@ const MyCoursesPage = () => {
                                     >
                                         <span className="sr-only">Previous</span>
                                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 01-1.414 1.414l-4-4a1 1 010-1.414l4-4a1 1 011.414 0z" clipRule="evenodd" />
                                         </svg>
                                     </button>
 
@@ -210,7 +239,7 @@ const MyCoursesPage = () => {
                                     >
                                         <span className="sr-only">Next</span>
                                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 011.414-1.414l4 4a1 1 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 010-1.414L10.586 10 7.293 6.707a1 1 011.414-1.414l4 4a1 1 010 1.414l-4 4a1 1 01-1.414 0z" clipRule="evenodd" />
                                         </svg>
                                     </button>
                                 </nav>
@@ -220,7 +249,7 @@ const MyCoursesPage = () => {
                 )}
 
                 {/* Error State */}
-                {error && (
+                {isError && error && (
                     <div className="text-center py-12 bg-red-50 rounded-lg shadow-sm border border-red-200 text-red-600">
                         <svg
                             className="mx-auto h-12 w-12"
@@ -236,12 +265,12 @@ const MyCoursesPage = () => {
                             />
                         </svg>
                         <h3 className="mt-2 text-lg font-medium">Đã xảy ra lỗi</h3>
-                        <p className="mt-1 text-sm">{error.message}</p>
+                        <p className="mt-1 text-sm">{error instanceof Error ? error.message : 'Lỗi không xác định'}</p>
                         <button
-                            onClick={() => window.location.reload()}
+                            onClick={() => refetch()}
                             className="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         >
-                            Tải lại trang
+                            Thử lại
                         </button>
                     </div>
                 )}
