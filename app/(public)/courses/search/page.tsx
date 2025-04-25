@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CourseDto, CourseSearchRequest, CourseLevel } from "@/types/course";
 import { searchCourses } from "@/services/courseService";
 import { useCategories } from "@/context/CategoryContext";
@@ -55,17 +56,20 @@ function SearchPageContent() {
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     // UI state
-    const [coursesData, setCoursesData] = useState<PaginatedResponse<CourseDto>>({
-        content: [],
-        totalPages: 0,
-        totalElements: 0,
-        size: 0,
-        number: 0,
-        first: true,
-        last: true
-    });
-    const [isLoading, setIsLoading] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+    // Map UI level strings to API CourseLevel enum
+    const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
+        if (!level) return undefined;
+        
+        const levelMap: Record<string, CourseLevel> = {
+            "Cơ bản": "BEGINNER",
+            "Trung cấp": "INTERMEDIATE",
+            "Nâng cao": "ADVANCED"
+        };
+        
+        return levelMap[level] as CourseLevel || undefined;
+    };
 
     // Initialize state from URL params
     const isParamsReady = useRef(false);
@@ -103,18 +107,10 @@ function SearchPageContent() {
         isParamsReady.current = true;
     }, [searchParams]);
 
-    // Fetch courses when filters change
-    useEffect(() => {
-        if (!isParamsReady.current) return;
-
-        if (isFirstLoad.current) {
-            isFirstLoad.current = false;
-            return;
-        }
-        
-        setIsLoading(true);
-        
-        const fetchCourses = async () => {
+    // Use React Query for data fetching
+    const { data: coursesData, isLoading, error } = useQuery({
+        queryKey: ['courses', 'search', query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection],
+        queryFn: async () => {
             try {
                 // Convert UI filters to CourseSearchRequest
                 const searchRequest: CourseSearchRequest = {
@@ -136,11 +132,11 @@ function SearchPageContent() {
                 );
                 
                 if (data) {
-                    setCoursesData(data);
                     console.log("Courses data response:", data);
+                    return data;
                 } else {
                     // Handle API error with empty state
-                    setCoursesData({
+                    return {
                         content: [],
                         totalPages: 0,
                         totalElements: 0,
@@ -148,39 +144,26 @@ function SearchPageContent() {
                         number: currentPage,
                         first: true,
                         last: true
-                    });
+                    } as PaginatedResponse<CourseDto>;
                 }
             } catch (error) {
                 console.error("Error fetching courses:", error);
-                // Set empty state on error
-                setCoursesData({
-                    content: [],
-                    totalPages: 0,
-                    totalElements: 0,
-                    size: pageSize,
-                    number: currentPage,
-                    first: true,
-                    last: true
-                });
-            } finally {
-                setIsLoading(false);
+                throw error;
             }
-        };
+        },
+        enabled: isParamsReady.current,
+        staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    });
 
-        fetchCourses();
-    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection, searchParams]);
-
-    // Map UI level strings to API CourseLevel enum
-    const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
-        if (!level) return undefined;
-        
-        const levelMap: Record<string, CourseLevel> = {
-            "Cơ bản": "BEGINNER",
-            "Trung cấp": "INTERMEDIATE",
-            "Nâng cao": "ADVANCED"
-        };
-        
-        return levelMap[level] as CourseLevel || undefined;
+    // Ensure we have a valid coursesData object even when the query hasn't run yet
+    const normalizedCoursesData: PaginatedResponse<CourseDto> = coursesData || {
+        content: [],
+        totalPages: 0,
+        totalElements: 0,
+        size: pageSize,
+        number: currentPage,
+        first: true,
+        last: true
     };
 
     // Handle category change - used by CategoryFilterTree
@@ -269,7 +252,7 @@ function SearchPageContent() {
 
                 {/* Search header with query and result count */}
                 {query && (
-                    <SearchHeader query={query} resultCount={coursesData.totalElements} />
+                    <SearchHeader query={query} resultCount={normalizedCoursesData.totalElements} />
                 )}
 
                 {/* Main content with sidebar layout */}
@@ -307,9 +290,9 @@ function SearchPageContent() {
                                 <h2 className="text-xl font-semibold mb-2">Bắt đầu tìm kiếm</h2>
                                 <p className="text-gray-600">Nhập từ khóa hoặc chọn bộ lọc để tìm khóa học phù hợp</p>
                             </div>
-                        ) : coursesData.content.length > 0 ? (
+                        ) : normalizedCoursesData.content.length > 0 ? (
                             <SearchResults
-                                coursesData={coursesData}
+                                coursesData={normalizedCoursesData}
                             />
                         ) : (
                             <NoResultsFound />
