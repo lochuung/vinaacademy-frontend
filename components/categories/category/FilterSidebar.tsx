@@ -5,62 +5,45 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useCategories } from "@/context/CategoryContext";
 import { CategoryDto } from "@/types/category";
-
-interface SubCategory {
-    name: string;
-    link: string;
-}
+import { CourseLevel } from "@/types/new-course";
 
 interface FilterSidebarProps {
     selectedLevel?: string;
-    setSelectedLevel: (level: string | undefined) => void;
     priceRange?: string;
-    setPriceRange: (price: string | undefined) => void;
-    subCategories: SubCategory[];
-    categoryInfo: {
-        category?: string;
-        categoryLink?: string;
-        subCategory?: string;
-        subCategoryLink?: string;
-    };
+    categorySlug: string;
     router: ReturnType<typeof useRouter>;
 }
 
 export function FilterSidebar({
     selectedLevel,
-    setSelectedLevel,
     priceRange,
-    setPriceRange,
-    subCategories,
-    categoryInfo,
+    categorySlug,
     router,
 }: FilterSidebarProps) {
     const { categories, getCategoryBySlug } = useCategories();
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredCategories, setFilteredCategories] = useState<CategoryDto[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-        categoryInfo.category ? categoryInfo.category.toLowerCase() : undefined
-    );
+    const levels = [{
+        label: 'Cơ bản',
+        value: CourseLevel.BEGINNER
+    }, {
+        label: 'Trung cấp',
+        value: CourseLevel.INTERMEDIATE
+    }, {
+        label: 'Nâng cao',
+        value: CourseLevel.ADVANCED
+    }];
 
     // Set initial expanded state based on active category
     useEffect(() => {
-        if (categoryInfo.category) {
-            const category = getCategoryBySlug(categoryInfo.category.toLowerCase());
+        if (categorySlug) {
+            const category = getCategoryBySlug(categorySlug);
             if (category) {
                 setExpandedCategories([category.slug]);
-                if (categoryInfo.subCategory && category.children) {
-                    // Find and expand the subcategory that matches
-                    const subCategory = category.children.find(
-                        child => child.name.toLowerCase() === categoryInfo.subCategory?.toLowerCase()
-                    );
-                    if (subCategory) {
-                        setExpandedCategories(prev => [...prev, subCategory.slug]);
-                    }
-                }
             }
         }
-    }, [categoryInfo, getCategoryBySlug]);
+    }, [categorySlug, getCategoryBySlug]);
 
     // Filter categories based on search
     useEffect(() => {
@@ -90,123 +73,49 @@ export function FilterSidebar({
         router.push(`/categories/${category.slug}`);
     };
 
-    const clearAllFilters = () => {
-        setSelectedLevel(undefined);
-        setPriceRange(undefined);
+    // Apply level filter
+    const handleLevelChange = (level: string | undefined) => {
+
+
+        const params = new URLSearchParams();
+        
+        if (level && levels.map(level => level.value).includes(level as CourseLevel)) {
+            params.set('level', level as string);
+        }
+        
+        if (priceRange) {
+            params.set('price', priceRange);
+        }
+        
+        const queryString = params.toString();
+        router.push(`/categories/${categorySlug}${queryString ? `?${queryString}` : ''}`);
     };
 
-    // Recursive function to render category tree
-    const renderCategoryTree = (category: CategoryDto, depth = 0) => {
-        const isExpanded = expandedCategories.includes(category.slug);
-        const isActive = category.slug.toLowerCase() === categoryInfo.category?.toLowerCase();
-        const hasChildren = category.children && category.children.length > 0;
-        const paddingLeft = `${depth * 12 + 4}px`;
+    // Apply price filter
+    const handlePriceChange = (price: string | undefined) => {
+        const params = new URLSearchParams();
+        
+        if (selectedLevel) {
+            params.set('level', selectedLevel);
+        }
+        
+        if (price) {
+            params.set('price', price);
+        }
+        
+        const queryString = params.toString();
+        router.push(`/categories/${categorySlug}${queryString ? `?${queryString}` : ''}`);
+    };
 
-        return (
-            <div key={category.id} className="category-item">
-                <div 
-                    className={`
-                        flex items-center py-2 cursor-pointer group transition-colors
-                        ${isActive ? 'font-medium text-black' : 'text-gray-700 hover:text-black'}
-                    `}
-                    style={{ paddingLeft }}
-                    onClick={() => handleCategorySelect(category)}
-                >
-                    <div className="flex items-center flex-1 min-w-0">
-                        <input
-                            type="radio"
-                            id={`category-${category.slug}`}
-                            name="category"
-                            checked={isActive}
-                            onChange={() => handleCategorySelect(category)}
-                            className="mr-2"
-                        />
-                        <label 
-                            htmlFor={`category-${category.slug}`} 
-                            className="truncate text-sm cursor-pointer"
-                        >
-                            {category.name}
-                        </label>
-                    </div>
-                    
-                    {hasChildren && (
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCategory(category.slug);
-                            }}
-                            className="p-1 rounded-full opacity-70 hover:opacity-100 focus:outline-none"
-                        >
-                            <svg 
-                                className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
-                                fill="none" 
-                                viewBox="0 0 24 24" 
-                                stroke="currentColor"
-                            >
-                                <path 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round" 
-                                    strokeWidth={2} 
-                                    d="M9 5l7 7-7 7" 
-                                />
-                            </svg>
-                        </button>
-                    )}
-                </div>
-
-                {/* Render children if expanded */}
-                {isExpanded && hasChildren && (
-                    <div className="pl-4 border-l border-gray-200 ml-2">
-                        {category.children.map(child => renderCategoryTree(child, depth + 1))}
-                    </div>
-                )}
-            </div>
-        );
+    const clearAllFilters = () => {
+        router.push(`/categories/${categorySlug}`);
     };
 
     return (
-        <div className="w-full md:w-64 flex-shrink-0">
-            <div className="md:sticky md:top-4 bg-white border rounded-md p-4">
+        <div className="w-full flex-shrink-0">
+            <div className="bg-white border rounded-md p-4">
                 <div className="mb-6">
                     <h3 className="font-medium text-lg border-b pb-2 mb-4">Bộ lọc</h3>
-
-                    {/* Categories with search */}
-                    <div className="mb-6">
-                        <div className="flex justify-between items-center mb-3">
-                            <h4 className="font-medium">Danh mục</h4>
-                            <button 
-                                className="text-xs text-blue-600 hover:underline"
-                                onClick={() => router.push('/categories')}
-                            >
-                                Xem tất cả
-                            </button>
-                        </div>
-
-                        {/* Search input */}
-                        <div className="relative mb-3">
-                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Tìm danh mục..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-8 pr-2 py-1.5 border rounded-md text-sm focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Category tree */}
-                        <div className="max-h-[240px] overflow-y-auto pr-1 space-y-1">
-                            {filteredCategories.length > 0 ? (
-                                filteredCategories.map(category => renderCategoryTree(category))
-                            ) : (
-                                <div className="text-sm text-gray-500 text-center py-2">
-                                    Không tìm thấy danh mục
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
                     {/* Level */}
                     <div className="mb-6">
                         <h4 className="font-medium mb-3">Cấp độ</h4>
@@ -217,25 +126,25 @@ export function FilterSidebar({
                                     id="all-levels"
                                     name="level"
                                     checked={selectedLevel === undefined}
-                                    onChange={() => setSelectedLevel(undefined)}
+                                    onChange={() => handleLevelChange(undefined)}
                                     className="mr-2"
                                 />
                                 <label htmlFor="all-levels" className="text-sm">
                                     Tất cả
                                 </label>
                             </div>
-                            {["Cơ bản", "Trung cấp", "Nâng cao"].map((level) => (
-                                <div key={level} className="flex items-center">
+                            {levels.map((level) => (
+                                <div key={level.value} className="flex items-center">
                                     <input
                                         type="radio"
                                         id={`level-${level}`}
                                         name="level"
-                                        checked={selectedLevel === level}
-                                        onChange={() => setSelectedLevel(level)}
+                                        checked={selectedLevel === level.value}
+                                        onChange={() => handleLevelChange(level.value)}
                                         className="mr-2"
                                     />
-                                    <label htmlFor={`level-${level}`} className="text-sm">
-                                        {level}
+                                    <label htmlFor={`level-${level.value}`} className="text-sm">
+                                        {level.label}
                                     </label>
                                 </div>
                             ))}
@@ -252,7 +161,7 @@ export function FilterSidebar({
                                     id="all-prices"
                                     name="price"
                                     checked={priceRange === undefined}
-                                    onChange={() => setPriceRange(undefined)}
+                                    onChange={() => handlePriceChange(undefined)}
                                     className="mr-2"
                                 />
                                 <label htmlFor="all-prices" className="text-sm">
@@ -265,7 +174,7 @@ export function FilterSidebar({
                                     id="price-free"
                                     name="price"
                                     checked={priceRange === "free"}
-                                    onChange={() => setPriceRange("free")}
+                                    onChange={() => handlePriceChange("free")}
                                     className="mr-2"
                                 />
                                 <label htmlFor="price-free" className="text-sm">
@@ -278,7 +187,7 @@ export function FilterSidebar({
                                     id="price-low"
                                     name="price"
                                     checked={priceRange === "low"}
-                                    onChange={() => setPriceRange("low")}
+                                    onChange={() => handlePriceChange("low")}
                                     className="mr-2"
                                 />
                                 <label htmlFor="price-low" className="text-sm">
@@ -291,7 +200,7 @@ export function FilterSidebar({
                                     id="price-medium"
                                     name="price"
                                     checked={priceRange === "medium"}
-                                    onChange={() => setPriceRange("medium")}
+                                    onChange={() => handlePriceChange("medium")}
                                     className="mr-2"
                                 />
                                 <label htmlFor="price-medium" className="text-sm">
@@ -304,7 +213,7 @@ export function FilterSidebar({
                                     id="price-high"
                                     name="price"
                                     checked={priceRange === "high"}
-                                    onChange={() => setPriceRange("high")}
+                                    onChange={() => handlePriceChange("high")}
                                     className="mr-2"
                                 />
                                 <label htmlFor="price-high" className="text-sm">

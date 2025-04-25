@@ -3,7 +3,6 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { CourseDto, CourseSearchRequest, CourseLevel } from "@/types/course";
-import { searchCourses } from "@/services/courseService";
 import { useCategories } from "@/context/CategoryContext";
 import SearchResults from "@/components/courses/search-course/search/SearchResults";
 import FilterSidebar from "@/components/courses/search-course/filters/FilterSidebar";
@@ -12,6 +11,7 @@ import NoResultsFound from "@/components/courses/search-course/ui/NoResultsFound
 import SearchHeader from "@/components/courses/search-course/search/SearchHeader";
 import { PaginatedResponse } from "@/types/api-response";
 import { Suspense } from "react";
+import { useCourses } from "@/hooks/useCourses";
 
 // Types
 export type FilterUpdates = {
@@ -55,17 +55,20 @@ function SearchPageContent() {
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     // UI state
-    const [coursesData, setCoursesData] = useState<PaginatedResponse<CourseDto>>({
-        content: [],
-        totalPages: 0,
-        totalElements: 0,
-        size: 0,
-        number: 0,
-        first: true,
-        last: true
-    });
-    const [isLoading, setIsLoading] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+    // Map UI level strings to API CourseLevel enum
+    const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
+        if (!level) return undefined;
+        
+        const levelMap: Record<string, CourseLevel> = {
+            "Cơ bản": "BEGINNER",
+            "Trung cấp": "INTERMEDIATE",
+            "Nâng cao": "ADVANCED"
+        };
+        
+        return levelMap[level] as CourseLevel || undefined;
+    };
 
     // Initialize state from URL params
     const isParamsReady = useRef(false);
@@ -103,84 +106,35 @@ function SearchPageContent() {
         isParamsReady.current = true;
     }, [searchParams]);
 
-    // Fetch courses when filters change
-    useEffect(() => {
-        if (!isParamsReady.current) return;
+    // Use the useCourses hook instead of direct React Query
+    const {
+        courses,
+        loading: isLoading,
+        error,
+        totalItems,
+        totalPages
+    } = useCourses({
+        keyword: query || undefined,
+        categorySlug: categories.length > 0 ? categories[0] : undefined,
+        level: mapLevelToApiFormat(levels[0]),
+        minPrice: minPrice ? parseInt(minPrice) * 1000 : undefined,
+        maxPrice: maxPrice ? parseInt(maxPrice) * 1000 : undefined,
+        minRating: minRating ? parseFloat(minRating) : undefined,
+        page: currentPage,
+        size: pageSize,
+        sortBy: sortBy,
+        sortDirection: sortDirection
+    });
 
-        if (isFirstLoad.current) {
-            isFirstLoad.current = false;
-            return;
-        }
-        
-        setIsLoading(true);
-        
-        const fetchCourses = async () => {
-            try {
-                // Convert UI filters to CourseSearchRequest
-                const searchRequest: CourseSearchRequest = {
-                    keyword: query || undefined,
-                    categorySlug: categories.length > 0 ? categories[0] : undefined,
-                    level: mapLevelToApiFormat(levels[0]),
-                    minPrice: minPrice ? parseInt(minPrice) * 1000 : undefined,
-                    maxPrice: maxPrice ? parseInt(maxPrice) * 1000 : undefined,
-                    minRating: minRating ? parseFloat(minRating) : 0
-                };
-                
-                // Call the API
-                const data = await searchCourses(
-                    searchRequest,
-                    currentPage,
-                    pageSize,
-                    sortBy,
-                    sortDirection
-                );
-                
-                if (data) {
-                    setCoursesData(data);
-                    console.log("Courses data response:", data);
-                } else {
-                    // Handle API error with empty state
-                    setCoursesData({
-                        content: [],
-                        totalPages: 0,
-                        totalElements: 0,
-                        size: pageSize,
-                        number: currentPage,
-                        first: true,
-                        last: true
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching courses:", error);
-                // Set empty state on error
-                setCoursesData({
-                    content: [],
-                    totalPages: 0,
-                    totalElements: 0,
-                    size: pageSize,
-                    number: currentPage,
-                    first: true,
-                    last: true
-                });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchCourses();
-    }, [query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection, searchParams]);
-
-    // Map UI level strings to API CourseLevel enum
-    const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
-        if (!level) return undefined;
-        
-        const levelMap: Record<string, CourseLevel> = {
-            "Cơ bản": "BEGINNER",
-            "Trung cấp": "INTERMEDIATE",
-            "Nâng cao": "ADVANCED"
-        };
-        
-        return levelMap[level] as CourseLevel || undefined;
+    // Ensure we have a valid coursesData object
+    const normalizedCoursesData: PaginatedResponse<CourseDto> = {
+        content: courses,
+        totalPages: totalPages,
+        totalElements: totalItems,
+        size: pageSize,
+        number: currentPage,
+        first: currentPage === 0,
+        last: currentPage === totalPages - 1
     };
 
     // Handle category change - used by CategoryFilterTree
@@ -269,7 +223,7 @@ function SearchPageContent() {
 
                 {/* Search header with query and result count */}
                 {query && (
-                    <SearchHeader query={query} resultCount={coursesData.totalElements} />
+                    <SearchHeader query={query} resultCount={normalizedCoursesData.totalElements} />
                 )}
 
                 {/* Main content with sidebar layout */}
@@ -307,9 +261,9 @@ function SearchPageContent() {
                                 <h2 className="text-xl font-semibold mb-2">Bắt đầu tìm kiếm</h2>
                                 <p className="text-gray-600">Nhập từ khóa hoặc chọn bộ lọc để tìm khóa học phù hợp</p>
                             </div>
-                        ) : coursesData.content.length > 0 ? (
+                        ) : normalizedCoursesData.content.length > 0 ? (
                             <SearchResults
-                                coursesData={coursesData}
+                                coursesData={normalizedCoursesData}
                             />
                         ) : (
                             <NoResultsFound />

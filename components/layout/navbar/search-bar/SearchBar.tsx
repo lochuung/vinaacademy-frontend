@@ -39,7 +39,7 @@ const SearchBar = () => {
         params.append("q", searchTerm.trim());
 
         // Redirect to the new courses search URL structure
-        window.location.href = `/courses/search?${params.toString()}`;
+        router.push(`/courses/search?${params.toString()}`);
     };
 
     return (

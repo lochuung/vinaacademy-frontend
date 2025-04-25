@@ -6,6 +6,7 @@ import RecentCoursesSection from "@/components/layout/home/RecentCoursesSection"
 import LearningRecommendations from "@/components/layout/home/LearningRecommendations";
 import TopRatedCourses from "@/components/layout/home/TopRatedCourses";
 import NewCoursesSection from "@/components/layout/home/NewCoursesSection";
+import PopularCoursesSection from "@/components/layout/home/PopularCoursesSection";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,15 +42,15 @@ export default function Home() {
 
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
-        show: { 
-            opacity: 1, 
-            y: 0, 
-            transition: { 
-                type: "spring", 
-                stiffness: 100, 
-                damping: 12, 
-                duration: 0.4 
-            } 
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 100,
+                damping: 12,
+                duration: 0.4
+            }
         }
     };
 
@@ -58,21 +59,21 @@ export default function Home() {
             <div className="w-full max-w-6xl">
                 {authLoading ? (
                     <div className="w-full">
-                        <Skeleton className="h-16 sm:h-20 w-full rounded-lg mb-4 shadow-sm"/>
+                        <Skeleton className="h-16 sm:h-20 w-full rounded-lg mb-4 shadow-sm" />
                     </div>
                 ) : isAuthenticated && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
                         className="mb-4"
                     >
-                        <WelcomeSection userName={username} userAvatar={userAvatar}/>
+                        <WelcomeSection userName={username} userAvatar={userAvatar} />
                     </motion.div>
                 )}
 
                 {contentLoading ? (
-                    <Skeleton className="h-52 sm:h-56 md:h-64 w-full rounded-lg mb-6 shadow-md"/>
+                    <Skeleton className="h-52 sm:h-56 md:h-64 w-full rounded-lg mb-6 shadow-md" />
                 ) : (
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -80,51 +81,56 @@ export default function Home() {
                         transition={{ duration: 0.5 }}
                         className="mb-5"
                     >
-                        <BannerSection/>
+                        <BannerSection />
                     </motion.div>
                 )}
 
                 {contentLoading ? (
                     <div className="space-y-6">
                         <div className="mb-4">
-                            <Skeleton className="h-8 w-36 mb-3 rounded-md"/>
+                            <Skeleton className="h-8 w-36 mb-3 rounded-md" />
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm"/>
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm"/>
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm hidden md:block"/>
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm" />
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm" />
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm hidden md:block" />
                             </div>
                         </div>
 
                         <div className="mb-4">
-                            <Skeleton className="h-8 w-40 mb-3 rounded-md"/>
+                            <Skeleton className="h-8 w-40 mb-3 rounded-md" />
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm"/>
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm"/>
-                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm hidden md:block"/>
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm" />
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm" />
+                                <Skeleton className="h-48 sm:h-52 rounded-lg shadow-sm hidden md:block" />
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <motion.div 
+                    <motion.div
                         className="space-y-8 sm:space-y-10 mt-3"
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
                     >
+
                         <motion.div variants={itemVariants}>
-                            <RecentCoursesSection/>
+                            <RecentCoursesSection />
                         </motion.div>
                         
                         <motion.div variants={itemVariants}>
-                            <LearningRecommendations/>
+                            <LearningRecommendations />
                         </motion.div>
-                        
+
                         <motion.div variants={itemVariants}>
-                            <TopRatedCourses/>
+                            <PopularCoursesSection />
                         </motion.div>
-                        
+
                         <motion.div variants={itemVariants}>
-                            <NewCoursesSection/>
+                            <TopRatedCourses />
+                        </motion.div>
+
+                        <motion.div variants={itemVariants}>
+                            <NewCoursesSection />
                         </motion.div>
                     </motion.div>
                 )}
