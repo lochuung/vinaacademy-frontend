@@ -16,15 +16,6 @@ const ShoppingCart = ({ items, onRemoveItem, total }: ShoppingCartProps) => {
     const cartRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Tính tổng giá trị (nếu không được truyền vào)
-    const calculatedTotal = () => {
-        if (total !== undefined) {
-            return total; // Sử dụng tổng đã được tính từ context
-        }
-
-
-    };
-
     // Mở dropdown với độ trễ nhỏ để tránh hiệu ứng flicker
     const handleMouseEnter = () => {
         if (timeoutRef.current) {
