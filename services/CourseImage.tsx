@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 // You can adjust this based on your environment config
@@ -53,7 +54,7 @@ export default function CourseImage({ src, alt, className = '' }: CourseImagePro
     }
 
     return (
-        <img
+        <Image
             className={className}
             src={imageSrc}
             alt={alt}

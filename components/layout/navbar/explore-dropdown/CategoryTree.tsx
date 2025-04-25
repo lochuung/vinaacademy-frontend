@@ -6,6 +6,7 @@ import { CategoryDto } from "@/types/category";
 import CategoryTreeItem from "./CategoryTreeItem";
 import { useCategories } from "@/context/CategoryContext";
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 interface CategoryTreeProps {
   categories: CategoryDto[];
@@ -142,9 +143,9 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
       <div className="border-t my-2"></div>
 
       <div className="px-4 py-2 hover:bg-gray-100 transition-colors rounded-md mx-2">
-        <a href="/categories" className="block text-blue-600 text-sm font-medium">
+        <Link href="/categories" className="block text-blue-600 text-sm font-medium">
           Xem tất cả danh mục
-        </a>
+        </Link>
       </div>
     </div>
   );

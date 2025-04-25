@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { LearningCourse } from "@/types/navbar";
 import { getCourseSlugById } from "@/services/courseService";
+import Image from "next/image";
 
 interface CourseCardProps {
     course: LearningCourse;
@@ -72,7 +73,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="relative">
-                <img
+                <Image
                     src={course.image}
                     alt={title}
                     className="w-full h-48 object-cover"

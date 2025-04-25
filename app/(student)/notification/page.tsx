@@ -50,41 +50,42 @@ const NotificationsPage = () => {
   });
 
   useEffect(() => {
+    const loadNotifications = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchUserNotifications({
+          type: filters.type,
+          isRead: filters.isRead,
+          page: pagination.currentPage,
+          size: pagination.size,
+          sortBy: filters.sortBy,
+          direction: filters.direction,
+        });
+  
+        setNotifications(result.content);
+        console.log("Notifications:", result.content);
+        setPagination({
+          currentPage: result.number,
+          totalPages: result.totalPages,
+          totalElements: result.totalElements,
+          size: result.size,
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        //console.error("Error loading notifications:", error);
+        toast({
+          title: "Đã có lỗi xảy ra khi tải thông báo",
+          description: "Vui lòng thử lại sau.",
+          className: "bg-red-500 text-white border-none",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
     loadNotifications();
   }, [pagination.currentPage, filters]);
 
-  const loadNotifications = async () => {
-    setLoading(true);
-    try {
-      const result = await fetchUserNotifications({
-        type: filters.type,
-        isRead: filters.isRead,
-        page: pagination.currentPage,
-        size: pagination.size,
-        sortBy: filters.sortBy,
-        direction: filters.direction,
-      });
-
-      setNotifications(result.content);
-      console.log("Notifications:", result.content);
-      setPagination({
-        currentPage: result.number,
-        totalPages: result.totalPages,
-        totalElements: result.totalElements,
-        size: result.size,
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      //console.error("Error loading notifications:", error);
-      toast({
-        title: "Đã có lỗi xảy ra khi tải thông báo",
-        description: "Vui lòng thử lại sau.",
-        className: "bg-red-500 text-white border-none",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   const handlePageChange = (page: number) => {
     
