@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { CartItem } from "@/types/navbar";
-import { initialCartItems } from "@/data/mockCartData";
 import ExploreDropdown from "./explore-dropdown/ExploreDropdown";
 import SearchBar from "./search-bar/SearchBar";
 import UserLearning from "./user-learning/UserLearning";
@@ -14,6 +13,7 @@ import NotificationDropdown from "./notification-badge/NotificationDropdown";
 import HomeLink from "../HomeLink";
 import { useAuth } from "@/context/AuthContext";
 import { useCategories } from "@/context/CategoryContext";
+import { useCart } from "@/context/CartContext"; // Import useCart hook
 import {
   fetchUserNotifications,
   markAllNotificationsAsRead,
@@ -23,21 +23,59 @@ import {
   NotificationPageResponse,
   NotificationType,
 } from "@/types/notification-type";
-import { set } from "date-fns";
+import { useToast } from "@/hooks/use-toast"; // Import useToast hook
 
 interface NavbarProps {
   onNavigateHome?: () => void;
 }
 
 const Navbar = ({ onNavigateHome }: NavbarProps) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
   const { categories, isLoading } = useCategories(); // Using the shared categories context
   const { isAuthenticated } = useAuth();
+  const { cartItems, removeFromCart, totalPrice } = useCart(); // Sử dụng context giỏ hàng
+  const { toast } = useToast();
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [totalUnread, setTotalUnread] = useState<number>(0);
+  const [formattedCartItems, setFormattedCartItems] = useState<CartItem[]>([]);
 
-  const handleRemoveFromCart = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  // Chuyển đổi cartItems từ CartContext sang định dạng CartItem cho ShoppingCart component
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0) {
+      const formatted = cartItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: `${item.price.toLocaleString('vi-VN')}đ`,
+        image: item.image || '/images/course-placeholder.jpg'
+      }));
+      setFormattedCartItems(formatted);
+    } else {
+      setFormattedCartItems([]);
+    }
+  }, [cartItems]);
+
+  const handleRemoveFromCart = async (id: number) => {
+    try {
+      const success = await removeFromCart(id);
+      if (success) {
+        toast({
+          title: "Đã xóa khỏi giỏ hàng",
+          description: "Khóa học đã được xóa khỏi giỏ hàng của bạn",
+        });
+      } else {
+        toast({
+          title: "Không thể xóa khóa học",
+          description: "Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+      toast({
+        title: "Không thể xóa khóa học",
+        description: "Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleMarkAllAsRead = () => {
@@ -84,8 +122,9 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
                   totalUnread={totalUnread}
                 />
                 <ShoppingCart
-                  items={cartItems}
+                  items={formattedCartItems}
                   onRemoveItem={handleRemoveFromCart}
+                  total={totalPrice} // Truyền tổng giá trị từ CartContext
                 />
               </>
             )}

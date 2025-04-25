@@ -19,12 +19,13 @@ interface PurchaseCardProps {
 
 export default function PurchaseCard({ course, instructors, sections }: PurchaseCardProps) {
     const { user, isAuthenticated } = useAuth();
-    const { addToCart } = useCart();
+    const { addToCart, cartItems } = useCart();
     const router = useRouter();
     const { toast } = useToast();
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [isEnrolling, setIsEnrolling] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [isInCart, setIsInCart] = useState(false);
 
     // Calculate total course duration in seconds
     const totalDuration = course.sections.reduce((total, section) => {
@@ -56,6 +57,14 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
         checkUserEnrollment();
     }, [isAuthenticated, course.id]);
 
+    // Check if course is already in cart
+    useEffect(() => {
+        if (isAuthenticated && course.id && cartItems.length > 0) {
+            const courseInCart = cartItems.some(item => item.courseId === course.id.toString());
+            setIsInCart(courseInCart);
+        }
+    }, [isAuthenticated, course.id, cartItems]);
+
     // Handle enrollment
     const handleEnroll = async () => {
         if (!isAuthenticated) {
@@ -68,6 +77,13 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             return;
         }
 
+        // Nếu khóa học có giá > 0 thì chuyển đến trang thanh toán
+        if (course.price > 0) {
+            router.push(`/checkout?course=${course.id}`);
+            return;
+        }
+
+        // Tiếp tục xử lý đăng ký miễn phí
         setIsEnrolling(true);
         try {
             const enrollmentData: EnrollmentRequest = {
@@ -109,11 +125,14 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
 
         setIsAddingToCart(true);
         try {
-            // Sử dụng CartContext để thêm vào giỏ hàng
-            const cartItemRequest = { courseId: course.id.toString(), price: course.price };
-            const success = await addToCart(cartItemRequest);
+            // Truyền object đúng format
+            const success = await addToCart({
+                courseId: course.id.toString(),
+                price: course.price
+            });
 
             if (success) {
+                setIsInCart(true);
                 toast({
                     title: "Đã thêm vào giỏ hàng",
                     description: "Khóa học đã được thêm vào giỏ hàng của bạn",
@@ -159,7 +178,12 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             {/* Purchase info and action buttons */}
             <div className="p-6">
                 <div className="mb-6">
-                    <p className="text-2xl font-bold mb-2">{course.price.toLocaleString('vi-VN')}₫</p>
+                    {/* Hiển thị giá dựa trên điều kiện */}
+                    <p className="text-2xl font-bold mb-2">
+                        {course.price === 0
+                            ? "Miễn phí"
+                            : `${course.price.toLocaleString('vi-VN')}₫`}
+                    </p>
                     <div className="space-y-3 mt-4">
                         {isEnrolled ? (
                             <Button
@@ -177,21 +201,37 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
                                 onClick={handleEnroll}
                                 disabled={isEnrolling}
                             >
-                                {isEnrolling ? 'Đang xử lý...' : 'Đăng ký học ngay'}
+                                {isEnrolling
+                                    ? 'Đang xử lý...'
+                                    : course.price > 0
+                                        ? 'Thanh toán ngay'
+                                        : 'Đăng ký học ngay'}
                             </Button>
                         )}
 
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={handleAddToCart}
-                            disabled={isAddingToCart || isEnrolled}
-                        >
-                            <ShoppingCart className="w-4 h-4 mr-2" />
-                            {isAddingToCart ? 'Đang xử lý...' : 'Thêm vào giỏ hàng'}
-                        </Button>
+                        {/* Hiển thị nút "Thêm vào giỏ hàng" chỉ khi có giá và chưa đăng ký */}
+                        {course.price > 0 && !isEnrolled && (
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={handleAddToCart}
+                                disabled={isAddingToCart || isInCart}
+                            >
+                                <ShoppingCart className="w-4 h-4 mr-2" />
+                                {isAddingToCart ? 'Đang xử lý...' : 'Thêm vào giỏ hàng'}
+                            </Button>
+                        )}
+
+                        {/* Hiển thị thông báo đã có trong giỏ hàng */}
+                        {isInCart && (
+                            <p className="text-xs text-center text-orange-500 font-medium">
+                                Khóa học đã có trong giỏ hàng của bạn
+                            </p>
+                        )}
                     </div>
-                    <p className="text-xs text-center text-gray-500 mt-2">Đảm bảo hoàn tiền trong 30 ngày</p>
+                    {course.price > 0 && (
+                        <p className="text-xs text-center text-gray-500 mt-2">Đảm bảo hoàn tiền trong 30 ngày</p>
+                    )}
                 </div>
 
                 {/* Course included features */}
