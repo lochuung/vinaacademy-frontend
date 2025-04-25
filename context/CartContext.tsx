@@ -96,7 +96,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 totalHours: calculateTotalHours(courseData),
                 lectures: courseData.totalLesson || 0,
                 level: getCourseLevel(courseData.level),
-                image: courseData.image || '/images/course-placeholder.jpg',
+                image: courseData.image || '/images/course-placeholder.jpg', //Chưa xử lý ảnh http và uuid
                 addedAt: item.addedAt
             };
         } catch (error) {
