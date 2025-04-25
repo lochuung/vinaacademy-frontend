@@ -6,7 +6,6 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import { fetchCourseBySlug } from '@/services/courseActions';
-import { CourseDetailsResponse } from '@/types/course';
 
 // Generate metadata for the page
 export async function generateMetadata({
