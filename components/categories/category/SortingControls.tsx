@@ -6,6 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { CourseLevel } from "@/types/new-course";
 
 interface SortingControlsProps {
     sortBy: string;
@@ -22,6 +23,17 @@ export function SortingControls({
     priceRange,
     categorySlug,
 }: SortingControlsProps) {
+    const levels = [{
+        label: 'Cơ bản',
+        value: CourseLevel.BEGINNER
+    }, {
+        label: 'Trung cấp',
+        value: CourseLevel.INTERMEDIATE
+    }, {
+        label: 'Nâng cao',
+        value: CourseLevel.ADVANCED
+    }];
+
     const hasFilters = selectedLevel || priceRange;
 
     return (
@@ -51,7 +63,7 @@ export function SortingControls({
 
                         {selectedLevel && (
                             <div className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm">
-                                <span>Cấp độ: {selectedLevel}</span>
+                                <span>Cấp độ: {levels.find(level => level.value === selectedLevel)?.label || selectedLevel}</span>
                                 <a 
                                     href={`/categories/${categorySlug}${priceRange ? `?price=${priceRange}` : ''}`}
                                     className="ml-2 cursor-pointer"

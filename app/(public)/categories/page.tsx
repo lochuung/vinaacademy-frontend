@@ -8,12 +8,14 @@ import { Search } from "lucide-react";
 import { CategoryDto } from "@/types/category";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import CategoryTree from "@/components/layout/navbar/explore-dropdown/CategoryTree";
+import CategoryTreeItem from "@/components/layout/navbar/explore-dropdown/CategoryTreeItem";
 
 export default function CategoriesPage() {
     const { categories, isLoading } = useCategories();
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredCategories, setFilteredCategories] = useState<CategoryDto[]>([]);
-    const [activeView, setActiveView] = useState<'hierarchy' | 'grid'>('hierarchy');
+    const [activeView, setActiveView] = useState<'hierarchy' | 'grid' | 'tree'>('tree');
 
     // Filter categories based on search
     useEffect(() => {
@@ -93,6 +95,16 @@ export default function CategoriesPage() {
                         <h2 className="text-2xl font-bold">Tất cả danh mục</h2>
                         <div className="flex gap-2">
                             <Button
+                                variant={activeView === 'tree' ? 'default' : 'outline'}
+                                onClick={() => setActiveView('tree')}
+                                className="flex items-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Cây thư mục
+                            </Button>
+                            <Button
                                 variant={activeView === 'hierarchy' ? 'default' : 'outline'}
                                 onClick={() => setActiveView('hierarchy')}
                                 className="flex items-center gap-2"
@@ -129,7 +141,34 @@ export default function CategoriesPage() {
                         </div>
                     ) : filteredCategories.length > 0 ? (
                         <>
-                            {activeView === 'hierarchy' ? (
+                            {activeView === 'tree' ? (
+                                <div className="bg-white rounded-lg shadow border p-6">
+                                    {/* Category Tree View */}
+                                    <div className="mb-4">
+                                        <div className="relative mb-4">
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="Lọc danh mục..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-2 border rounded-md"
+                                            />
+                                        </div>
+                                        <div className="max-h-[70vh] overflow-auto">
+                                            {filteredCategories.map(category => (
+                                                <CategoryTreeItem
+                                                    key={category.id}
+                                                    category={category}
+                                                    depth={0}
+                                                    isExpanded={true}
+                                                    activePath={[]}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : activeView === 'hierarchy' ? (
                                 <CategoryHierarchyDisplay categories={filteredCategories} />
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -142,7 +181,7 @@ export default function CategoriesPage() {
                                             <h3 className="font-medium text-lg mb-2">{category.name}</h3>
                                             {category.children && category.children.length > 0 && (
                                                 <p className="text-sm text-gray-500">
-                                                    {category.children.length} {category.children.length === 1 ? 'subcategory' : 'subcategories'}
+                                                    {category.children.length} danh mục con
                                                 </p>
                                             )}
                                         </Link>
