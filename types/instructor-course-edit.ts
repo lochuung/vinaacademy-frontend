@@ -4,6 +4,7 @@ export interface Lecture {
     title: string;
     type: string; // Sử dụng lowercase của LessonType ('video', 'reading', 'quiz')
     duration?: number;
+    isPublished: boolean;
     content?: string;
     order: number; // Tương đương với orderIndex trong backend
 }

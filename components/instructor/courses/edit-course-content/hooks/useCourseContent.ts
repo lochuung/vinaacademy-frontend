@@ -32,6 +32,7 @@ export interface LectureDisplay {
     duration?: number;
     content?: string;
     order: number;
+    isPublished ?: boolean;
 }
 
 // Type mapping từ backend sang frontend

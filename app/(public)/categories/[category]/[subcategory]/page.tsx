@@ -1,7 +1,7 @@
 "use client";
 
 import {useParams, useRouter, useSearchParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useEffect, useState, Suspense} from "react";
 import {categoriesData} from "@/data/categories";
 import {mockCourses} from "@/data/mockCourses";
 
@@ -16,7 +16,35 @@ import {CourseTabs} from "@/components/categories/ui/CourseTabs";
 import {CourseGrid} from "@/components/categories/ui/CourseGrid";
 import {SubCategoryEmptyState} from "@/components/categories/sub-category/SubCategoryEmptyState";
 
-export default function SubCategoryPage() {
+// Loading component for Suspense fallback
+function SubCategoryPageLoading() {
+    return (
+        <div className="min-h-screen bg-white">
+            <div className="h-16 bg-gray-100 border-b animate-pulse"></div>
+            <div className="container mx-auto px-4 py-8">
+                <div className="h-12 w-3/4 bg-gray-100 mb-6 animate-pulse"></div>
+                
+                <div className="flex flex-col md:flex-row gap-8">
+                    <div className="md:w-1/4 h-96 bg-gray-100 animate-pulse"></div>
+                    
+                    <div className="flex-grow">
+                        <div className="h-10 bg-gray-100 mb-4 animate-pulse"></div>
+                        <div className="h-10 bg-gray-100 mb-8 animate-pulse"></div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <div key={i} className="h-80 bg-gray-100 animate-pulse"></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Component that uses useSearchParams
+function SubCategoryPageContent() {
     const router = useRouter();
     const params = useParams();
     const searchParams = useSearchParams();
@@ -278,5 +306,14 @@ export default function SubCategoryPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Export wrapped in Suspense
+export default function SubCategoryPage() {
+    return (
+        <Suspense fallback={<SubCategoryPageLoading />}>
+            <SubCategoryPageContent />
+        </Suspense>
     );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card } from "@/components/ui/card";
 import ResetPasswordForm, { ResetPasswordFormValues } from "@/components/ui/resetpasswordform";
@@ -10,7 +10,22 @@ import { Loader2, XCircle } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-export default function ResetPasswordPage() {
+// Loading component for Suspense fallback
+function ResetPasswordLoading() {
+    return (
+        <div className="container flex items-center justify-center min-h-screen py-10">
+            <Card className="w-full max-w-md p-6 shadow-lg">
+                <div className="flex flex-col items-center justify-center gap-4 py-8">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <p className="text-muted-foreground">Đang tải...</p>
+                </div>
+            </Card>
+        </div>
+    );
+}
+
+// Component that uses useSearchParams
+function ResetPasswordContent() {
     const [isValidating, setIsValidating] = useState(true);
     const [isValidToken, setIsValidToken] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,5 +118,14 @@ export default function ResetPasswordPage() {
                 )}
             </Card>
         </div>
+    );
+}
+
+// Export wrapped in Suspense
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<ResetPasswordLoading />}>
+            <ResetPasswordContent />
+        </Suspense>
     );
 }

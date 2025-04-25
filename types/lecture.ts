@@ -1,5 +1,5 @@
 // Cập nhật interface Lecture
-import { CourseDto, LessonDto, SectionDto } from './course';
+import {CourseDto, LessonDto, SectionDto} from './course';
 
 export interface Resource {
     id: string;
@@ -52,6 +52,7 @@ export interface Lecture {
     type: LectureType;
     description: string;
     duration: string;
+    isPublished?: boolean;
 
     // Các trường tùy chọn cho mọi loại bài học
     isCompleted?: boolean;
@@ -94,6 +95,15 @@ export interface LearningCourse {
     slug: string;
     title: string; // Maps to course.name
     currentLecture: Lecture | null;
+    sections: Section[];
+    progress: number; // Phần trăm hoàn thành khóa học
+}
+
+export interface Course {
+    id: string;
+    title: string;
+    slug: string;
+    currentLecture: Lecture;
     sections: Section[];
     progress: number; // Phần trăm hoàn thành khóa học
 }

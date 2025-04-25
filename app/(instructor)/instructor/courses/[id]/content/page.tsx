@@ -9,6 +9,7 @@ import { CourseContentBody } from '@/components/instructor/courses/edit-course-c
 import { CourseContentFooter } from '@/components/instructor/courses/edit-course-content/CourseContentFooter';
 import { useCourseContent } from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
 import { SectionEditModal } from '@/components/instructor/courses/SectionEditModal';
+import { adaptSectionDisplaysToSections } from '@/utils/adapters/courseContentAdapter';
 
 export default function CourseContentPage() {
     const params = useParams();
@@ -17,7 +18,7 @@ export default function CourseContentPage() {
     const [isAddSectionModalOpen, setAddSectionModalOpen] = useState(false);
 
     const {
-        sections,
+        sections: sectionsDisplay,
         expandedSections,
         isDragging,
         isLoading,
@@ -30,6 +31,9 @@ export default function CourseContentPage() {
         saveAllChanges,
         fetchSections
     } = useCourseContent(courseId);
+
+    // Convert SectionDisplay[] to Section[] using the adapter
+    const sections = adaptSectionDisplaysToSections(sectionsDisplay);
 
     const handleSaveDraft = async () => {
         setIsSaving(true);

@@ -1,22 +1,38 @@
 import {siteConfig} from "@/config/site.config";
 import {MetadataRoute} from "next";
 
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    // courses
-    const courses = await fetch(`${siteConfig.apiUrl}/courses`);
-    const coursesData = await courses.json();
+    // Base URL for API calls - ensure it's an absolute URL
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+    
+    try {
+        // courses - use the absolute API URL
+        const coursesResponse = await fetch(`${baseUrl}/courses`);
+        
+        if (!coursesResponse.ok) {
+            console.warn('Failed to fetch courses for sitemap:', coursesResponse.statusText);
+            return getStaticPages(); // Return only static pages if courses can't be fetched
+        }
+        
+        const coursesData = await coursesResponse.json();
+        
+        const courseUrls = coursesData.map((course: any) => ({
+            url: `${siteConfig.url}/courses/${course.slug}`,
+            lastModified: new Date(course.updatedAt || Date.now()),
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+        }));
+        
+        return [...getStaticPages(), ...courseUrls];
+    } catch (error) {
+        console.warn('Error generating sitemap:', error);
+        return getStaticPages(); // Fallback to static pages on error
+    }
+}
 
-    const courseUrls = coursesData.map((course: any) => ({
-        url: `${siteConfig.url}/courses/${course.slug}`,
-        lastModified: new Date(course.updatedAt),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-    }));
-
-
-    // Static pages
-    const staticPages = [
+// Static pages function for reuse
+function getStaticPages() {
+    return [
         {
             url: siteConfig.url,
             lastModified: new Date(),
@@ -42,6 +58,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
     ];
-
-    return [...staticPages, ...courseUrls];
 }
