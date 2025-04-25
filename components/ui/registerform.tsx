@@ -17,6 +17,7 @@ import { IoMdLock } from "react-icons/io";
 import { MdOutlineDriveFileRenameOutline, MdEmail } from "react-icons/md";
 import { RegisterRequest } from "@/types/auth";
 import { createErrorToast, createSuccessToast } from "./toast-cus";
+import Image from "next/image";
 
 // Password regex: At least 8 characters, at least one uppercase letter, one lowercase letter, and one number
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -53,7 +54,7 @@ interface RegisterFormProps {
 export default function RegisterForm({
     heading = "VN Academy",
     subheading = "Tạo ngay cho mình một tài khoản",
-    imageUrl = "https://source.unsplash.com/600x600/?education,technology",
+    imageUrl = "https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg?t=st=1745597272~exp=1745600872~hmac=667ac92fb131452d1c619cbe5cd84b2efdf074d9debbbe2ac16108c009b1d820&w=826",
     registerText = "Đăng ký",
     googleText = "Đăng nhập bằng Google",
     signinText = "Đã có tài khoản?",
@@ -218,8 +219,13 @@ export default function RegisterForm({
 
                 {/* Right Side - Image */}
                 <div className="hidden md:block md:w-1/2 bg-gray-200 items-center justify-center">
-                    <img src={imageUrl} alt="Register Illustration"
-                        className="h-full w-full object-cover flex items-center justify-center" />
+                    <Image 
+                        src={imageUrl} 
+                        alt="Register Illustration"
+                        width={600}
+                        height={600}
+                        className="h-full w-full object-cover flex items-center justify-center" 
+                    />
                 </div>
             </div>
 
