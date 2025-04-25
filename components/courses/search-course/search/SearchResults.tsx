@@ -1,10 +1,10 @@
 "use client";
 
-import {CourseDto} from "@/types/course";
+import { CourseDto } from "@/types/course";
 import CourseCard from "@/components/courses/search-course/ui/CourseCard";
 import Pagination from "@/components/courses/search-course/ui/Pagination";
-import {useSearchParams, useRouter} from "next/navigation";
-import {PaginatedResponse} from "@/types/api-response";
+import { useSearchParams, useRouter } from "next/navigation";
+import { PaginatedResponse } from "@/types/api-response";
 import { useEffect, useState, Suspense } from "react";
 
 interface SearchResultsProps {
@@ -34,22 +34,22 @@ function SearchResultsLoading({ coursesData }: { coursesData: PaginatedResponse<
 }
 
 // Component that uses useSearchParams
-function SearchResultsContent({coursesData}: SearchResultsProps) {
+function SearchResultsContent({ coursesData }: SearchResultsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") || "1");
-    
+
     // Track current sort selection
     const [currentSort, setCurrentSort] = useState("relevance");
 
     // Use pagination data from API response
-    const {content: courses, totalPages, totalElements} = coursesData;
+    const { content: courses, totalPages, totalElements } = coursesData;
 
     // Initialize sort value from URL on component mount
     useEffect(() => {
         const sortBy = searchParams.get("sortBy") || "name";
         const sortDirection = searchParams.get("sortDirection") || "asc";
-        
+
         // Determine the current sort option based on URL parameters
         if (sortBy === "name" && sortDirection === "asc") {
             setCurrentSort("relevance");
@@ -79,9 +79,9 @@ function SearchResultsContent({coursesData}: SearchResultsProps) {
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
         const params = new URLSearchParams(searchParams.toString());
-        
+
         // Update sort parameters based on selection
-        switch(value) {
+        switch (value) {
             case "relevance":
                 params.set("sortBy", "name");
                 params.set("sortDirection", "asc");
@@ -103,10 +103,10 @@ function SearchResultsContent({coursesData}: SearchResultsProps) {
                 params.set("sortDirection", "desc");
                 break;
         }
-        
+
         // Reset to page 1 when changing sort
         params.set("page", "1");
-        
+
         // Navigate to the new URL
         router.push(`/courses/search?${params.toString()}`);
     };
@@ -121,7 +121,7 @@ function SearchResultsContent({coursesData}: SearchResultsProps) {
                 <div className="flex items-center space-x-2">
                     <span className="text-sm">Sắp xếp theo:</span>
                     <select
-                        className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-black bg-white"
                         value={currentSort}
                         onChange={handleSortChange}
                     >
@@ -137,7 +137,7 @@ function SearchResultsContent({coursesData}: SearchResultsProps) {
             {/* Grid display of courses */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses.map((course) => (
-                    <CourseCard key={course.id} course={course}/>
+                    <CourseCard key={course.id} course={course} />
                 ))}
             </div>
 
@@ -156,7 +156,7 @@ function SearchResultsContent({coursesData}: SearchResultsProps) {
 }
 
 // Export wrapped in Suspense
-const SearchResults = ({coursesData}: SearchResultsProps) => {
+const SearchResults = ({ coursesData }: SearchResultsProps) => {
     return (
         <Suspense fallback={<SearchResultsLoading coursesData={coursesData} />}>
             <SearchResultsContent coursesData={coursesData} />

@@ -4,7 +4,6 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCategories } from "@/context/CategoryContext";
 import { useCourses } from "@/hooks/useCourses";
-import { CategoryDto } from "@/types/category";
 import { CourseLevel } from "@/types/course";
 
 // Import components
@@ -22,23 +21,23 @@ export default function CategoryPage() {
     const params = useParams();
     const searchParams = useSearchParams();
     const { categories, isLoading: categoriesLoading, getCategoryBySlug, getCategoryPath, findSubcategories } = useCategories();
-    
+
     const categorySlug = params.category as string;
     const selectedLevel = searchParams.get('level') || undefined;
     const priceRange = searchParams.get('price') || undefined;
     const sortParam = searchParams.get('sort') || 'popular';
-    
+
     const [sortBy, setSortBy] = useState(sortParam);
     const [activeTab, setActiveTab] = useState(sortParam === 'newest' ? 'newest' : sortParam === 'rating' ? 'rating' : 'popular');
-    
+
     // Get category information
     const categoryInfo = getCategoryBySlug(categorySlug);
     const categoryPath = getCategoryPath(categorySlug);
     const subCategories = findSubcategories(categorySlug);
-    
+
     // Helper function to get sort field
     function getSortField(sort: string): string {
-        switch(sort) {
+        switch (sort) {
             case 'popular': return 'totalStudent';
             case 'rating': return 'rating';
             case 'newest': return 'createdDate';
@@ -49,10 +48,10 @@ export default function CategoryPage() {
                 return 'totalStudent';
         }
     }
-    
+
     // Helper function to get sort direction
     function getSortDirection(sort: string): 'asc' | 'desc' {
-        switch(sort) {
+        switch (sort) {
             case 'price-low': return 'asc';
             case 'price-high':
             case 'popular':
@@ -65,7 +64,7 @@ export default function CategoryPage() {
     }
 
     // Use the useCourses hook instead of direct React Query
-    const { 
+    const {
         courses,
         loading: coursesLoading,
         error: coursesError,
@@ -76,14 +75,14 @@ export default function CategoryPage() {
         keyword: searchParams.get('query') || undefined,
         categorySlug: categorySlug,
         level: selectedLevel as CourseLevel,
-        minPrice: priceRange === 'free' ? 0 : 
-                 priceRange === 'low' ? 1 : 
-                 priceRange === 'medium' ? 500000 : 
-                 priceRange === 'high' ? 1000000 : undefined,
-        maxPrice: priceRange === 'free' ? 0 : 
-                 priceRange === 'low' ? 500000 : 
-                 priceRange === 'medium' ? 1000000 : 
-                 undefined,
+        minPrice: priceRange === 'free' ? 0 :
+            priceRange === 'low' ? 1 :
+                priceRange === 'medium' ? 500000 :
+                    priceRange === 'high' ? 1000000 : undefined,
+        maxPrice: priceRange === 'free' ? 0 :
+            priceRange === 'low' ? 500000 :
+                priceRange === 'medium' ? 1000000 :
+                    undefined,
         page: 0, // First page
         size: 20,
         sortBy: getSortField(sortBy),
@@ -103,46 +102,46 @@ export default function CategoryPage() {
         setActiveTab(tab);
         setSortBy(tab);
     };
-    
+
     // Update query params when filters change
     useEffect(() => {
         const currentParams = new URLSearchParams(searchParams.toString());
-        
+
         if (sortBy) {
             currentParams.set('sort', sortBy);
         } else {
             currentParams.delete('sort');
         }
-        
+
         const newQueryString = currentParams.toString();
         const queryPart = newQueryString ? `?${newQueryString}` : '';
-        
+
         router.replace(`/categories/${categorySlug}${queryPart}`, { scroll: false });
     }, [sortBy]);
-    
+
     // Reset all filters
     const resetFilters = () => {
         router.replace(`/categories/${categorySlug}`);
     };
-    
+
     // Show loading state when fetching data
     if (categoriesLoading || coursesLoading) {
         return <LoadingState />;
     }
-    
+
     // Show not found state if category doesn't exist
     if (!categoryInfo) {
         return <NotFoundState />;
     }
-    
+
     // Show error state if courses query failed
     if (coursesError) {
         return (
             <div className="container mx-auto py-20 text-center">
                 <h2 className="text-2xl font-bold mb-4">Có lỗi xảy ra</h2>
                 <p className="text-gray-600 mb-6">Không thể tải danh sách khóa học. Vui lòng thử lại sau.</p>
-                <button 
-                    onClick={() => refetch()} 
+                <button
+                    onClick={() => refetch()}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                     Thử lại
@@ -150,7 +149,7 @@ export default function CategoryPage() {
             </div>
         );
     }
-    
+
     return (
         <div className="min-h-screen bg-white">
             <div className="container mx-auto px-4 py-8">
@@ -159,7 +158,7 @@ export default function CategoryPage() {
                     category={categoryInfo.name}
                     subCategory={categoryPath.length > 1 ? categoryPath[categoryPath.length - 2].name : undefined}
                 />
-                
+
                 {/* Course Grid with Sidebar - Tree Layout */}
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Left Sidebar with Category Tree */}
@@ -177,7 +176,7 @@ export default function CategoryPage() {
                                     />
                                 ))}
                             </div>
-                            
+
                             {/* Filter components */}
                             <FilterSidebar
                                 selectedLevel={selectedLevel}
@@ -187,7 +186,7 @@ export default function CategoryPage() {
                             />
                         </div>
                     </div>
-                    
+
                     {/* Main Content Area */}
                     <div className="flex-grow">
                         {/* Breadcrumb Navigation */}
@@ -203,13 +202,12 @@ export default function CategoryPage() {
                                         <li key={cat.id}>
                                             <div className="flex items-center">
                                                 <span className="mx-2 text-gray-400">/</span>
-                                                <a 
+                                                <a
                                                     href={`/categories/${cat.slug}`}
-                                                    className={`${
-                                                        index === categoryPath.length - 1 
-                                                        ? 'text-blue-600 font-medium' 
+                                                    className={`${index === categoryPath.length - 1
+                                                        ? 'text-blue-600 font-medium'
                                                         : 'text-gray-700 hover:text-blue-600'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {cat.name}
                                                 </a>
@@ -262,20 +260,19 @@ export default function CategoryPage() {
                             totalItems={coursesData?.totalElements || 0}
                             resetFilters={resetFilters}
                         />
-                        
+
                         {/* Pagination */}
                         {coursesData && coursesData.totalPages > 1 && (
                             <div className="flex justify-center mt-8">
                                 <nav className="flex items-center space-x-2">
                                     {[...Array(Math.min(5, coursesData.totalPages))].map((_, i) => (
-                                        <a 
-                                            key={i} 
+                                        <a
+                                            key={i}
                                             href={`/categories/${categorySlug}?page=${i}`}
-                                            className={`px-3 py-1 rounded border ${
-                                                coursesData.number === i 
-                                                    ? 'bg-blue-600 text-white border-blue-600' 
-                                                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                            className={`px-3 py-1 rounded border ${coursesData.number === i
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                                                }`}
                                         >
                                             {i + 1}
                                         </a>

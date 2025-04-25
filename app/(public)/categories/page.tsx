@@ -8,7 +8,6 @@ import { Search } from "lucide-react";
 import { CategoryDto } from "@/types/category";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import CategoryTree from "@/components/layout/navbar/explore-dropdown/CategoryTree";
 import CategoryTreeItem from "@/components/layout/navbar/explore-dropdown/CategoryTreeItem";
 
 export default function CategoriesPage() {
