@@ -19,6 +19,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./form";
 import { toast } from "react-toastify";
 import { forgotPassword } from "@/services/authService";
 import { Loader2 } from "lucide-react";
+import { createErrorToast, createSuccessToast } from "./toast-cus";
 
 const formSchema = z.object({
     email: z
@@ -51,13 +52,13 @@ export default function DialogForgotPassword({ open, onClose }: DialogForgotPass
             const success = await forgotPassword(data.email);
             if (success) {
                 setIsSubmitSuccessful(true);
-                toast.success("Vui lòng kiểm tra email để đặt lại mật khẩu");
+                createSuccessToast("Vui lòng kiểm tra email để đặt lại mật khẩu");
             } else {
-                toast.error("Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.");
+                createErrorToast("Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.");
             }
         } catch (error) {
             console.error("Forgot password error:", error);
-            toast.error("Có lỗi xảy ra khi gửi yêu cầu đặt lại mật khẩu");
+            createErrorToast("Có lỗi xảy ra khi gửi yêu cầu đặt lại mật khẩu");
         } finally {
             setIsSubmitting(false);
         }

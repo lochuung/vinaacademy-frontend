@@ -2,7 +2,7 @@
 "use client";
 
 import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {FaUserShield} from "react-icons/fa";
 import {IoMdLock} from "react-icons/io";
 
 import DialogForgotPassword from "./otp-dialog";
+import Image from "next/image";
 
 const formSchema = z.object({
     email: z
@@ -95,7 +96,7 @@ export default function LoginForm({
                         <div className="mb-6 flex flex-col items-center">
                             <a href={logo.url}>
 
-                                <img src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto"/>
+                                <Image src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto"/>
 
                             </a>
                             <p className="mb-2 text-2xl font-bold">{heading}</p>
@@ -154,7 +155,7 @@ export default function LoginForm({
                                     )}
                                 />
                                 <div className="flex justify-between">
-                                    <FormField
+                                    {/* <FormField
                                         control={form.control}
                                         name="remember"
 
@@ -171,7 +172,7 @@ export default function LoginForm({
                                                 <Label className="-translate-y-[3px]" htmlFor="remember">Ghi nhớ</Label>
                                             </FormItem>
                                         )}
-                                    />
+                                    /> */}
                                     <a className="text-sm text-primary hover:underline hover:cursor-pointer"
 
                                        onClick={() => setDialogOpen(true)}>
