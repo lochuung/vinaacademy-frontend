@@ -36,12 +36,14 @@ interface ReviewsAreaProps {
     courseId: string;
     currentUserId?: string;
     mainPage?: boolean;
+    userEnrolled?: boolean; // Add new prop for user enrollment status
 }
 
 const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     courseId,
     mainPage = false,
-    currentUserId = '1'
+    currentUserId = '1',
+    userEnrolled = false // Default to false if not provided
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -465,7 +467,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Đánh giá từ học viên</h2>
-                {canReview && (
+                {canReview && userEnrolled && (
                     <Button
                         onClick={() => {
                             setEditingReview(null);

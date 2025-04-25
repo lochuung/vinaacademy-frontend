@@ -1,13 +1,13 @@
-import {CartItem} from "@/types/navbar";
+import { CartItem } from "@/types/navbar";
 import Image from "next/image";
-import {X} from "lucide-react";
+import { X } from "lucide-react";
 
 interface CartItemListProps {
     items: CartItem[];
     onRemove?: (id: number) => void;
 }
 
-export const CartItemList = ({items, onRemove}: CartItemListProps) => {
+export const CartItemList = ({ items, onRemove }: CartItemListProps) => {
     if (items.length === 0) {
         return (
             <div className="py-6 text-center text-gray-500">
@@ -30,12 +30,26 @@ export const CartItemList = ({items, onRemove}: CartItemListProps) => {
     );
 };
 
+function parsePrice(price: string): number {
+    // Loại bỏ ký tự không phải số và xử lý "K"
+    if (price.toLowerCase().endsWith("k")) {
+        const num = parseFloat(price);
+        return Math.round(num * 1000);
+    }
+    // Loại bỏ dấu chấm, phẩy nếu có
+    return Number(price.replace(/[^\d]/g, ""));
+}
+
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
+};
+
 interface CartItemRowProps {
     item: CartItem;
     onRemove?: (id: number) => void;
 }
 
-const CartItemRow = ({item, onRemove}: CartItemRowProps) => {
+const CartItemRow = ({ item, onRemove }: CartItemRowProps) => {
     const handleRemove = () => {
         if (onRemove) {
             onRemove(item.id);
@@ -58,7 +72,9 @@ const CartItemRow = ({item, onRemove}: CartItemRowProps) => {
                 <h4 className="text-sm font-medium text-gray-900 line-clamp-2">
                     {item.name}
                 </h4>
-                <p className="text-sm text-gray-500 mt-1">{item.price}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                    {formatCurrency(parsePrice(item.price))}
+                </p>
             </div>
             {onRemove && (
                 <button
@@ -66,7 +82,7 @@ const CartItemRow = ({item, onRemove}: CartItemRowProps) => {
                     className="p-1 hover:bg-gray-200 rounded-full transition-colors"
                     aria-label="Xóa khỏi giỏ hàng"
                 >
-                    <X className="w-4 h-4 text-gray-400"/>
+                    <X className="w-4 h-4 text-gray-400" />
                 </button>
             )}
         </li>
