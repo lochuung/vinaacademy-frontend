@@ -18,4 +18,4 @@ export async function uploadImage(file: File): Promise<MediaFileDto | null> {
     console.error("uploadImage error:", error);
     return null;
   }
-}
+} 
