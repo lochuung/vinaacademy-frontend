@@ -41,7 +41,7 @@ const SearchFilter = ({
   }, []);
   useEffect(() => {
     onSearchChange(debouncedSearchTerm); // Call the search change handler with the debounced value
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, onSearchChange]);
 
   useEffect(() => {
     setSearchTerm(oldValue); // Update the search term when oldValue changes

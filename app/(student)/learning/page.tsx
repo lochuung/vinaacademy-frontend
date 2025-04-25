@@ -1,17 +1,17 @@
 'use client';
 
-import {useEffect} from 'react';
-import {use} from 'react';
-import {useRouter} from 'next/navigation';
-import {mockCourseData} from '@/data/mockLearningData';
+import { useEffect } from 'react';
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
+import { mockCourseData } from '@/data/mockLearningData';
 
 interface LearningPageParams {
-    params: { [key: string]: string };
+    params: Promise<{ [key: string]: string }>;
 }
 
-export default function DefaultLearningPage({params}: LearningPageParams) {
+export default function DefaultLearningPage({ params }: LearningPageParams) {
     // Unwrap the params Promise
-    const unwrappedParams = params;
+    const unwrappedParams = use(params);
     const router = useRouter();
 
     useEffect(() => {

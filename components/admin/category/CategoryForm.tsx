@@ -66,13 +66,15 @@ export function CategoryForm({
 
         form.setValue('slug', slug);
         setGeneratedSlug(slug);
-    }, [form.watch('name')]);
+    }, [form]);
 
     useEffect(() => {
-        form.setValue('name', initialData?.name || '');
-        form.setValue('slug', initialData?.slug || '');
-        form.setValue('parentId', initialData?.parent?.id || -999);
-    }, [initialData]);
+        if (initialData) {
+            form.setValue('name', initialData.name || '');
+            form.setValue('slug', initialData.slug || '');
+            form.setValue('parentId', initialData.parent?.id || -999);
+        }
+    }, [initialData, form]);
 
     const handleSubmit = async (values: z.infer<typeof categorySchema>) => {
         await onSubmit(values);

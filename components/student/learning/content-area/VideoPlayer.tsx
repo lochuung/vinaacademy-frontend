@@ -198,7 +198,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
             videoElement.removeEventListener('ended', handleEnded);
             videoElement.removeEventListener('loadeddata', handleLoadedData);
         };
-    }, [videoRef.current]);
+    }, [handleTimeUpdate, handleDurationChange, handleEnded, handleLoadedData]);
 
     return (
         <div

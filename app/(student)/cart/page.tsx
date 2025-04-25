@@ -46,7 +46,7 @@ export default function Cart() {
         return () => {
             hasRefreshedRef.current = false;
         };
-    }, [isAuthenticated, authLoading]);
+    }, [isAuthenticated, authLoading, router, refreshCart]);
 
     const handleRemoveItem = async (id: number) => {
         console.log("handleRemoveItem called with id:", id);

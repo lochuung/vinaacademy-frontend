@@ -122,7 +122,7 @@ const CourseApprovalPage = () => {
   useEffect(() => {
     fetchCoursesCount();
     fetchCourses();
-  }, [filter, searchTerm, category, sortDirection, currentPage]);
+  }, [filter, searchTerm, category, sortDirection, currentPage, fetchCourses]);
 
   // Reset page when filters change
   useEffect(() => {

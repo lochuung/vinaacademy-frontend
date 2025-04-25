@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // Enhanced banner images with better quality and relevant content
 const slides = [
@@ -82,10 +83,13 @@ const Banner: React.FC = () => {
                 >
                     <div className="relative w-full h-full">
                         {/* Image */}
-                        <img 
+                        <Image 
                             src={slides[currentSlide].image} 
-                            className="w-full h-full object-cover object-center" 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 100vw"
+                            className="object-cover object-center"
                             alt={`Banner ${currentSlide + 1}`}
+                            priority={currentSlide === 0}
                         />
                         
                         {/* Gradient overlay for better text visibility */}

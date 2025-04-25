@@ -29,11 +29,9 @@ const RecentCoursesSection = () => {
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
     
-    if (!isAuthenticated) {
-        return null;
-    }
-
     useEffect(() => {
+        if (!isAuthenticated) return;
+        
         // Lấy 3 khóa học gần nhất dựa trên lastAccessed
         const sortedCourses = [...mockEnrolledCourses]
             .sort((a, b) => {
@@ -45,7 +43,11 @@ const RecentCoursesSection = () => {
             .slice(0, 3);
 
         setRecentCourses(sortedCourses);
-    }, []);
+    }, [isAuthenticated]);
+
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div 

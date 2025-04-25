@@ -204,20 +204,20 @@ export default function AdminDashboard() {
                     <h3 className="font-medium text-gray-900">Yêu cầu rút tiền</h3>
                     <p className="mt-1 text-3xl font-semibold text-black">8</p>
                     <div className="mt-2">
-                        <a href="/admin/payments/withdrawals"
+                        <Link href="/admin/payments/withdrawals"
                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                             Xem ngay →
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="p-4 bg-white rounded-lg shadow">
                     <h3 className="font-medium text-gray-900">Báo cáo vi phạm</h3>
                     <p className="mt-1 text-3xl font-semibold text-black">3</p>
                     <div className="mt-2">
-                        <a href="/admin/reports/violations"
+                        <Link href="/admin/reports/violations"
                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                             Xem ngay →
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="p-4 bg-white rounded-lg shadow">

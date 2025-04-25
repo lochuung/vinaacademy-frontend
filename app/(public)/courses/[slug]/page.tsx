@@ -9,12 +9,17 @@ import { fetchCourseBySlug } from '@/services/courseActions';
 import { CourseDetailsResponse } from '@/types/course';
 
 // Generate metadata for the page
-export async function generateMetadata({ params }: { params: { slug?: string } }): Promise<Metadata> {
-    const slug = params?.slug;
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+
     if (!slug) {
         return {
             title: 'Khóa học | VinaAcademy',
-            description: 'Khám phá các khóa học tại VinaAcademy'
+            description: 'Khám phá các khóa học tại VinaAcademy',
         };
     }
 
@@ -49,10 +54,19 @@ export async function generateMetadata({ params }: { params: { slug?: string } }
     };
 }
 
-export default async function CoursePage({ params }: { params: { slug: string } }) {
+
+export default async function CoursePage({
+    params
+}: {
+    params: Promise<{ slug: string }>
+}) {
     try {
+        const { slug } = await params;
+        if (!slug) {
+            return notFound();
+        }
         // Fetch course data from API using server action
-        const course = await fetchCourseBySlug(params.slug);
+        const course = await fetchCourseBySlug(slug);
 
         // If course not found, return 404
         if (!course) {

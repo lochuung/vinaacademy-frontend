@@ -19,16 +19,16 @@ const MyCoursesPage = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [error, setError] = useState<Error | null>(null);
 
-    // Convert activeTab to API status format
-    const getStatusFromTab = (): 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | undefined => {
-        switch (activeTab) {
-            case 'inProgress': return 'IN_PROGRESS';
-            case 'completed': return 'COMPLETED';
-            default: return undefined;
-        }
-    };
-
     useEffect(() => {
+        // Convert activeTab to API status format inside the effect
+        const getStatusFromTab = (): 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | undefined => {
+            switch (activeTab) {
+                case 'inProgress': return 'IN_PROGRESS';
+                case 'completed': return 'COMPLETED';
+                default: return undefined;
+            }
+        };
+
         // Fetch enrollments from API
         const fetchCourses = async () => {
             setIsLoading(true);
