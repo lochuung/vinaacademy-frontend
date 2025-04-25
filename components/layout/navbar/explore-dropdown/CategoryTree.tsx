@@ -18,7 +18,7 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
   const [activePath, setActivePath] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCategories, setFilteredCategories] = useState<CategoryDto[]>(categories);
-  
+
   // Extract current category slug from the pathname
   useEffect(() => {
     if (pathname) {
@@ -42,17 +42,17 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
     }
 
     const lowerSearchTerm = searchTerm.toLowerCase();
-    
+
     // Recursive function to search through category hierarchy
     const filterCategories = (cats: CategoryDto[]): CategoryDto[] => {
       return cats.reduce((filtered, category) => {
         const matchesSearch = category.name.toLowerCase().includes(lowerSearchTerm);
-        
+
         // Filter children recursively
-        const filteredChildren = category.children && category.children.length > 0 
-          ? filterCategories(category.children) 
+        const filteredChildren = category.children && category.children.length > 0
+          ? filterCategories(category.children)
           : [];
-        
+
         // Include this category if it matches or if any children match
         if (matchesSearch || filteredChildren.length > 0) {
           filtered.push({
@@ -60,11 +60,11 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
             children: filteredChildren
           });
         }
-        
+
         return filtered;
       }, [] as CategoryDto[]);
     };
-    
+
     setFilteredCategories(filterCategories(categories));
   }, [searchTerm, categories]);
 
@@ -92,7 +92,7 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
             placeholder="Tìm danh mục..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-8 pr-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-8 pr-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 bg-white"
           />
         </div>
       </div>
@@ -138,9 +138,9 @@ const CategoryTree = ({ categories, className = "" }: CategoryTreeProps) => {
           </>
         )}
       </div>
-      
+
       <div className="border-t my-2"></div>
-      
+
       <div className="px-4 py-2 hover:bg-gray-100 transition-colors rounded-md mx-2">
         <a href="/categories" className="block text-blue-600 text-sm font-medium">
           Xem tất cả danh mục

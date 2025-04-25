@@ -44,7 +44,7 @@ export interface CartItem {
 export interface LearningCourse {
     id?: string;
     name: string;
-    slug?: string;
+    slug: string;
     image: string;
     instructor?: string;
     progress: number;

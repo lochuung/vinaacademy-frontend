@@ -28,7 +28,7 @@ interface CartContextType {
     cartItems: CartItemDisplay[];
     isLoading: boolean;
     error: Error | null;
-    addToCart: (courseId: string, price: number) => Promise<boolean>;
+    addToCart: (cartItemRequest: { courseId: string, price: number }) => Promise<boolean>;
     removeFromCart: (itemId: number) => Promise<boolean>;
     updateCartItem: (itemId: number, courseId: string, price: number) => Promise<boolean>;
     applyCoupon: (couponId: string) => Promise<boolean>;
@@ -56,8 +56,6 @@ const CartContext = createContext<CartContextType>({
 
 export const useCart = () => useContext(CartContext);
 
-
-
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const [cartItems, setCartItems] = useState<CartItemDisplay[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -71,16 +69,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const isRefreshingRef = useRef(false);
     const apiCallInProgressRef = useRef(false);
 
-    // Thêm ref để theo dõi lần chạy cuối - ADDED
+    // Thêm ref để theo dõi lần chạy cuối
     const lastUserIdRef = useRef<string | null>(null);
 
-    // Flag to use mock data during development
-    const useMockData = true; // Set to false in production
-
     // Tính tổng giá tiền
-    const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
-    const totalOriginalPrice = cartItems.reduce((sum, item) => sum + item.originalPrice, 0);
-
+    const totalPrice = cartItems.reduce((sum, item) => sum + Number(item.price), 0);
+    const totalOriginalPrice = cartItems.reduce((sum, item) => sum + Number(item.originalPrice), 0);
     // Hàm chuyển đổi từ CartItemDto và CourseDto sang CartItemDisplay
     const enrichCartItem = async (item: CartItemDto): Promise<CartItemDisplay | null> => {
         try {
@@ -101,7 +95,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 totalHours: calculateTotalHours(courseData),
                 lectures: courseData.totalLesson || 0,
                 level: getCourseLevel(courseData.level),
-                image: courseData.image || '/images/course-placeholder.jpg',
+                image: courseData.image || '/images/course-placeholder.jpg', //Chưa xử lý ảnh http và uuid
                 addedAt: item.addedAt
             };
         } catch (error) {
@@ -166,7 +160,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             return;
         }
 
-        // THÊM: Kiểm tra nếu đã khởi tạo và userId không thay đổi, và không phải force refresh
+        // Kiểm tra nếu đã khởi tạo và userId không thay đổi, và không phải force refresh
         if (isInitializedRef.current && user.id === lastUserIdRef.current && !forceRefresh) {
             return;
         }
@@ -195,7 +189,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                     console.error('Error creating cart:', createError);
                 }
                 setCartItems([]);
-                // CẬP NHẬT: Lưu lại userId hiện tại và đánh dấu đã khởi tạo
+                // Lưu lại userId hiện tại và đánh dấu đã khởi tạo
                 lastUserIdRef.current = user.id;
                 isInitializedRef.current = true;
                 return;
@@ -224,7 +218,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 setCartItems([]);
             }
 
-            // CẬP NHẬT: Lưu lại userId hiện tại và đánh dấu đã khởi tạo
+            // Lưu lại userId hiện tại và đánh dấu đã khởi tạo
             lastUserIdRef.current = user.id;
             isInitializedRef.current = true;
         } catch (err) {
@@ -246,7 +240,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // Initial load - strict control to prevent multiple calls
     useEffect(() => {
         if (isAuthenticated && user && !apiCallInProgressRef.current) {
-            // CẬP NHẬT: Kiểm tra nếu userId đã thay đổi hoặc chưa khởi tạo
+            // Kiểm tra nếu userId đã thay đổi hoặc chưa khởi tạo
             if (!isInitializedRef.current || user.id !== lastUserIdRef.current) {
                 fetchCart();
             }
@@ -277,7 +271,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     // Thêm sản phẩm vào giỏ hàng
-    const addToCart = async (courseId: string, price: number): Promise<boolean> => {
+    const addToCart = async (cartItemRequest: { courseId: string, price: number }): Promise<boolean> => {
         if (!isAuthenticated || !user) {
             toast({
                 title: 'Bạn cần đăng nhập',
@@ -285,45 +279,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 variant: 'destructive'
             });
             return false;
-        }
-
-        // Mock behavior
-        if (useMockData) {
-            // Check if already in cart
-            const existingItem = cartItems.find(item => item.courseId === courseId);
-            if (existingItem) {
-                toast({
-                    title: 'Đã có trong giỏ hàng',
-                    description: 'Khóa học này đã có trong giỏ hàng của bạn',
-                });
-                return true;
-            }
-
-            // Add new mock item
-            const newItem: CartItemDisplay = {
-                id: Math.floor(Math.random() * 1000) + 10, // Random ID
-                courseId,
-                price,
-                originalPrice: price * 2,
-                name: "Khóa học mới",
-                instructor: "Giảng viên",
-                rating: 5,
-                totalStudents: 0,
-                totalHours: 10,
-                lectures: 20,
-                level: "Cơ bản",
-                image: "/images/courses/react.jpg",
-                addedAt: new Date().toISOString()
-            };
-
-            setCartItems(prev => [...prev, newItem]);
-
-            toast({
-                title: 'Đã thêm vào giỏ hàng',
-                description: 'Khóa học đã được thêm vào giỏ hàng của bạn',
-            });
-
-            return true;
         }
 
         if (!cartId) {
@@ -338,7 +293,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(true);
         try {
             // Kiểm tra xem khóa học đã có trong giỏ hàng chưa
-            const existingItem = cartItems.find(item => item.courseId === courseId);
+            const existingItem = cartItems.find(item => item.courseId === cartItemRequest.courseId);
             if (existingItem) {
                 toast({
                     title: 'Đã có trong giỏ hàng',
@@ -347,16 +302,16 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 return true;
             }
 
-            const cartItemRequest: CartItemRequest = {
+            const request: CartItemRequest = {
                 cart_id: cartId,
-                course_id: courseId,
-                price: price
+                course_id: cartItemRequest.courseId,
+                price: cartItemRequest.price
             };
 
-            const result = await cartService.addToCart(cartItemRequest);
+            const result = await cartService.addToCart(request);
             if (result) {
                 // Get course info separately instead of refreshing entire cart
-                const courseInfo = await getCourseWithInstructor(courseId);
+                const courseInfo = await getCourseWithInstructor(cartItemRequest.courseId);
 
                 if (courseInfo) {
                     const newCartItem: CartItemDisplay = {
@@ -385,6 +340,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 });
                 return true;
             }
+
+            toast({
+                title: 'Không thể thêm vào giỏ hàng',
+                description: 'Đã xảy ra lỗi khi thêm khóa học vào giỏ hàng.',
+                variant: 'destructive'
+            });
             return false;
         } catch (err) {
             console.error('Error adding to cart:', err);
@@ -403,24 +364,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (itemId: number): Promise<boolean> => {
         if (!isAuthenticated) {
-            return false;
-        }
-
-        // Handle mock data
-        if (useMockData) {
-            setCartItems(prev => prev.filter(item => item.id !== itemId));
             toast({
-                title: 'Đã xóa khỏi giỏ hàng',
-                description: 'Khóa học đã được xóa khỏi giỏ hàng của bạn',
+                title: 'Bạn cần đăng nhập',
+                description: 'Vui lòng đăng nhập để thực hiện thao tác này',
+                variant: 'destructive'
             });
-            return true;
+            return false;
         }
 
         setIsLoading(true);
         try {
+            // Gọi service xóa từ cartService
             const success = await cartService.removeFromCart(itemId);
+
             if (success) {
-                // Update local state
+                // Cập nhật state local nếu xóa thành công
                 setCartItems(prev => prev.filter(item => item.id !== itemId));
                 toast({
                     title: 'Đã xóa khỏi giỏ hàng',
@@ -428,6 +386,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 });
                 return true;
             }
+
+            toast({
+                title: 'Không thể xóa khóa học',
+                description: 'Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.',
+                variant: 'destructive'
+            });
             return false;
         } catch (err) {
             console.error('Error removing from cart:', err);
@@ -446,23 +410,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // Cập nhật thông tin sản phẩm trong giỏ hàng
     const updateCartItem = async (itemId: number, courseId: string, price: number): Promise<boolean> => {
         if (!isAuthenticated || !cartId) {
-            return false;
-        }
-
-        // Handle mock data
-        if (useMockData) {
-            setCartItems(prev =>
-                prev.map(item =>
-                    item.id === itemId
-                        ? { ...item, price }
-                        : item
-                )
-            );
             toast({
-                title: 'Đã cập nhật giỏ hàng',
-                description: 'Thông tin khóa học đã được cập nhật',
+                title: 'Bạn cần đăng nhập',
+                description: 'Vui lòng đăng nhập để thực hiện thao tác này',
+                variant: 'destructive'
             });
-            return true;
+            return false;
         }
 
         setIsLoading(true);
@@ -490,6 +443,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 });
                 return true;
             }
+
+            toast({
+                title: 'Không thể cập nhật',
+                description: 'Đã xảy ra lỗi khi cập nhật thông tin khóa học.',
+                variant: 'destructive'
+            });
             return false;
         } catch (err) {
             console.error('Error updating cart item:', err);
@@ -508,23 +467,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     // Áp dụng mã giảm giá
     const applyCoupon = async (couponId: string): Promise<boolean> => {
         if (!isAuthenticated || !user || !cartId) {
-            return false;
-        }
-
-        // Handle mock data
-        if (useMockData) {
-            // Apply a mock discount of 20%
-            setCartItems(prev =>
-                prev.map(item => ({
-                    ...item,
-                    price: Math.round(item.price * 0.8) // 20% discount
-                }))
-            );
             toast({
-                title: 'Đã áp dụng mã giảm giá',
-                description: 'Mã giảm giá đã được áp dụng thành công',
+                title: 'Bạn cần đăng nhập',
+                description: 'Vui lòng đăng nhập để thực hiện thao tác này',
+                variant: 'destructive'
             });
-            return true;
+            return false;
         }
 
         setIsLoading(true);
@@ -545,6 +493,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 });
                 return true;
             }
+
+            toast({
+                title: 'Không thể áp dụng mã giảm giá',
+                description: 'Đã xảy ra lỗi khi áp dụng mã giảm giá.',
+                variant: 'destructive'
+            });
             return false;
         } catch (err) {
             console.error('Error applying coupon:', err);
@@ -562,7 +516,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Xóa toàn bộ giỏ hàng (chỉ xóa state local)
     const clearCart = () => {
+        if (!isAuthenticated) {
+            toast({
+                title: 'Bạn cần đăng nhập',
+                description: 'Vui lòng đăng nhập để thực hiện thao tác này',
+                variant: 'destructive'
+            });
+            return;
+        }
+
         setCartItems([]);
+        toast({
+            title: 'Đã xóa giỏ hàng',
+            description: 'Giỏ hàng của bạn đã được xóa',
+        });
     };
 
     return (

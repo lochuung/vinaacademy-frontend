@@ -16,6 +16,9 @@ export default function Cart() {
     const { toast } = useToast();
     const [localLoading, setLocalLoading] = useState(false);
 
+    // Thêm state để theo dõi các mục đang được xóa
+    const [removingItems, setRemovingItems] = useState<Set<number>>(new Set());
+
     // Theo dõi nếu đã gọi refreshCart() để tránh gọi nhiều lần
     const hasRefreshedRef = useRef(false);
 
@@ -46,16 +49,38 @@ export default function Cart() {
     }, [isAuthenticated, authLoading]);
 
     const handleRemoveItem = async (id: number) => {
-        setLocalLoading(true);
-        const success = await removeFromCart(id);
-        if (!success) {
+        console.log("handleRemoveItem called with id:", id);
+
+        // Thêm item vào danh sách đang xóa
+        setRemovingItems(prev => new Set(prev).add(id));
+
+        try {
+            console.log("Calling removeFromCart with id:", id);
+            const success = await removeFromCart(id);
+            console.log("removeFromCart result:", success);
+
+            if (!success) {
+                toast({
+                    title: 'Không thể xóa khóa học',
+                    description: 'Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.',
+                    variant: 'destructive'
+                });
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
             toast({
                 title: 'Không thể xóa khóa học',
                 description: 'Đã xảy ra lỗi khi xóa khóa học khỏi giỏ hàng.',
                 variant: 'destructive'
             });
+        } finally {
+            // Xóa item khỏi danh sách đang xóa
+            setRemovingItems(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(id);
+                return newSet;
+            });
         }
-        setLocalLoading(false);
     };
 
     const handleSaveForLater = (id: number) => {
@@ -102,6 +127,7 @@ export default function Cart() {
                                     onRemove={handleRemoveItem}
                                     onSaveForLater={handleSaveForLater}
                                     onAddToFavorites={handleAddToFavorites}
+                                    isRemoving={removingItems.has(item.id)} // Thêm prop này
                                 />
                             ))}
                         </div>
