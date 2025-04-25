@@ -5,13 +5,36 @@ import CourseCard from "@/components/courses/search-course/ui/CourseCard";
 import Pagination from "@/components/courses/search-course/ui/Pagination";
 import {useSearchParams, useRouter} from "next/navigation";
 import {PaginatedResponse} from "@/types/api-response";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 interface SearchResultsProps {
     coursesData: PaginatedResponse<CourseDto>;
 }
 
-const SearchResults = ({coursesData}: SearchResultsProps) => {
+// Loading component for Suspense fallback
+function SearchResultsLoading({ coursesData }: { coursesData: PaginatedResponse<CourseDto> }) {
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-6">
+                <div className="text-lg">
+                    <span className="font-semibold">{coursesData.totalElements || 0}</span> khóa học tìm thấy
+                </div>
+                <div className="flex items-center space-x-2">
+                    <span className="text-sm">Đang tải...</span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="bg-gray-100 rounded-lg p-4 h-80 animate-pulse"></div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// Component that uses useSearchParams
+function SearchResultsContent({coursesData}: SearchResultsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") || "1");
@@ -129,6 +152,15 @@ const SearchResults = ({coursesData}: SearchResultsProps) => {
                 </div>
             )}
         </div>
+    );
+}
+
+// Export wrapped in Suspense
+const SearchResults = ({coursesData}: SearchResultsProps) => {
+    return (
+        <Suspense fallback={<SearchResultsLoading coursesData={coursesData} />}>
+            <SearchResultsContent coursesData={coursesData} />
+        </Suspense>
     );
 };
 

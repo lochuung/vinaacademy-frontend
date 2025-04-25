@@ -11,13 +11,29 @@ import MobileFilterToggle from "@/components/courses/search-course/filters/Mobil
 import NoResultsFound from "@/components/courses/search-course/ui/NoResultsFound";
 import SearchHeader from "@/components/courses/search-course/search/SearchHeader";
 import { PaginatedResponse } from "@/types/api-response";
+import { Suspense } from "react";
 
 // Types
 export type FilterUpdates = {
     [key: string]: string | null;
 };
 
-export default function SearchPage() {
+// Loading component for Suspense fallback
+function SearchPageLoading() {
+    return (
+        <div className="min-h-screen bg-gray-100 py-8">
+            <div className="container mx-auto px-4">
+                <h1 className="text-3xl font-bold mb-6">Kết quả tìm kiếm</h1>
+                <div className="flex justify-center items-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Actual Search Page Component
+function SearchPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { categories: allCategories, getCategoryPath } = useCategories();
@@ -26,9 +42,9 @@ export default function SearchPage() {
     // State for search and filter params
     const [query, setQuery] = useState("");
     const [categories, setCategories] = useState<string[]>([]);
-    const [subCategories, setSubCategories] = useState<string[]>([]); // Added for FilterSidebar
-    const [topics, setTopics] = useState<string[]>([]); // Added for FilterSidebar
-    const [selectedTopics, setSelectedTopics] = useState<string[]>([]); // Added for FilterSidebar
+    const [subCategories, setSubCategories] = useState<string[]>([]);
+    const [topics, setTopics] = useState<string[]>([]);
+    const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
     const [levels, setLevels] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
@@ -302,5 +318,14 @@ export default function SearchPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Export wrapped in Suspense
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<SearchPageLoading />}>
+            <SearchPageContent />
+        </Suspense>
     );
 }
