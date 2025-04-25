@@ -53,7 +53,7 @@ export function FilterSidebar({
         }
 
         const lowerSearchTerm = searchTerm.toLowerCase();
-        const filtered = categories.filter(category => 
+        const filtered = categories.filter(category =>
             category.name.toLowerCase().includes(lowerSearchTerm)
         );
         setFilteredCategories(filtered);
@@ -61,7 +61,7 @@ export function FilterSidebar({
 
     // Toggle category expansion
     const toggleCategory = (slug: string) => {
-        setExpandedCategories(prev => 
+        setExpandedCategories(prev =>
             prev.includes(slug)
                 ? prev.filter(id => id !== slug)
                 : [...prev, slug]
@@ -78,15 +78,15 @@ export function FilterSidebar({
 
 
         const params = new URLSearchParams();
-        
+
         if (level && levels.map(level => level.value).includes(level as CourseLevel)) {
             params.set('level', level as string);
         }
-        
+
         if (priceRange) {
             params.set('price', priceRange);
         }
-        
+
         const queryString = params.toString();
         router.push(`/categories/${categorySlug}${queryString ? `?${queryString}` : ''}`);
     };
@@ -94,15 +94,15 @@ export function FilterSidebar({
     // Apply price filter
     const handlePriceChange = (price: string | undefined) => {
         const params = new URLSearchParams();
-        
+
         if (selectedLevel) {
             params.set('level', selectedLevel);
         }
-        
+
         if (price) {
             params.set('price', price);
         }
-        
+
         const queryString = params.toString();
         router.push(`/categories/${categorySlug}${queryString ? `?${queryString}` : ''}`);
     };
