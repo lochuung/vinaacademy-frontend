@@ -95,11 +95,11 @@ export default function CartItemCard({
             {/* Price Information */}
             <div className="text-right min-w-[120px]">
                 <div className="font-bold text-lg flex items-center justify-end gap-1">
-                    <span>{item.price.toLocaleString()}đ</span>
+                    <span>{Number(item.price).toLocaleString("vi-VN")}đ</span>
                     <Tag className="w-4 h-4" />
                 </div>
                 <div className="text-sm text-gray-500 line-through">
-                    {item.originalPrice.toLocaleString()}đ
+                    {Number(item.originalPrice).toLocaleString("vi-VN")}đ
                 </div>
             </div>
         </div>

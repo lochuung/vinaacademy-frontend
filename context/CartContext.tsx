@@ -73,9 +73,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const lastUserIdRef = useRef<string | null>(null);
 
     // Tính tổng giá tiền
-    const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
-    const totalOriginalPrice = cartItems.reduce((sum, item) => sum + item.originalPrice, 0);
-
+    const totalPrice = cartItems.reduce((sum, item) => sum + Number(item.price), 0);
+    const totalOriginalPrice = cartItems.reduce((sum, item) => sum + Number(item.originalPrice), 0);
     // Hàm chuyển đổi từ CartItemDto và CourseDto sang CartItemDisplay
     const enrichCartItem = async (item: CartItemDto): Promise<CartItemDisplay | null> => {
         try {

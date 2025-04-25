@@ -66,13 +66,13 @@ export default function CheckoutSummary({ cartItems }: CheckoutSummaryProps) {
                 <div className="flex justify-between">
                     <span>Giá gốc:</span>
                     <span className="line-through text-gray-500">
-                        {totalOriginalPrice.toLocaleString()}đ
+                        {totalOriginalPrice.toLocaleString("vi-VN")}đ
                     </span>
                 </div>
                 <div className="flex justify-between font-bold">
                     <span>Giá ưu đãi:</span>
                     <span>
-                        {totalPrice.toLocaleString()}đ
+                        {totalPrice.toLocaleString("vi-VN")}đ
                     </span>
                 </div>
                 <Button

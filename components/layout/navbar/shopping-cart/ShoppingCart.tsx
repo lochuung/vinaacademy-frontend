@@ -17,7 +17,13 @@ const ShoppingCart = ({ items, onRemoveItem, total }: ShoppingCartProps) => {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Tính tổng giá trị (nếu không được truyền vào)
-    const calculatedTotal = total || items.reduce((sum, item) => sum + Number(item.price.replace(/\D/g, '')), 0);
+    const calculatedTotal = () => {
+        if (total !== undefined) {
+            return total; // Sử dụng tổng đã được tính từ context
+        }
+
+
+    };
 
     // Mở dropdown với độ trễ nhỏ để tránh hiệu ứng flicker
     const handleMouseEnter = () => {
@@ -91,7 +97,9 @@ const ShoppingCart = ({ items, onRemoveItem, total }: ShoppingCartProps) => {
                         <div className="mt-4 pt-3 border-t border-gray-200">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="font-medium">Tổng cộng:</span>
-                                <span className="font-bold text-lg">{calculatedTotal.toLocaleString('vi-VN')}đ</span>
+                                <span className="font-bold text-lg">
+                                    {(total ?? 0).toLocaleString("vi-VN")}đ
+                                </span>
                             </div>
                             <ViewCartButton />
                         </div>
