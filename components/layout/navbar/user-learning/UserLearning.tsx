@@ -1,49 +1,15 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { LearningCourse } from "@/types/navbar";
 import { CourseList } from "@/components/layout/navbar/user-learning/CourseList";
 import { ViewAllButton } from "@/components/layout/navbar/user-learning/ViewAllButton";
-import { getUserEnrollments, EnrollmentResponse } from "@/services/enrollmentService";
-
+import { useContinueLearning } from "@/hooks/course/useContinueLearning";
 
 const UserLearning = () => {
-    const [courses, setCourses] = useState<LearningCourse[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchUserEnrollments = async () => {
-            try {
-                setLoading(true);
-                // Fetch user enrollments, with status IN_PROGRESS to get the active courses
-                const response = await getUserEnrollments(0, 10, 'IN_PROGRESS');
-
-                if (response && response.content) {
-                    // Convert enrollment data to LearningCourse format
-                    const learningCourses: LearningCourse[] = response.content.map((enrollment: EnrollmentResponse) => ({
-                        id: enrollment.courseId,
-                        name: enrollment.courseName || "",
-                        progress: enrollment.progressPercentage || 0,
-                        image: enrollment.courseImage || "/placeholder-course.jpg",
-                        lastAccessed: enrollment.lastAccessedAt,
-                        instructor: enrollment.instructorName || "",
-                        totalLessons: enrollment.totalLessons || 0,
-                        completedLessons: enrollment.completedLessons || 0,
-                        category: enrollment.category || ""
-                    }));
-
-                    setCourses(learningCourses);
-                }
-            } catch (err) {
-                console.error("Error fetching user enrollments:", err);
-                setError("Failed to load your courses");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserEnrollments();
-    }, []);
+    // Use our custom hook to fetch courses in progress
+    const { courses, isLoading, error } = useContinueLearning({ 
+        limit: 5, // Show up to 5 courses in the dropdown
+        enabled: true 
+    });
 
     return (
         <div className="relative group">
@@ -55,13 +21,13 @@ const UserLearning = () => {
                 <div className="p-4">
                     <h3 className="font-bold text-lg mb-3">Khóa học của tôi</h3>
 
-                    {loading ? (
+                    {isLoading ? (
                         <div className="py-4 text-center text-gray-500">
                             <p>Đang tải khóa học...</p>
                         </div>
                     ) : error ? (
                         <div className="py-4 text-center text-gray-500">
-                            <p>{error}</p>
+                            <p>{error instanceof Error ? error.message : "Lỗi khi tải khóa học"}</p>
                         </div>
                     ) : (
                         <CourseList courses={courses} />

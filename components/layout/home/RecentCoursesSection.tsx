@@ -1,49 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect, useState, useRef} from "react";
-import {mockEnrolledCourses} from "@/data/mockCourseData";
+import {useRef} from "react";
 import CourseCard from "@/components/layout/home/CourseCard";
 import { useAuth } from "@/context/AuthContext";
 import { Clock } from "lucide-react";
 import { useInView } from "framer-motion";
-
-// Định nghĩa kiểu dữ liệu cho các khóa học
-interface CourseType {
-    id: number;
-    name: string;
-    instructor: string;
-    category: string;
-    image: string;
-    progress: number;
-    lastAccessed: string;
-    completedLessons: number;
-    totalLessons: number;
-}
+import { useContinueLearning } from "@/hooks/course/useContinueLearning";
+import { LearningCourse } from "@/types/navbar";
 
 const RecentCoursesSection = () => {
-    // Định nghĩa kiểu dữ liệu cho state
-    const [recentCourses, setRecentCourses] = useState<CourseType[]>([]);
-
     const { isAuthenticated } = useAuth();
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
     
-    useEffect(() => {
-        if (!isAuthenticated) return;
-        
-        // Lấy 3 khóa học gần nhất dựa trên lastAccessed
-        const sortedCourses = [...mockEnrolledCourses]
-            .sort((a, b) => {
-                // Chuyển đổi ngày từ định dạng dd/mm/yyyy sang đối tượng Date
-                const dateA = a.lastAccessed.split('/').reverse().join('-');
-                const dateB = b.lastAccessed.split('/').reverse().join('-');
-                return new Date(dateB).getTime() - new Date(dateA).getTime();
-            })
-            .slice(0, 3);
-
-        setRecentCourses(sortedCourses);
-    }, [isAuthenticated]);
+    // Use our custom hook to fetch recent courses
+    const { courses, isLoading } = useContinueLearning({ 
+        limit: 3,
+        enabled: isAuthenticated 
+    });
 
     if (!isAuthenticated) {
         return null;
@@ -75,9 +50,48 @@ const RecentCoursesSection = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
-                {recentCourses.map((course) => (
-                    <CourseCard key={course.id} course={course}/>
-                ))}
+                {isLoading ? (
+                    // Loading skeleton
+                    Array(3).fill(0).map((_, i) => (
+                        <div key={i} className="bg-white rounded-lg shadow-md p-3 animate-pulse">
+                            <div className="w-full h-32 bg-gray-200 rounded-md mb-3"></div>
+                            <div className="h-6 bg-gray-200 rounded mb-2 w-3/4"></div>
+                            <div className="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
+                            <div className="h-2 bg-gray-200 rounded w-full mb-3"></div>
+                            <div className="flex justify-between">
+                                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    courses.length > 0 ? (
+                        courses.map((course: LearningCourse) => (
+                            <CourseCard 
+                                key={course.slug} 
+                                course={{
+                                    id: Number(course.id),
+                                    slug: course.slug,
+                                    name: course.name,
+                                    instructor: course.instructor || 'Unknown Instructor',
+                                    category: course.category,
+                                    image: course.image,
+                                    progress: Number(course.progress),
+                                    lastAccessed: course.lastAccessed,
+                                    completedLessons: course.completedLessons || 0,
+                                    totalLessons: course.totalLessons || 0,
+                                }}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-3 text-center py-10">
+                            <p className="text-gray-500">Bạn chưa có khóa học nào đang học.</p>
+                            <Link href="/courses" className="mt-4 inline-block text-blue-600 hover:underline">
+                                Khám phá khóa học mới
+                            </Link>
+                        </div>
+                    )
+                )}
             </div>
         </div>
     );
