@@ -1,32 +1,87 @@
 import apiClient from "@/lib/apiClient";
+import { ApiResponse, PaginatedResponse } from "@/types/api-response";
+import { CourseDto } from "@/types/course";
 import { AxiosResponse } from "axios";
-import { ApiResponse } from "@/types/api-response";
-import { CourseType } from "@/types/instructor-course";
+import { InstructorInfoDto } from "@/types/instructor";
 
 /**
  * Lấy thông tin giảng viên theo ID
  * @param instructorId ID của giảng viên
+ * @returns Thông tin chi tiết của giảng viên hoặc null nếu không tìm thấy
  */
-export const getInstructorById = async (instructorId: string): Promise<any | null> => {
+export const getInstructorById = async (instructorId: string): Promise<InstructorInfoDto | null> => {
     try {
-        const response: AxiosResponse<ApiResponse<any>> = await apiClient.get(`/instructors/${instructorId}`);
+        const response: AxiosResponse<ApiResponse<InstructorInfoDto>> = await apiClient.get(`/instructor/${instructorId}`);
         return response.data.data;
     } catch (error) {
-        console.error("getInstructorById error:", error);
+        console.error(`Error fetching instructor with ID ${instructorId}:`, error);
         return null;
     }
 };
 
 /**
- * Lấy danh sách khóa học của giảng viên theo ID
- * @param instructorId ID của giảng viên
+ * Kiểm tra một người dùng có phải là giảng viên hay không
+ * @param userId ID của người dùng cần kiểm tra
+ * @returns true nếu người dùng là giảng viên, false nếu không phải
  */
-export const getInstructorCourses = async (instructorId: string): Promise<CourseType[] | null> => {
+export const checkIfUserIsInstructor = async (userId: string): Promise<boolean> => {
     try {
-        const response: AxiosResponse<ApiResponse<CourseType[]>> = await apiClient.get(`/instructors/${instructorId}/courses`);
+        const response: AxiosResponse<ApiResponse<boolean>> = await apiClient.get(`/instructor/check/${userId}`);
         return response.data.data;
     } catch (error) {
-        console.error("getInstructorCourses error:", error);
+        console.error(`Error checking if user ${userId} is an instructor:`, error);
+        return false;
+    }
+};
+
+/**
+ * Lấy danh sách khóa học đã published của một giảng viên bất kỳ
+ * @param instructorId ID của giảng viên
+ * @param page Số trang (bắt đầu từ 0)
+ * @param size Số lượng bản ghi mỗi trang
+ * @param sortBy Trường để sắp xếp
+ * @param sortDirection Hướng sắp xếp (asc/desc)
+ * @returns Danh sách khóa học đã published của giảng viên theo trang
+ */
+export const getInstructorCourses = async (
+    instructorId: string,
+    page = 0,
+    size = 10,
+    sortBy = 'createdDate',
+    sortDirection: 'asc' | 'desc' = 'desc'
+): Promise<PaginatedResponse<CourseDto> | null> => {
+    try {
+        const response: AxiosResponse<ApiResponse<PaginatedResponse<CourseDto>>> = await apiClient.get(
+            `/courses/instructor/${instructorId}/published`,
+            {
+                params: {
+                    page,
+                    size,
+                    sortBy,
+                    sortDirection
+                }
+            }
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching published courses for instructor ${instructorId}:`, error);
         return null;
+    }
+};
+
+/**
+ * Lấy số lượng khóa học đã published của một giảng viên bất kỳ
+ * @param instructorId ID của giảng viên
+ * @returns Số lượng khóa học đã published của giảng viên
+ */
+export const countPublishedCoursesByInstructor = async (instructorId: string): Promise<number> => {
+    try {
+        const response: AxiosResponse<ApiResponse<number>> = await apiClient.get(
+            `/courses/instructor/${instructorId}/published/count`
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error counting published courses for instructor ${instructorId}:`, error);
+        return 0;
     }
 };
