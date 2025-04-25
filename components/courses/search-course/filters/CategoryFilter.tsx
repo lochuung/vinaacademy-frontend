@@ -30,10 +30,10 @@ export default function CategoryFilter({
   handleCategoryExpand,
   subCategories = [],
   expandedSubCategories = [],
-  handleSubCategoryToggle = () => {},
-  handleSubCategoryExpand = () => {},
+  handleSubCategoryToggle = () => { },
+  handleSubCategoryExpand = () => { },
   selectedTopics = [],
-  handleTopicToggle = () => {}
+  handleTopicToggle = () => { }
 }: CategoryFilterProps) {
   const { categories: allCategories, isLoading } = useCategories();
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,17 +43,17 @@ export default function CategoryFilter({
     if (!searchTerm) return allCategories;
 
     const lowerSearchTerm = searchTerm.toLowerCase();
-    
+
     // Recursive function to search through category hierarchy
     const filterCategories = (cats: any[]): any[] => {
       return cats.reduce((filtered, category) => {
         const matchesSearch = category.name.toLowerCase().includes(lowerSearchTerm);
-        
+
         // Filter children recursively
-        const filteredChildren = category.children && category.children.length > 0 
-          ? filterCategories(category.children) 
+        const filteredChildren = category.children && category.children.length > 0
+          ? filterCategories(category.children)
           : [];
-        
+
         // Include this category if it matches or if any children match
         if (matchesSearch || filteredChildren.length > 0) {
           filtered.push({
@@ -61,11 +61,11 @@ export default function CategoryFilter({
             children: filteredChildren
           });
         }
-        
+
         return filtered;
       }, [] as any[]);
     };
-    
+
     return filterCategories(allCategories);
   };
 
@@ -87,7 +87,7 @@ export default function CategoryFilter({
             placeholder="Tìm danh mục..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-8 pr-2 py-1.5 border rounded-md text-sm focus:outline-none"
+            className="w-full pl-8 pr-2 py-1.5 border rounded-md text-sm focus:outline-none bg-white"
           />
         </div>
       </div>

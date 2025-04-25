@@ -37,7 +37,7 @@ export function CourseCard({ course }: CourseCardProps) {
                         <span className="text-xs text-gray-600">({course.totalStudent})</span>
                     </div>
                     <div className="font-bold">
-                        {course.price.toLocaleString()}₫
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price).replace('₫', '')}₫
                     </div>
                     {course.totalStudent > 1000 && (
                         <span className="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 mt-1">

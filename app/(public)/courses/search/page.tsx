@@ -60,13 +60,13 @@ function SearchPageContent() {
     // Map UI level strings to API CourseLevel enum
     const mapLevelToApiFormat = (level: string | undefined): CourseLevel | undefined => {
         if (!level) return undefined;
-        
+
         const levelMap: Record<string, CourseLevel> = {
             "Cơ bản": "BEGINNER",
             "Trung cấp": "INTERMEDIATE",
             "Nâng cao": "ADVANCED"
         };
-        
+
         return levelMap[level] as CourseLevel || undefined;
     };
 
@@ -87,7 +87,7 @@ function SearchPageContent() {
 
         const levelsParam = searchParams.get("level") || "";
         setLevels(levelsParam ? levelsParam.split(",") : []);
-        
+
         setMinPrice(searchParams.get("minPrice") || "");
         setMaxPrice(searchParams.get("maxPrice") || "");
         setMinRating(searchParams.get("minRating") || "");
@@ -142,26 +142,26 @@ function SearchPageContent() {
         const updatedCategories = categories.includes(slug)
             ? categories.filter(cat => cat !== slug)
             : [...categories, slug];
-        
+
         const params = new URLSearchParams(searchParams.toString());
-        
+
         if (updatedCategories.length > 0) {
             params.set('categories', updatedCategories.join(','));
         } else {
             params.delete('categories');
         }
-        
+
         // Reset to page 1 when changing filters
         params.set('page', '1');
-        
+
         router.push(`/courses/search?${params.toString()}`);
     };
 
     // Handle sort change
     const handleSortChange = (value: string) => {
         const params = new URLSearchParams(searchParams.toString());
-        
-        switch(value) {
+
+        switch (value) {
             case "relevance":
                 params.set("sortBy", "name");
                 params.set("sortDirection", "asc");
@@ -183,7 +183,7 @@ function SearchPageContent() {
                 params.set("sortDirection", "desc");
                 break;
         }
-        
+
         router.push(`/courses/search?${params.toString()}`);
     };
 

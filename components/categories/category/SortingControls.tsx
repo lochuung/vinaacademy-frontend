@@ -43,8 +43,8 @@ export function SortingControls({
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">Sắp xếp theo:</span>
                     <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-[180px] bg-white">
-                            <SelectValue placeholder="Phổ biến nhất"/>
+                        <SelectTrigger className="w-[180px] bg-white text-gray-800 border border-gray-200 hover:bg-white focus:bg-white">
+                            <SelectValue placeholder="Phổ biến nhất" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="popular">Phổ biến nhất</SelectItem>
@@ -64,7 +64,7 @@ export function SortingControls({
                         {selectedLevel && (
                             <div className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm">
                                 <span>Cấp độ: {levels.find(level => level.value === selectedLevel)?.label || selectedLevel}</span>
-                                <a 
+                                <a
                                     href={`/categories/${categorySlug}${priceRange ? `?price=${priceRange}` : ''}`}
                                     className="ml-2 cursor-pointer"
                                 >
