@@ -10,13 +10,15 @@ interface CartItemCardProps {
     onRemove: (id: number) => void;
     onSaveForLater: (id: number) => void;
     onAddToFavorites: (id: number) => void;
+    isRemoving?: boolean;
 }
 
 export default function CartItemCard({
     item,
     onRemove,
     onSaveForLater,
-    onAddToFavorites
+    onAddToFavorites,
+    isRemoving = false
 }: CartItemCardProps) {
     return (
         <div className="flex gap-4 bg-white p-4 rounded-lg shadow-sm">
@@ -58,20 +60,33 @@ export default function CartItemCard({
             {/* Action Buttons */}
             <div className="flex flex-col gap-2 min-w-[120px]">
                 <button
-                    className="text-red-600 hover:text-red-800 hover:underline text-sm text-left w-fit"
-                    onClick={() => onRemove(item.id)}
+                    className="text-red-600 hover:text-red-800 hover:underline text-sm text-left w-fit flex items-center"
+                    onClick={() => {
+                        console.log("Remove button clicked for item:", item.id);
+                        onRemove(item.id);
+                    }}
+                    disabled={isRemoving}
                 >
-                    Xóa
+                    {isRemoving ? (
+                        <>
+                            <span className="mr-2 w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
+                            Đang xóa...
+                        </>
+                    ) : (
+                        'Xóa'
+                    )}
                 </button>
                 <button
                     className="text-black hover:text-gray-700 hover:underline text-sm text-left w-fit"
                     onClick={() => onSaveForLater(item.id)}
+                    disabled={isRemoving}
                 >
                     Lưu lại sau
                 </button>
                 <button
                     className="text-black hover:text-gray-700 hover:underline text-sm text-left w-fit"
                     onClick={() => onAddToFavorites(item.id)}
+                    disabled={isRemoving}
                 >
                     Thêm vào yêu thích
                 </button>
