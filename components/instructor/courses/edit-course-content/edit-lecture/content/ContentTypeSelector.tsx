@@ -29,7 +29,7 @@ export default function ContentTypeSelector({lecture, handleInputChange}: Conten
                     label="Bài đọc"
                     description="Tạo bài giảng dạng văn bản"
                     icon={<FileText className="h-4 w-4 inline mr-1"/>}
-                    isSelected={lecture.type === 'text'}
+                    isSelected={lecture.type === 'reading'}
                     onChange={handleInputChange}
                 />
 

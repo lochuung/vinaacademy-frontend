@@ -6,7 +6,17 @@ import ContentTab from './tabs/ContentTab';
 import ResourcesTab from './tabs/ResourcesTab';
 import SettingsTab from './tabs/SettingsTab';
 import Footer from './LectureFooter';
-import {Lecture, mockLecture} from '@/types/lecture';
+import {Lecture, LectureType} from '@/types/lecture';
+
+// Create a default lecture object to initialize the state
+const createDefaultLecture = (): Lecture => ({
+    id: '',
+    title: 'Bài giảng mới',
+    type: 'video' as LectureType,
+    description: '',
+    duration: '0:00',
+    resources: []
+});
 
 export default function LectureEditor() {
     const router = useRouter();
@@ -14,7 +24,7 @@ export default function LectureEditor() {
     const courseId = params.id as string;
     const lectureId = params.lectureId as string;
 
-    const [lecture, setLecture] = useState<Lecture>(mockLecture);
+    const [lecture, setLecture] = useState<Lecture>(createDefaultLecture());
     const [activeTab, setActiveTab] = useState<'content' | 'resources' | 'settings'>('content');
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);

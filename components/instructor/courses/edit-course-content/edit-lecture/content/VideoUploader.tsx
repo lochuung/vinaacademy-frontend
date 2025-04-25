@@ -39,7 +39,7 @@ export default function VideoUploader({
                                     <span className="text-sm font-medium text-gray-900 block">Video đã tải lên</span>
                                     {lecture.duration && (
                                         <span
-                                            className="text-xs text-gray-500">{formatDuration(lecture.duration)}</span>
+                                            className="text-xs text-gray-500">{formatDuration(Number(lecture.duration))}</span>
                                     )}
                                 </div>
                             </div>

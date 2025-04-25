@@ -34,7 +34,7 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                     ...lecture,
                     type: value as Lecture['type'],
                     videoUrl: '',
-                    duration: undefined,
+                    duration: '',
                     quiz: undefined
                 });
             } else if (value === 'quiz') {
@@ -43,7 +43,7 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                     type: value as Lecture['type'],
                     videoUrl: '',
                     textContent: '',
-                    duration: undefined
+                    duration: ''
                 });
             } else if (value === 'assignment') {
                 setLecture({
@@ -51,7 +51,7 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                     type: value as Lecture['type'],
                     videoUrl: '',
                     textContent: '',
-                    duration: undefined,
+                    duration: '',
                     quiz: undefined
                 });
             }
@@ -92,7 +92,7 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                         setLecture({
                             ...lecture,
                             videoUrl: URL.createObjectURL(file),
-                            duration: lecture.duration || 300 // Giả lập thời lượng
+                            duration: lecture.duration || '300' // Giả lập thời lượng
                         });
                     }
 
@@ -157,7 +157,7 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                 />
             )}
 
-            {lecture.type === 'text' && (
+            {lecture.type === 'reading' && (
                 <TextEditor
                     textContent={lecture.textContent || ''}
                     handleTextContentChange={handleTextContentChange}

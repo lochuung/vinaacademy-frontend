@@ -18,19 +18,19 @@ export default function ResourcesTab({lecture, setLecture}: ResourcesTabProps) {
 
         setLecture({
             ...lecture,
-            resources: [...lecture.resources, newResource]
+            resources: [...(lecture.resources || []), newResource]
         });
     };
 
     const removeResource = (resourceId: string) => {
         setLecture({
             ...lecture,
-            resources: lecture.resources.filter(r => r.id !== resourceId)
+            resources: (lecture.resources || []).filter(r => r.id !== resourceId)
         });
     };
 
     const handleResourceChange = (index: number, field: string, value: string) => {
-        const newResources = [...lecture.resources];
+        const newResources = [...(lecture.resources || [])];
         newResources[index] = {
             ...newResources[index],
             [field]: value
