@@ -2,9 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { CourseDto, CourseSearchRequest, CourseLevel } from "@/types/course";
-import { searchCourses } from "@/services/courseService";
 import { useCategories } from "@/context/CategoryContext";
 import SearchResults from "@/components/courses/search-course/search/SearchResults";
 import FilterSidebar from "@/components/courses/search-course/filters/FilterSidebar";
@@ -13,6 +11,7 @@ import NoResultsFound from "@/components/courses/search-course/ui/NoResultsFound
 import SearchHeader from "@/components/courses/search-course/search/SearchHeader";
 import { PaginatedResponse } from "@/types/api-response";
 import { Suspense } from "react";
+import { useCourses } from "@/hooks/useCourses";
 
 // Types
 export type FilterUpdates = {
@@ -107,63 +106,35 @@ function SearchPageContent() {
         isParamsReady.current = true;
     }, [searchParams]);
 
-    // Use React Query for data fetching
-    const { data: coursesData, isLoading, error } = useQuery({
-        queryKey: ['courses', 'search', query, categories, minPrice, maxPrice, levels, minRating, currentPage, pageSize, sortBy, sortDirection],
-        queryFn: async () => {
-            try {
-                // Convert UI filters to CourseSearchRequest
-                const searchRequest: CourseSearchRequest = {
-                    keyword: query || undefined,
-                    categorySlug: categories.length > 0 ? categories[0] : undefined,
-                    level: mapLevelToApiFormat(levels[0]),
-                    minPrice: minPrice ? parseInt(minPrice) * 1000 : undefined,
-                    maxPrice: maxPrice ? parseInt(maxPrice) * 1000 : undefined,
-                    minRating: minRating ? parseFloat(minRating) : 0
-                };
-                
-                // Call the API
-                const data = await searchCourses(
-                    searchRequest,
-                    currentPage,
-                    pageSize,
-                    sortBy,
-                    sortDirection
-                );
-                
-                if (data) {
-                    console.log("Courses data response:", data);
-                    return data;
-                } else {
-                    // Handle API error with empty state
-                    return {
-                        content: [],
-                        totalPages: 0,
-                        totalElements: 0,
-                        size: pageSize,
-                        number: currentPage,
-                        first: true,
-                        last: true
-                    } as PaginatedResponse<CourseDto>;
-                }
-            } catch (error) {
-                console.error("Error fetching courses:", error);
-                throw error;
-            }
-        },
-        enabled: isParamsReady.current,
-        staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    // Use the useCourses hook instead of direct React Query
+    const {
+        courses,
+        loading: isLoading,
+        error,
+        totalItems,
+        totalPages
+    } = useCourses({
+        keyword: query || undefined,
+        categorySlug: categories.length > 0 ? categories[0] : undefined,
+        level: mapLevelToApiFormat(levels[0]),
+        minPrice: minPrice ? parseInt(minPrice) * 1000 : undefined,
+        maxPrice: maxPrice ? parseInt(maxPrice) * 1000 : undefined,
+        minRating: minRating ? parseFloat(minRating) : undefined,
+        page: currentPage,
+        size: pageSize,
+        sortBy: sortBy,
+        sortDirection: sortDirection
     });
 
-    // Ensure we have a valid coursesData object even when the query hasn't run yet
-    const normalizedCoursesData: PaginatedResponse<CourseDto> = coursesData || {
-        content: [],
-        totalPages: 0,
-        totalElements: 0,
+    // Ensure we have a valid coursesData object
+    const normalizedCoursesData: PaginatedResponse<CourseDto> = {
+        content: courses,
+        totalPages: totalPages,
+        totalElements: totalItems,
         size: pageSize,
         number: currentPage,
-        first: true,
-        last: true
+        first: currentPage === 0,
+        last: currentPage === totalPages - 1
     };
 
     // Handle category change - used by CategoryFilterTree

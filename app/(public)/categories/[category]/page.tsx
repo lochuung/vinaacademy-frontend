@@ -2,10 +2,10 @@
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { searchCourses } from "@/services/courseService";
 import { useCategories } from "@/context/CategoryContext";
+import { useCourses } from "@/hooks/useCourses";
 import { CategoryDto } from "@/types/category";
+import { CourseLevel } from "@/types/course";
 
 // Import components
 import { LoadingState } from "@/components/categories/ui/LoadingState";
@@ -16,7 +16,6 @@ import { SortingControls } from "@/components/categories/category/SortingControl
 import { CourseTabs } from "@/components/categories/ui/CourseTabs";
 import { CourseGrid } from "@/components/categories/ui/CourseGrid";
 import CategoryTreeItem from "@/components/layout/navbar/explore-dropdown/CategoryTreeItem";
-import { CourseLevel } from "@/types/course";
 
 export default function CategoryPage() {
     const router = useRouter();
@@ -36,39 +35,6 @@ export default function CategoryPage() {
     const categoryInfo = getCategoryBySlug(categorySlug);
     const categoryPath = getCategoryPath(categorySlug);
     const subCategories = findSubcategories(categorySlug);
-    
-    // Prepare search parameters
-    const searchRequest = {
-        name: searchParams.get('query') || '',
-        categorySlug: categorySlug,
-        level: selectedLevel as CourseLevel,
-        minPrice: priceRange === 'free' ? 0 : 
-                 priceRange === 'low' ? 1 : 
-                 priceRange === 'medium' ? 500000 : 
-                 priceRange === 'high' ? 1000000 : undefined,
-        maxPrice: priceRange === 'free' ? 0 : 
-                 priceRange === 'low' ? 500000 : 
-                 priceRange === 'medium' ? 1000000 : 
-                 undefined,
-    };
-    
-    // Use Tanstack Query to fetch courses
-    const { 
-        data: coursesData,
-        isLoading: coursesLoading,
-        error: coursesError,
-        refetch
-    } = useQuery({
-        queryKey: ['courses', categorySlug, selectedLevel, priceRange, sortBy],
-        queryFn: () => searchCourses(
-            searchRequest,
-            0, // page
-            20, // size
-            getSortField(sortBy), 
-            getSortDirection(sortBy)
-        ),
-        enabled: !!categorySlug
-    });
     
     // Helper function to get sort field
     function getSortField(sort: string): string {
@@ -97,6 +63,40 @@ export default function CategoryPage() {
                 return 'desc';
         }
     }
+
+    // Use the useCourses hook instead of direct React Query
+    const { 
+        courses,
+        loading: coursesLoading,
+        error: coursesError,
+        totalItems,
+        totalPages,
+        refetch
+    } = useCourses({
+        keyword: searchParams.get('query') || undefined,
+        categorySlug: categorySlug,
+        level: selectedLevel as CourseLevel,
+        minPrice: priceRange === 'free' ? 0 : 
+                 priceRange === 'low' ? 1 : 
+                 priceRange === 'medium' ? 500000 : 
+                 priceRange === 'high' ? 1000000 : undefined,
+        maxPrice: priceRange === 'free' ? 0 : 
+                 priceRange === 'low' ? 500000 : 
+                 priceRange === 'medium' ? 1000000 : 
+                 undefined,
+        page: 0, // First page
+        size: 20,
+        sortBy: getSortField(sortBy),
+        sortDirection: getSortDirection(sortBy)
+    });
+
+    // Create a coursesData object for compatibility with existing code
+    const coursesData = {
+        content: courses,
+        totalElements: totalItems,
+        totalPages: totalPages,
+        number: 0
+    };
 
     // Handle tab change - update sorting
     const handleTabChange = (tab: string) => {

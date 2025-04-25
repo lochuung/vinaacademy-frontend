@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CourseDto, CourseSearchRequest } from "@/types/course";
 import { searchCourses } from "@/services/courseService";
 
@@ -31,56 +31,7 @@ export const useCourses = ({
   sortBy = "createdDate",
   sortDirection = "desc",
 }: UseCoursesProps = {}) => {
-  const [courses, setCourses] = useState<CourseDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalItems, setTotalItems] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const searchRequest: CourseSearchRequest = {
-          keyword,
-          categorySlug,
-          level,
-          language,
-          minPrice,
-          maxPrice,
-          minRating,
-          status,
-        };
-
-        const response = await searchCourses(
-          searchRequest,
-          page,
-          size,
-          sortBy,
-          sortDirection
-        );
-
-        if (response) {
-          setCourses(response.content || []);
-          setTotalItems(response.totalElements || 0);
-          setTotalPages(response.totalPages || 0);
-        } else {
-          setCourses([]);
-          setError("Không thể tải khóa học. Vui lòng thử lại sau.");
-        }
-      } catch (err) {
-        console.error("Error fetching courses:", err);
-        setError("Đã xảy ra lỗi khi tải dữ liệu khóa học.");
-        setCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, [
+  const searchRequest: CourseSearchRequest = {
     keyword,
     categorySlug,
     level,
@@ -89,17 +40,46 @@ export const useCourses = ({
     maxPrice,
     minRating,
     status,
-    page,
-    size,
-    sortBy,
-    sortDirection,
-  ]);
+  };
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: [
+      'courses',
+      keyword,
+      categorySlug,
+      level,
+      language,
+      minPrice,
+      maxPrice,
+      minRating,
+      status,
+      page,
+      size,
+      sortBy,
+      sortDirection
+    ],
+    queryFn: () => searchCourses(
+      searchRequest,
+      page,
+      size,
+      sortBy,
+      sortDirection
+    ),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   return {
-    courses,
-    loading,
-    error,
-    totalItems,
-    totalPages,
+    courses: data?.content || [],
+    loading: isLoading,
+    error: isError ? (error instanceof Error ? error.message : "Đã xảy ra lỗi khi tải dữ liệu khóa học.") : null,
+    totalItems: data?.totalElements || 0,
+    totalPages: data?.totalPages || 0,
+    refetch
   };
 };
