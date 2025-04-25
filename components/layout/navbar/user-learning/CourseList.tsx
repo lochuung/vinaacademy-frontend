@@ -1,4 +1,4 @@
-import {LearningCourse} from "@/types/navbar";
+import { LearningCourse } from "@/types/navbar";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -6,7 +6,7 @@ interface CourseListProps {
     courses: LearningCourse[];
 }
 
-export const CourseList = ({courses}: CourseListProps) => {
+export const CourseList = ({ courses }: CourseListProps) => {
     // Hàm lấy màu thanh tiến độ dựa vào phần trăm hoàn thành
     const getProgressColor = (progress: number) => {
         if (progress >= 100) return "bg-black"; // 100%: Màu đen
@@ -50,15 +50,13 @@ export const CourseList = ({courses}: CourseListProps) => {
                                 )}
                             </div>
                             <div className="flex-1">
-                                <Link href={`/learning/${course.id}`}>
-                                    <h4 className="text-sm font-medium line-clamp-2 mb-1 hover:text-gray-800 transition-colors">
-                                        {course.name}
-                                    </h4>
-                                </Link>
+                                <h4 className="text-sm font-medium line-clamp-2 mb-1 hover:text-gray-800 transition-colors">
+                                    {course.name}
+                                </h4>
                                 <div className="w-full bg-gray-100 h-1.5 rounded-full">
                                     <div
                                         className={`h-1.5 rounded-full ${getProgressColor(course.progress)}`}
-                                        style={{width: `${course.progress}%`}}
+                                        style={{ width: `${course.progress}%` }}
                                     ></div>
                                 </div>
                                 <div className="flex justify-between items-center mt-1">
@@ -72,11 +70,13 @@ export const CourseList = ({courses}: CourseListProps) => {
                 ))}
             </ul>
 
-            {hasMoreCourses && (
-                <div className="mt-2 text-right text-xs text-gray-500">
-                    ... còn {courses.length - 3} khóa học khác
-                </div>
-            )}
-        </div>
+            {
+                hasMoreCourses && (
+                    <div className="mt-2 text-right text-xs text-gray-500">
+                        ... còn {courses.length - 3} khóa học khác
+                    </div>
+                )
+            }
+        </div >
     );
 };

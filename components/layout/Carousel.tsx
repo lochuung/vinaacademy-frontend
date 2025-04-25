@@ -273,11 +273,11 @@ const Carousel = ({
                                                 <span className="font-bold">
                                                     {isFree
                                                         ? "Miễn phí"
-                                                        : `${parseInt(course.price).toLocaleString()}đ`}
+                                                        : `${parseInt(course.price).toLocaleString("vi-VN")}đ`}
                                                 </span>
                                                 {course.originalPrice && !isFree && (
                                                     <span className="text-sm text-gray-500 line-through">
-                                                        {parseInt(course.originalPrice).toLocaleString()}đ
+                                                        {parseInt(course.originalPrice).toLocaleString("vi-VN")}đ
                                                     </span>
                                                 )}
                                             </div>
@@ -294,7 +294,7 @@ const Carousel = ({
                                                 </button>
                                             ) : courseEnrolled ? (
                                                 <button
-                                                    className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                                                    className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                                                     onClick={(e) => handleContinueLearning(e, course)}
                                                 >
                                                     <BookOpen className="w-4 h-4" />
