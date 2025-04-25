@@ -1,50 +1,164 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { LearningCourse } from "@/types/navbar";
+import { mockEnrolledCourses } from "@/data/mockCourseData";
 import CourseCard from "@/components/student/progress/CourseCard";
-import { useFetchCourses } from "@/hooks/my-course/useFetchCourses";
-import { useFilterCourses } from "@/hooks/my-course/useFilterCourses";
-import { useSortCourses, SortOption } from "@/hooks/my-course/useSortCourses";
-import { usePagination } from "@/hooks/my-course/usePagination";
+import { getUserEnrollments, EnrollmentResponse } from "@/services/enrollmentService";
+
+type SortOption = "newest" | "oldest" | "progress-high" | "progress-low" | "name-az" | "name-za";
 
 const MyCoursesPage = () => {
-    // State for UI controls
+    const [courses, setCourses] = useState<LearningCourse[]>([]);
+    const [filteredCourses, setFilteredCourses] = useState<LearningCourse[]>([]);
     const [activeTab, setActiveTab] = useState<"all" | "inProgress" | "completed">("all");
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("newest");
-    
-    // Custom hook for pagination - call once at the top level
-    const { 
-        currentPage, 
-        setCurrentPage,
-        totalPages,
-        setTotalPages,
-        goToPreviousPage,
-        goToNextPage,
-        hasPreviousPage,
-        hasNextPage
-    } = usePagination();
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [error, setError] = useState<Error | null>(null);
 
-    // Custom hook for fetching courses
-    const { 
-        courses, 
-        isLoading, 
-        error,
-        totalPages: apiTotalPages 
-    } = useFetchCourses(activeTab, currentPage, 10);
-
-    // Update total pages when API responds - but use the extracted function
     useEffect(() => {
-        if (apiTotalPages !== totalPages) {
-            setTotalPages(apiTotalPages);
+        // Convert activeTab to API status format inside the effect
+        const getStatusFromTab = (): 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | undefined => {
+            switch (activeTab) {
+                case 'inProgress': return 'IN_PROGRESS';
+                case 'completed': return 'COMPLETED';
+                default: return undefined;
+            }
+        };
+
+        // Fetch enrollments from API
+        const fetchCourses = async () => {
+            setIsLoading(true);
+            try {
+                const status = getStatusFromTab();
+                const response = await getUserEnrollments(currentPage, 10, status);
+
+                if (response && response.content) {
+                    // Map enrollment data to LearningCourse format
+                    // Đảm bảo id của course luôn là string
+                    const mappedCourses = response.content.map((enrollment: EnrollmentResponse) => ({
+                        id: String(enrollment.courseId), // Chuyển đổi sang string
+                        name: enrollment.courseName,
+                        slug: enrollment.courseSlug, // API provided slug
+                        image: enrollment.courseImage || '/images/course-placeholder.jpg',
+                        instructor: enrollment.instructorName || enrollment.instructor || '',
+                        progress: enrollment.progressPercentage?.toFixed(0) || 0,
+                        completedLessons: enrollment.completedLessons || 0,
+                        totalLessons: enrollment.totalLessons || 0,
+                        category: enrollment.category || '',
+                        lastAccessed: enrollment.lastAccessedAt || '',
+                        enrollmentId: enrollment.id
+                    }));
+
+                    setCourses(mappedCourses);
+                    setTotalPages(response.totalPages || 1);
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải danh sách khóa học:", err);
+                setError(err instanceof Error ? err : new Error('Lỗi không xác định khi tải khóa học'));
+                // Fallback to mock data if API fails
+                // Đảm bảo chuyển đổi id trong dữ liệu mẫu sang string
+                const mockCoursesWithStringId = mockEnrolledCourses.map(course => ({
+                    ...course,
+                    id: String(course.id)
+                }));
+                setCourses(mockCoursesWithStringId as LearningCourse[]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCourses();
+    }, [activeTab, currentPage]);
+
+    // Lọc và sắp xếp khóa học
+    useEffect(() => {
+        if (!courses.length) return;
+
+        // Lọc theo từ khóa tìm kiếm
+        let filtered = [...courses];
+
+        if (searchQuery.trim() !== "") {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                course =>
+                (course.name?.toLowerCase().includes(query) ||
+                    course.instructor?.toLowerCase().includes(query) ||
+                    course.category?.toLowerCase().includes(query))
+            );
         }
-    }, [apiTotalPages, totalPages, setTotalPages]);
 
-    // Custom hook for filtering courses
-    const { filteredCourses } = useFilterCourses(courses, searchQuery);
+        // Sắp xếp
+        switch (sortOption) {
+            case "newest":
+                filtered = [...filtered].sort((a, b) => {
+                    // Parse dates in DD/MM/YYYY format or ISO format
+                    const getTimestamp = (dateStr: string | undefined) => {
+                        if (!dateStr) return 0;
 
-    // Custom hook for sorting courses
-    const { sortedCourses } = useSortCourses(filteredCourses, sortOption);
+                        if (dateStr.includes('/')) {
+                            // DD/MM/YYYY format
+                            const [day, month, year] = dateStr.split('/');
+                            return new Date(`${year}-${month}-${day}`).getTime();
+                        } else {
+                            // ISO format
+                            return new Date(dateStr).getTime();
+                        }
+                    };
+
+                    const dateA = getTimestamp(a.lastAccessed);
+                    const dateB = getTimestamp(b.lastAccessed);
+                    return dateB - dateA;
+                });
+                break;
+            case "oldest":
+                filtered = [...filtered].sort((a, b) => {
+                    // Parse dates in DD/MM/YYYY format or ISO format
+                    const getTimestamp = (dateStr: string | undefined) => {
+                        if (!dateStr) return 0;
+
+                        if (dateStr.includes('/')) {
+                            // DD/MM/YYYY format
+                            const [day, month, year] = dateStr.split('/');
+                            return new Date(`${year}-${month}-${day}`).getTime();
+                        } else {
+                            // ISO format
+                            return new Date(dateStr).getTime();
+                        }
+                    };
+
+                    const dateA = getTimestamp(a.lastAccessed);
+                    const dateB = getTimestamp(b.lastAccessed);
+                    return dateA - dateB;
+                });
+                break;
+            case "progress-high":
+                filtered = [...filtered].sort((a, b) => b.progress - a.progress);
+                break;
+            case "progress-low":
+                filtered = [...filtered].sort((a, b) => a.progress - b.progress);
+                break;
+            case "name-az":
+                filtered = [...filtered].sort((a, b) => {
+                    const nameA = (a.name || "").toLowerCase();
+                    const nameB = (b.name || "").toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+                break;
+            case "name-za":
+                filtered = [...filtered].sort((a, b) => {
+                    const nameA = (a.name || "").toLowerCase();
+                    const nameB = (b.name || "").toLowerCase();
+                    return nameB.localeCompare(nameA);
+                });
+                break;
+        }
+
+        setFilteredCourses(filtered);
+    }, [courses, searchQuery, sortOption]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -144,7 +258,7 @@ const MyCoursesPage = () => {
                 ) : (
                     <>
                         {/* Course Grid or Empty State */}
-                        {sortedCourses.length === 0 ? (
+                        {filteredCourses.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
                                 <svg
                                     className="mx-auto h-12 w-12 text-gray-400"
@@ -177,7 +291,7 @@ const MyCoursesPage = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {sortedCourses.map((course) => (
+                                {filteredCourses.map((course) => (
                                     <CourseCard key={course.id || String(course.enrollmentId)} course={course} />
                                 ))}
                             </div>
@@ -188,9 +302,9 @@ const MyCoursesPage = () => {
                             <div className="flex justify-center mt-8">
                                 <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                                     <button
-                                        onClick={goToPreviousPage}
-                                        disabled={!hasPreviousPage}
-                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                                        disabled={currentPage === 0}
+                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <span className="sr-only">Previous</span>
                                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -204,13 +318,13 @@ const MyCoursesPage = () => {
                                     </span>
 
                                     <button
-                                        onClick={goToNextPage}
-                                        disabled={!hasNextPage}
-                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                                        disabled={currentPage >= totalPages - 1}
+                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage >= totalPages - 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <span className="sr-only">Next</span>
                                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 011.414-1.414l4 4a1 1 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                         </svg>
                                     </button>
                                 </nav>
