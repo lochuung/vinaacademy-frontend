@@ -64,7 +64,8 @@ export default function QuizEditor({lecture, setLecture}: QuizEditorProps) {
             allowRetake: true,
             requirePassingScore: false,
             passingScore: 70
-        }
+        },
+        totalPoints: 0
     };
     const questions = quiz.questions || [];
 

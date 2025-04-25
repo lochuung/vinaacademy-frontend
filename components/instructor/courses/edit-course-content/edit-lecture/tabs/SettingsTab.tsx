@@ -2,12 +2,23 @@ import {Play, Download, Lock, Video} from 'lucide-react';
 import {Lecture} from '@/types/lecture';
 import SettingsCheckbox from '../settings/SettingsCheckbox';
 
+// Extended type to include additional settings properties
+interface LectureWithSettings extends Lecture {
+    isPublished?: boolean;
+    isPreviewable?: boolean; 
+    isDownloadable?: boolean;
+    isRequired?: boolean;
+}
+
 interface SettingsTabProps {
     lecture: Lecture;
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
 }
 
 export default function SettingsTab({lecture, setLecture}: SettingsTabProps) {
+    // Cast to extended lecture type to handle additional properties
+    const lectureWithSettings = lecture as LectureWithSettings;
+    
     // Format seconds to MM:SS
     const formatDuration = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
@@ -23,31 +34,31 @@ export default function SettingsTab({lecture, setLecture}: SettingsTabProps) {
 
             <div className="space-y-6">
                 <SettingsCheckbox
-                    checked={lecture.isPublished}
-                    onChange={(checked) => setLecture({...lecture, isPublished: checked})}
+                    checked={lectureWithSettings.isPublished || false}
+                    onChange={(checked) => setLecture({...lecture, isPublished: checked } as LectureWithSettings)}
                     label="Xuất bản bài giảng này"
                     description="Học viên sẽ có thể xem bài giảng này nếu đã xuất bản"
                 />
 
                 <SettingsCheckbox
-                    checked={lecture.isPreviewable}
-                    onChange={(checked) => setLecture({...lecture, isPreviewable: checked})}
+                    checked={lectureWithSettings.isPreviewable || false}
+                    onChange={(checked) => setLecture({...lecture, isPreviewable: checked } as LectureWithSettings)}
                     label="Cho phép xem trước"
                     description="Bài giảng này sẽ có thể xem miễn phí như một phần xem trước khóa học"
                     icon={<Play className="h-4 w-4 mr-1 text-gray-500"/>}
                 />
 
                 <SettingsCheckbox
-                    checked={lecture.isDownloadable}
-                    onChange={(checked) => setLecture({...lecture, isDownloadable: checked})}
+                    checked={lectureWithSettings.isDownloadable || false}
+                    onChange={(checked) => setLecture({...lecture, isDownloadable: checked } as LectureWithSettings)}
                     label="Cho phép tải về"
                     description="Học viên có thể tải video bài giảng này về thiết bị của họ"
                     icon={<Download className="h-4 w-4 mr-1 text-gray-500"/>}
                 />
 
                 <SettingsCheckbox
-                    checked={lecture.isRequired}
-                    onChange={(checked) => setLecture({...lecture, isRequired: checked})}
+                    checked={lectureWithSettings.isRequired || false}
+                    onChange={(checked) => setLecture({...lecture, isRequired: checked } as LectureWithSettings)}
                     label="Bắt buộc hoàn thành"
                     description="Học viên phải hoàn thành bài giảng này trước khi chuyển tiếp"
                     icon={<Lock className="h-4 w-4 mr-1 text-gray-500"/>}
@@ -59,18 +70,18 @@ export default function SettingsTab({lecture, setLecture}: SettingsTabProps) {
                         {lecture.type === 'video' && lecture.duration ? (
                             <div className="flex items-center">
                                 <Video className="h-4 w-4 text-gray-500 mr-2"/>
-                                <span className="text-sm text-gray-700">{formatDuration(lecture.duration)}</span>
+                                <span className="text-sm text-gray-700">{formatDuration(Number(lecture.duration))}</span>
                                 <button
                                     type="button"
                                     className="ml-3 text-sm text-blue-600 hover:text-blue-800"
                                     onClick={() => {
-                                        const durationStr = prompt("Nhập thời lượng (phút:giây)", formatDuration(lecture.duration || 0));
+                                        const durationStr = prompt("Nhập thời lượng (phút:giây)", formatDuration(Number(lecture.duration) || 0));
                                         if (durationStr) {
                                             const [mins, secs] = durationStr.split(':').map(Number);
                                             if (!isNaN(mins) && !isNaN(secs)) {
                                                 setLecture({
                                                     ...lecture,
-                                                    duration: mins * 60 + secs
+                                                    duration: (mins * 60 + secs).toString()
                                                 });
                                             }
                                         }
