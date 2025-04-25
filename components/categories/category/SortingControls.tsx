@@ -11,19 +11,17 @@ interface SortingControlsProps {
     sortBy: string;
     setSortBy: (value: string) => void;
     selectedLevel?: string;
-    setSelectedLevel: (value: string | undefined) => void;
     priceRange?: string;
-    setPriceRange: (value: string | undefined) => void;
+    categorySlug: string;
 }
 
 export function SortingControls({
-                                    sortBy,
-                                    setSortBy,
-                                    selectedLevel,
-                                    setSelectedLevel,
-                                    priceRange,
-                                    setPriceRange,
-                                }: SortingControlsProps) {
+    sortBy,
+    setSortBy,
+    selectedLevel,
+    priceRange,
+    categorySlug,
+}: SortingControlsProps) {
     const hasFilters = selectedLevel || priceRange;
 
     return (
@@ -54,9 +52,12 @@ export function SortingControls({
                         {selectedLevel && (
                             <div className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm">
                                 <span>Cấp độ: {selectedLevel}</span>
-                                <button className="ml-2" onClick={() => setSelectedLevel(undefined)}>
+                                <a 
+                                    href={`/categories/${categorySlug}${priceRange ? `?price=${priceRange}` : ''}`}
+                                    className="ml-2 cursor-pointer"
+                                >
                                     ×
-                                </button>
+                                </a>
                             </div>
                         )}
 
@@ -72,9 +73,12 @@ export function SortingControls({
                                                 ? "500,000đ - 1,000,000đ"
                                                 : "> 1,000,000đ"}
                                 </span>
-                                <button className="ml-2" onClick={() => setPriceRange(undefined)}>
+                                <a
+                                    href={`/categories/${categorySlug}${selectedLevel ? `?level=${selectedLevel}` : ''}`}
+                                    className="ml-2 cursor-pointer"
+                                >
                                     ×
-                                </button>
+                                </a>
                             </div>
                         )}
                     </div>

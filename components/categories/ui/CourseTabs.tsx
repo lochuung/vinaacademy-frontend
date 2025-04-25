@@ -6,27 +6,25 @@ interface CourseTabsProps {
 }
 
 export function CourseTabs({activeTab, onTabChange}: CourseTabsProps) {
+    // Map of tab values to their display names
+    const tabs = [
+        { id: 'popular', label: 'Phổ biến nhất' },
+        { id: 'newest', label: 'Mới nhất' },
+        { id: 'rating', label: 'Đánh giá cao' }
+    ];
+    
     return (
         <div className="mb-8 border-b">
             <div className="flex space-x-8">
-                <button
-                    className={`py-3 ${activeTab === 'popular' ? 'border-b-2 border-black font-medium' : 'text-gray-600 hover:text-black'}`}
-                    onClick={() => onTabChange('popular')}
-                >
-                    Phổ biến nhất
-                </button>
-                <button
-                    className={`py-3 ${activeTab === 'new' ? 'border-b-2 border-black font-medium' : 'text-gray-600 hover:text-black'}`}
-                    onClick={() => onTabChange('new')}
-                >
-                    Mới
-                </button>
-                <button
-                    className={`py-3 ${activeTab === 'trending' ? 'border-b-2 border-black font-medium' : 'text-gray-600 hover:text-black'}`}
-                    onClick={() => onTabChange('trending')}
-                >
-                    Xu hướng
-                </button>
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        className={`py-3 ${activeTab === tab.id ? 'border-b-2 border-black font-medium' : 'text-gray-600 hover:text-black'}`}
+                        onClick={() => onTabChange(tab.id)}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
             </div>
         </div>
     );

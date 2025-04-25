@@ -27,21 +27,21 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={inter.className}>
-        <ToastProvider>
-          <AuthProvider>
-            <CategoryProvider>
-              <CartProvider>
-                <ReactQueryProvider>
+        <ReactQueryProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <CategoryProvider>
+                <CartProvider>
                   <LayoutWrapper>
                     {children}
                   </LayoutWrapper>
                   <Toaster />
                   <ToastContainer />
-                </ReactQueryProvider>
-              </CartProvider>
-            </CategoryProvider>
-          </AuthProvider>
-        </ToastProvider>
+                </CartProvider>
+              </CategoryProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </ReactQueryProvider>
 
         {/* Use Next.js Script component for client-side scripts */}
         <Script id="navigation-fix">
