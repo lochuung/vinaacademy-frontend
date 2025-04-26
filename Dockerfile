@@ -19,7 +19,7 @@ RUN \
 
 # Stage 2: Build the application
 # Use an official Node.js runtime as a parent image
-FROM base AS build
+FROM base AS builder
 # Set the working directory
 WORKDIR /app
 
