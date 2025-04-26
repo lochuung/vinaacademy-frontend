@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useHLS } from '@/hooks/video/useHLS';
 import { getLessonById } from '@/services/lessonService';
 import { useQueryClient } from '@tanstack/react-query';
+import { createErrorToast, createSuccessToast } from '@/components/ui/toast-cus';
 
 interface VideoUploaderProps {
     lecture: Lecture;
@@ -48,6 +49,7 @@ const HLSVideoPreview: React.FC<HLSVideoPreviewProps> = ({ videoRef, lectureId }
         </div>
     );
 };
+
 
 export default function VideoUploader({
     lecture,
@@ -121,13 +123,13 @@ export default function VideoUploader({
 
                 timeoutId = setTimeout(videoProcessTracking, interval);
 
-                toast.success('Video đã được tải lên thành công và đang xử lý');
+                createSuccessToast("Video đã được tải lên thành công và đang xử lý")
             } else {
                 throw new Error('Không thể tải lên video');
             }
         } catch (error) {
             console.error('Error uploading video:', error);
-            toast.error('Lỗi khi tải lên video. Vui lòng thử lại.');
+            createErrorToast('Lỗi khi tải lên video. Vui lòng thử lại.');
         } finally {
             setUploading(false);
         }
