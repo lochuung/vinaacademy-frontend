@@ -148,6 +148,7 @@ export default function Home() {
         const uploadedImage = await uploadImage(data.avatar);
         if (uploadedImage) {
           avatarId = uploadedImage.id; // Store the image ID
+          console.log("Ảnh đã được tải lên thành công: ",avatarId);
         } else {
           console.error("Không thể tải ảnh lên:");
         }
@@ -156,7 +157,7 @@ export default function Home() {
       const requestData: UpdateUserInfoRequest = {
         fullName: data.fullName,
         phone: data.phone || null,
-        avatar: avatarId,
+        avatarUrl: avatarId,
         dateOfBirth: data.dateOfBirth || null,
         description: data.description || null,
       };
@@ -193,6 +194,8 @@ export default function Home() {
       </div>
     );
   }
+
+  console.log("ava url", avatarPreview);
 
   return (
     <div className="w-full p-6 bg-gray-100 flex justify-center items-center overflow-hidden">

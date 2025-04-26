@@ -119,6 +119,7 @@ const RightCourseDetail = ({
           {courseDto.image && (
             <div className="relative w-full h-64 rounded-lg overflow-hidden">
               <Image
+                fill
                 src={reformatImageUrl}
                 alt={courseDto.name}
                 className="object-cover w-full h-full"

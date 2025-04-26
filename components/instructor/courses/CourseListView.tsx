@@ -33,7 +33,7 @@ export default function CourseListView({ courses }: CourseListViewProps) {
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                 <div className="flex items-center">
                                     <div className="h-16 w-24 flex-shrink-0 overflow-hidden rounded">
-                                        <Image src={course.thumbnail} alt="" className="h-full w-full object-cover" />
+                                        <Image width={12} height={12} src={course.thumbnail} alt="" className="h-full w-full object-cover" />
                                     </div>
                                     <div className="ml-4">
                                         <div className="font-medium text-gray-900">{course.title}</div>

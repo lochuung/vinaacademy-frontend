@@ -42,7 +42,7 @@ const UserDropdown = ({isVisible}: UserDropdownProps) => {
             <ul className="py-2">
                 <li>
                     <Link
-                        href="/profile"
+                        href="/profile/info"
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                         Hồ sơ

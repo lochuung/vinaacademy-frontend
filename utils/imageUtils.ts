@@ -2,6 +2,8 @@
  * Utility functions for handling images
  */
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+
 /**
  * Checks if a string is a valid UUID v4
  * @param str - The string to validate
@@ -29,7 +31,7 @@ export function getImageUrl(src: string): string {
 
     // Check if src is a UUID (strict validation for UUID v4)
     if (isUuid(src)) {
-        return `/images/view/${src}`;
+        return `${API_BASE_URL}/images/view/${src}`;
     }
 
     // Handle relative paths

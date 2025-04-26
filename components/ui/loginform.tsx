@@ -96,7 +96,7 @@ export default function LoginForm({
                         <div className="mb-6 flex flex-col items-center">
                             <a href={logo.url}>
 
-                                <Image src={logo.src} alt={logo.alt} className="mb-7 h-10 w-auto"/>
+                                <Image width={10} height={10} src={logo.src} alt={logo.alt} className="mb-7 w-10 h-10"/>
 
                             </a>
                             <p className="mb-2 text-2xl font-bold">{heading}</p>
@@ -154,7 +154,7 @@ export default function LoginForm({
                                         </FormItem>
                                     )}
                                 />
-                                <div className="flex justify-between">
+                                <div className="flex justify-end">
                                     {/* <FormField
                                         control={form.control}
                                         name="remember"
@@ -173,7 +173,7 @@ export default function LoginForm({
                                             </FormItem>
                                         )}
                                     /> */}
-                                    <a className="text-sm text-primary hover:underline hover:cursor-pointer"
+                                    <a className="text-sm text-primary hover:underline hover:cursor-pointer "
 
                                        onClick={() => setDialogOpen(true)}>
                                         Quên mật khẩu

@@ -10,6 +10,7 @@ import {
   LineChart,
   CreditCard,
   ShoppingCart,
+  Bell,
 } from "lucide-react";
 import {
   Avatar,
@@ -26,6 +27,7 @@ import {
 } from "../../ui/sidebar-shadcn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 interface AppSidebarProps {
   className?: string;
@@ -36,6 +38,7 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { logout } = useAuth();
   useEffect(() => {
     setIsClient(true);
     // Simulate loading time (remove this in production and use your actual loading state)
@@ -48,12 +51,23 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
 
   // Menu items
   const menuItems = [
-    { title: "Thông tin cá nhân", icon: Home, badge: null, url: "/profile/info" },
+    {
+      title: "Thông tin cá nhân",
+      icon: Home,
+      badge: null,
+      url: "/profile/info",
+    },
     // { title: "Giỏ hàng", icon: ShoppingCart, badge: 5 },
     { title: "Lịch sử thanh toán", icon: LineChart, badge: null, url: "" },
+    {
+      title: "Thông báo",
+      icon: Bell,
+      badge: null,
+      url: "/profile/notification",
+    },
     // { title: "Phương thức thanh toán", icon: CreditCard, badge: null },
     // { title: "Điều khoản dịch vụ", icon: Info, badge: null },
-    { title: "Đăng xuất", icon: LogOut, badge: null, url: "" },
+    { title: "Đăng xuất", icon: LogOut, badge: null, url: "/logout" },
   ];
 
   // If not client-side yet, render skeleton
@@ -119,8 +133,13 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
                   }`}
                   onClick={() => {
                     setActiveItem(item.title);
-                    if (activeItem !== item.title){
+                    if (activeItem !== item.title) {
+                      if (item.url === "/logout") {
+                        logout();
+                        //  router.push("/login");
+                      } else {
                         router.push(item.url);
+                      }
                     }
                   }}
                 >

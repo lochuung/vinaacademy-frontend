@@ -18,7 +18,7 @@ export const changePassword = async (changePasswordRequest : ChangePasswordReque
 
 export const updateUserInfo = async (updateUserInfoRequest: UpdateUserInfoRequest ): Promise<User | null> => {
     try {
-        const response: AxiosResponse = await apiClient.put(`/user/update-info`, updateUserInfoRequest);
+        const response: AxiosResponse = await apiClient.put(`/users/update-info`, updateUserInfoRequest);
         
         return response.data.data;
     } catch (error) {
