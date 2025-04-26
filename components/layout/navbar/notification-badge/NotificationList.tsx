@@ -17,7 +17,7 @@ const NotificationList = ({
 }: NotificationListProps) => {
   const router = useRouter();
   const viewAllNotifications = () => {
-    router.push("/notification");
+    router.push("/profile/notification");
   };
   return (
     <div className="p-4">

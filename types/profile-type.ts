@@ -7,7 +7,7 @@ export interface ChangePasswordRequest {
 export interface UpdateUserInfoRequest{
     fullName: string
     phone: string | null
-    avatar: string | null
+    avatarUrl: string | null
     dateOfBirth: Date | null
     description: string | null
 }

@@ -5,7 +5,8 @@ import { FaUserCircle } from "react-icons/fa";
 import UserDropdown from "./UserDropdown";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
-import { AvatarImage } from "@/components/ui/avatar-shadcn";
+import { Avatar, AvatarImage } from "@/components/ui/avatar-shadcn";
+import { getImageUrl } from "@/utils/imageUtils";
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +56,7 @@ const UserMenu = () => {
     >
       {isAuthenticated ? (
         <div
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-full transition-colors duration-200 ${
+          className={`flex items-center space-x-2 cursor-pointer p-1 rounded-full transition-colors duration-200 ${
             isOpen ? "bg-gray-100" : "hover:bg-gray-50"
           }`}
           onClick={toggleDropdown}
@@ -65,11 +66,16 @@ const UserMenu = () => {
           {user ? (
             <div className="flex items-center space-x-4">
               {user.avatarUrl ? (
-                <AvatarImage
-                  src={user.avatarUrl || "/default-avatar.png"}
-                  alt="Avatar"
-                  className="object-cover w-7 h-7"
-                />
+                <Avatar className= "border-2 w-[30px] h-[30px] border-gray-200">
+                  <AvatarImage
+                    width={7}
+                    height={7}
+                    src={getImageUrl(user.avatarUrl) || "/default-avatar.png"}
+                    alt="Avatar"
+                    className="object-cover w-7 h-7 items-center"
+                  />
+                </Avatar>
+                // <FaUserCircle size={26} className="text-black" />
               ) : (
                 <FaUserCircle size={26} className="text-black" />
               )}

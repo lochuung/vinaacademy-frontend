@@ -24,9 +24,7 @@ import {
 import { CourseSearchRequest, CourseStatusCountDto } from "@/types/course";
 import { PaginatedResponse } from "@/types/api-response";
 import { CourseDetailsResponse } from "@/types/course";
-import { set } from "date-fns";
 import RejectCourseDialog from "@/components/staff/ui/RejectCourse";
-import { getCurrentUser } from "@/services/authService";
 import { NotificationType } from "@/types/notification-type";
 import { createNotification } from "@/services/notificationService";
 
@@ -58,26 +56,132 @@ const CourseApprovalPage = () => {
 
   const itemsPerPage = 3;
 
-  // Function to fetch courses with current filters
-  const fetchCourses = async () => {
+  // Effect to fetch course counts for stats
+  useEffect(() => {
+    const fetchCoursesCount = async () => {
+      try {
+        const data = await getStatusCourse();
+        setCoursesCount(data);
+        if (data) {
+          setTotal(data.totalPending + data.totalPublished + data.totalRejected);
+        }
+      } catch (error) {
+        console.error("Error fetching course counts:", error);
+      }
+    };
+    
+    fetchCoursesCount();
+  }, []); // Empty dependency array means this only runs once on mount
+
+  // Effect to fetch courses when filters change
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setIsLoading(true);
+
+      // Map UI filter to API status
+      const statusMap: Record<string, string | undefined> = {
+        all: undefined,
+        pending: "PENDING",
+        approved: "PUBLISHED",
+        rejected: "REJECTED",
+      };
+
+      // Prepare search request
+      const searchRequest: CourseSearchRequest = {
+        keyword: searchTerm || undefined,
+        categorySlug: category !== "all" ? category : undefined,
+        status: statusMap[filter] as any,
+      };
+
+      try {
+        const result = await searchCoursesDetail(
+          searchRequest,
+          currentPage,
+          itemsPerPage,
+          "createdDate",
+          sortDirection
+        );
+
+        setCourseData(result);
+        // Select first course by default if available
+        if (result?.content.length && !selectedCourseId) {
+          setSelectedCourseId(result.content[0].id);
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        toast({
+          title: "Lỗi tải dữ liệu",
+          description: "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+      
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+    };
+
+    fetchCourses();
+  }, [filter, searchTerm, category, sortDirection, currentPage, toast]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filter, searchTerm, category, sortDirection]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
+  }, [selectedCourseId]);
+
+  const handleApprove = async (slug: string) => {
     setIsLoading(true);
 
-    // Map UI filter to API status
-    const statusMap: Record<string, string | undefined> = {
-      all: undefined,
-      pending: "PENDING",
-      approved: "PUBLISHED",
-      rejected: "REJECTED",
-    };
-
-    // Prepare search request
-    const searchRequest: CourseSearchRequest = {
-      keyword: searchTerm || undefined,
-      categorySlug: category !== "all" ? category : undefined,
-      status: statusMap[filter] as any,
-    };
-
     try {
+      const check = await updateStatusCourse({
+        slug: slug,
+        status: "PUBLISHED",
+      });
+
+      if (check) {
+        toast({
+          title: "Khóa học đã được xuất bản",
+          description: `Khóa học #${slug} đã được xuất bản thành công.`,
+          className: "bg-green-500 text-white",
+        });
+      } else {
+        toast({
+          title: "Lỗi",
+          description: `Có lỗi xảy ra khi xuất bản khóa học #${slug}. Vui lòng thử lại.`,
+          variant: "destructive",
+          className: "bg-red-500 text-white",
+        });
+      }
+
+      // Refresh counts and course data
+      const data = await getStatusCourse();
+      setCoursesCount(data);
+      if (data) {
+        setTotal(data.totalPending + data.totalPublished + data.totalRejected);
+      }
+
+      // Refresh courses data
+      const statusMap: Record<string, string | undefined> = {
+        all: undefined,
+        pending: "PENDING",
+        approved: "PUBLISHED",
+        rejected: "REJECTED",
+      };
+
+      const searchRequest: CourseSearchRequest = {
+        keyword: searchTerm || undefined,
+        categorySlug: category !== "all" ? category : undefined,
+        status: statusMap[filter] as any,
+      };
+
       const result = await searchCoursesDetail(
         searchRequest,
         currentPage,
@@ -87,112 +191,92 @@ const CourseApprovalPage = () => {
       );
 
       setCourseData(result);
-      // Select first course by default if available
-      if (result?.content.length && !selectedCourseId) {
-        setSelectedCourseId(result.content[0].id);
-      }
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("Error approving course:", error);
       toast({
-        title: "Lỗi tải dữ liệu",
-        description: "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
+        title: "Lỗi",
+        description: "Có lỗi xảy ra. Vui lòng thử lại sau.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-    //delay 100ms
-    //only delay 100ms with code below
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 50);
-  };
-
-  // Effect to fetch course counts for stats
-  const fetchCoursesCount = async () => {
-    setIsLoading(true);
-    const data = await getStatusCourse();
-    setCoursesCount(data);
-    if (data) {
-      setTotal(data.totalPending + data.totalPublished + data.totalRejected);
-    }
-    setIsLoading(false);
-  };
-  // Effect to fetch courses when filters change
-  useEffect(() => {
-    fetchCoursesCount();
-    fetchCourses();
-  }, [filter, searchTerm, category, sortDirection, currentPage, fetchCourses]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [filter, searchTerm, category, sortDirection]);
-
-  // Calculate counts for stats and filters
-
-  const handleApprove = async (slug: string) => {
-    setIsLoading(true);
-
-    const check = await updateStatusCourse({
-      slug: slug,
-      status: "PUBLISHED",
-    });
-
-    if (check) {
-      toast({
-        title: "Khóa học đã được xuất bản",
-        description: `Khóa học #${slug} đã được xuất bản thành công.`,
-        className: "bg-green-500 text-white",
-      });
-    } else {
-      toast({
-        title: "Lỗi",
-        description: `Có lỗi xảy ra khi xuất bản khóa học #${slug}. Vui lòng thử lại.`,
-        variant: "destructive",
-        className: "bg-red-500 text-white",
-      });
-    }
-    await fetchCoursesCount();
-    // Refresh data after action
-    await fetchCourses();
   };
 
   const handleReject = async (slug: string, comment: string, name: string, id: string, recipid: string) => {
     setIsLoading(true);
 
-    const check = await updateStatusCourse({
-      slug: slug,
-      status: "REJECTED",
-    });
-
-    if (check) {
-      toast({
-        title: "Khóa học đã bị từ chối",
-        description: `Khóa học #${slug} đã bị từ chối.`,
-        className: "bg-green-500 text-white",
+    try {
+      const check = await updateStatusCourse({
+        slug: slug,
+        status: "REJECTED",
       });
 
-      const notificationData = {
-        title: `Khóa học "${name}" của bạn đã bị từ chối`,
-        content: `Lí do: ${comment}`,
-        targetUrl: `/instructor/courses/${id}/content`,
-        userId: recipid,
-        type: NotificationType.COURSE_APPROVAL,
+      if (check) {
+        toast({
+          title: "Khóa học đã bị từ chối",
+          description: `Khóa học #${slug} đã bị từ chối.`,
+          className: "bg-green-500 text-white",
+        });
+
+        const notificationData = {
+          title: `Khóa học "${name}" của bạn đã bị từ chối`,
+          content: `Lí do: ${comment}`,
+          targetUrl: `/instructor/courses/${id}/content`,
+          userId: recipid,
+          type: NotificationType.COURSE_APPROVAL,
+        };
+
+        await createNotification(notificationData);
+      } else {
+        toast({
+          title: "Lỗi",
+          description: `Có lỗi xảy ra khi Từ chôi khóa học #${slug}. Vui lòng thử lại.`,
+          variant: "destructive",
+          className: "bg-red-500 text-white",
+        });
+      }
+
+      // Refresh counts and course data
+      const data = await getStatusCourse();
+      setCoursesCount(data);
+      if (data) {
+        setTotal(data.totalPending + data.totalPublished + data.totalRejected);
+      }
+
+      // Refresh courses data
+      const statusMap: Record<string, string | undefined> = {
+        all: undefined,
+        pending: "PENDING",
+        approved: "PUBLISHED",
+        rejected: "REJECTED",
       };
 
-      createNotification(notificationData);
-    } else {
+      const searchRequest: CourseSearchRequest = {
+        keyword: searchTerm || undefined,
+        categorySlug: category !== "all" ? category : undefined,
+        status: statusMap[filter] as any,
+      };
+
+      const result = await searchCoursesDetail(
+        searchRequest,
+        currentPage,
+        itemsPerPage,
+        "createdDate",
+        sortDirection
+      );
+
+      setCourseData(result);
+    } catch (error) {
+      console.error("Error rejecting course:", error);
       toast({
         title: "Lỗi",
-        description: `Có lỗi xảy ra khi Từ chôi khóa học #${slug}. Vui lòng thử lại.`,
+        description: "Có lỗi xảy ra. Vui lòng thử lại sau.",
         variant: "destructive",
-        className: "bg-red-500 text-white",
       });
+    } finally {
+      setIsLoading(false);
     }
-    await fetchCoursesCount();
-    // Refresh data after action
-    await fetchCourses();
   };
 
   const openRejectDialog = (slug: string, name: string, id: string, recipid: string) => {
