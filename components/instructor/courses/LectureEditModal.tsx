@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { LectureDisplay } from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
 import { createLesson, updateLesson } from '@/services/lessonService';
-import { LessonType } from '@/types/course';
+import { LessonType, VideoStatus } from '@/types/course';
 import { toast } from 'react-toastify';
 
 interface LectureEditModalProps {
@@ -23,7 +23,8 @@ export const LectureEditModal = ({
 }: LectureEditModalProps) => {
     const [title, setTitle] = useState('');
     const [type, setType] = useState<LessonType>('VIDEO');
-    const [duration, setDuration] = useState<number>(0);
+    const [description, setDescription] = useState('');
+    const [isFree, setIsFree] = useState(false);
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,13 +33,15 @@ export const LectureEditModal = ({
         if (lecture) {
             setTitle(lecture.title);
             setType(lecture.type.toUpperCase() as LessonType);
-            setDuration(lecture.duration || 0);
+            setDescription(lecture.description || '');
+            setIsFree(lecture.free || false);
             setContent(lecture.content || '');
         } else {
             // Giá trị mặc định cho bài giảng mới
             setTitle('');
             setType('VIDEO');
-            setDuration(0);
+            setDescription('');
+            setIsFree(false);
             setContent('');
         }
     }, [lecture]);
@@ -61,14 +64,35 @@ export const LectureEditModal = ({
         setIsSubmitting(true);
 
         try {
+            // Tạo đối tượng lectureData theo cấu trúc LessonRequest
             const lectureData = {
                 title: title.trim(),
-                type: type,
-                content: content,
                 sectionId: sectionId,
+                type: type,
+                description: description.trim(),
+                free: isFree,
                 orderIndex: lecture ? lecture.order : 0,
-                duration: type === 'VIDEO' ? duration : undefined
             };
+
+            // Thêm các trường tùy theo loại bài giảng
+            if (type === 'VIDEO') {
+                Object.assign(lectureData, {
+                    status: 'PROCESSING'
+                });
+            } else if (type === 'READING' || type === 'QUIZ') {
+                Object.assign(lectureData, {
+                    content: content
+                });
+            }
+
+            // Nếu là QUIZ, thêm các trường liên quan đến quiz
+            if (type === 'QUIZ') {
+                Object.assign(lectureData, {
+                    passPoint: 0, // Giá trị mặc định, sẽ được cập nhật sau trong trang chỉnh sửa quiz
+                    totalPoint: 0, // Giá trị mặc định, sẽ được cập nhật sau trong trang chỉnh sửa quiz
+                    duration: 0 // Thời gian làm bài mặc định
+                });
+            }
 
             let result;
             if (lecture) {
@@ -149,27 +173,38 @@ export const LectureEditModal = ({
                             </select>
                         </div>
 
-                        {type === 'VIDEO' && (
-                            <div>
-                                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Thời lượng (giây)
-                                </label>
-                                <input
-                                    type="number"
-                                    id="duration"
-                                    value={duration}
-                                    onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-                                    min="0"
-                                    disabled={isSubmitting}
-                                />
-                            </div>
-                        )}
+                        <div>
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                                Mô tả bài giảng
+                            </label>
+                            <textarea
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                                rows={3}
+                                placeholder="Mô tả ngắn gọn về nội dung bài giảng"
+                                disabled={isSubmitting}
+                            />
+                        </div>
 
-                        {(type === 'READING' || type === 'QUIZ') && (
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                id="free-lesson"
+                                checked={isFree}
+                                onChange={(e) => setIsFree(e.target.checked)}
+                                className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
+                                disabled={isSubmitting}
+                            />
+                            <label htmlFor="free-lesson" className="ml-2 block text-sm text-gray-700">
+                                Bài giảng miễn phí (học viên chưa mua khóa học vẫn xem được)
+                            </label>
+                        </div>
+                        {(type === 'READING') && (
                             <div>
                                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Nội dung
+                                    Nội dung bài học
                                 </label>
                                 <textarea
                                     id="content"
@@ -177,7 +212,10 @@ export const LectureEditModal = ({
                                     onChange={(e) => setContent(e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                     rows={5}
-                                    placeholder="Nhập nội dung bài giảng"
+                                    placeholder={type === 'READING'
+                                        ? "Nhập nội dung bài đọc"
+                                        : "Mô tả ngắn gọn về bài kiểm tra"
+                                    }
                                     disabled={isSubmitting}
                                 />
                             </div>

@@ -33,6 +33,8 @@ export interface LectureDisplay {
     content?: string;
     order: number;
     isPublished ?: boolean;
+    free ?: boolean;
+    description?: string;
 }
 
 // Type mapping từ backend sang frontend

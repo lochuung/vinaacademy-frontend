@@ -55,6 +55,8 @@ export default function CourseImage({ src, alt, className = '' }: CourseImagePro
 
     return (
         <Image
+            width={300}
+            height={200}
             className={className}
             src={imageSrc}
             alt={alt}

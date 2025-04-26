@@ -1,10 +1,10 @@
 import { BaseDto } from "./api-response";
 import { EnrollmentProgressDto, LessonProgress } from "./learning";
+import { VideoStatus } from "./video";
 
 export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED';
 export type LessonType = 'VIDEO' | 'READING' | 'QUIZ';
-export type VideoStatus = 'PROCESSING' | 'READY' | 'FAILED';
 
 export interface CourseStatusCountDto {
     totalPublished: number;

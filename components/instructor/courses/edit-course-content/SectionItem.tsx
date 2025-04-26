@@ -5,6 +5,7 @@ import { Section } from '@/types/instructor-course-edit';
 import { LectureItem } from './LectureItem';
 import { SectionEditModal } from '@/components/instructor/courses/SectionEditModal';
 import { LectureEditModal } from '@/components/instructor/courses/LectureEditModal';
+import { useRouter } from 'next/navigation';
 
 interface SectionItemProps {
     section: Section;
@@ -33,12 +34,12 @@ export const SectionItem = ({
     onSectionUpdated,
     onLectureUpdated
 }: SectionItemProps) => {
+    const router = useRouter();
     // State cho modal chỉnh sửa section
     const [isSectionModalOpen, setSectionModalOpen] = useState(false);
 
-    // State cho modal thêm/chỉnh sửa bài giảng
+    // State cho modal thêm bài giảng mới
     const [isLectureModalOpen, setLectureModalOpen] = useState(false);
-    const [selectedLecture, setSelectedLecture] = useState<string | null>(null);
 
     // Xử lý mở modal chỉnh sửa section
     const handleEditSection = () => {
@@ -47,20 +48,12 @@ export const SectionItem = ({
 
     // Xử lý mở modal thêm bài giảng mới
     const handleAddLecture = () => {
-        setSelectedLecture(null);
         setLectureModalOpen(true);
     };
 
-    // Xử lý mở modal chỉnh sửa bài giảng
+    // Xử lý chuyển đến trang chỉnh sửa bài giảng
     const handleEditLecture = (lectureId: string) => {
-        setSelectedLecture(lectureId);
-        setLectureModalOpen(true);
-    };
-
-    // Lấy dữ liệu bài giảng đang được chọn
-    const getSelectedLectureData = () => {
-        if (!selectedLecture) return undefined;
-        return section.lectures.find(lecture => lecture.id === selectedLecture);
+        router.push(`/instructor/courses/${courseId}/lectures/${lectureId}`);
     };
 
     return (
@@ -154,9 +147,8 @@ export const SectionItem = ({
                 onSave={onSectionUpdated}
             />
 
-            {/* Modal thêm/chỉnh sửa bài giảng */}
+            {/* Modal thêm bài giảng mới */}
             <LectureEditModal
-                lecture={getSelectedLectureData()}
                 sectionId={section.id}
                 isOpen={isLectureModalOpen}
                 onClose={() => setLectureModalOpen(false)}
