@@ -1,4 +1,6 @@
-import {List} from 'lucide-react';
+import { FileText, Info } from 'lucide-react';
+import MarkdownEditorSection from '../../../new-course/MarkdownEditor';
+import { useState } from 'react';
 
 interface TextEditorProps {
     textContent: string;
@@ -6,35 +8,56 @@ interface TextEditorProps {
 }
 
 export default function TextEditor({textContent, handleTextContentChange}: TextEditorProps) {
+    const [showTips, setShowTips] = useState(false);
+    
     return (
-        <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nội dung bài đọc
-            </label>
-            <div className="mt-1 border border-gray-300 rounded-md">
-                <div className="bg-gray-50 px-3 py-2 border-b border-gray-300">
-                    <div className="flex space-x-2">
-                        <button className="p-1 hover:bg-gray-200 rounded">
-                            <strong className="font-bold">B</strong>
-                        </button>
-                        <button className="p-1 hover:bg-gray-200 rounded italic">
-                            <em>I</em>
-                        </button>
-                        <button className="p-1 hover:bg-gray-200 rounded underline">
-                            <u>U</u>
-                        </button>
-                        <span className="border-r border-gray-300 mx-1"></span>
-                        <button className="p-1 hover:bg-gray-200 rounded">
-                            <List className="h-4 w-4"/>
-                        </button>
-                    </div>
+        <div className="space-y-5">
+            {/* Header with info */}
+            <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                        <FileText className="h-5 w-5 mr-2 text-emerald-600" />
+                        Soạn thảo nội dung
+                    </h3>
+                    <button 
+                        onClick={() => setShowTips(!showTips)}
+                        className="text-sm text-emerald-600 hover:text-emerald-800 flex items-center"
+                    >
+                        <Info className="h-4 w-4 mr-1" />
+                        {showTips ? "Ẩn mẹo" : "Mẹo soạn thảo"}
+                    </button>
                 </div>
-                <textarea
-                    className="w-full p-3 h-64 focus:outline-none focus:ring-0 border-0 bg-white text-gray-900"
-                    placeholder="Nhập nội dung bài đọc ở đây..."
-                    value={textContent}
-                    onChange={handleTextContentChange}
-                ></textarea>
+                
+                {showTips && (
+                    <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100 text-sm text-emerald-800">
+                        <h4 className="font-medium mb-2">Mẹo để tạo bài đọc hấp dẫn:</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>Sử dụng các tiêu đề rõ ràng để chia nội dung thành các phần.</li>
+                            <li>Thêm hình ảnh minh họa để làm rõ điểm chính.</li>
+                            <li>Sử dụng định dạng đậm, nghiêng để nhấn mạnh các điểm quan trọng.</li>
+                            <li>Thêm danh sách có thứ tự hoặc không thứ tự để tổ chức thông tin.</li>
+                            <li>Đảm bảo có đủ khoảng trắng giữa các đoạn để dễ đọc.</li>
+                        </ul>
+                    </div>
+                )}
+            </div>
+            
+            {/* Content badge */}
+            <div className="flex items-center">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    Bài đọc
+                </span>
+                <span className="ml-2 text-sm text-gray-500">
+                    Định dạng Markdown được hỗ trợ
+                </span>
+            </div>
+            
+            {/* Editor */}
+            <div className="w-full rounded-lg overflow-hidden">
+                <MarkdownEditorSection
+                    setDescription={(value: string) => handleTextContentChange({ target: { value } } as React.ChangeEvent<HTMLTextAreaElement>)}
+                    description={textContent}
+                />
             </div>
         </div>
     );

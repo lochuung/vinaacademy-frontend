@@ -83,7 +83,6 @@ export const SectionEditModal = ({
             onClose();
         } catch (error) {
             console.error('Lỗi khi lưu phần học:', error);
-            toast.error('Không thể lưu phần học. Vui lòng thử lại sau.');
         } finally {
             setIsSubmitting(false);
         }

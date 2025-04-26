@@ -1,7 +1,7 @@
 "use client";
 
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Loader2 } from 'lucide-react';
 import { CourseContentHeader } from '@/components/instructor/courses/edit-course-content/CourseContentHeader';
@@ -14,7 +14,6 @@ import { adaptSectionDisplaysToSections } from '@/utils/adapters/courseContentAd
 export default function CourseContentPage() {
     const params = useParams();
     const courseId = params.id as string;
-    const [isSaving, setIsSaving] = useState(false);
     const [isAddSectionModalOpen, setAddSectionModalOpen] = useState(false);
 
     const {
@@ -22,6 +21,7 @@ export default function CourseContentPage() {
         expandedSections,
         isDragging,
         isLoading,
+        error,
         setIsDragging,
         toggleSection,
         addSection,
@@ -36,17 +36,10 @@ export default function CourseContentPage() {
     const sections = adaptSectionDisplaysToSections(sectionsDisplay);
 
     const handleSaveDraft = async () => {
-        setIsSaving(true);
         try {
-            const success = await saveAllChanges();
-            if (success) {
-                toast.success('Đã lưu thay đổi thành công');
-            }
+            await saveAllChanges();
         } catch (error) {
             console.error('Lỗi khi lưu thay đổi:', error);
-            toast.error('Không thể lưu thay đổi. Vui lòng thử lại sau.');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -94,7 +87,7 @@ export default function CourseContentPage() {
             {/* Footer Component */}
             <CourseContentFooter
                 onSaveDraft={handleSaveDraft}
-                isSaving={isSaving}
+                isSaving={false}
             />
 
             {/* Modal thêm phần học mới */}

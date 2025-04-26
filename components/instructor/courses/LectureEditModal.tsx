@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { LectureDisplay } from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
 import { createLesson, updateLesson } from '@/services/lessonService';
-import { LessonType, VideoStatus } from '@/types/course';
+import { LessonType } from '@/types/course';
 import { toast } from 'react-toastify';
 
 interface LectureEditModalProps {
@@ -115,7 +115,6 @@ export const LectureEditModal = ({
             onClose();
         } catch (error) {
             console.error('Lỗi khi lưu bài giảng:', error);
-            toast.error('Không thể lưu bài giảng. Vui lòng thử lại sau.');
         } finally {
             setIsSubmitting(false);
         }

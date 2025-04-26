@@ -8,15 +8,10 @@ import { CourseDto, LessonType } from "@/types/course";
 
 // 🔍 GET /lessons/{id}
 export const getLessonById = async (id: string): Promise<LessonDto | null> => {
-  try {
-    const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.get(
-      `/lessons/${id}`
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error("getLessonById error:", error);
-    return null;
-  }
+  const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.get(
+    `/lessons/${id}`
+  );
+  return response.data.data;
 };
 
 // 🔍 GET /lessons/section/{sectionId}
