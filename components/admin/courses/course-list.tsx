@@ -22,6 +22,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {Button} from '@/components/ui/button';
+import Image from 'next/image';
 
 // Mock data
 const courseData = [
@@ -340,7 +341,7 @@ export default function CourseList({view, searchQuery}: CourseListProps) {
                         <td className="px-6 py-4">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0 h-10 w-10">
-                                    <img
+                                    <Image
                                         className="h-10 w-10 rounded object-cover"
                                         src={course.thumbnail}
                                         alt=""

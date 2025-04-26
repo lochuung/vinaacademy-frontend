@@ -1,6 +1,7 @@
 // components/course-creator/FileUpload.tsx
 import {ReactNode} from 'react';
 import {CheckCircle2} from 'lucide-react';
+import Image from 'next/image';
 
 interface FileUploadProps {
     id: string;
@@ -40,7 +41,7 @@ export default function FileUpload({
                     {previewComponent || (
                         <div className="overflow-hidden rounded-lg shadow-md aspect-video">
                             {accept.includes('image') ? (
-                                <img
+                                <Image
                                     src={preview as string}
                                     alt="Preview"
                                     className="w-full h-full object-cover"

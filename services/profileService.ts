@@ -1,0 +1,28 @@
+import apiClient from "@/lib/apiClient";
+import { ApiResponse } from "@/types/api-response";
+import { User } from "@/types/auth";
+import { UserDto } from "@/types/course";
+import { ChangePasswordRequest, UpdateUserInfoRequest } from "@/types/profile-type";
+import { AxiosResponse } from "axios";
+
+
+export const changePassword = async (changePasswordRequest : ChangePasswordRequest ): Promise<Boolean | null> => {
+    try {
+        const response: AxiosResponse = await apiClient.put(`/auth/change-password`, changePasswordRequest);
+        return response.data.data;
+    } catch (error) {
+        console.error("changePassword error:", error);
+        return false;
+    }
+};
+
+export const updateUserInfo = async (updateUserInfoRequest: UpdateUserInfoRequest ): Promise<User | null> => {
+    try {
+        const response: AxiosResponse = await apiClient.put(`/user/update-info`, updateUserInfoRequest);
+        
+        return response.data.data;
+    } catch (error) {
+        console.error("updateUserInfo error:", error);
+        return null;
+    }
+};

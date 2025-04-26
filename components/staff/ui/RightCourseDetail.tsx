@@ -16,6 +16,8 @@ import {
 import { format } from "date-fns";
 import { CourseDetailsResponse } from "@/types/course";
 import MarkdownMD from "@/components/ui/markdownMD";
+import Image from "next/image";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface CourseDetailProps {
   selectedCourseId: string | null;
@@ -75,6 +77,7 @@ const RightCourseDetail = ({
     style: "currency",
     currency: "VND",
   }).format(courseDto.price);
+  const reformatImageUrl = getImageUrl(courseDto.image);
 
   return (
     <div className="flex flex-col h-full overflow-auto">
@@ -115,8 +118,8 @@ const RightCourseDetail = ({
         <div className="space-y-6">
           {courseDto.image && (
             <div className="relative w-full h-64 rounded-lg overflow-hidden">
-              <img
-                src={courseDto.image}
+              <Image
+                src={reformatImageUrl}
                 alt={courseDto.name}
                 className="object-cover w-full h-full"
               />

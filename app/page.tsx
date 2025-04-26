@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const userAvatar = "";
 
@@ -116,7 +117,7 @@ export default function Home() {
                         <motion.div variants={itemVariants}>
                             <RecentCoursesSection />
                         </motion.div>
-                        
+
                         <motion.div variants={itemVariants}>
                             <LearningRecommendations />
                         </motion.div>
@@ -133,6 +134,20 @@ export default function Home() {
                             <NewCoursesSection />
                         </motion.div>
                     </motion.div>
+                )}
+
+                {!contentLoading && (
+                    <div className="flex justify-end mt-8">
+                        <Link
+                            href="/courses"
+                            className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center gap-1 font-medium"
+                        >
+                            Tất cả khóa học
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </Link>
+                    </div>
                 )}
             </div>
         </div>
