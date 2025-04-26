@@ -2,10 +2,10 @@
 import {useState} from 'react';
 import VideoUploader from '../content/VideoUploader';
 import TextEditor from '../content/TextEditor';
-import ContentTypeSelector from '../content/ContentTypeSelector';
 import QuizEditor from '../content/quiz/QuizEditor';
 import AssignmentEditor from '../content/AssignmentEditor';
 import {Lecture} from '@/types/lecture';
+import { Video, FileText, MessageSquare, Monitor } from 'lucide-react';
 
 interface ContentTabProps {
     lecture: Lecture;
@@ -13,55 +13,14 @@ interface ContentTabProps {
 }
 
 export default function ContentTab({lecture, setLecture}: ContentTabProps) {
-    const [isUploading, setIsUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const {name, value} = e.target;
-
-        // For type changes, we need to handle differently
-        if (name === 'type' && value !== lecture.type) {
-            // Reset specific content fields when changing type
-            if (value === 'video') {
-                setLecture({
-                    ...lecture,
-                    type: value as Lecture['type'],
-                    textContent: '',
-                    quiz: undefined
-                });
-            } else if (value === 'text') {
-                setLecture({
-                    ...lecture,
-                    type: value as Lecture['type'],
-                    videoUrl: '',
-                    duration: '',
-                    quiz: undefined
-                });
-            } else if (value === 'quiz') {
-                setLecture({
-                    ...lecture,
-                    type: value as Lecture['type'],
-                    videoUrl: '',
-                    textContent: '',
-                    duration: ''
-                });
-            } else if (value === 'assignment') {
-                setLecture({
-                    ...lecture,
-                    type: value as Lecture['type'],
-                    videoUrl: '',
-                    textContent: '',
-                    duration: '',
-                    quiz: undefined
-                });
-            }
-        } else {
-            // For other fields, simply update the value
-            setLecture({
-                ...lecture,
-                [name]: value
-            });
-        }
+        
+        // For other fields, simply update the value
+        setLecture({
+            ...lecture,
+            [name]: value
+        });
     };
 
     const handleTextContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -71,37 +30,38 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
         });
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        setUploadProgress(0);
-
-        // Giả lập quá trình upload
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setIsUploading(false);
-
-                    // Cập nhật URL sau khi upload
-                    if (e.target.name === 'video-upload') {
-                        setLecture({
-                            ...lecture,
-                            videoUrl: URL.createObjectURL(file),
-                            duration: lecture.duration || '300' // Giả lập thời lượng
-                        });
-                    }
-
-                    return 100;
-                }
-                return prev + 10;
-            });
-        }, 300);
+    // Get appropriate type label and icon for the current lecture type
+    const getTypeInfo = () => {
+        switch(lecture.type) {
+            case 'video':
+                return {
+                    label: 'Video',
+                    icon: <Video className="h-4 w-4 inline mr-1"/>
+                };
+            case 'reading':
+                return {
+                    label: 'Bài đọc',
+                    icon: <FileText className="h-4 w-4 inline mr-1"/>
+                };
+            case 'quiz':
+                return {
+                    label: 'Bài kiểm tra',
+                    icon: <Monitor className="h-4 w-4 inline mr-1"/>
+                };
+            case 'assignment':
+                return {
+                    label: 'Bài tập',
+                    icon: <MessageSquare className="h-4 w-4 inline mr-1"/>
+                };
+            default:
+                return {
+                    label: 'Không xác định',
+                    icon: <FileText className="h-4 w-4 inline mr-1"/>
+                };
+        }
     };
+
+    const { label: typeLabel, icon: typeIcon } = getTypeInfo();
 
     return (
         <div className="space-y-6">
@@ -143,17 +103,31 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                 </p>
             </div>
 
-            {/* Loại nội dung */}
-            <ContentTypeSelector lecture={lecture} handleInputChange={handleInputChange}/>
+            {/* Display lecture type (read-only) */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Loại nội dung
+                </label>
+                <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 mr-3">
+                            {typeIcon}
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-900">{typeLabel}</h3>
+                            <p className="mt-1 text-xs text-gray-500">
+                                Loại nội dung không thể thay đổi sau khi đã tạo. Để sử dụng loại nội dung khác, vui lòng xóa bài giảng này và tạo bài giảng mới.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Content based on type */}
             {lecture.type === 'video' && (
                 <VideoUploader
                     lecture={lecture}
                     setLecture={setLecture}
-                    isUploading={isUploading}
-                    uploadProgress={uploadProgress}
-                    handleFileUpload={handleFileUpload}
                 />
             )}
 

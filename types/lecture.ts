@@ -1,5 +1,6 @@
 // Cập nhật interface Lecture
 import {CourseDto, LessonDto, SectionDto} from './course';
+import { VideoStatus } from './video';
 
 export interface Resource {
     id: string;
@@ -41,6 +42,9 @@ export interface Quiz {
     questions: QuizQuestion[];
     settings: QuizSettings;
     totalPoints: number;
+    passPoint: number; // Percentage
+    totalPoint: number; // Percentage
+    timeLimit?: number; // Minutes
 }
 
 // Cập nhật LectureType và Lesson để đảm bảo bao gồm tất cả các field cần thiết
@@ -53,6 +57,7 @@ export interface Lecture {
     description: string;
     duration: string;
     isPublished?: boolean;
+    free?: boolean;
 
     // Các trường tùy chọn cho mọi loại bài học
     isCompleted?: boolean;
@@ -60,8 +65,8 @@ export interface Lecture {
     resources?: Resource[];
 
     // Các trường cho video
-    videoUrl?: string;
     transcript?: string;
+    status?: VideoStatus;
 
     // Các trường cho reading
     textContent?: string;

@@ -1,5 +1,6 @@
 import { BaseDto } from "./api-response";
-import { LessonType, VideoStatus } from "./course";
+import { LessonType } from "./course";
+import { VideoStatus } from "./video";
 
 export interface LessonDto extends BaseDto {
     id: string; // UUID
@@ -13,6 +14,7 @@ export interface LessonDto extends BaseDto {
     authorName: string;
     courseId: string; // UUID
     courseName: string;
+    description?: string; // HTML content for reading lessons
 
     // progress
     currentUserProgress?: LessonProgressDto;
