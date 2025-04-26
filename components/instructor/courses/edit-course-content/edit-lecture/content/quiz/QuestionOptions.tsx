@@ -1,9 +1,10 @@
 import {Plus} from 'lucide-react';
-import {QuizQuestion, QuizOption} from '@/types/lecture';
+import {QuizOption} from '@/types/lecture';
+import { QuestionType } from '@/types/quiz';  // Import the QuestionType enum
 import OptionItem from './OptionItem';
 
 interface QuestionOptionsProps {
-    questionType: QuizQuestion['type'];
+    questionType: QuestionType;  // Updated type
     options: QuizOption[];
     onAddOption: () => void;
     onRemoveOption: (optionId: string) => void;
@@ -19,41 +20,48 @@ export default function QuestionOptions({
                                             onUpdateOptionText,
                                             onToggleOptionCorrect
                                         }: QuestionOptionsProps) {
-    // Nếu là câu hỏi tự luận, không hiển thị options
-    if (questionType === 'text') {
-        return null;
+    // Only show options for choice-based questions
+    if (questionType === QuestionType.TEXT) {
+        return (
+            <div className="p-4 bg-gray-50 rounded-md text-gray-600 text-sm italic">
+                Câu hỏi tự luận không có lựa chọn. Học viên sẽ nhập câu trả lời vào ô văn bản.
+            </div>
+        );
     }
 
     return (
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-                Các lựa chọn
-                {questionType === 'true_false' ? '' : <span className="text-red-500"> *</span>}
-            </label>
+        <div>
+            <div className="mb-2 flex justify-between items-center">
+                <label className="block text-sm font-medium text-gray-700">
+                    Các lựa chọn
+                </label>
+                {/* Only show add button for multiple choice and single choice */}
+                {questionType !== QuestionType.TRUE_FALSE && (
+                    <button
+                        type="button"
+                        onClick={onAddOption}
+                        className="inline-flex items-center text-xs text-black hover:text-gray-900"
+                    >
+                        <Plus size={14} className="mr-1"/> Thêm lựa chọn
+                    </button>
+                )}
+            </div>
 
-            {options.map((option, optIndex) => (
-                <OptionItem
-                    key={option.id}
-                    option={option}
-                    optionIndex={optIndex}
-                    questionType={questionType}
-                    onRemove={onRemoveOption}
-                    onUpdateText={(text) => onUpdateOptionText(option.id, text)}
-                    onToggleCorrect={() => onToggleOptionCorrect(option.id)}
-                    canRemove={questionType !== 'true_false' && options.length > 2}
-                />
-            ))}
-
-            {/* Thêm lựa chọn button - chỉ hiển thị nếu không phải true/false */}
-            {questionType !== 'true_false' && (
-                <button
-                    type="button"
-                    onClick={onAddOption}
-                    className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-                >
-                    <Plus size={16} className="mr-1"/> Thêm lựa chọn
-                </button>
-            )}
+            <div className="space-y-2">
+                {options.map((option, index) => (
+                    <OptionItem
+                        key={option.id}
+                        option={option}
+                        optionIndex={index}
+                        questionType={questionType}
+                        onRemove={() => onRemoveOption(option.id)}
+                        onUpdateText={(text) => onUpdateOptionText(option.id, text)}
+                        onToggleCorrect={() => onToggleOptionCorrect(option.id)}
+                        // For True/False or if there are only 2 options, don't allow removal
+                        canRemove={questionType !== QuestionType.TRUE_FALSE && options.length > 2}
+                    />
+                ))}
+            </div>
         </div>
     );
 }

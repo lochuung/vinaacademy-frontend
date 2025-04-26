@@ -31,38 +31,11 @@ export default function QuestionActions({
             <div>
                 <button
                     type="button"
-                    onClick={onDuplicate}
-                    className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mr-4"
-                >
-                    <Copy size={16} className="mr-1"/> Nhân bản
-                </button>
-                <button
-                    type="button"
                     onClick={onRemove}
                     className="inline-flex items-center text-sm text-red-600 hover:text-red-800"
                     disabled={!canDelete}
                 >
                     <Trash2 size={16} className="mr-1"/> Xóa câu hỏi
-                </button>
-            </div>
-            <div>
-                <button
-                    type="button"
-                    onClick={onMoveUp}
-                    disabled={isFirst}
-                    className={`inline-flex items-center text-sm ${isFirst ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:text-gray-900'
-                    } mr-3`}
-                >
-                    <ChevronUp size={16} className="mr-1"/> Lên
-                </button>
-                <button
-                    type="button"
-                    onClick={onMoveDown}
-                    disabled={isLast}
-                    className={`inline-flex items-center text-sm ${isLast ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                    <ChevronDown size={16} className="mr-1"/> Xuống
                 </button>
             </div>
         </div>

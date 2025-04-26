@@ -133,6 +133,7 @@ export default function LectureEditor() {
                             <ContentTab
                                 lecture={lecture}
                                 setLecture={setLecture}
+                                sectionId={sectionId}
                             />
                         )}
 

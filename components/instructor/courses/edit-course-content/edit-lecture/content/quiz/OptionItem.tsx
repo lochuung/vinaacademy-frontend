@@ -1,10 +1,11 @@
 import {GripVertical, Trash2, CheckCircle} from 'lucide-react';
-import {QuizOption, QuizQuestion} from '@/types/lecture';
+import {QuizOption} from '@/types/lecture';
+import { QuestionType } from '@/types/quiz';  // Import the QuestionType enum
 
 interface OptionItemProps {
     option: QuizOption;
     optionIndex: number;
-    questionType: QuizQuestion['type'];
+    questionType: QuestionType;  // Updated type
     onRemove: (optionId: string) => void;
     onUpdateText: (text: string) => void;
     onToggleCorrect: () => void;
@@ -27,7 +28,7 @@ export default function OptionItem({
             </div>
 
             <div className="mr-2">
-                {questionType === 'multiple_choice' ? (
+                {questionType === QuestionType.MULTIPLE_CHOICE ? (
                     // Checkbox cho multiple choice
                     <div
                         className={`w-5 h-5 rounded border cursor-pointer flex items-center justify-center ${option.isCorrect
@@ -52,26 +53,23 @@ export default function OptionItem({
                 )}
             </div>
 
-            <div className="flex-grow">
+            <div className="flex-1">
                 <input
                     type="text"
                     value={option.text}
                     onChange={(e) => onUpdateText(e.target.value)}
+                    className="shadow-sm focus:ring-black focus:border-black block w-full text-sm p-2 border-gray-300 rounded-md bg-white"
                     placeholder={`Lựa chọn ${optionIndex + 1}`}
-                    className="shadow-sm focus:ring-black focus:border-black block w-full text-base p-2.5 border-gray-300 rounded-md bg-white"
-                    disabled={questionType === 'true_false'}
                 />
             </div>
 
-            {/* Delete option button - only show if can remove */}
             {canRemove && (
                 <button
                     type="button"
                     onClick={() => onRemove(option.id)}
-                    className="ml-2 text-gray-400 hover:text-red-500"
-                    title="Xóa lựa chọn"
+                    className="ml-2 p-1 text-gray-500 hover:text-red-500"
                 >
-                    <Trash2 size={16}/>
+                    <Trash2 className="h-4 w-4"/>
                 </button>
             )}
         </div>

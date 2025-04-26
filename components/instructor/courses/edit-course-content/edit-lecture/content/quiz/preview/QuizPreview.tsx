@@ -1,21 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Quiz } from '@/types/lecture';
 import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
+import { quizDtoToQuiz } from '@/adapters/quizAdapter';
+import { QuizDto } from '@/types/quiz';
 
 interface QuizPreviewProps {
-    quiz: Quiz;
+    quiz: Quiz | QuizDto;
     onClose: () => void;
 }
 
 export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
+    // Convert QuizDto to Quiz if needed
+    const [quizData, setQuizData] = useState<Quiz>(() => {
+        // Check if quiz is QuizDto and convert if needed
+        if ('questions' in quiz && Array.isArray(quiz.questions) && 
+            quiz.questions.length > 0 && 'questionText' in quiz.questions[0]) {
+            return quizDtoToQuiz(quiz as QuizDto);
+        }
+        return quiz as Quiz;
+    });
+    
     const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string[]>>({});
     const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
     const [showResults, setShowResults] = useState(false);
 
-    const questions = quiz.questions;
+    const questions = quizData.questions;
 
     // Handle option selection for single/multiple choice questions
     const handleOptionSelect = (questionId: string, optionId: string) => {
@@ -120,7 +132,7 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
         });
 
         const percentageScore = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-        const passed = !quiz.settings.requirePassingScore || percentageScore >= quiz.settings.passingScore;
+        const passed = !quizData.settings.requirePassingScore || percentageScore >= quizData.settings.passingScore;
 
         return {
             totalScore,
@@ -148,13 +160,13 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
     if (showResults) {
         return (
             <QuizResults
-                quiz={quiz}
+                quiz={quizData}
                 questions={questions}
                 quizResults={quizResults}
                 selectedAnswers={selectedAnswers}
                 textAnswers={textAnswers}
                 onReview={resetQuiz}
-                onRetake={quiz.settings.allowRetake ? resetQuiz : undefined}
+                onRetake={quizData.settings.allowRetake ? resetQuiz : undefined}
                 onClose={onClose}
             />
         );

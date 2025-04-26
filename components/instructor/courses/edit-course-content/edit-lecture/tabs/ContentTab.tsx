@@ -9,10 +9,11 @@ import { Video, FileText, MessageSquare, Monitor, Sparkles, Info, AlertCircle } 
 
 interface ContentTabProps {
     lecture: Lecture;
+    sectionId: string;
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
 }
 
-export default function ContentTab({lecture, setLecture}: ContentTabProps) {
+export default function ContentTab({lecture, setLecture, sectionId}: ContentTabProps) {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const {name, value} = e.target;
         
@@ -190,7 +191,11 @@ export default function ContentTab({lecture, setLecture}: ContentTabProps) {
                         )}
 
                         {lecture.type === 'quiz' && (
-                            <QuizEditor lecture={lecture} setLecture={setLecture}/>
+                            <QuizEditor 
+                                lecture={lecture} 
+                                setLecture={setLecture}
+                                sectionId={sectionId}
+                            />
                         )}
 
                         {lecture.type === 'assignment' && <AssignmentEditor/>}

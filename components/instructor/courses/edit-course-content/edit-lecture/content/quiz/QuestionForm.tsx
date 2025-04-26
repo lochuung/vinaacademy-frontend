@@ -1,11 +1,12 @@
 import {QuizQuestion} from '@/types/lecture';
+import { QuestionType } from '@/types/quiz';  // Import the QuestionType enum
 
 interface QuestionFormProps {
     text: string;
-    type: QuizQuestion['type'];
+    type: QuestionType;  // Updated type
     points: number;
     onUpdateText: (text: string) => void;
-    onUpdateType: (type: QuizQuestion['type']) => void;
+    onUpdateType: (type: QuestionType) => void;  // Updated type
     onUpdatePoints: (points: number) => void;
 }
 
@@ -43,13 +44,13 @@ export default function QuestionForm({
                     <select
                         id="question-type"
                         value={type}
-                        onChange={(e) => onUpdateType(e.target.value as QuizQuestion['type'])}
+                        onChange={(e) => onUpdateType(e.target.value as QuestionType)}
                         className="shadow-sm focus:ring-black focus:border-black block w-full text-base p-2.5 border-gray-300 rounded-md bg-white"
                     >
-                        <option value="single_choice">Chọn một đáp án</option>
-                        <option value="multiple_choice">Chọn nhiều đáp án</option>
-                        <option value="true_false">Đúng / Sai</option>
-                        <option value="text">Câu trả lời tự luận</option>
+                        <option value={QuestionType.SINGLE_CHOICE}>Chọn một đáp án</option>
+                        <option value={QuestionType.MULTIPLE_CHOICE}>Chọn nhiều đáp án</option>
+                        <option value={QuestionType.TRUE_FALSE}>Đúng / Sai</option>
+                        <option value={QuestionType.TEXT}>Câu trả lời tự luận</option>
                     </select>
                 </div>
 

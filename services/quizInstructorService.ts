@@ -2,46 +2,8 @@
 
 import apiClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/api-response";
-import { AnswerDto, QuestionDto, QuizCreateRequest, QuizDto, QuizSubmissionResultDto } from "@/types/quiz";
-import { LessonDto } from "@/types/lesson";
+import { AnswerDto, QuestionDto, QuizDto, QuizSubmissionResultDto } from "@/types/quiz";
 import { AxiosResponse } from "axios";
-
-/**
- * Create a new quiz lesson
- * @param request Quiz creation data
- * @returns Created lesson data or null if creation fails
- */
-export async function createQuizLesson(request: QuizCreateRequest): Promise<LessonDto | null> {
-    try {
-        const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.post(
-            '/instructor/quiz',
-            request
-        );
-        return response.data.data;
-    } catch (error) {
-        console.error("Error creating quiz lesson:", error);
-        return null;
-    }
-}
-
-/**
- * Update an existing quiz lesson
- * @param id UUID of the quiz to update
- * @param request Updated quiz data
- * @returns Updated lesson data or null if update fails
- */
-export async function updateQuizLesson(id: string, request: QuizCreateRequest): Promise<LessonDto | null> {
-    try {
-        const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.put(
-            `/instructor/quiz/${id}`,
-            request
-        );
-        return response.data.data;
-    } catch (error) {
-        console.error(`Error updating quiz lesson with ID ${id}:`, error);
-        return null;
-    }
-}
 
 /**
  * Get a quiz by ID for instructor view with all details
