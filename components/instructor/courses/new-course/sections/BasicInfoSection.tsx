@@ -1,16 +1,17 @@
-// components/course-creator/sections/BasicInfoSection.tsx
 "use client";
 import { CourseData } from "@/types/new-course";
-import { Editor, EditorTextChangeEvent } from "primereact/editor";
+import { EditorTextChangeEvent } from "primereact/editor";
 import { useState, useEffect } from "react";
-import rehypeSanitize from "rehype-sanitize";
-import MDEditor from "@uiw/react-md-editor";
-import MarkdownMD from "@/components/ui/markdownMD";
-import { existCourseBySlug } from "@/services/courseService";
-import MarkdownEditorSection from "@/components/instructor/courses/new-course/MarkdownEditor";
-import { Input } from "@/components/ui/input";
 import { getCategories } from "@/services/categoryService";
 import { CategoryDto } from "@/types/category";
+import { motion } from "framer-motion";
+import { FileText } from "lucide-react";
+import InfoAlert from "../InfoAlert";
+import MarkdownEditorSection from "@/components/instructor/courses/new-course/MarkdownEditor";
+import FormField from "@/components/ui/form/FormField";
+import ProgressIndicator from "@/components/ui/form/ProgressIndicator";
+import CategorySelect from "@/components/ui/form/CategorySelect";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface BasicInfoSectionProps {
   courseData: CourseData;
@@ -36,15 +37,40 @@ export default function BasicInfoSection({
   onChange,
   onEditorChange,
 }: BasicInfoSectionProps) {
+  // Local state for input values to improve responsiveness
+  const [localValues, setLocalValues] = useState({
+    title: courseData.title || "",
+    description: courseData.description || "",
+    category: courseData.category || "",
+    level: courseData.level || ""
+  });
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isCheckingSlug, setIsCheckingSlug] = useState(false);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
-  const [slugDebounceTimeout, setSlugDebounceTimeout] =
-    useState<NodeJS.Timeout | null>(null);
+
+  // Debounce the values to avoid excessive validation/state updates
+  const debouncedTitle = useDebounce(localValues.title, 300);
+  const debouncedDescription = useDebounce(localValues.description, 500);
+
+  // Apply validated values to the parent component
+  useEffect(() => {
+    if (debouncedTitle !== courseData.title) {
+      const event = {
+        target: { name: 'title', value: debouncedTitle }
+      } as React.ChangeEvent<HTMLInputElement>;
+      validateField("title", debouncedTitle);
+      onChange(event);
+    }
+  }, [debouncedTitle]);
+
+  useEffect(() => {
+    if (debouncedDescription !== courseData.description) {
+      validateField("description", debouncedDescription);
+      courseData.description = debouncedDescription;
+    }
+  }, [debouncedDescription]);
 
   const handleDescriptionChange = (value: string) => {
-    validateField("description", value);
-    courseData.description = value;
+    setLocalValues(prev => ({ ...prev, description: value }));
   };
 
   const loadCategories = async () => {
@@ -59,6 +85,7 @@ export default function BasicInfoSection({
   useEffect(() => {
     loadCategories();
   }, []);
+
   // Function to validate form fields
   const validateField = (name: string, value: string) => {
     const newErrors = { ...errors };
@@ -91,41 +118,10 @@ export default function BasicInfoSection({
         }
         break;
 
-      case "slug":
-        if (!value.trim()) {
-          newErrors.slug = "Slug không được để trống";
-        } else if (!/^[a-z0-9-]+$/.test(value)) {
-          newErrors.slug =
-            "Slug chỉ được chứa chữ thường, số và dấu gạch ngang";
-        } else {
-          delete newErrors.slug;
-
-          // Debounce the slug existence check
-          if (slugDebounceTimeout) {
-            clearTimeout(slugDebounceTimeout);
-          }
-
-          setSlugDebounceTimeout(
-            setTimeout(async () => {
-              setIsCheckingSlug(true);
-              const resultCheck = await existCourseBySlug(value);
-              setIsCheckingSlug(false);
-              console.log("Slug check result:", resultCheck);
-              if (resultCheck) {
-                setErrors((prev) => ({
-                  ...prev,
-                  slug: "Slug này đã tồn tại, vui lòng chọn slug khác",
-                }));
-              }
-            }, 500)
-          );
-        }
-        break;
-
       case "category":
       case "level":
         if (!value) {
-          newErrors[name] = "Trường này không được để trống";
+          newErrors[name] = `${name === "category" ? "Danh mục" : "Trình độ"} không được để trống`;
         } else {
           delete newErrors[name];
         }
@@ -135,187 +131,133 @@ export default function BasicInfoSection({
     setErrors(newErrors);
   };
 
-  // Handle input change with validation
-  const handleChange = (
+  // Handle input change for local state first (feels more responsive)
+  const handleLocalChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    validateField(name, value);
-    onChange(e);
+    
+    // Update local state immediately for responsive UI
+    setLocalValues(prev => ({ ...prev, [name]: value }));
+    
+    // For select inputs (category, level), update parent state immediately
+    // as they don't typically suffer from typing lag
+    if (name === 'category' || name === 'level') {
+      validateField(name, value);
+      onChange(e);
+    }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Tên khóa học <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          required
-          className={`shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-            errors.title ? "border-red-500" : ""
-          }`}
-          placeholder="Ví dụ: Lập trình Web với React và Node.js"
-          value={courseData.title}
-          onChange={handleChange}
-        />
-        {errors.title && (
-          <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-        )}
-        <p className="mt-2 text-sm text-gray-500">
-          Đặt tên dễ hiểu và hấp dẫn để thu hút học viên (tối đa 100 ký tự)
+    <motion.div 
+      className="p-6 space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <InfoAlert 
+        title="Thông tin cơ bản về khóa học" 
+        icon={<FileText className="h-6 w-6 text-blue-500" />}
+        variant="blue"
+      >
+        <p>
+          Điền đầy đủ thông tin cơ bản để giúp học viên hiểu khóa học của bạn. Tên khóa học hấp dẫn và mô tả rõ ràng sẽ giúp thu hút nhiều người học hơn.
         </p>
-      </div>
-
-      <div>
-        <label
-          htmlFor="slug"
-          className="block text-sm font-medium text-gray-700 mb-1"
+      </InfoAlert>
+      
+      <div className="space-y-6">
+        <FormField
+          label="Tên khóa học"
+          name="title"
+          required
+          error={errors.title}
+          successMessage={localValues.title && !errors.title ? "Tên khóa học phù hợp" : undefined}
+          helperText="Đặt tên dễ hiểu và hấp dẫn để thu hút học viên (tối đa 70 ký tự)"
+          characterCount={localValues.title ? { current: localValues.title.length, max: 70 } : undefined}
         >
-          Slug <span className="text-red-500">*</span>
-        </label>
-        <div className="flex items-center">
           <input
             type="text"
-            name="slug"
-            id="slug"
+            name="title"
+            id="title"
             required
-            className={`shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-              errors.slug ? "border-red-500" : ""
+            className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
+              errors.title ? "border-red-500" : ""
             }`}
-            placeholder="lap-trinh-web-voi-react"
-            value={courseData.slug || ""}
-            onChange={handleChange}
+            placeholder="Ví dụ: Lập trình Web với React và Node.js"
+            value={localValues.title}
+            onChange={handleLocalChange}
           />
-          {isCheckingSlug && (
-            <div className="ml-2">
-              <div className="animate-spin h-5 w-5 border-2 border-gray-500 rounded-full border-t-transparent"></div>
-            </div>
-          )}
-        </div>
-        {errors.slug && (
-          <p className="mt-1 text-sm text-red-600">{errors.slug}</p>
-        )}
-        <p className="mt-2 text-sm text-gray-500">
-          URL duy nhất cho khóa học của bạn (chỉ sử dụng chữ thường, số và dấu
-          gạch ngang)
-        </p>
-      </div>
+        </FormField>
 
-      {/* <div>
-        <label
-          htmlFor="subtitle"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Mô tả ngắn <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          name="subtitle"
-          id="subtitle"
+        <FormField
+          label="Mô tả chi tiết"
+          name="description"
           required
-          className={`shadow-sm focus:ring-black focus:border-y-sky-500 block w-full sm:text-sm border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-            errors.subtitle ? "border-red-500" : ""
-          }`}
-          placeholder="Mô tả ngắn gọn về khóa học"
-          value={courseData.subtitle}
-          onChange={handleChange}
-        />
-        {errors.subtitle && (
-          <p className="mt-1 text-sm text-red-600">{errors.subtitle}</p>
-        )}
-        <p className="mt-2 text-sm text-gray-500">
-          Mô tả ngắn gọn về những gì học viên sẽ học được (tối đa 160 ký tự)
-        </p>
-      </div> */}
-
-      <div>
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          error={errors.description}
+          helperText="Mô tả chi tiết về nội dung khóa học, những gì học viên sẽ học được, và lợi ích khi tham gia khóa học"
         >
-          Mô tả chi tiết <span className="text-red-500">*</span>
-        </label>
+          <div className="border border-gray-300 rounded-md overflow-hidden">
+            <MarkdownEditorSection 
+              description={localValues.description || undefined} 
+              setDescription={handleDescriptionChange} 
+            />
+          </div>
+        </FormField>
 
-        {/* Client-side only Markdown editor section */}
-        <MarkdownEditorSection description={courseData.description||undefined} setDescription={handleDescriptionChange} />
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="category"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Danh mục <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="category"
+        <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+          <FormField
+            label="Danh mục"
             name="category"
             required
-            className={`shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-              errors.category ? "border-red-500" : ""
-            }`}
-            value={courseData.category}
-            onChange={handleChange}
+            error={errors.category}
+            helperText="Lựa chọn danh mục phù hợp nhất với nội dung khóa học của bạn"
           >
-            <option value="">Chọn danh mục khóa học</option>
-            {categories && categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-            {/* <option value="programming">Lập trình</option>
-            
-            {/* <option value="web-development">Lập trình Web</option>
-            <option value="mobile-development">Lập trình Mobile</option>
-            <option value="data-science">Data Science</option>
-            <option value="ui-ux">UI/UX Design</option>
-            <option value="marketing">Marketing</option> */}
-          </select>
-          {errors.category && (
-            <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-          )}
-        </div>
+            <CategorySelect 
+              categories={categories}
+              value={localValues.category}
+              onChange={handleLocalChange}
+              error={!!errors.category}
+            />
+          </FormField>
 
-        <div>
-          <label
-            htmlFor="level"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Trình độ <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="level"
+          <FormField
+            label="Trình độ"
             name="level"
             required
-            className={`shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-              errors.level ? "border-red-500" : ""
-            }`}
-            value={courseData.level}
-            onChange={handleChange}
+            error={errors.level}
+            helperText="Chọn trình độ phù hợp với đối tượng học viên mục tiêu"
           >
-            <option value="">Chọn trình độ khóa học</option>
-            <option value="BEGINNER">Người mới bắt đầu</option>
-            <option value="INTERMEDIATE">Trung cấp</option>
-            <option value="ADVANCED">Nâng cao</option>
-          </select>
-          {errors.level && (
-            <p className="mt-1 text-sm text-red-600">{errors.level}</p>
-          )}
+            <select
+              id="level"
+              name="level"
+              required
+              className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
+                errors.level ? "border-red-500" : ""
+              }`}
+              value={localValues.level}
+              onChange={handleLocalChange}
+            >
+              <option value="">Chọn trình độ khóa học</option>
+              <option value="BEGINNER">Người mới bắt đầu</option>
+              <option value="INTERMEDIATE">Trung cấp</option>
+              <option value="ADVANCED">Nâng cao</option>
+            </select>
+          </FormField>
         </div>
       </div>
-    </div>
+
+      {/* Summary of completed fields */}
+      <ProgressIndicator 
+        title="Tiến trình thông tin cơ bản"
+        items={[
+          { label: "Tên khóa học", isCompleted: !!courseData.title, step: 1 },
+          { label: "Mô tả chi tiết", isCompleted: !!courseData.description, step: 2 },
+          { label: "Danh mục", isCompleted: !!courseData.category, step: 3 },
+          { label: "Trình độ", isCompleted: !!courseData.level, step: 4 },
+        ]}
+      />
+    </motion.div>
   );
 }
