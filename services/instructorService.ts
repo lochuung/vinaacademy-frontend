@@ -19,20 +19,20 @@ export const getInstructorById = async (instructorId: string): Promise<Instructo
     }
 };
 
-/**
- * Kiểm tra một người dùng có phải là giảng viên hay không
- * @param userId ID của người dùng cần kiểm tra
- * @returns true nếu người dùng là giảng viên, false nếu không phải
- */
-export const checkIfUserIsInstructor = async (userId: string): Promise<boolean> => {
-    try {
-        const response: AxiosResponse<ApiResponse<boolean>> = await apiClient.get(`/instructor/check/${userId}`);
-        return response.data.data;
-    } catch (error) {
-        console.error(`Error checking if user ${userId} is an instructor:`, error);
-        return false;
-    }
-};
+// /**
+//  * Kiểm tra một người dùng có phải là giảng viên hay không
+//  * @param userId ID của người dùng cần kiểm tra
+//  * @returns true nếu người dùng là giảng viên, false nếu không phải
+//  */
+// export const checkIfUserIsInstructor = async (userId: string): Promise<boolean> => {
+//     try {
+//         const response: AxiosResponse<ApiResponse<boolean>> = await apiClient.get(`/instructor/check/${userId}`);
+//         return response.data.data;
+//     } catch (error) {
+//         console.error(`Error checking if user ${userId} is an instructor:`, error);
+//         return false;
+//     }
+// };
 
 /**
  * Lấy danh sách khóa học đã published của một giảng viên bất kỳ
@@ -83,5 +83,19 @@ export const countPublishedCoursesByInstructor = async (instructorId: string): P
     } catch (error) {
         console.error(`Error counting published courses for instructor ${instructorId}:`, error);
         return 0;
+    }
+};
+
+/**
+ * Đăng ký trở thành giảng viên
+ * @returns Thông tin của giảng viên mới đăng ký
+ */
+export const registerAsInstructor = async (): Promise<InstructorInfoDto | null> => {
+    try {
+        const response: AxiosResponse<ApiResponse<InstructorInfoDto>> = await apiClient.post('/instructor/register');
+        return response.data.data;
+    } catch (error) {
+        console.error('Error registering as instructor:', error);
+        throw error;
     }
 };
