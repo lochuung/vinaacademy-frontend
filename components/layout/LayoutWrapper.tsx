@@ -15,6 +15,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     // Các đường dẫn cụ thể của trang quản lý instructor cần ẩn layout
     const hiddenInstructorPaths = [
+        "/instructors",
         "/instructor/dashboard",
         "/instructor/courses",
         "/instructor/students",

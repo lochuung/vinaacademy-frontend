@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (loggedInUser) {
                 setUser(loggedInUser);
                 createSuccessToast(`Chào bạn, ${loggedInUser.fullName || loggedInUser.username || loggedInUser.email || 'user'}!`)
-                
+
                 return true;
             }
             return false;
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             createErrorToast('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             console.error('Login failed:', error);
-            
+
             return false;
         } finally {
             setIsLoading(false);
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             return success;
         } catch (error) {
             console.error('Registration failed:', error);
-            
+
             createErrorToast('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin tài khoản.');
             return false;
         } finally {

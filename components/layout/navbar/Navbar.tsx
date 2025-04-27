@@ -24,6 +24,8 @@ import {
   NotificationType,
 } from "@/types/notification-type";
 import { useToast } from "@/hooks/use-toast"; // Import useToast hook
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   onNavigateHome?: () => void;
@@ -31,21 +33,26 @@ interface NavbarProps {
 
 const Navbar = ({ onNavigateHome }: NavbarProps) => {
   const { categories, isLoading } = useCategories(); // Using the shared categories context
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { cartItems, removeFromCart, totalPrice } = useCart(); // Sử dụng context giỏ hàng
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [totalUnread, setTotalUnread] = useState<number>(0);
   const [formattedCartItems, setFormattedCartItems] = useState<CartItem[]>([]);
+  const roleStaffAdmin =
+    user?.roles.findLast(
+      (role) => role.name === "admin" || role.name === "staff"
+    ) || null;
+
 
   // Chuyển đổi cartItems từ CartContext sang định dạng CartItem cho ShoppingCart component
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
-      const formatted = cartItems.map(item => ({
+      const formatted = cartItems.map((item) => ({
         id: item.id,
         name: item.name,
-        price: `${item.price.toLocaleString('vi-VN')}đ`,
-        image: item.image || '/images/course-placeholder.jpg'
+        price: `${item.price.toLocaleString("vi-VN")}đ`,
+        image: item.image || "/images/course-placeholder.jpg",
       }));
       setFormattedCartItems(formatted);
     } else {
@@ -115,6 +122,9 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
           <div className="flex items-center space-x-4">
             {isAuthenticated && (
               <>
+                {roleStaffAdmin && (
+                   <Link href={"/requests"}>Duyệt khóa học</Link>
+                )}
                 <UserLearning />
                 <NotificationDropdown
                   onMarkAllAsRead={handleMarkAllAsRead}

@@ -27,6 +27,7 @@ import { CourseDetailsResponse } from "@/types/course";
 import RejectCourseDialog from "@/components/staff/ui/RejectCourse";
 import { NotificationType } from "@/types/notification-type";
 import { createNotification } from "@/services/notificationService";
+import LessonDialogPreview from "@/components/staff/ui/LessonPreview";
 
 const CourseApprovalPage = () => {
   const { toast } = useToast();
@@ -35,6 +36,12 @@ const CourseApprovalPage = () => {
   const [nameOpen, setNameOpen] = useState<string | null>(null);
   const [idOpen, setIdOpen] = useState<string | null>(null);
   const [recipid, setRecipid] = useState<string | null>(null);
+
+  //lesson state
+  const [lessonId, setLessonId] = useState<string | "">("");
+  const [lessonType, setLessonType] = useState<string | "">("");
+  const [videoDuration, setVideoDuration] = useState<number | null>(0);
+  const [readingContent, setReadingContent] = useState<string | "">("");
 
   const [isDialogOpenReject, setIsDialogOpenReject] = useState(false);
   const [filter, setFilter] = useState("all");
@@ -46,6 +53,7 @@ const CourseApprovalPage = () => {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPreviewLesson, setIsPreviewLesson] = useState(false);
   const [coursesCount, setCoursesCount] = useState<CourseStatusCountDto | null>(
     null
   );
@@ -63,13 +71,15 @@ const CourseApprovalPage = () => {
         const data = await getStatusCourse();
         setCoursesCount(data);
         if (data) {
-          setTotal(data.totalPending + data.totalPublished + data.totalRejected);
+          setTotal(
+            data.totalPending + data.totalPublished + data.totalRejected
+          );
         }
       } catch (error) {
         console.error("Error fetching course counts:", error);
       }
     };
-    
+
     fetchCoursesCount();
   }, []); // Empty dependency array means this only runs once on mount
 
@@ -111,13 +121,14 @@ const CourseApprovalPage = () => {
         console.error("Error fetching courses:", error);
         toast({
           title: "Lỗi tải dữ liệu",
-          description: "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
+          description:
+            "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
           variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
-      
+
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }, 50);
@@ -203,7 +214,13 @@ const CourseApprovalPage = () => {
     }
   };
 
-  const handleReject = async (slug: string, comment: string, name: string, id: string, recipid: string) => {
+  const handleReject = async (
+    slug: string,
+    comment: string,
+    name: string,
+    id: string,
+    recipid: string
+  ) => {
     setIsLoading(true);
 
     try {
@@ -279,7 +296,12 @@ const CourseApprovalPage = () => {
     }
   };
 
-  const openRejectDialog = (slug: string, name: string, id: string, recipid: string) => {
+  const openRejectDialog = (
+    slug: string,
+    name: string,
+    id: string,
+    recipid: string
+  ) => {
     setSlugOpen(slug);
     setNameOpen(name);
     setIdOpen(id);
@@ -474,10 +496,27 @@ const CourseApprovalPage = () => {
         }
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        onLessonClick={(lessonId) => {
-          // Handle lesson click here, e.g., navigate to lesson details
-          console.log(`Lesson clicked: ${lessonId}`);
+        onLessonClick={(
+          lessonId,
+          lessonType,
+          videoDuration,
+          readingContent
+        ) => {
+          setLessonId(lessonId);
+          setLessonType(lessonType);
+          console.log(`Lesson clicked: ${lessonId} ` + lessonType);
+          setIsPreviewLesson(true);
+          setVideoDuration(videoDuration || 0);
+          setReadingContent(readingContent || "");
         }}
+      />
+      <LessonDialogPreview
+        isOpen={isPreviewLesson}
+        lessonId={lessonId}
+        lessonType={lessonType}
+        videoDuration={videoDuration || 0}
+        readingContent={readingContent}
+        onClose={() => setIsPreviewLesson(false)}
       />
     </div>
   );

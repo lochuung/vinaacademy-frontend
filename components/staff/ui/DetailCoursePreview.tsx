@@ -9,74 +9,6 @@ import { useState, useEffect } from "react";
 import { CourseDetailsResponse, LessonType } from "@/types/course";
 import { VideoStatus } from "@/types/video";
 
-export const mockCourseDetails: CourseDetailsResponse = {
-  level: "BEGINNER",
-  status: "DRAFT",
-  ownerInstructor: {
-    createdDate: "2025-03-20T09:15:00Z",
-    updatedDate: "2025-03-20T09:15:00Z",
-    id: "instr-1",
-    fullName: "Ngọc Trần",
-    email: "",
-    username: "",
-    phone: "",
-    avatarUrl: "/avatar.jpg",
-    description: "",
-    isCollaborator: false,
-    birthday: "",
-    roles: [],
-    isActive: true,
-  },
-  reviews: [],
-  createdDate: "2025-03-20T09:15:00Z",
-  updatedDate: "2025-03-20T09:15:00Z",
-  id: "course-123",
-  image: "/placeholder-course-1.jpg",
-  name: "Giới Thiệu Về Machine Learning",
-  description: "Khóa học toàn diện về Machine Learning từ cơ bản đến nâng cao",
-  slug: "gioi-thieu-machine-learning",
-  price: 49.99,
-  language: "Tiếng Việt",
-  categorySlug: "khoa-hoc-may-tinh",
-  categoryName: "Khoa Học Máy Tính",
-  rating: 4.5,
-  totalRating: 120,
-  totalStudent: 1500,
-  totalSection: 4,
-  totalLesson: 22,
-  instructors: [],
-  sections: [
-    {
-      id: "sect-1",
-      title: "Giới Thiệu Khóa Học",
-      orderIndex: 1,
-      lessonCount: 3,
-      courseId: "course-123",
-      courseName: "Giới Thiệu Về Machine Learning",
-      lessons: [
-        {
-          createdDate: "2025-03-20T09:15:00Z",
-          updatedDate: "2025-03-20T09:15:00Z",
-          id: "less-1",
-          title: "Tổng Quan Khóa Học",
-          type: "VIDEO" as LessonType,
-          free: true,
-          orderIndex: 1,
-          sectionId: "sect-1",
-          sectionTitle: "Giới Thiệu Khóa Học",
-          authorId: "instr-1",
-          authorName: "Ngọc Trần",
-          courseId: "course-123",
-          courseName: "Giới Thiệu Về Machine Learning",
-          thumbnailUrl: "/thumb-lesson-1.jpg",
-          status: VideoStatus.READY,
-          videoUrl: "/videos/lesson-1.mp4",
-          videoDuration: 850, // 14:10
-        },
-      ],
-    },
-  ],
-};
 
 // Course details preview dialog component
 const CourseDetailsPreview = ({
@@ -88,7 +20,7 @@ const CourseDetailsPreview = ({
   courseDetails: CourseDetailsResponse | null;
   isOpen: boolean;
   onClose: () => void;
-  onLessonClick: (lessonId: string, lessonType: LessonType) => void;
+  onLessonClick: (lessonId: string, lessonType: LessonType, videoDuration?: number, readingContent?: string) => void;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -101,7 +33,7 @@ const CourseDetailsPreview = ({
           <div className="flex justify-center items-center p-12">
             <Loader className="animate-spin h-8 w-8 text-blue-500" />
           </div>
-        ) : (courseDetails && courseDetails?.sections) ? (
+        ) : courseDetails && courseDetails?.sections ? (
           <>
             <DialogHeader>
               <DialogTitle className="text-2xl">
@@ -118,14 +50,14 @@ const CourseDetailsPreview = ({
                     className="border rounded-lg overflow-hidden"
                   >
                     <div className="bg-gray-50 p-3 font-medium">
-                      {section.orderIndex}. {section.title} 
+                      {section.orderIndex}. {section.title}
                     </div>
                     <ul className="divide-y">
                       {section.lessons?.map((lesson) => (
                         <li
                           key={lesson.id}
                           className="p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                          onClick={() => onLessonClick(lesson.id, lesson.type)}
+                          onClick={() => onLessonClick(lesson.id, lesson.type, lesson.videoDuration, lesson.content)}
                         >
                           <div className="flex items-center">
                             {lesson.type === "VIDEO" && (
@@ -149,6 +81,7 @@ const CourseDetailsPreview = ({
                                   d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 ></path>
                               </svg>
+                              
                             )}
                             {lesson.type === "READING" && (
                               <svg
@@ -183,33 +116,31 @@ const CourseDetailsPreview = ({
                               </svg>
                             )}
                             <span>
-                              {lesson.orderIndex}. {lesson.title} {lesson.free && (
-                            <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                              Free
-                            </span>
-                          )}
+                              {lesson.orderIndex}. {lesson.title}{" "}
+                              {lesson.free && (
+                                <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                  Free
+                                </span>
+                              )}
                             </span>
                           </div>
                           {lesson.type === "VIDEO" && lesson.videoDuration && (
                             <span className="text-sm text-gray-500">
-                              {Math.floor(lesson.videoDuration / 60)}:
-                              {(lesson.videoDuration % 60)
-                                .toString()
-                                .padStart(2, "0")}
-                            </span>
+                            {(lesson.videoDuration/60).toFixed(0)}:
+                            {(lesson.videoDuration % 60).toFixed(0)}
+                            {" "}
+                          </span>
                           )}
                           {lesson.type === "QUIZ" && lesson.duration && (
                             <span className="text-sm text-gray-500">
-                                yêu cầu {lesson.passPoint}/{lesson.totalPoint} điểm -{" "}
-                             
+                              yêu cầu {lesson.passPoint}/{lesson.totalPoint}{" "}
+                              điểm -{" "}
                               {(lesson.duration % 60)
                                 .toString()
                                 .padStart(2, "0")}
-                                 {" giây"}
-                                 
+                              {" "}
                             </span>
                           )}
-                          
                         </li>
                       ))}
                     </ul>
