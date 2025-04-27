@@ -18,7 +18,6 @@ export interface NotificationCreateDTO {
   title: string;
   type: NotificationType;
   userId: string;
-  hash?: string;  // Added hash property as optional
 }
 
 export interface NotificationDTO {
