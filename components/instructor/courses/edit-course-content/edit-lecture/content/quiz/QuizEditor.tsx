@@ -92,7 +92,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
             
             // Set the first question as expanded if there are questions
             if (mappedQuiz.questions.length > 0 && expandedQuestion === '') {
-                setExpandedQuestion(mappedQuiz.questions[0].id);
+                setExpandedQuestion(mappedQuiz.questions[0].id || '');
             }
         }
     }, [quizQuery.data, expandedQuestion]);
@@ -158,7 +158,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
     // Add a new question
     const addQuestion = async () => {
         const newQuestion: QuizQuestion = {
-            id: `q_${uuidv4()}`,
+            id: '',
             text: '',
             type: 'single_choice',
             options: [
@@ -185,7 +185,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
             quiz: updatedQuiz
         });
         
-        setExpandedQuestion(newQuestion.id);
+        setExpandedQuestion(newQuestion.id || '');
         
         // If we have a quiz ID, create the question in the backend
         if (lecture.id) {
@@ -193,7 +193,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                 await createQuestionMutation.mutateAsync({
                     quizId: lecture.id,
                     question: {
-                        id: newQuestion.id,
+                        id: newQuestion.id || '',
                         questionText: newQuestion.text,
                         explanation: newQuestion.explanation || '',
                         point: newQuestion.points,
@@ -230,7 +230,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
         
         // If expandedQuestion was the one being removed, expand the first question if available
         if (expandedQuestion === questionId && updatedQuestions.length > 0) {
-            setExpandedQuestion(updatedQuestions[0].id);
+            setExpandedQuestion(updatedQuestions[0].id || '');
         } else if (expandedQuestion === questionId) {
             setExpandedQuestion('');
         }
@@ -275,13 +275,13 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                     questionId,
                     quizId: lecture.id,
                     question: {
-                        id: question.id,
+                        id: question.id || '',
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
                         questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
-                            id: o.id,
+                            id: o.id || '',
                             answerText: o.text,
                             isCorrect: o.isCorrect
                         }))
@@ -346,7 +346,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                     questionId,
                     quizId: lecture.id,
                     question: {
-                        id: question.id,
+                        id: question.id || '',
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
@@ -587,7 +587,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                     questionId,
                     quizId: lecture.id,
                     question: {
-                        id: question.id,
+                        id: question.id || '',
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
@@ -635,13 +635,13 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                     questionId,
                     quizId: lecture.id,
                     question: {
-                        id: question.id,
+                        id: question.id || '',
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
                         questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
-                            id: o.id,
+                            id: o.id || '',
                             answerText: o.text,
                             isCorrect: o.isCorrect
                         }))

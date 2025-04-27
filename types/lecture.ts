@@ -19,7 +19,7 @@ export interface QuizOption {
 export type QuestionType = 'single_choice' | 'multiple_choice' | 'true_false' | 'text';
 
 export interface QuizQuestion {
-    id: string;
+    id?: string;
     text: string;
     type: QuestionType;
     options: QuizOption[];

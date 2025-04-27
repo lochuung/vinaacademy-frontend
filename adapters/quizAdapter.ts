@@ -79,7 +79,7 @@ const answerDtoToQuizOption = (answer: AnswerDto): QuizOption => {
  */
 const quizQuestionToQuestionDto = (question: QuizQuestion): QuestionDto => {
   return {
-    id: question.id,
+    id: question.id || '',
     questionText: question.text,
     explanation: question.explanation || '',
     point: question.points,
@@ -95,7 +95,7 @@ const questionDtoToQuizQuestion = (question: QuestionDto): QuizQuestion => {
   console.log('Converting QuestionDto to QuizQuestion:', question);
   
   // Convert each answer to options
-  const options = question.answers.map(answerDtoToQuizOption);
+  const options = question.answers?.map(answerDtoToQuizOption);
   
   const uiQuestion: QuizQuestion = {
     id: question.id,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Quiz } from '@/types/lecture';
 import { Settings, Clock, Shuffle, Eye, RefreshCw, Medal } from 'lucide-react';
+import ToggleSwitch from '@/components/ui/ToggleSwitch';
 
 interface QuizSettingsProps {
     settings: Quiz['settings'];
@@ -22,87 +23,51 @@ export default function QuizSettings({ settings, onUpdateSettings }: QuizSetting
                     
                     <div className="space-y-3">
                         {/* Randomize Questions */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <Shuffle className="h-5 w-5 mr-2 text-blue-600" />
-                                <label htmlFor="randomize" className="text-sm text-gray-700">Xáo trộn thứ tự câu hỏi</label>
-                            </div>
-                            <div className="relative inline-block w-11 align-middle select-none">
-                                <input 
-                                    type="checkbox" 
-                                    id="randomize" 
-                                    checked={settings.randomizeQuestions} 
-                                    onChange={e => onUpdateSettings('randomizeQuestions', e.target.checked)}
-                                    className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none transition-transform duration-200 ease-in-out"
-                                />
-                                <label 
-                                    htmlFor="randomize" 
-                                    className={`block overflow-hidden h-5 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${settings.randomizeQuestions ? 'bg-blue-600' : 'bg-gray-300'}`}
-                                ></label>
-                            </div>
+                        <div className="flex items-center">
+                            <Shuffle className="h-5 w-5 mr-3 text-blue-600" />
+                            <ToggleSwitch
+                                id="randomize"
+                                label="Xáo trộn thứ tự câu hỏi"
+                                checked={settings.randomizeQuestions}
+                                onChange={(checked) => onUpdateSettings('randomizeQuestions', checked)}
+                                activeColor="bg-blue-600"
+                            />
                         </div>
                         
                         {/* Show Correct Answers */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <Eye className="h-5 w-5 mr-2 text-green-600" />
-                                <label htmlFor="showCorrect" className="text-sm text-gray-700">Hiển thị đáp án đúng</label>
-                            </div>
-                            <div className="relative inline-block w-11 align-middle select-none">
-                                <input 
-                                    type="checkbox" 
-                                    id="showCorrect" 
-                                    checked={settings.showCorrectAnswers} 
-                                    onChange={e => onUpdateSettings('showCorrectAnswers', e.target.checked)}
-                                    className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none transition-transform duration-200 ease-in-out"
-                                />
-                                <label 
-                                    htmlFor="showCorrect" 
-                                    className={`block overflow-hidden h-5 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${settings.showCorrectAnswers ? 'bg-green-600' : 'bg-gray-300'}`}
-                                ></label>
-                            </div>
+                        <div className="flex items-center">
+                            <Eye className="h-5 w-5 mr-3 text-green-600" />
+                            <ToggleSwitch
+                                id="showCorrect"
+                                label="Hiển thị đáp án đúng"
+                                checked={settings.showCorrectAnswers}
+                                onChange={(checked) => onUpdateSettings('showCorrectAnswers', checked)}
+                                activeColor="bg-green-600"
+                            />
                         </div>
                         
                         {/* Allow Retake */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <RefreshCw className="h-5 w-5 mr-2 text-purple-600" />
-                                <label htmlFor="allowRetake" className="text-sm text-gray-700">Cho phép làm lại</label>
-                            </div>
-                            <div className="relative inline-block w-11 align-middle select-none">
-                                <input 
-                                    type="checkbox" 
-                                    id="allowRetake" 
-                                    checked={settings.allowRetake} 
-                                    onChange={e => onUpdateSettings('allowRetake', e.target.checked)}
-                                    className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none transition-transform duration-200 ease-in-out"
-                                />
-                                <label 
-                                    htmlFor="allowRetake" 
-                                    className={`block overflow-hidden h-5 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${settings.allowRetake ? 'bg-purple-600' : 'bg-gray-300'}`}
-                                ></label>
-                            </div>
+                        <div className="flex items-center">
+                            <RefreshCw className="h-5 w-5 mr-3 text-purple-600" />
+                            <ToggleSwitch
+                                id="allowRetake"
+                                label="Cho phép làm lại"
+                                checked={settings.allowRetake}
+                                onChange={(checked) => onUpdateSettings('allowRetake', checked)}
+                                activeColor="bg-purple-600"
+                            />
                         </div>
                         
                         {/* Require Passing Score */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <Medal className="h-5 w-5 mr-2 text-amber-600" />
-                                <label htmlFor="requirePass" className="text-sm text-gray-700">Yêu cầu đạt điểm tối thiểu</label>
-                            </div>
-                            <div className="relative inline-block w-11 align-middle select-none">
-                                <input 
-                                    type="checkbox" 
-                                    id="requirePass" 
-                                    checked={settings.requirePassingScore} 
-                                    onChange={e => onUpdateSettings('requirePassingScore', e.target.checked)}
-                                    className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none transition-transform duration-200 ease-in-out"
-                                />
-                                <label 
-                                    htmlFor="requirePass" 
-                                    className={`block overflow-hidden h-5 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${settings.requirePassingScore ? 'bg-amber-600' : 'bg-gray-300'}`}
-                                ></label>
-                            </div>
+                        <div className="flex items-center">
+                            <Medal className="h-5 w-5 mr-3 text-amber-600" />
+                            <ToggleSwitch
+                                id="requirePass"
+                                label="Yêu cầu đạt điểm tối thiểu"
+                                checked={settings.requirePassingScore}
+                                onChange={(checked) => onUpdateSettings('requirePassingScore', checked)}
+                                activeColor="bg-amber-600"
+                            />
                         </div>
                     </div>
                 </div>
