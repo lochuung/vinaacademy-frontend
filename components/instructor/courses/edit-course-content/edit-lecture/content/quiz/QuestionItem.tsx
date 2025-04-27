@@ -6,10 +6,10 @@ import {
     Edit,
     CheckCircle2
 } from 'lucide-react';
-import { QuestionType } from '@/types/quiz';
+import {QuestionType} from '@/types/quiz';
 import QuestionContent from './QuestionContent';
-import { QuizQuestion } from '@/types/lecture';
-import { useState } from 'react';
+import {QuizQuestion} from '@/types/lecture';
+import {useState} from 'react';
 
 interface QuestionItemProps {
     question: QuizQuestion;
@@ -51,15 +51,15 @@ export default function QuestionItem({
                                          onMove
                                      }: QuestionItemProps) {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     // Check if question is valid
-    const isValid = question.text && 
-                  (question.type === 'text' || 
-                   question.options.some(o => o.text && o.isCorrect));
-    
+    const isValid = question.text &&
+        (question.type === 'text' ||
+            question.options.some(o => o.text && o.isCorrect));
+
     // Get badge color based on question type
     const getTypeBadgeClass = () => {
-        switch(question.type) {
+        switch (question.type) {
             case 'single_choice':
                 return "bg-blue-100 text-blue-700 border-blue-200";
             case 'multiple_choice':
@@ -74,13 +74,13 @@ export default function QuestionItem({
     };
 
     return (
-        <div 
+        <div
             className={`border ${isExpanded ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-200 hover:shadow-sm'} rounded-lg overflow-hidden transition-all duration-200 ease-in-out`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Question header */}
-            <div 
+            <div
                 className={`${isExpanded ? 'bg-blue-50' : 'bg-white'} p-4 flex items-center justify-between cursor-pointer transition-colors duration-200`}
                 onClick={onToggleExpand}
             >
@@ -92,12 +92,14 @@ export default function QuestionItem({
                     <div className="flex-1">
                         <div className="flex items-center mb-1">
                             <div className="mr-2 font-medium text-gray-800 line-clamp-1">
-                                {question.text ? question.text : <span className="text-gray-400 italic">Câu hỏi chưa có tiêu đề</span>}
+                                {question.text ? question.text :
+                                    <span className="text-gray-400 italic">Câu hỏi chưa có tiêu đề</span>}
                             </div>
-                            {isValid && <CheckCircle2 className="text-green-500 h-4 w-4" />}
+                            {isValid && <CheckCircle2 className="text-green-500 h-4 w-4"/>}
                         </div>
                         <div className="flex items-center text-sm">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeClass()}`}>
+                            <span
+                                className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeClass()}`}>
                                 {question.type === 'single_choice' && "Chọn một"}
                                 {question.type === 'multiple_choice' && "Chọn nhiều"}
                                 {question.type === 'true_false' && "Đúng / Sai"}
@@ -143,19 +145,19 @@ export default function QuestionItem({
                     question={question}
                     index={index}
                     totalQuestions={totalQuestions}
-                    onUpdateText={(text) => onUpdateText(question.id, text)}
-                    onUpdateType={(type) => onUpdateType(question.id, type)}
-                    onAddOption={() => onAddOption(question.id)}
-                    onRemoveOption={(optionId) => onRemoveOption(question.id, optionId)}
-                    onUpdateOptionText={(optionId, text) => onUpdateOptionText(question.id, optionId, text)}
-                    onToggleOptionCorrect={(optionId) => onToggleOptionCorrect(question.id, optionId)}
-                    onUpdateExplanation={(text) => onUpdateExplanation(question.id, text)}
-                    onUpdatePoints={(points) => onUpdatePoints(question.id, points)}
-                    onToggleRequired={() => onToggleRequired(question.id)}
-                    onDuplicate={() => onDuplicate(question.id)}
-                    onRemove={() => onRemove(question.id)}
-                    onMoveUp={() => onMove(question.id, 'up')}
-                    onMoveDown={() => onMove(question.id, 'down')}
+                    onUpdateText={(text) => onUpdateText(question.id || '', text)}
+                    onUpdateType={(type) => onUpdateType(question.id || '', type)}
+                    onAddOption={() => onAddOption(question.id || '')}
+                    onRemoveOption={(optionId) => onRemoveOption(question.id || '', optionId)}
+                    onUpdateOptionText={(optionId, text) => onUpdateOptionText(question.id || '', optionId, text)}
+                    onToggleOptionCorrect={(optionId) => onToggleOptionCorrect(question.id || '', optionId)}
+                    onUpdateExplanation={(text) => onUpdateExplanation(question.id || '', text)}
+                    onUpdatePoints={(points) => onUpdatePoints(question.id || '', points)}
+                    onToggleRequired={() => onToggleRequired(question.id || '')}
+                    onDuplicate={() => onDuplicate(question.id || '')}
+                    onRemove={() => onRemove(question.id || '')}
+                    onMoveUp={() => onMove(question.id || '', 'up')}
+                    onMoveDown={() => onMove(question.id || '', 'down')}
                 />
             )}
         </div>

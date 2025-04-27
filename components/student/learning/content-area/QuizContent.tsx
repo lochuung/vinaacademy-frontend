@@ -1,15 +1,22 @@
 "use client";
 
-import { FC, useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Check, Clock, AlertCircle } from 'lucide-react';
-import { Quiz, QuizQuestion as QuizQuestionType } from '@/types/lecture';
+import {FC, useState, useEffect, useRef} from 'react';
+import {ChevronLeft, ChevronRight, Check, Clock, AlertCircle} from 'lucide-react';
+import {Quiz, QuizQuestion as QuizQuestionType} from '@/types/lecture';
 import QuizProgress from '../quiz/QuizProgress';
 import QuizQuestion from '../quiz/QuizQuestion';
 import QuizResults from '../quiz/QuizResults';
 import QuizTimer from '../quiz/QuizTimer';
-import { getQuiz, startQuiz, submitQuiz, getLatestSubmission, cacheQuizAnswer, getCachedAnswers } from '@/services/quizService';
-import { QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest, QuizSession } from '@/types/quiz';
-import { useQueryClient } from '@tanstack/react-query';
+import {
+    getQuiz,
+    startQuiz,
+    submitQuiz,
+    getLatestSubmission,
+    cacheQuizAnswer,
+    getCachedAnswers
+} from '@/services/quizService';
+import {QuizDto, QuizSubmissionRequest, QuizSubmissionResultDto, UserAnswerRequest, QuizSession} from '@/types/quiz';
+import {useQueryClient} from '@tanstack/react-query';
 
 interface QuizContentProps {
     courseId: string;
@@ -19,7 +26,7 @@ interface QuizContentProps {
     isCompleted?: boolean;
 }
 
-const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonCompleted, courseSlug, isCompleted }) => {
+const QuizContent: FC<QuizContentProps> = ({courseId, lectureId, onLessonCompleted, courseSlug, isCompleted}) => {
     const queryClient = useQueryClient();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -241,11 +248,11 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
     // Format answers for API submission
     const formatAnswersForSubmission = (): UserAnswerRequest[] => {
         return quiz?.questions.map(question => {
-            const selectedIds = selectedAnswers[question.id] || [];
-            const textAnswer = textAnswers[question.id] || '';
+            const selectedIds = selectedAnswers[question.id || ''] || [];
+            const textAnswer = textAnswers[question.id || ''] || '';
 
             return {
-                questionId: question.id,
+                questionId: question.id || '',
                 selectedAnswerIds: question.type === 'text' ? [] : selectedIds,
                 textAnswer: question.type === 'text' ? textAnswer : undefined
             };
@@ -379,9 +386,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         if (!currentQuestion) return false;
 
         if (currentQuestion.type === 'text') {
-            return textAnswers[currentQuestion.id]?.trim().length > 0;
+            return textAnswers[currentQuestion.id || '']?.trim().length > 0;
         } else {
-            return selectedAnswers[currentQuestion.id]?.length > 0;
+            return selectedAnswers[currentQuestion.id || '']?.length > 0;
         }
     };
 
@@ -393,9 +400,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
             if (!question.isRequired) return true;
 
             if (question.type === 'text') {
-                return textAnswers[question.id]?.trim().length > 0;
+                return textAnswers[question.id || '']?.trim().length > 0;
             } else {
-                return selectedAnswers[question.id]?.length > 0;
+                return selectedAnswers[question.id || '']?.length > 0;
             }
         });
     };
@@ -413,34 +420,37 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         }
 
         const results = quiz.questions.map(question => {
+            // Get questionId, ensuring it's always a string
+            const questionId = question.id || '';
+            
             // Find corresponding answer from API response
-            const apiAnswer = quizResult.answers.find(a => a.questionId === question.id);
+            const apiAnswer = quizResult.answers.find(a => a.questionId === questionId);
 
             if (!apiAnswer) {
                 return {
-                    questionId: question.id,
+                    questionId,  // Now guaranteed to be a string
                     correct: false,
                     score: 0,
-                    userAnswer: selectedAnswers[question.id] || []
+                    userAnswer: selectedAnswers[questionId] || []
                 };
             }
 
             // For text questions
             if (question.type === 'text') {
                 return {
-                    questionId: question.id,
+                    questionId,  // Now guaranteed to be a string
                     correct: apiAnswer.isCorrect,
                     score: apiAnswer.earnedPoints,
-                    userAnswer: textAnswers[question.id] || '',
+                    userAnswer: textAnswers[questionId] || '',
                     explanation: apiAnswer.explanation
                 };
             }
 
             // For choice questions
-            const userAnswerIds = selectedAnswers[question.id] || [];
+            const userAnswerIds = selectedAnswers[questionId] || [];
 
             return {
-                questionId: question.id,
+                questionId,  // Now guaranteed to be a string
                 correct: apiAnswer.isCorrect,
                 score: apiAnswer.earnedPoints,
                 userAnswer: userAnswerIds,
@@ -541,7 +551,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4"/>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Đã xảy ra lỗi</h3>
                     <p className="text-gray-600">{error}</p>
                     <button
@@ -559,7 +569,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="text-center p-8 bg-white shadow-lg rounded-lg max-w-md">
-                    <Clock className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                    <Clock className="h-12 w-12 text-yellow-500 mx-auto mb-4"/>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Phiên làm bài đã hết hạn</h3>
                     <p className="text-gray-600 mb-4">Thời gian làm bài đã kết thúc.</p>
                     {quiz.settings.allowRetake ? (
@@ -608,7 +618,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
 
                         {/* Nếu có thời gian giới hạn, hiển thị đồng hồ đếm ngược */}
                         {remainingTime !== null && (
-                            <QuizTimer remainingTime={remainingTime} />
+                            <QuizTimer remainingTime={remainingTime}/>
                         )}
                     </div>
 
@@ -636,10 +646,10 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
 
                         <QuizQuestion
                             question={currentQuestion}
-                            selectedAnswers={selectedAnswers[currentQuestion.id] || []}
-                            textAnswer={textAnswers[currentQuestion.id] || ''}
-                            onSelectOption={(optionId) => handleSelectOption(currentQuestion.id, optionId)}
-                            onTextChange={(text) => handleTextAnswer(currentQuestion.id, text)}
+                            selectedAnswers={selectedAnswers[currentQuestion.id || ''] || []}
+                            textAnswer={textAnswers[currentQuestion.id || ''] || ''}
+                            onSelectOption={(optionId) => handleSelectOption(currentQuestion.id || '', optionId)}
+                            onTextChange={(text) => handleTextAnswer(currentQuestion.id || '', text)}
                             showCorrectAnswers={false}
                             isSubmitted={isSubmitted}
                         />
@@ -653,9 +663,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                             className={`flex items-center px-4 py-2 border rounded-md ${currentQuestionIndex === 0
                                 ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                                 : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                }`}
+                            }`}
                         >
-                            <ChevronLeft size={16} className="mr-1" /> Câu hỏi trước
+                            <ChevronLeft size={16} className="mr-1"/> Câu hỏi trước
                         </button>
 
                         {currentQuestionIndex < quiz.questions.length - 1 ? (
@@ -663,14 +673,14 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                                 onClick={goToNextQuestion}
                                 className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                             >
-                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1" />
+                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1"/>
                             </button>
                         ) : (
                             <button
                                 onClick={handleConfirmSubmit}
                                 className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                             >
-                                <Check size={16} className="mr-1" /> Nộp bài
+                                <Check size={16} className="mr-1"/> Nộp bài
                             </button>
                         )}
                     </div>
@@ -683,7 +693,7 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
                         <div className="flex items-start mb-4">
                             <div className="flex-shrink-0">
-                                <AlertCircle className="h-6 w-6 text-yellow-500" />
+                                <AlertCircle className="h-6 w-6 text-yellow-500"/>
                             </div>
                             <div className="ml-3">
                                 <h3 className="text-lg font-medium text-gray-900">Có câu hỏi bắt buộc chưa trả lời</h3>

@@ -105,18 +105,20 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
 
         const results = questions.map(question => {
             maxScore += question.points;
+            // Ensure questionId is always a string
+            const questionId = question.id || '';
 
             // For text answers, we can't automatically grade
             if (question.type === 'text') {
                 return {
-                    questionId: question.id,
+                    questionId, // Always a string now
                     correct: null, // Can't determine automatically
                     score: 0, // No automatic score
-                    userAnswer: textAnswers[question.id] || ''
+                    userAnswer: textAnswers[questionId] || ''
                 };
             }
 
-            const selectedOptionIds = selectedAnswers[question.id] || [];
+            const selectedOptionIds = selectedAnswers[questionId] || [];
 
             // Check if answers are correct
             if (question.type === 'single_choice' || question.type === 'true_false') {
@@ -129,7 +131,7 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
                 }
 
                 return {
-                    questionId: question.id,
+                    questionId, // Always a string now
                     correct: isCorrect,
                     score: isCorrect ? question.points : 0,
                     userAnswer: selectedOptionIds
@@ -153,7 +155,7 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
                 }
 
                 return {
-                    questionId: question.id,
+                    questionId, // Always a string now
                     correct: isFullyCorrect,
                     score,
                     userAnswer: selectedOptionIds
@@ -161,7 +163,7 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
             }
 
             return {
-                questionId: question.id,
+                questionId, // Always a string now
                 correct: false,
                 score: 0,
                 userAnswer: []
@@ -216,10 +218,10 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
         if (!question) return false;
         
         if (question.type === 'text') {
-            return !!textAnswers[question.id] && textAnswers[question.id].trim() !== '';
+            return !!textAnswers[question.id || ''] && textAnswers[question.id || ''].trim() !== '';
         }
         
-        return !!selectedAnswers[question.id] && selectedAnswers[question.id].length > 0;
+        return !!selectedAnswers[question.id || ''] && selectedAnswers[question.id || ''].length > 0;
     };
 
     // Jump to a specific question
@@ -248,8 +250,8 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
     // Count answered questions
     const answeredCount = questions.reduce((count, question) => {
         if (
-            (selectedAnswers[question.id] && selectedAnswers[question.id].length > 0) ||
-            (textAnswers[question.id] && textAnswers[question.id].trim() !== '')
+            (selectedAnswers[question.id || ''] && selectedAnswers[question.id || ''].length > 0) ||
+            (textAnswers[question.id || ''] && textAnswers[question.id || ''].trim() !== '')
         ) {
             return count + 1;
         }
@@ -317,8 +319,8 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
                         
                         <div className="grid grid-cols-5 gap-2">
                             {questions.map((question, idx) => {
-                                const isAnswered = (selectedAnswers[question.id]?.length > 0) || 
-                                                (textAnswers[question.id]?.trim().length > 0);
+                                const isAnswered = (selectedAnswers[question.id || '']?.length > 0) ||
+                                                (textAnswers[question.id || '']?.trim().length > 0);
                                 return (
                                     <button
                                         key={question.id}
@@ -382,10 +384,10 @@ export default function QuizPreview({ quiz, onClose }: QuizPreviewProps) {
                                     {currentQuestion && (
                                         <QuizQuestion
                                             question={currentQuestion}
-                                            selectedAnswers={selectedAnswers[currentQuestion.id] || []}
-                                            textAnswer={textAnswers[currentQuestion.id] || ''}
-                                            onSelectOption={(optionId) => handleOptionSelect(currentQuestion.id, optionId)}
-                                            onTextChange={(text) => handleTextAnswer(currentQuestion.id, text)}
+                                            selectedAnswers={selectedAnswers[currentQuestion.id || ''] || []}
+                                            textAnswer={textAnswers[currentQuestion.id || ''] || ''}
+                                            onSelectOption={(optionId) => handleOptionSelect(currentQuestion.id || '', optionId)}
+                                            onTextChange={(text) => handleTextAnswer(currentQuestion.id || '', text)}
                                             showCorrectAnswers={false}
                                         />
                                     )}

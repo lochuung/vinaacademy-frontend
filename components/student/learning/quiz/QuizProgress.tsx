@@ -29,7 +29,7 @@ const QuizProgress: FC<QuizProgressProps> = ({
 
     // Số câu hỏi đã trả lời
     const answeredCount = questions.reduce((count, question) => {
-        return isQuestionAnswered(question.id, question.type) ? count + 1 : count;
+        return isQuestionAnswered(question.id || '', question.type) ? count + 1 : count;
     }, 0);
 
     // Tính phần trăm hoàn thành
@@ -54,12 +54,12 @@ const QuizProgress: FC<QuizProgressProps> = ({
             <div className="flex flex-wrap gap-2 my-4">
                 {questions.map((question, index) => {
                     const isActive = index + 1 === currentQuestion;
-                    const isAnswered = isQuestionAnswered(question.id, question.type);
+                    const isAnswered = isQuestionAnswered(question.id || '', question.type);
                     const isRequired = question.isRequired;
 
                     return (
                         <button
-                            key={question.id}
+                            key={question.id || ''}
                             onClick={() => onSelectQuestion(index)}
                             className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors
                                 ${isActive
