@@ -19,47 +19,14 @@ export const createNotification = async (notificationData: {
   userId: string;
 }): Promise<NotificationCreateDTO> => {
   try {
-    // Prepare the notification DTO
-    const timeStamp = new Date().getTime().toString();
-    const secretKey = process.env.NEXT_PUBLIC_NOTI || 'default-secret-key';
-    
-    // Create notification object without hash first
-    const notificationWithoutHash: Omit<NotificationCreateDTO, 'hash'> = {
-      title: notificationData.title,
-      content: notificationData.content,
-      targetUrl: notificationData.targetUrl,
-      type: notificationData.type,
-      userId: notificationData.userId
-    };
-    
-    // Generate hash
-    const hash = createSignature({
-      notiCreate: notificationWithoutHash as NotificationCreateDTO,
-      timeStamp,
-      secretKey
-    });
-    
-    // Create final notification object with hash
-    const notification: NotificationCreateDTO = {
-      ...notificationWithoutHash,
-      hash
-    };
-    
-    // Add timestamp to headers for validation on backend
     const response: AxiosResponse = await apiClient.post<NotificationCreateDTO>(
       "/notifications",
-      notification,
-      {
-        headers: {
-          'X-Timestamp': timeStamp
-        }
-      }
+      notificationData
     );
-    
     return response.data;
   } catch (error) {
     console.error("Error creating notification:", error);
-    throw error; // Better to throw error to handle it at calling site
+    return {} as NotificationCreateDTO; // Return an empty object with error
   }
 };
 
