@@ -13,5 +13,5 @@ export enum VideoStatus {
     NO_VIDEO = "NO_VIDEO",
     PROCESSING = "PROCESSING", 
     READY = "READY",
-    FAILED = "FAILED"
+    ERROR = "ERROR"
 }
