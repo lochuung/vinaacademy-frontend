@@ -15,18 +15,19 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     // Các đường dẫn cụ thể của trang quản lý instructor cần ẩn layout
     const hiddenInstructorPaths = [
-        "/instructors",
+        "/instructor",
         "/instructor/dashboard",
         "/instructor/courses",
         "/instructor/students",
         "/instructor/earnings",
-        "/instructor/profile-settings"
+        "/instructor/profile-settings",
+        "/instructors/become-instructor" // Trang đăng ký làm giảng viên
         // Thêm các đường dẫn khác nếu cần
     ];
 
     // Kiểm tra nếu đường dẫn bắt đầu bằng các đường dẫn instructor cần ẩn
     const isHiddenInstructorPath = hiddenInstructorPaths.some(path =>
-        pathname.startsWith(path)
+        pathname === path || pathname.startsWith(`${path}/`)
     );
 
     // Kiểm tra nếu chứa các từ khóa khác cần ẩn layout

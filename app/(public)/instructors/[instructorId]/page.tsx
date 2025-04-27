@@ -5,11 +5,11 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, BookOpen, ChevronLeft, ChevronRight, Mail, Users, Award, Calendar, Globe } from "lucide-react";
-import { Spinner } from "@/components/common/pinner";
 import { CourseDto } from "@/types/course";
 import { InstructorInfoDto } from "@/types/instructor";
 import { getInstructorById, getInstructorCourses, countPublishedCoursesByInstructor } from "@/services/instructorService";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/common/spinner";
 
 export default function PublicInstructorPage() {
     const { instructorId } = useParams();

@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Define protected paths that require authentication
 const protectedPaths = ['/admin', '/instructor', '/cart',
@@ -8,15 +8,15 @@ const protectedPaths = ['/admin', '/instructor', '/cart',
 const publicPaths = ['/auth'];
 
 export function middleware(request: NextRequest) {
-    const {pathname} = request.nextUrl;
+    const { pathname } = request.nextUrl;
 
     // Get token from cookies - no change needed as we're already using cookies here
     const token = request.cookies.get('access_token')?.value;
 
     // Check if path is protected
-    const isProtectedPath = protectedPaths.some((path) =>
-        pathname.startsWith(path)
-    );
+    const isProtectedPath = protectedPaths.some((path) => {
+        return pathname === path || pathname.startsWith(`${path}/`);
+    });
 
     // Check if path is public
     const isPublicPath = publicPaths.some((path) =>
