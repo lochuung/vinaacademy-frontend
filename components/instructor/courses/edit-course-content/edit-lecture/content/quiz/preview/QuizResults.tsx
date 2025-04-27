@@ -181,7 +181,7 @@ export default function QuizResults({
                                                         ? 'bg-red-50'
                                                         : 'bg-gray-50'
                                             }`}
-                                            onClick={() => toggleQuestion(question.id)}
+                                            onClick={() => toggleQuestion(question.id || '')}
                                         >
                                             <div className="flex items-center">
                                                 <div
@@ -229,8 +229,8 @@ export default function QuizResults({
                                             >
                                                 <QuizQuestionView
                                                     question={question}
-                                                    selectedAnswers={selectedAnswers[question.id] || []}
-                                                    textAnswer={textAnswers[question.id] || ''}
+                                                    selectedAnswers={selectedAnswers[question.id || ''] || []}
+                                                    textAnswer={textAnswers[question.id || ''] || ''}
                                                     onSelectOption={() => {}} // Disabled in results view
                                                     onTextChange={() => {}} // Disabled in results view
                                                     showCorrectAnswers={quiz.settings.showCorrectAnswers}

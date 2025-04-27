@@ -56,7 +56,7 @@ const QuizResults: FC<QuizResultsProps> = ({
 
     // Expand all questions
     const expandAllQuestions = () => {
-        setExpandedQuestions(quiz.questions.map(q => q.id));
+        setExpandedQuestions(quiz.questions.map(q => q.id || ''));
     };
 
     // Collapse all questions
@@ -235,16 +235,16 @@ const QuizResults: FC<QuizResultsProps> = ({
                     {quiz.questions.map((question, index) => {
                         const result = quizResults.results.find(r => r.questionId === question.id);
                         const apiAnswer = displayedResult?.answers.find(a => a.questionId === question.id);
-                        const isExpanded = expandedQuestions.includes(question.id);
+                        const isExpanded = expandedQuestions.includes(question.id || '');
 
                         // Use API result if available, fallback to client-side result
                         const isCorrect = apiAnswer ? apiAnswer.isCorrect : result?.correct;
                         const earnedPoints = apiAnswer ? apiAnswer.earnedPoints : result?.score;
 
                         return (
-                            <div key={question.id} className="p-4">
+                            <div key={question.id || ''} className="p-4">
                                 <button
-                                    onClick={() => toggleExpandQuestion(question.id)}
+                                    onClick={() => toggleExpandQuestion(question.id || '')}
                                     className="w-full flex items-center justify-between text-left"
                                 >
                                     <div className="flex items-start">
@@ -281,8 +281,8 @@ const QuizResults: FC<QuizResultsProps> = ({
                                     <div className="mt-4 pl-9">
                                         <QuizQuestion
                                             question={question}
-                                            selectedAnswers={selectedAnswers[question.id] || []}
-                                            textAnswer={textAnswers[question.id] || ''}
+                                            selectedAnswers={selectedAnswers[question.id || ''] || []}
+                                            textAnswer={textAnswers[question.id || ''] || ''}
                                             onSelectOption={() => {}} // No-op as quiz is submitted
                                             onTextChange={() => {}} // No-op as quiz is submitted
                                             showCorrectAnswers={showCorrectAnswers}
