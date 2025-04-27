@@ -70,7 +70,7 @@ export default function InstructorsPage() {
                 description: "Bạn đã trở thành giảng viên trên VinaAcademy",
             });
 
-            // Tạo thông báo trước khi chuyển hướng
+            //Tạo thông báo trước khi chuyển hướng
             // if (user?.id) {
             //     try {
             //         await createNotification({
