@@ -50,7 +50,7 @@ export default function QuestionOptions({
 
             <div className="space-y-2">
                 {options.map((option, index) => (
-                    <OptionItem
+                    option.id ? <OptionItem
                         key={option.id}
                         option={option}
                         optionIndex={index}
@@ -60,7 +60,7 @@ export default function QuestionOptions({
                         onToggleCorrect={() => onToggleOptionCorrect(option.id || '')}
                         // For True/False or if there are only 2 options, don't allow removal
                         canRemove={questionType !== QuestionType.TRUE_FALSE && options.length > 2}
-                    />
+                    /> : null
                 ))}
             </div>
         </div>
