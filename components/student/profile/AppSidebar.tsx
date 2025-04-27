@@ -94,7 +94,7 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <Avatar className="h-10 w-10 border-2 border-white">
-                  <AvatarImage src="/api/placeholder/40/40" alt="Profile" />
+                  <AvatarImage src={undefined} alt="Profile" />
                   <AvatarFallback>HN</AvatarFallback>
                 </Avatar>
                 <div className="ml-3">
