@@ -124,7 +124,7 @@ const Carousel = ({
                                                 {course.level}
                                             </span>
                                         </div>
-                                        <CardTitle className="text-lg mb-2 line-clamp-2 h-16">{course.title}</CardTitle>
+                                        <CardTitle className="text-lg mb-2 line-clamp-2 h-15">{course.title}</CardTitle>
                                         <p className="text-gray-600 text-sm mb-2">{course.instructor}</p>
                                         <div className="flex items-center gap-1 mb-2">
                                             <Star size={16} className="text-yellow-500 fill-yellow-500" />

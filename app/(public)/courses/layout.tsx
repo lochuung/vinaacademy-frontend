@@ -4,10 +4,8 @@ export default function ProfileLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <main className="mt-[-37px]">
+        <main className="mt-[-37px] min-h-screen">
             {children}
-
         </main>
-
     );
 }

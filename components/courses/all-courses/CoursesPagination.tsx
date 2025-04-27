@@ -16,12 +16,33 @@ export function CoursesPagination({
     // Không hiển thị phân trang nếu chỉ có 1 trang
     if (totalPages <= 1) return null;
 
-    // Tạo danh sách số trang
-    // Nếu có nhiều trang, chỉ hiển thị một số trang xung quanh trang hiện tại
+    // Tạo danh sách số trang với logic responsive
     const getPageNumbers = (): number[] => {
         const pageNumbers: number[] = [];
 
-        if (totalPages <= 7) {
+        // Logic cho màn hình nhỏ - chỉ hiển thị điều hướng và trang hiện tại
+        const isMobileView = typeof window !== 'undefined' && window.innerWidth < 640;
+        
+        if (isMobileView) {
+            // Cho màn hình mobile, chỉ hiển thị trang hiện tại và nút điều hướng
+            if (currentPage > 1) {
+                pageNumbers.push(1); // Trang đầu tiên
+                
+                if (currentPage > 2) {
+                    pageNumbers.push(-1); // Dấu ... 
+                }
+            }
+            
+            pageNumbers.push(currentPage); // Trang hiện tại
+            
+            if (currentPage < totalPages) {
+                if (currentPage < totalPages - 1) {
+                    pageNumbers.push(-2); // Dấu ...
+                }
+                
+                pageNumbers.push(totalPages); // Trang cuối
+            }
+        } else if (totalPages <= 7) {
             // Nếu tổng số trang ≤ 7, hiện tất cả số trang
             for (let i = 1; i <= totalPages; i++) {
                 pageNumbers.push(i);
@@ -60,42 +81,53 @@ export function CoursesPagination({
     };
 
     return (
-        <div className="flex justify-center mt-10">
-            <div className="flex gap-2">
+        <div className="flex justify-center mt-6 sm:mt-10">
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
                 <Button
                     variant="outline"
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
+                    className="h-8 w-8 sm:h-10 sm:w-10 p-0"
                 >
                     <ChevronLeft size={16}/>
                 </Button>
 
-                {getPageNumbers().map((page, index) => {
-                    if (page < 0) {
-                        // Hiển thị dấu "..." thay vì số trang
+                <div className="hidden sm:flex gap-1 sm:gap-2">
+                    {getPageNumbers().map((page, index) => {
+                        if (page < 0) {
+                            // Hiển thị dấu "..." thay vì số trang
+                            return (
+                                <Button key={`ellipsis-${index}`} variant="outline" disabled className="h-8 sm:h-10 w-8 sm:w-10 p-0">
+                                    ...
+                                </Button>
+                            );
+                        }
+
                         return (
-                            <Button key={`ellipsis-${index}`} variant="outline" disabled>
-                                ...
+                            <Button
+                                key={page}
+                                variant={page === currentPage ? "default" : "outline"}
+                                onClick={() => onPageChange(page)}
+                                className={`h-8 sm:h-10 w-8 sm:w-10 p-0 ${page === currentPage ? "bg-black" : ""}`}
+                            >
+                                {page}
                             </Button>
                         );
-                    }
+                    })}
+                </div>
 
-                    return (
-                        <Button
-                            key={page}
-                            variant={page === currentPage ? "default" : "outline"}
-                            onClick={() => onPageChange(page)}
-                            className={page === currentPage ? "bg-black" : ""}
-                        >
-                            {page}
-                        </Button>
-                    );
-                })}
+                {/* Hiển thị phiên bản đơn giản hơn trên mobile */}
+                <div className="flex sm:hidden items-center">
+                    <span className="mx-2 text-sm font-medium">
+                        {currentPage} / {totalPages}
+                    </span>
+                </div>
 
                 <Button
                     variant="outline"
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
+                    className="h-8 w-8 sm:h-10 sm:w-10 p-0"
                 >
                     <ChevronRight size={16}/>
                 </Button>
