@@ -43,6 +43,8 @@ export default function FileUpload({
                             {accept.includes('image') ? (
                                 <Image
                                     src={preview as string}
+                                    width={500}
+                                    height={500}
                                     alt="Preview"
                                     className="w-full h-full object-cover"
                                 />

@@ -10,11 +10,32 @@ import { CourseContentFooter } from '@/components/instructor/courses/edit-course
 import { useCourseContent } from '@/components/instructor/courses/edit-course-content/hooks/useCourseContent';
 import { SectionEditModal } from '@/components/instructor/courses/SectionEditModal';
 import { adaptSectionDisplaysToSections } from '@/utils/adapters/courseContentAdapter';
+import { getCourseById } from '@/services/courseService';
+import { CourseDto } from '@/types/course';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '@/components/shared/ErrorFallback';
+import { getImageUrl } from '@/utils/imageUtils';
 
 export default function CourseContentPage() {
     const params = useParams();
     const courseId = params.id as string;
     const [isAddSectionModalOpen, setAddSectionModalOpen] = useState(false);
+    const [courseInfo, setCourseInfo] = useState<CourseDto | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Fetch course info for header
+    useEffect(() => {
+        const fetchCourseInfo = async () => {
+            try {
+                const course = await getCourseById(courseId);
+                setCourseInfo(course);
+            } catch (error) {
+                console.error('Error fetching course info:', error);
+            }
+        };
+        
+        fetchCourseInfo();
+    }, [courseId]);
 
     const {
         sections: sectionsDisplay,
@@ -37,9 +58,19 @@ export default function CourseContentPage() {
 
     const handleSaveDraft = async () => {
         try {
+            setIsSaving(true);
             await saveAllChanges();
+            toast.success('Tất cả thay đổi đã được lưu thành công!', {
+                position: 'bottom-right',
+                autoClose: 3000
+            });
         } catch (error) {
             console.error('Lỗi khi lưu thay đổi:', error);
+            toast.error('Đã xảy ra lỗi khi lưu thay đổi. Vui lòng thử lại!', {
+                position: 'bottom-right'
+            });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -53,50 +84,81 @@ export default function CourseContentPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader2 className="h-8 w-8 animate-spin text-black" />
-                <span className="ml-2 text-lg">Đang tải nội dung khóa học...</span>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
+                <div className="bg-white shadow-lg rounded-xl p-8 flex flex-col items-center max-w-md w-full">
+                    <Loader2 className="h-12 w-12 animate-spin text-blue-600 mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Đang tải nội dung khóa học...</h3>
+                    <p className="text-gray-500 text-center">Hệ thống đang tải nội dung khóa học của bạn. Quá trình này sẽ chỉ mất vài giây.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
+                <div className="bg-white shadow-lg rounded-xl p-8 flex flex-col items-center max-w-md w-full">
+                    <div className="bg-red-100 p-3 rounded-full mb-4">
+                        <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Không thể tải nội dung</h3>
+                    <p className="text-gray-500 text-center mb-4">Đã xảy ra lỗi khi tải nội dung khóa học. Vui lòng thử lại sau.</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        Tải lại trang
+                    </button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="py-6">
-            {/* Header Component */}
-            <CourseContentHeader
-                courseId={courseId}
-                onAddSection={handleAddSection}
-            />
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <div className="min-h-screen bg-gray-50">
+                {/* Header Component with course info */}
+                <CourseContentHeader
+                    courseId={courseId}
+                    courseName={courseInfo?.name}
+                    courseImage={getImageUrl(courseInfo?.image || '')}
+                    courseStatus={courseInfo?.status}
+                    onAddSection={handleAddSection}
+                />
 
-            {/* Main Content Component */}
-            <CourseContentBody
-                sections={sections}
-                courseId={courseId}
-                expandedSections={expandedSections}
-                isDragging={isDragging}
-                onDragStart={() => setIsDragging(true)}
-                onDragEnd={() => setIsDragging(false)}
-                toggleSection={toggleSection}
-                deleteSection={deleteSection}
-                addLecture={addLecture}
-                deleteLecture={deleteLecture}
-                onSectionUpdated={fetchSections}
-                onLectureUpdated={fetchSections}
-            />
+                {/* Main Content Component */}
+                <CourseContentBody
+                    sections={sections}
+                    courseId={courseId}
+                    expandedSections={expandedSections}
+                    isDragging={isDragging}
+                    onDragStart={() => setIsDragging(true)}
+                    onDragEnd={() => setIsDragging(false)}
+                    toggleSection={toggleSection}
+                    deleteSection={deleteSection}
+                    addLecture={addLecture}
+                    deleteLecture={deleteLecture}
+                    onSectionUpdated={fetchSections}
+                    onLectureUpdated={fetchSections}
+                />
 
-            {/* Footer Component */}
-            <CourseContentFooter
-                onSaveDraft={handleSaveDraft}
-                isSaving={false}
-            />
+                {/* Footer Component */}
+                <CourseContentFooter
+                    onSaveDraft={handleSaveDraft}
+                    isSaving={isSaving}
+                    hasChanges={true}
+                />
 
-            {/* Modal thêm phần học mới */}
-            <SectionEditModal
-                courseId={courseId}
-                isOpen={isAddSectionModalOpen}
-                onClose={() => setAddSectionModalOpen(false)}
-                onSave={handleSectionAdded}
-            />
-        </div>
+                {/* Modal thêm phần học mới */}
+                <SectionEditModal
+                    courseId={courseId}
+                    isOpen={isAddSectionModalOpen}
+                    onClose={() => setAddSectionModalOpen(false)}
+                    onSave={handleSectionAdded}
+                />
+            </div>
+        </ErrorBoundary>
     );
 }

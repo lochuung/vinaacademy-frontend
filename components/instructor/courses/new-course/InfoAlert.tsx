@@ -1,48 +1,66 @@
-// components/course-creator/InfoAlert.tsx
-import {ReactNode} from 'react';
-import {Info} from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Info } from 'lucide-react';
 
 interface InfoAlertProps {
-    title?: string;
-    children: ReactNode;
-    icon?: ReactNode;
-    variant?: 'blue' | 'green';
+    title: string;
+    icon: React.ReactNode;
+    children: React.ReactNode;
+    variant?: 'blue' | 'green' | 'amber' | 'purple';
 }
 
-export default function InfoAlert({
-                                      title,
-                                      children,
-                                      icon,
-                                      variant = 'blue'
-                                  }: InfoAlertProps) {
-    const colors = {
-        blue: {
-            bg: 'bg-blue-50',
-            border: 'border-blue-200',
-            text: 'text-blue-700',
-            icon: 'text-blue-500'
-        },
-        green: {
-            bg: 'bg-green-50',
-            border: 'border-green-200',
-            text: 'text-green-700',
-            icon: 'text-green-500'
+export default function InfoAlert({ title, icon, children, variant = 'blue' }: InfoAlertProps) {
+    // Dynamic styles based on variant
+    const getStyles = () => {
+        switch (variant) {
+            case 'green':
+                return {
+                    bg: 'bg-green-50',
+                    border: 'border-green-200',
+                    title: 'text-green-800'
+                };
+            case 'amber':
+                return {
+                    bg: 'bg-amber-50',
+                    border: 'border-amber-200',
+                    title: 'text-amber-800'
+                };
+            case 'purple':
+                return {
+                    bg: 'bg-purple-50',
+                    border: 'border-purple-200',
+                    title: 'text-purple-800'
+                };
+            case 'blue':
+            default:
+                return {
+                    bg: 'bg-blue-50',
+                    border: 'border-blue-200',
+                    title: 'text-blue-800'
+                };
         }
     };
 
-    const style = colors[variant];
+    const styles = getStyles();
 
     return (
-        <div className={`${style.bg} p-4 rounded-lg border ${style.border} flex items-start`}>
-            {icon ? (
-                <div className={`mr-3 mt-0.5 flex-shrink-0 ${style.icon}`}>{icon}</div>
-            ) : (
-                <Info className={`h-5 w-5 ${style.icon} mr-3 mt-0.5 flex-shrink-0`}/>
-            )}
-            <div className={`text-sm ${style.text}`}>
-                {title && <p className="font-medium mb-1">{title}</p>}
-                <div>{children}</div>
+        <motion.div 
+            className={`${styles.bg} ${styles.border} border rounded-lg p-4 mb-6`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+        >
+            <div className="flex">
+                <div className="flex-shrink-0">
+                    {icon}
+                </div>
+                <div className="ml-3">
+                    <h3 className={`text-sm font-medium ${styles.title}`}>{title}</h3>
+                    <div className="mt-2 text-sm text-gray-600">
+                        {children}
+                    </div>
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
