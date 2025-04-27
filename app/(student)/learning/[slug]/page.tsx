@@ -133,39 +133,39 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
                 courseSlug={slug}
             />
 
-            <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-1">
+            <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 flex-1">
                 <div className="bg-white shadow-sm rounded-lg overflow-hidden">
                     {/* Header của khóa học */}
-                    <div className="p-6 md:p-8 border-b border-gray-200">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{course.title}</h1>
-                        <div className="mt-4 flex flex-wrap items-center gap-6">
-                            <div className="flex items-center text-gray-600">
-                                <Clock className="w-5 h-5 mr-2"/>
-                                <span>{formatTotalDuration(course.sections)} tổng thời lượng</span>
+                    <div className="p-4 sm:p-6 md:p-8 border-b border-gray-200">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 break-words">{course.title}</h1>
+                        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3">
+                            <div className="flex items-center text-gray-600 text-sm sm:text-base">
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0"/>
+                                <span className="truncate">{formatTotalDuration(course.sections)}</span>
                             </div>
-                            <div className="flex items-center text-gray-600">
-                                <FileText className="w-5 h-5 mr-2"/>
+                            <div className="flex items-center text-gray-600 text-sm sm:text-base">
+                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0"/>
                                 <span>{totalLectures} bài học</span>
                             </div>
-                            <div className="flex items-center text-gray-600">
-                                <Users className="w-5 h-5 mr-2"/>
+                            <div className="flex items-center text-gray-600 text-sm sm:text-base">
+                                <Users className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0"/>
                                 <span>{apiResponse?.totalStudent || 0} học viên</span>
                             </div>
-                            <div className="flex items-center text-gray-600">
-                                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                <span>Cập nhật lần cuối: {formatLastUpdated(apiResponse?.updatedDate)}</span>
+                            <div className="flex items-center text-gray-600 text-sm sm:text-base">
+                                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1 sm:mr-2 flex-shrink-0"></span>
+                                <span>Cập nhật: {formatLastUpdated(apiResponse?.updatedDate)}</span>
                             </div>
                         </div>
 
                         {/* Thanh tiến độ */}
-                        <div className="mt-6">
+                        <div className="mt-5 sm:mt-6">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-medium text-gray-700">Tiến độ học tập</span>
-                                <span className="text-sm font-medium text-blue-600">{course.progress}% hoàn thành</span>
+                                <span className="text-xs sm:text-sm font-medium text-gray-700">Tiến độ học tập</span>
+                                <span className="text-xs sm:text-sm font-medium text-blue-600">{course.progress}% hoàn thành</span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
                                 <div
-                                    className="bg-blue-600 h-2 rounded-full"
+                                    className="bg-blue-600 h-1.5 sm:h-2 rounded-full transition-all duration-300"
                                     style={{width: `${course.progress}%`}}
                                 ></div>
                             </div>
@@ -173,102 +173,104 @@ const CoursePage: FC<CoursePageProps> = ({params}) => {
 
                         {/* Tiếp tục học */}
                         {course.currentLecture && (
-                            <div className="mt-6">
-                                <h2 className="text-lg font-semibold text-gray-800 mb-2">Tiếp tục học</h2>
+                            <div className="mt-5 sm:mt-6">
+                                <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">Tiếp tục học</h2>
                                 <Link
                                     href={`/learning/${slug}/lecture/${course.currentLecture.id}`}
-                                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                                    className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                                     onClick={handleContinueLearning}
                                 >
-                                    <div className="flex items-center">
-                                        {getLectureTypeIcon(course.currentLecture.type)}
-                                        <div className="ml-3">
-                                            <p className="font-medium text-gray-800">{course.currentLecture.title}</p>
-                                            <p className="text-sm text-gray-500">{course.currentLecture.duration}</p>
+                                    <div className="flex items-center min-w-0">
+                                        <div className="flex-shrink-0">
+                                            {getLectureTypeIcon(course.currentLecture.type)}
+                                        </div>
+                                        <div className="ml-2 sm:ml-3 min-w-0">
+                                            <p className="font-medium text-gray-800 text-sm sm:text-base truncate">{course.currentLecture.title}</p>
+                                            <p className="text-xs sm:text-sm text-gray-500">{course.currentLecture.duration}</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-gray-400"/>
+                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0 ml-2"/>
                                 </Link>
                             </div>
                         )}
                     </div>
 
                     {/* Nội dung khóa học */}
-                    <div className="p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Nội dung khóa học</h2>
+                    <div className="p-4 sm:p-6 md:p-8">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Nội dung khóa học</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div className="p-4 bg-blue-50 rounded-lg flex items-center justify-between">
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-4 sm:gap-4 mb-4 sm:mb-6">
+                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-blue-700">Video</p>
-                                    <p className="text-xl font-bold text-blue-900">{countLecturesByType('video')}</p>
+                                    <p className="text-xs sm:text-sm text-blue-700">Video</p>
+                                    <p className="text-lg sm:text-xl font-bold text-blue-900">{countLecturesByType('video')}</p>
                                 </div>
-                                <Video className="w-8 h-8 text-blue-500"/>
+                                <Video className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500"/>
                             </div>
-                            <div className="p-4 bg-green-50 rounded-lg flex items-center justify-between">
+                            <div className="p-3 sm:p-4 bg-green-50 rounded-lg flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-green-700">Bài đọc</p>
-                                    <p className="text-xl font-bold text-green-900">{countLecturesByType('reading')}</p>
+                                    <p className="text-xs sm:text-sm text-green-700">Bài đọc</p>
+                                    <p className="text-lg sm:text-xl font-bold text-green-900">{countLecturesByType('reading')}</p>
                                 </div>
-                                <BookOpen className="w-8 h-8 text-green-500"/>
+                                <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-green-500"/>
                             </div>
-                            <div className="p-4 bg-orange-50 rounded-lg flex items-center justify-between">
+                            <div className="p-3 sm:p-4 bg-orange-50 rounded-lg flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-orange-700">Bài kiểm tra</p>
-                                    <p className="text-xl font-bold text-orange-900">{countLecturesByType('quiz')}</p>
+                                    <p className="text-xs sm:text-sm text-orange-700">Bài kiểm tra</p>
+                                    <p className="text-lg sm:text-xl font-bold text-orange-900">{countLecturesByType('quiz')}</p>
                                 </div>
-                                <FileText className="w-8 h-8 text-orange-500"/>
+                                <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500"/>
                             </div>
-                            <div className="p-4 bg-purple-50 rounded-lg flex items-center justify-between">
+                            <div className="p-3 sm:p-4 bg-purple-50 rounded-lg flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-purple-700">Bài tập</p>
-                                    <p className="text-xl font-bold text-purple-900">{countLecturesByType('assignment')}</p>
+                                    <p className="text-xs sm:text-sm text-purple-700">Bài tập</p>
+                                    <p className="text-lg sm:text-xl font-bold text-purple-900">{countLecturesByType('assignment')}</p>
                                 </div>
-                                <PenSquare className="w-8 h-8 text-purple-500"/>
+                                <PenSquare className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500"/>
                             </div>
                         </div>
 
                         {/* Danh sách các phần */}
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                             {course.sections.map((section, sectionIndex) => (
                                 <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                                    <div className="p-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 className="font-medium text-gray-800">
+                                    <div className="p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
+                                        <h3 className="text-sm sm:text-base font-medium text-gray-800">
                                             Phần {sectionIndex + 1}: {section.title}
                                         </h3>
-                                        <p className="text-sm text-gray-500 mt-1">{section.lectures.length} bài học</p>
+                                        <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">{section.lectures.length} bài học</p>
                                     </div>
                                     <div className="divide-y divide-gray-200">
                                         {section.lectures.map((lecture, lectureIndex) => (
                                             <Link
                                                 key={lecture.id}
                                                 href={`/learning/${slug}/lecture/${lecture.id}`}
-                                                className="flex items-center p-4 hover:bg-gray-50 transition"
+                                                className="flex items-center p-3 sm:p-4 hover:bg-gray-50 transition"
                                             >
-                                                <div className="w-8 text-center text-gray-500 mr-2">
+                                                <div className="w-6 sm:w-8 text-center text-gray-500 mr-1 sm:mr-2 flex-shrink-0">
                                                     {lecture.isCompleted ? (
-                                                        <CheckCircle className="w-5 h-5 text-green-500 mx-auto"/>
+                                                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mx-auto"/>
                                                     ) : (
-                                                        <span>{sectionIndex + 1}.{lectureIndex + 1}</span>
+                                                        <span className="text-xs sm:text-sm">{sectionIndex + 1}.{lectureIndex + 1}</span>
                                                     )}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center">
-                                                        {getLectureTypeIcon(lecture.type || 'video')}
-                                                        <span
-                                                            className="ml-2 font-medium text-gray-800">{lecture.title}</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center flex-wrap gap-1 sm:gap-2">
+                                                        <div className="flex-shrink-0">
+                                                            {getLectureTypeIcon(lecture.type || 'video')}
+                                                        </div>
+                                                        <span className="font-medium text-gray-800 text-sm sm:text-base truncate">{lecture.title}</span>
                                                         {lecture.isCurrent && (
-                                                            <span
-                                                                className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                            <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full flex-shrink-0">
                                                                 Đang học
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-sm text-gray-500 mt-1">
+                                                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">
                                                         {lecture.duration}
                                                     </p>
                                                 </div>
-                                                <ChevronRight className="w-5 h-5 text-gray-400"/>
+                                                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0 ml-1 sm:ml-2"/>
                                             </Link>
                                         ))}
                                     </div>
