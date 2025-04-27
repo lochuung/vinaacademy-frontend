@@ -43,7 +43,6 @@ export const convertLessonToLecture = (lesson: LessonDto, isCompleted: boolean =
     duration: formatDuration(lesson.videoDuration),
     isCompleted: isCompleted,
     isCurrent,
-    videoUrl: lesson.videoUrl,
     textContent: lesson.content
   };
 };

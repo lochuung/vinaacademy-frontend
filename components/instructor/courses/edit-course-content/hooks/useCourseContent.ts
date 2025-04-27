@@ -1,6 +1,11 @@
 // components/instructor/courses/edit-course-content/hooks/useCourseContent.ts
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
 import { LessonDto, SectionDto, LessonType } from '@/types/course';
 import {
     getLessonsBySectionId,
@@ -32,8 +37,8 @@ export interface LectureDisplay {
     duration?: number;
     content?: string;
     order: number;
-    isPublished ?: boolean;
-    free ?: boolean;
+    isPublished?: boolean;
+    free?: boolean;
     description?: string;
 }
 
@@ -56,31 +61,29 @@ const mapSectionToDisplay = (section: SectionDto, lessons: LessonDto[] = []): Se
 });
 
 export const useCourseContent = (courseId?: string) => {
-    const [sections, setSections] = useState<SectionDisplay[]>([]);
+    const queryClient = useQueryClient();
     const [expandedSections, setExpandedSections] = useState<string[]>([]);
     const [isDragging, setIsDragging] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch sections when component mounts
-    useEffect(() => {
-        if (courseId) {
-            fetchSections();
-        }
-    }, [courseId]);
+    // Query key definitions
+    const sectionsQueryKey = ['sections', courseId];
 
-    // Fetch all sections for the course
-    const fetchSections = async () => {
-        if (!courseId) return;
+    // Fetch sections and their lectures
+    const {
+        data: sections = [],
+        isLoading,
+        error,
+        refetch: fetchSections
+    } = useQuery({
+        queryKey: sectionsQueryKey,
+        queryFn: async () => {
+            if (!courseId) return [];
 
-        setIsLoading(true);
-        try {
             const fetchedSections = await getSectionsByCourse(courseId);
 
             // Nếu không có sections hoặc API lỗi
             if (!fetchedSections || fetchedSections.length === 0) {
-                setSections([]);
-                setIsLoading(false);
-                return;
+                return [];
             }
 
             // Lấy tất cả các bài giảng cho mỗi section
@@ -96,33 +99,30 @@ export const useCourseContent = (courseId?: string) => {
                 })
             );
 
-            setSections(sectionsWithLectures);
-
             // Auto-expand the first section if no sections are expanded
             if (sectionsWithLectures.length > 0 && expandedSections.length === 0) {
                 setExpandedSections([sectionsWithLectures[0].id]);
             }
-        } catch (error) {
-            console.error('Lỗi khi tải dữ liệu phần học:', error);
-            toast.error('Không thể tải dữ liệu phần học. Vui lòng thử lại sau.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
-    // Add a new section
-    const addSection = async () => {
-        if (!courseId) return;
+            return sectionsWithLectures;
+        },
+        enabled: !!courseId
+    });
 
-        try {
+    // Add section mutation
+    const addSectionMutation = useMutation({
+        mutationFn: async () => {
+            if (!courseId) throw new Error('Không có ID khóa học');
+
             const newSectionData = {
                 title: `Phần học mới`,
                 courseId: courseId,
                 orderIndex: sections.length
             };
 
-            const createdSection = await createSection(newSectionData);
-
+            return await createSection(newSectionData);
+        },
+        onSuccess: (createdSection) => {
             if (!createdSection) {
                 toast.error('Không thể tạo phần học mới. Vui lòng thử lại sau.');
                 return;
@@ -135,41 +135,25 @@ export const useCourseContent = (courseId?: string) => {
                 lectures: []
             };
 
-            setSections(prev => [...prev, newSection]);
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? [...oldData, newSection] : [newSection];
+            });
+
             setExpandedSections(prev => [...prev, newSection.id]);
             toast.success('Đã thêm phần học mới thành công');
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Lỗi khi thêm phần học:', error);
-            toast.error('Không thể thêm phần học. Vui lòng thử lại sau.');
         }
-    };
+    });
 
-    // Toggle section expansion
-    const toggleSection = (sectionId: string) => {
-        setExpandedSections(prev => {
-            if (prev.includes(sectionId)) {
-                return prev.filter(id => id !== sectionId);
-            } else {
-                return [...prev, sectionId];
-            }
-        });
-    };
+    // Edit section mutation
+    const editSectionMutation = useMutation({
+        mutationFn: async ({ sectionId, newTitle }: { sectionId: string, newTitle: string }) => {
+            if (!courseId) throw new Error('Không có ID khóa học');
 
-    // Edit section title
-    const editSection = async (sectionId: string, newTitle: string) => {
-        try {
             const section = sections.find(s => s.id === sectionId);
-
-            if (!section) {
-                toast.error('Không tìm thấy phần học');
-                return;
-            }
-
-            // Đảm bảo courseId không phải undefined
-            if (!courseId) {
-                toast.error('Không tìm thấy thông tin khóa học');
-                return;
-            }
+            if (!section) throw new Error('Không tìm thấy phần học');
 
             const updatedSectionData = {
                 title: newTitle,
@@ -177,74 +161,81 @@ export const useCourseContent = (courseId?: string) => {
                 orderIndex: section.order
             };
 
-            const updatedSection = await updateSection(sectionId, updatedSectionData);
-
+            return await updateSection(sectionId, updatedSectionData);
+        },
+        onSuccess: (updatedSection, { sectionId, newTitle }) => {
             if (!updatedSection) {
                 toast.error('Không thể cập nhật phần học. Vui lòng thử lại sau.');
                 return;
             }
 
-            setSections(prev => prev.map(section =>
-                section.id === sectionId
-                    ? { ...section, title: newTitle }
-                    : section
-            ));
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.map(section =>
+                    section.id === sectionId
+                        ? { ...section, title: newTitle }
+                        : section
+                ) : [];
+            });
 
             toast.success('Đã cập nhật phần học thành công');
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Lỗi khi cập nhật phần học:', error);
-            toast.error('Không thể cập nhật phần học. Vui lòng thử lại sau.');
         }
-    };
+    });
 
-    // Delete a section
-    const deleteSection = async (sectionId: string) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa phần học này không?')) {
-            return;
-        }
-
-        try {
-            const success = await deleteSectionApi(sectionId);
-
-            // Kiểm tra kết quả của API call
+    // Delete section mutation
+    const deleteSectionMutation = useMutation({
+        mutationFn: async (sectionId: string) => {
+            if (!window.confirm('Bạn có chắc chắn muốn xóa phần học này không?')) {
+                throw new Error('User cancelled');
+            }
+            return await deleteSectionApi(sectionId);
+        },
+        onSuccess: (success, sectionId) => {
             if (success === false) {
                 toast.error('Không thể xóa phần học. Vui lòng thử lại sau.');
                 return;
             }
 
-            setSections(prev => prev.filter(section => section.id !== sectionId));
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.filter(section => section.id !== sectionId) : [];
+            });
+
             setExpandedSections(prev => prev.filter(id => id !== sectionId));
             toast.success('Đã xóa phần học thành công');
 
             // Cập nhật lại thứ tự các phần học còn lại
-            updateSectionOrders();
-        } catch (error) {
+            updateSectionOrdersMutation.mutate();
+        },
+        onError: (error) => {
+            if ((error as Error).message === 'User cancelled') return;
             console.error('Lỗi khi xóa phần học:', error);
-            toast.error('Không thể xóa phần học. Có thể phần học này đã có bài giảng.');
         }
-    };
+    });
 
-    // Add a new lecture to a section
-    const addLecture = async (sectionId: string) => {
-        try {
-            if (!courseId) {
-                toast.error('Không tìm thấy thông tin khóa học');
-                return;
-            }
-
-            const section = sections.find(s => s.id === sectionId);
-            if (!section) return;
+    // Add lecture mutation
+    const addLectureMutation = useMutation({
+        mutationFn: async (sectionId: string) => {
+            if (!courseId) throw new Error('Không có ID khóa học');
 
             const newLectureData = {
                 title: `Bài giảng mới`,
                 type: 'VIDEO' as LessonType,
                 content: '',
                 sectionId: sectionId,
-                // Loại bỏ orderIndex để backend tự động xử lý
             };
 
             const createdLesson = await createLesson(newLectureData);
 
+            if (createdLesson) {
+                // Gửi khóa học đi duyệt khi thêm bài giảng mới
+                await submitCourseForReview(courseId);
+            }
+
+            return { createdLesson, sectionId };
+        },
+        onSuccess: ({ createdLesson, sectionId }) => {
             if (!createdLesson) {
                 toast.error('Không thể thêm bài giảng. Vui lòng thử lại sau.');
                 return;
@@ -252,35 +243,37 @@ export const useCourseContent = (courseId?: string) => {
 
             const newLecture: LectureDisplay = mapLessonToLectureDisplay(createdLesson);
 
-            setSections(prev => prev.map(section => {
-                if (section.id === sectionId) {
-                    return {
-                        ...section,
-                        lectures: [...section.lectures, newLecture]
-                    };
-                }
-                return section;
-            }));
-
-            // Gửi khóa học đi duyệt khi thêm bài giảng mới
-            await submitCourseForReview(courseId);
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.map(section => {
+                    if (section.id === sectionId) {
+                        return {
+                            ...section,
+                            lectures: [...section.lectures, newLecture]
+                        };
+                    }
+                    return section;
+                }) : [];
+            });
 
             toast.success('Đã thêm bài giảng mới thành công và gửi khóa học đi duyệt');
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Lỗi khi thêm bài giảng:', error);
-            toast.error('Không thể thêm bài giảng. Vui lòng thử lại sau.');
         }
-    };
+    });
 
-    // Edit lecture
-    const editLecture = async (sectionId: string, lectureId: string, lectureData: Partial<LectureDisplay>) => {
-        try {
+    // Edit lecture mutation
+    const editLectureMutation = useMutation({
+        mutationFn: async ({ sectionId, lectureId, lectureData }: {
+            sectionId: string,
+            lectureId: string,
+            lectureData: Partial<LectureDisplay>
+        }) => {
             const section = sections.find(s => s.id === sectionId);
             const lecture = section?.lectures.find(l => l.id === lectureId);
 
             if (!section || !lecture) {
-                toast.error('Không tìm thấy bài giảng');
-                return;
+                throw new Error('Không tìm thấy bài giảng');
             }
 
             const updateData = {
@@ -292,104 +285,94 @@ export const useCourseContent = (courseId?: string) => {
                 duration: lectureData.duration !== undefined ? lectureData.duration : lecture.duration
             };
 
-            const updatedLesson = await updateLesson(lectureId, updateData);
-
+            return {
+                updatedLesson: await updateLesson(lectureId, updateData),
+                sectionId,
+                lectureId,
+                lectureData
+            };
+        },
+        onSuccess: ({ updatedLesson, sectionId, lectureId, lectureData }) => {
             if (!updatedLesson) {
                 toast.error('Không thể cập nhật bài giảng. Vui lòng thử lại sau.');
                 return;
             }
 
-            setSections(prev => prev.map(section => {
-                if (section.id === sectionId) {
-                    return {
-                        ...section,
-                        lectures: section.lectures.map(lecture =>
-                            lecture.id === lectureId ? { ...lecture, ...lectureData } : lecture
-                        )
-                    };
-                }
-                return section;
-            }));
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.map(section => {
+                    if (section.id === sectionId) {
+                        return {
+                            ...section,
+                            lectures: section.lectures.map(lecture =>
+                                lecture.id === lectureId ? { ...lecture, ...lectureData } : lecture
+                            )
+                        };
+                    }
+                    return section;
+                }) : [];
+            });
 
             toast.success('Đã cập nhật bài giảng thành công');
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Lỗi khi cập nhật bài giảng:', error);
-            toast.error('Không thể cập nhật bài giảng. Vui lòng thử lại sau.');
         }
-    };
+    });
 
-    // Delete a lecture
-    const deleteLecture = async (sectionId: string, lectureId: string) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa bài giảng này không?')) {
-            return;
-        }
-
-        try {
-            const success = await deleteLesson(lectureId);
-
-            // Kiểm tra kết quả API call
+    // Delete lecture mutation
+    const deleteLectureMutation = useMutation({
+        mutationFn: async ({ sectionId, lectureId }: { sectionId: string, lectureId: string }) => {
+            if (!window.confirm('Bạn có chắc chắn muốn xóa bài giảng này không?')) {
+                throw new Error('User cancelled');
+            }
+            return { success: await deleteLesson(lectureId), sectionId, lectureId };
+        },
+        onSuccess: ({ success, sectionId, lectureId }) => {
             if (success === false) {
                 toast.error('Không thể xóa bài giảng. Vui lòng thử lại sau.');
                 return;
             }
 
-            setSections(prev => prev.map(section => {
-                if (section.id === sectionId) {
-                    return {
-                        ...section,
-                        lectures: section.lectures.filter(lecture => lecture.id !== lectureId)
-                    };
-                }
-                return section;
-            }));
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.map(section => {
+                    if (section.id === sectionId) {
+                        return {
+                            ...section,
+                            lectures: section.lectures.filter(lecture => lecture.id !== lectureId)
+                        };
+                    }
+                    return section;
+                }) : [];
+            });
 
             toast.success('Đã xóa bài giảng thành công');
 
             // Cập nhật lại thứ tự các bài giảng trong phần học đó
-            updateLectureOrders(sectionId);
-        } catch (error) {
+            updateLectureOrdersMutation.mutate(sectionId);
+        },
+        onError: (error) => {
+            if ((error as Error).message === 'User cancelled') return;
             console.error('Lỗi khi xóa bài giảng:', error);
-            toast.error('Không thể xóa bài giảng. Vui lòng thử lại sau.');
         }
-    };
+    });
 
-    // Update section orders after reordering
-    const updateSectionOrders = async () => {
-        if (!courseId || sections.length === 0) return;
-
-        try {
+    // Update section orders mutation
+    const updateSectionOrdersMutation = useMutation({
+        mutationFn: async () => {
+            if (!courseId || sections.length === 0) return false;
             const sectionIds = sections.map(section => section.id);
-            const success = await reorderSections(courseId, sectionIds);
-
-            if (success === false) {
-                toast.error('Không thể cập nhật thứ tự các phần học.');
-            }
-        } catch (error) {
+            return await reorderSections(courseId, sectionIds);
+        },
+        onError: (error) => {
             console.error('Lỗi khi cập nhật thứ tự phần học:', error);
-            toast.error('Không thể cập nhật thứ tự các phần học.');
         }
-    };
+    });
 
-    // Update lecture orders within a section
-    const updateLectureOrders = async (sectionId: string) => {
-        try {
+    // Update lecture orders mutation
+    const updateLectureOrdersMutation = useMutation({
+        mutationFn: async (sectionId: string) => {
             const section = sections.find(s => s.id === sectionId);
             if (!section) return;
-
-            // Cập nhật thứ tự trên UI
-            setSections(prev => prev.map(s => {
-                if (s.id === sectionId) {
-                    const updatedLectures = [...s.lectures].map((lecture, index) => ({
-                        ...lecture,
-                        order: index
-                    }));
-                    return {
-                        ...s,
-                        lectures: updatedLectures
-                    };
-                }
-                return s;
-            }));
 
             // Cập nhật từng bài giảng với orderIndex mới
             const promises = section.lectures.map((lecture, index) => {
@@ -410,32 +393,64 @@ export const useCourseContent = (courseId?: string) => {
             });
 
             await Promise.all(promises);
-        } catch (error) {
-            console.error('Lỗi khi cập nhật thứ tự bài giảng:', error);
-            toast.error('Không thể cập nhật thứ tự các bài giảng.');
-        }
-    };
+            return sectionId;
+        },
+        onSuccess: (sectionId) => {
+            if (!sectionId) return;
 
-    // Save all changes (sections and lectures)
-    const saveAllChanges = async () => {
-        try {
+            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                return oldData ? oldData.map(s => {
+                    if (s.id === sectionId) {
+                        const updatedLectures = [...s.lectures].map((lecture, index) => ({
+                            ...lecture,
+                            order: index
+                        }));
+                        return {
+                            ...s,
+                            lectures: updatedLectures
+                        };
+                    }
+                    return s;
+                }) : [];
+            });
+        },
+        onError: (error) => {
+            console.error('Lỗi khi cập nhật thứ tự bài giảng:', error);
+        }
+    });
+
+    // Save all changes mutation
+    const saveAllChangesMutation = useMutation({
+        mutationFn: async () => {
             // First update section orders
             if (courseId) {
-                await updateSectionOrders();
+                await updateSectionOrdersMutation.mutateAsync();
             }
 
             // Then update lecture orders for each section
             for (const section of sections) {
-                await updateLectureOrders(section.id);
+                await updateLectureOrdersMutation.mutateAsync(section.id);
             }
 
-            toast.success('Đã lưu tất cả thay đổi thành công');
             return true;
-        } catch (error) {
+        },
+        onSuccess: () => {
+            toast.success('Đã lưu tất cả thay đổi thành công');
+        },
+        onError: (error) => {
             console.error('Lỗi khi lưu thay đổi:', error);
-            toast.error('Không thể lưu thay đổi. Vui lòng thử lại sau.');
-            return false;
         }
+    });
+
+    // Toggle section expansion
+    const toggleSection = (sectionId: string) => {
+        setExpandedSections(prev => {
+            if (prev.includes(sectionId)) {
+                return prev.filter(id => id !== sectionId);
+            } else {
+                return [...prev, sectionId];
+            }
+        });
     };
 
     return {
@@ -443,15 +458,18 @@ export const useCourseContent = (courseId?: string) => {
         expandedSections,
         isDragging,
         isLoading,
+        error,
         setIsDragging,
         toggleSection,
-        addSection,
-        editSection,
-        deleteSection,
-        addLecture,
-        editLecture,
-        deleteLecture,
-        saveAllChanges,
+        addSection: () => addSectionMutation.mutate(),
+        editSection: (sectionId: string, newTitle: string) => editSectionMutation.mutate({ sectionId, newTitle }),
+        deleteSection: (sectionId: string) => deleteSectionMutation.mutate(sectionId),
+        addLecture: (sectionId: string) => addLectureMutation.mutate(sectionId),
+        editLecture: (sectionId: string, lectureId: string, lectureData: Partial<LectureDisplay>) =>
+            editLectureMutation.mutate({ sectionId, lectureId, lectureData }),
+        deleteLecture: (sectionId: string, lectureId: string) =>
+            deleteLectureMutation.mutate({ sectionId, lectureId }),
+        saveAllChanges: () => saveAllChangesMutation.mutateAsync(),
         fetchSections
     };
 };

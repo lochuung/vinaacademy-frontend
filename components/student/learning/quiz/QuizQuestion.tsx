@@ -75,9 +75,9 @@ const QuizQuestion: FC<QuizQuestionProps> = ({
             ) : (
                 <div className="space-y-3">
                     {question.options.map(option => {
-                        const isSelected = selectedAnswers.includes(option.id);
+                        const isSelected = selectedAnswers.includes(option.id || '');
                         const showCorrectness = showCorrectAnswers && isSubmitted;
-                        const isCorrectAnswer = quizResults?.correctAnswers?.includes(option.id);
+                        const isCorrectAnswer = quizResults?.correctAnswers?.includes(option.id || '');
                         const isOptionCorrect = isCorrectAnswer || option.isCorrect;
                         const isMultipleChoice = question.type === 'multiple_choice';
 
@@ -85,7 +85,7 @@ const QuizQuestion: FC<QuizQuestionProps> = ({
                             <div
                                 key={option.id}
                                 className={getOptionClasses(isSelected, isOptionCorrect, showCorrectness)}
-                                onClick={() => !isSubmitted && onSelectOption(option.id)}
+                                onClick={() => !isSubmitted && onSelectOption(option.id || '')}
                             >
                                 <div className="flex items-center">
                                     <div className="mr-3">

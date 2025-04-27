@@ -177,7 +177,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
 
             } catch (error) {
                 console.error('Error loading reviews:', error);
-                toast.error('Không thể tải đánh giá, vui lòng thử lại sau');
             } finally {
                 setIsLoading(false);
             }
@@ -205,7 +204,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                 }
             } catch (error) {
                 console.error('Error loading more reviews:', error);
-                toast.error('Không thể tải thêm đánh giá');
             }
         };
 
@@ -296,7 +294,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             setDialogOpen(false);
         } catch (error) {
             console.error('Error saving review:', error);
-            toast.error('Không thể lưu đánh giá, vui lòng thử lại sau');
         } finally {
             setIsSaving(false);
         }
@@ -349,7 +346,6 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             }
         } catch (error) {
             console.error('Error deleting review:', error);
-            toast.error('Không thể xóa đánh giá, vui lòng thử lại sau');
         } finally {
             setIsDeleting(null);
         }

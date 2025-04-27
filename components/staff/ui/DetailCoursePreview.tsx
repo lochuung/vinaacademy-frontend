@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { CourseDetailsResponse, LessonType } from "@/types/course";
+import { VideoStatus } from "@/types/video";
 
 
 // Course details preview dialog component

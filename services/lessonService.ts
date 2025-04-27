@@ -8,15 +8,10 @@ import { CourseDto, LessonType } from "@/types/course";
 
 // 🔍 GET /lessons/{id}
 export const getLessonById = async (id: string): Promise<LessonDto | null> => {
-  try {
-    const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.get(
-      `/lessons/${id}`
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error("getLessonById error:", error);
-    return null;
-  }
+  const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.get(
+    `/lessons/${id}`
+  );
+  return response.data.data;
 };
 
 // 🔍 GET /lessons/section/{sectionId}
@@ -61,6 +56,12 @@ export const updateLesson = async (id: string, lessonData: LessonRequest): Promi
       } else {
         throw new Error("Cannot update lesson with unknown orderIndex");
       }
+    }
+
+    // Handle quiz settings if this is a quiz
+    if (lessonData.type === 'QUIZ' && lessonData.settings) {
+      // Make sure settings is properly formatted for API
+      console.log('Updating quiz with settings:', lessonData.settings);
     }
 
     const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.put(

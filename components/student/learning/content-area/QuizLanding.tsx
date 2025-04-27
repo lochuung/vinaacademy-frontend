@@ -63,7 +63,9 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
                 passingScore: quizData.passingScore,
                 timeLimit: quizData.timeLimit
             },
-            totalPoints: quizData.totalPoint
+            totalPoints: quizData.totalPoint,
+            passPoint: quizData.passingScore, // Add passPoint
+            totalPoint: quizData.totalPoint   // Add totalPoint
           };
           
           setMappedQuiz(mapped);

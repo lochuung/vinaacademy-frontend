@@ -1,5 +1,6 @@
 import { BaseDto } from "./api-response";
 import { LessonType } from "./course";
+import { QuestionDto } from "./quiz";
 import { VideoStatus } from "./video";
 
 export interface LessonDto extends BaseDto {
@@ -55,6 +56,12 @@ export interface LessonRequest {
     passPoint?: number;
     totalPoint?: number;
     duration?: number;
+
+    // Quiz settings
+    settings?: Record<string, any>;
+
+    // List of questions for quizzes
+    questions?: QuestionDto[];
 }
 
 export interface LessonProgressDto {
