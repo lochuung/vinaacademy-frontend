@@ -2,6 +2,7 @@ import CourseHeader from '@/components/courses/course-detail/CourseHeader';
 import CourseDetails from '@/components/courses/course-detail/CourseDetails';
 import ReviewsArea from '@/components/student/learning/learning-tab/ReviewArea';
 import PurchaseCard from '@/components/courses/course-detail/PurchaseCard';
+import MobilePurchaseBar from '@/components/courses/course-detail/MobilePurchaseBar';
 import { Metadata } from 'next';
 import Script from 'next/script';
 import { notFound } from 'next/navigation';
@@ -153,18 +154,8 @@ export default async function CoursePage({
                         </div>
                     </main>
 
-                    {/* Mobile Purchase Bar - Fixed at bottom on mobile only */}
-                    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xl font-bold">{course.price.toLocaleString('vi-VN')}₫</p>
-                            </div>
-                            <button
-                                className="bg-[#a435f0] hover:bg-[#8710d8] text-white py-3 px-6 rounded font-medium">
-                                Đăng ký học ngay
-                            </button>
-                        </div>
-                    </div>
+                    {/* Mobile Purchase Bar - Using interactive component */}
+                    <MobilePurchaseBar course={course} />
                 </div>
             </>
         );

@@ -56,7 +56,7 @@ const UserMenu = () => {
     >
       {isAuthenticated ? (
         <div
-          className={`flex items-center space-x-2 cursor-pointer p-1 rounded-full transition-colors duration-200 ${
+          className={`flex items-center space-x-2 cursor-pointer p-1.5 rounded-full transition-colors duration-200 ${
             isOpen ? "bg-gray-100" : "hover:bg-gray-50"
           }`}
           onClick={toggleDropdown}
@@ -64,39 +64,34 @@ const UserMenu = () => {
           aria-haspopup="true"
         >
           {user ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               {user.avatarUrl ? (
-                <Avatar className= "border-2 w-[30px] h-[30px] border-gray-200">
+                <Avatar className="border-2 w-[32px] h-[32px] border-gray-100 shadow-sm">
                   <AvatarImage
-                    width={7}
-                    height={7}
                     src={getImageUrl(user.avatarUrl) || "/default-avatar.png"}
                     alt="Avatar"
-                    className="object-cover w-7 h-7 items-center"
+                    className="object-cover w-full h-full"
                   />
                 </Avatar>
-                // <FaUserCircle size={26} className="text-black" />
               ) : (
-                <FaUserCircle size={26} className="text-black" />
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100">
+                  <FaUserCircle size={24} className="text-gray-700" />
+                </div>
               )}
-
-              {/* <span className="text-sm font-medium text-gray-800 truncate">
-                
-              </span> */}
             </div>
           ) : null}
         </div>
       ) : (
-        <div className="flex space-x-3">
+        <div className="hidden lg:flex space-x-2">
           <Link
             href="/login"
-            className="px-4 py-2 border border-black text-black rounded hover:bg-gray-200"
+            className="px-4 py-2 border border-black text-black rounded hover:bg-gray-100 transition-colors text-sm font-medium"
           >
             Đăng nhập
           </Link>
           <Link
             href="/register"
-            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors text-sm font-medium"
           >
             Đăng ký
           </Link>

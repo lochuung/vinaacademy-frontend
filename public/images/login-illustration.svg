@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none" xmlns:v="https://vecta.io/nano">
+  <path d="M440.5 503.5c138.5 0 251-112.5 251-251S579 1.5 440.5 1.5 189.5 114 189.5 252.5s112.5 251 251 251z" fill="#f3f4f6"/>
+  <path d="M94 231.5h175v175H94v-175z" fill="#fff"/>
+  <path d="M164 289v60.5h35V289h-35z" fill="#e4e4e7"/>
+  <path d="M212.5 289v60.5h33V289h-33z" fill="#d1d5db"/>
+  <path d="M268 331.5h-26.5V289h26.5v42.5z" fill="#e4e4e7"/>
+  <path d="M94 319v87.5h175V319" stroke="#6366f1" stroke-width="2"/>
+  <path d="M154 349.5h25v30h-25z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M118.5 349.5h23v15h-23z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M154 269h25v30h-25z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M118.5 269h23v15h-23z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M251 349.5h-15v30h15v-30z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M236 349.5h-45v30h45v-30z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M251 269h-15v30h15v-30z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M236 269h-45v30h45v-30z" fill="#fff" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M269 319v-74.5" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M94 244.5v-25h175v25" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M109 231.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M123 231.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M137 231.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M269.5 401s-.5-6.5-3-9c0 0-2-1-4.5-2 0 0-1.5 4-3 5 0 0-7.5-8-19.5-19s-16-16.5-16-16.5c-2-3-12.5-14-12.5-14-1-1.5-4-6-3.5-9.5-.5-6.5 3-8.5 3-8.5.5-1.5 2.5-4.5 6-1.5l14.5 13s.5-14.5.5-19 1-17.5 1-17.5c.5-1 3-1 3.5-.5v17l.5 11s13-14 15-15.5c0 0 2-1.5 3.5-.5 0 0 1.5 1 0 3 0 0-18 20-18.5 20.5 0 0 5 5.5 10.5 11s18 19.5 18 19.5c2-5.5 5.5-4 5.5-4 4.5 1 4 6 4 6v29z" fill="#3b82f6"/>
+  <path d="M84 400h192.5" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10"/>
+  <path d="M348 160.5h215v152H348z" fill="#fff"/>
+  <circle cx="400.5" cy="282.5" r="11" fill="#e4e4e7"/>
+  <circle cx="426.5" cy="282.5" r="11" fill="#e4e4e7"/>
+  <circle cx="452.5" cy="282.5" r="11" fill="#e4e4e7"/>
+  <circle cx="479.5" cy="282.5" r="11" fill="#e4e4e7"/>
+  <circle cx="506.5" cy="282.5" r="11" fill="#e4e4e7"/>
+  <path d="M348 205.5h215v3H348v-3zm0 23h215v3H348v-3z" fill="#e4e4e7"/>
+  <path d="M601.5 301h-294v11h294v-11zm-294-47v-82.5a11 11 0 0 1 11-11h272a11 11 0 0 1 11 11V254h-294z" stroke="#6366f1" stroke-width="2"/>
+  <path d="M363.5 175.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M377.5 175.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M391.5 175.5c0-1.5-1-3-3-3s-3 1.5-3 3 1 3 3 3 3-1.5 3-3z" fill="#6366f1"/>
+  <path d="M454.5 198h-88a2.5 2.5 0 0 1-2.5-2.5v-1a2.5 2.5 0 0 1 2.5-2.5h88a2.5 2.5 0 0 1 2.5 2.5v1a2.5 2.5 0 0 1-2.5 2.5z" fill="#e4e4e7"/>
+  <path d="M618 360.5c-62 72-190.5 89.5-294 13.5-56-41-94-139-67.5-207.5 9-23 24-39 24-39" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10" stroke-dasharray="11 11"/>
+  <path d="M397.5 525h365a5 5 0 0 0 5-5v-124c0-27.5-22.5-50-50-50H397.5c-27.5 0-50 22.5-50 50v124c0 2.5 2.5 5 5 5z" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+  <path d="M636 398.5v28m-39.5-28v28m-198-28v28m39.5-28v28m39.5-28v28m39.5-28v28m163-28v28m39.5-28v28" stroke="#6366f1" stroke-width="2" stroke-miterlimit="10" stroke-dasharray="3 3"/>
+  <rect x="392" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="452" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="512" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="572" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="632" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="692" y="436.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="392" y="478.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="452" y="478.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="512" y="478.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="572" y="478.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="632" y="478.5" width="45" height="30" rx="2" fill="#f9fafb"/>
+  <rect x="692" y="478.5" width="45" height="30" rx="2" fill="#3b82f6"/>
+  <path d="M714.5 493.5l-2 2-4.5-4.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

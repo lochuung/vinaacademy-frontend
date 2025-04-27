@@ -15,8 +15,12 @@ import "react-toastify/dist/ReactToastify.css";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ViNA ACADEMY - Nền tảng học trực tuyến',
-  description: 'Học mọi lúc, mọi nơi với ViNA ACADEMY',
+  title: 'VinaAcademy - Nền tảng học trực tuyến',
+  description: 'Học mọi lúc, mọi nơi với VinaAcademy',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
@@ -26,6 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
+      <head>
+        <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+      </head>
       <body className={inter.className}>
         <ReactQueryProvider>
           <ToastProvider>
@@ -48,15 +55,15 @@ export default function RootLayout({
           {`
             // Xử lý việc quay về trang chủ từ Logo
             document.addEventListener('DOMContentLoaded', function() {
-              const logo = document.querySelector('a.text-2xl.font-bold');
-              if (logo) {
-                logo.addEventListener('click', function(e) {
+              const logoLinks = document.querySelectorAll('a.flex.items-center');
+              logoLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
                   if (window.location.pathname.includes('/search')) {
                     e.preventDefault();
                     window.location.href = '/';
                   }
                 });
-              }
+              });
             });
           `}
         </Script>

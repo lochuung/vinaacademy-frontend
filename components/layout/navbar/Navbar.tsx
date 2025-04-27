@@ -2,50 +2,55 @@
 
 import { useEffect, useState } from "react";
 import { CartItem } from "@/types/navbar";
-import ExploreDropdown from "./explore-dropdown/ExploreDropdown";
-import SearchBar from "./search-bar/SearchBar";
-import UserLearning from "./user-learning/UserLearning";
-import UserMenu from "./user-dropdown/UserMenu";
-import ShoppingCart from "./shopping-cart/ShoppingCart";
-import NavigationLinks from "./other-link/NavigationLinks";
-import SubNavbar from "./sub-navbar/SubNavbar";
-import NotificationDropdown from "./notification-badge/NotificationDropdown";
 import HomeLink from "../HomeLink";
+import DesktopNav from "./desktop/DesktopNav";
+import MobileSearchBar from "./mobile/MobileSearchBar";
 import { useAuth } from "@/context/AuthContext";
 import { useCategories } from "@/context/CategoryContext";
-import { useCart } from "@/context/CartContext"; // Import useCart hook
+import { useCart } from "@/context/CartContext";
 import {
   fetchUserNotifications,
   markAllNotificationsAsRead,
 } from "@/services/notificationService";
-import {
-  NotificationDTO,
-  NotificationPageResponse,
-  NotificationType,
-} from "@/types/notification-type";
-import { useToast } from "@/hooks/use-toast"; // Import useToast hook
-import Link from "next/link";
+import { NotificationDTO } from "@/types/notification-type";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { Search, Menu, X } from "lucide-react";
+import ExploreDropdown from "./explore-dropdown/ExploreDropdown";
+import MobileNav from "./mobile/MobileNav";
 
 interface NavbarProps {
   onNavigateHome?: () => void;
 }
 
 const Navbar = ({ onNavigateHome }: NavbarProps) => {
-  const { categories, isLoading } = useCategories(); // Using the shared categories context
-  const { isAuthenticated, user } = useAuth();
-  const { cartItems, removeFromCart, totalPrice } = useCart(); // Sử dụng context giỏ hàng
+  const { categories, isLoading } = useCategories();
+  const { isAuthenticated, user, logout } = useAuth();
+  const { cartItems, removeFromCart, totalPrice } = useCart();
   const { toast } = useToast();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [totalUnread, setTotalUnread] = useState<number>(0);
   const [formattedCartItems, setFormattedCartItems] = useState<CartItem[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  
   const roleStaffAdmin =
     user?.roles.findLast(
       (role) => role.name === "admin" || role.name === "staff"
     ) || null;
 
+  // Handle logout function
+  const handleLogout = () => {
+    logout();
+    setMobileMenuOpen(false);
+    router.push("/");
+    toast({
+      title: "Đã đăng xuất",
+      description: "Bạn đã đăng xuất thành công",
+    });
+  };
 
-  // Chuyển đổi cartItems từ CartContext sang định dạng CartItem cho ShoppingCart component
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
       const formatted = cartItems.map((item) => ({
@@ -109,40 +114,86 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
     }
   }, [isAuthenticated]);
 
+  // Close mobile menu when screen resizes to larger size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileMenuOpen(false);
+        setMobileSearchOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div>
-      <nav className="bg-white text-black shadow-md border-b-2 border-black p-4">
+    <div className="sticky top-0 z-50 bg-white">
+      <nav className="bg-white text-black shadow-md border-b border-gray-200 py-3 px-4 lg:py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <HomeLink className="text-2xl font-bold">ViNA</HomeLink>
-          <div className="hidden md:flex space-x-6">
-            <ExploreDropdown categories={isLoading ? [] : categories} />
+          {/* Logo and brand */}
+          <div className="flex items-center">
+            <HomeLink className="flex items-center">
+              <span className="hidden sm:inline">Vina Academy</span>
+            </HomeLink>
+            {/* Categories dropdown - hidden on mobile */}
+            <div className="hidden lg:block ml-6">
+              <ExploreDropdown categories={isLoading ? [] : categories} />
+            </div>
           </div>
-          <SearchBar />
-          <NavigationLinks />
-          <div className="flex items-center space-x-4">
-            {isAuthenticated && (
-              <>
-                {roleStaffAdmin && (
-                   <Link href={"/requests"}>Duyệt khóa học</Link>
-                )}
-                <UserLearning />
-                <NotificationDropdown
-                  onMarkAllAsRead={handleMarkAllAsRead}
-                  notifications={notifications}
-                  totalUnread={totalUnread}
-                />
-                <ShoppingCart
-                  items={formattedCartItems}
-                  onRemoveItem={handleRemoveFromCart}
-                  total={totalPrice} // Truyền tổng giá trị từ CartContext
-                />
-              </>
-            )}
-            <UserMenu />
+
+          {/* Desktop navigation */}
+          <DesktopNav 
+            categories={categories}
+            isLoading={isLoading}
+            isAuthenticated={isAuthenticated}
+            roleStaffAdmin={roleStaffAdmin}
+            notifications={notifications}
+            totalUnread={totalUnread}
+            cartItems={formattedCartItems}
+            onRemoveFromCart={handleRemoveFromCart}
+            onMarkAllAsRead={handleMarkAllAsRead}
+            totalPrice={totalPrice}
+          />
+
+          {/* Mobile menu buttons */}
+          <div className="flex items-center lg:hidden">
+            <button 
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              className="p-2 mr-2 text-gray-600 hover:text-black"
+              aria-label="Search"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-gray-600 hover:text-black"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
           </div>
         </div>
       </nav>
-      {/* <SubNavbar categories={isLoading ? [] : categories} /> */}
+
+      {/* Mobile search bar - expands when active */}
+      <MobileSearchBar isOpen={mobileSearchOpen} />
+
+      {/* Mobile menu */}
+      <MobileNav
+        isOpen={mobileMenuOpen}
+        categories={categories}
+        isLoading={isLoading}
+        isAuthenticated={isAuthenticated} 
+        roleStaffAdmin={roleStaffAdmin}
+        cartItems={formattedCartItems}
+        totalUnread={totalUnread}
+        onClose={() => setMobileMenuOpen(false)}
+        onLogout={handleLogout}
+      />
     </div>
   );
 };

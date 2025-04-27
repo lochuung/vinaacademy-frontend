@@ -7,24 +7,24 @@ interface WelcomeSectionProps {
 
 const WelcomeSection = ({userName, userAvatar}: WelcomeSectionProps) => {
     return (
-        <div className="flex items-center justify-start gap-4 py-4 w-full max-w-6xl px-5">
+        <div className="flex items-center justify-start gap-4 py-6 mt-4 sm:mt-6 md:mt-8 w-full max-w-6xl px-5">
             {/* Avatar */}
             {userAvatar ? (
                 <img
                     src={userAvatar}
                     alt="User Avatar"
-                    className="w-12 h-12 rounded-full border-2 border-gray-300"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-gray-300"
                 />
             ) : (
                 <div
-                    className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 border-2 border-gray-400">
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gray-300 border-2 border-gray-400">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-8 h-8 text-gray-600"
+                        className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600"
                     >
                         <path
                             strokeLinecap="round"
@@ -36,7 +36,7 @@ const WelcomeSection = ({userName, userAvatar}: WelcomeSectionProps) => {
             )}
 
             {/* Welcome Text */}
-            <span className="text-xl font-semibold text-black">Chào mừng trở lại, {userName}! 👋</span>
+            <span className="text-lg sm:text-xl font-semibold text-black">Chào mừng trở lại, {userName}! 👋</span>
         </div>
     );
 };

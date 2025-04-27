@@ -5,21 +5,22 @@ import React, { useEffect, useState, Suspense } from "react";
 import { LoginCredentials } from "@/types/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 // Loading component for Suspense fallback
 function LoginLoading() {
     return (
-        <main className='flex items-center justify-center max-h-full bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
-            <div className='w-full max-w-[28%] p-8 bg-white rounded-lg shadow-lg'>
-                <div className="text-center mb-6">
-                    <h1 className="text-3xl font-bold">VN Academy</h1>
-                    <p className="text-gray-600">Đang tải...</p>
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-100 to-gray-200">
+            <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
+                <div className="w-16 h-16 relative mb-4">
+                    <div className="animate-pulse rounded-full h-full w-full bg-gray-200"></div>
                 </div>
-                <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black"></div>
+                <h1 className="text-2xl font-bold mb-2">Vina Academy</h1>
+                <div className="flex justify-center mt-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-600 border-gray-300"></div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }
 
@@ -69,18 +70,50 @@ function LoginContent() {
     };
 
     return (
-        <main
-            className='flex items-center justify-center max-h-full bg-gradient-to-tl from-gray-300 via-gray-200 to-neutral-300'>
-
-            <div className='w-full max-w-[28%]'>
-                <LoginForm
-                    onSubmit={handleSubmit}
-                    isSubmitting={isLoading}
-                    error={error}
-                    signupUrl="/register"
-                />
+        <div className="min-h-screen flex flex-col md:flex-row bg-white">
+            {/* Left side - illustration for desktop */}
+            <div className="hidden lg:flex lg:w-1/2 bg-blue-600 text-white p-12 flex-col justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold mb-6">Welcome to Vina Academy</h1>
+                    <p className="text-lg opacity-90 mb-8">
+                        Nền tảng học trực tuyến hàng đầu với hàng ngàn khoá học chất lượng cao
+                    </p>
+                </div>
+                
+                <div className="relative h-96 w-full">
+                    <Image 
+                        src="/images/login-illustration.svg" 
+                        alt="Login Illustration"
+                        fill
+                        className="object-contain"
+                    />
+                </div>
+                
+                <div>
+                    <p className="text-sm opacity-75">
+                        © 2023 Vina Academy. Tất cả các quyền được bảo lưu.
+                    </p>
+                </div>
             </div>
-        </main>
+            
+            {/* Right side - login form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8">
+                <div className="w-full max-w-md">
+                    <LoginForm
+                        heading="Vina Academy"
+                        subheading="Đăng nhập để tiếp tục học tập"
+                        logo={{
+                            url: "/",
+                            src: "/logo.png",  // Update with your actual logo path
+                            alt: "Vina Academy Logo"
+                        }}
+                        onSubmit={handleSubmit}
+                        isSubmitting={isLoading}
+                        error={error}
+                    />
+                </div>
+            </div>
+        </div>
     );
 }
 

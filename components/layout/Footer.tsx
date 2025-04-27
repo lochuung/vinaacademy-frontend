@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site.config";
+import Image from "next/image";
 
 export default function Footer() {
     return (
@@ -9,7 +10,8 @@ export default function Footer() {
                 <div className="flex flex-col items-center text-center">
                     {/* Logo and brand name */}
                     <Link href="/" className="flex items-center mb-3">
-                        <Icons.logo className="h-6 w-6 text-primary mr-2" />
+                        <Image src="/logo.png" alt="VinaAcademy Logo" width={24} height={24} 
+                        className="h-6 w-6 text-primary mr-2" />
                         <span className="text-xl font-bold">VinaAcademy</span>
                     </Link>
                     

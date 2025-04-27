@@ -1,4 +1,4 @@
-import {FaBell} from "react-icons/fa";
+import { Bell } from "lucide-react";
 
 interface NotificationBadgeProps {
     count: number;
@@ -9,17 +9,23 @@ interface NotificationBadgeProps {
 const NotificationBadge = ({count, onClick, isActive}: NotificationBadgeProps) => {
     return (
         <button
-            className={`relative flex items-center p-2 rounded-full transition-colors duration-200 ${isActive ? "bg-gray-100" : "hover:bg-gray-50"
+            className={`relative flex items-center justify-center p-2 rounded-full transition-all duration-200 ${
+                isActive 
+                    ? "bg-gray-100 text-black" 
+                    : "hover:bg-gray-50 text-gray-700 hover:text-black"
             }`}
             onClick={onClick}
-            aria-label="Thông báo"
+            aria-label={`Thông báo${count > 0 ? ` (${count})` : ''}`}
             aria-expanded={isActive}
             aria-haspopup="true"
         >
-            <FaBell className="w-5 h-5 text-black"/>
+            <Bell className="w-5 h-5" strokeWidth={2} />
+            
             {count > 0 && (
                 <span
-                    className="absolute -top-0 -right-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full">
+                    className="absolute -top-0.5 -right-0.5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full animate-pulse-subtle shadow-sm"
+                    aria-hidden="true"
+                >
                     {count > 99 ? "99+" : count}
                 </span>
             )}
