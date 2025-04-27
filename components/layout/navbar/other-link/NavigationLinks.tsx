@@ -1,21 +1,29 @@
-import Link from "next/link"; // Import component Link từ next/link
+import Link from "next/link";
+import { useAuth } from '@/context/AuthContext';
 
 // Định nghĩa component NavigationLinks
 export const NavigationLinks = () => {
+    const { isAuthenticated, user } = useAuth();
+
+    // Xác định link cho "Trở thành Giảng viên/Giảng dạy"
+    const teachingLink = (isAuthenticated && user?.roles.some(role => role.code === "instructor"))
+        ? { href: "/instructor/dashboard", label: "Giảng dạy" }
+        : { href: "/instructors", label: "Trở thành Giảng viên" };
+
     const links = [
-        {href: "/blog", label: "Blog"}, // Định nghĩa liên kết đến trang Blog
-        {href: "/teaching", label: "Trở thành Giảng viên"}, // Định nghĩa liên kết đến trang Trở thành Giảng viên
+        { href: "/blog", label: "Blog" },
+        teachingLink,
     ];
 
     return (
-        <ul className="hidden md:flex items-center space-x-6"> {/* Danh sách các liên kết, chỉ hiển thị trên màn hình md trở lên */}
+        <ul className="hidden md:flex items-center space-x-6">
             {links.map((link) => (
-                <li key={link.href}> {/* Mỗi liên kết là một mục trong danh sách */}
+                <li key={link.href}>
                     <Link
                         href={link.href}
                         className="hover:text-gray-500 transition-colors duration-200"
                     >
-                        {link.label} {/* Hiển thị nhãn của liên kết */}
+                        {link.label}
                     </Link>
                 </li>
             ))}
@@ -23,4 +31,4 @@ export const NavigationLinks = () => {
     );
 };
 
-export default NavigationLinks; // Xuất component NavigationLinks để sử dụng ở nơi khác
+export default NavigationLinks;

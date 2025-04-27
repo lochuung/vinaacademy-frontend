@@ -9,6 +9,7 @@ export enum NotificationType {
   PROMOTION = "PROMOTION",
   FINANCIAL_ALERT = "FINANCIAL_ALERT",
   STAFF_REQUEST = "STAFF_REQUEST",
+  INSTRUCTOR_REQUEST = "INSTRUCTOR_REQUEST",
 }
 
 export interface NotificationCreateDTO {
