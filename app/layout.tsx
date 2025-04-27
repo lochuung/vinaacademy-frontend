@@ -55,15 +55,15 @@ export default function RootLayout({
           {`
             // Xử lý việc quay về trang chủ từ Logo
             document.addEventListener('DOMContentLoaded', function() {
-              const logo = document.querySelector('a.text-2xl.font-bold');
-              if (logo) {
-                logo.addEventListener('click', function(e) {
+              const logoLinks = document.querySelectorAll('a.flex.items-center');
+              logoLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
                   if (window.location.pathname.includes('/search')) {
                     e.preventDefault();
                     window.location.href = '/';
                   }
                 });
-              }
+              });
             });
           `}
         </Script>

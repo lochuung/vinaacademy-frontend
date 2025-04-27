@@ -1,6 +1,7 @@
 import { CategoryDto } from "@/types/category";
 import { CartItem } from "@/types/navbar";
 import Link from "next/link";
+import Image from "next/image";
 import { LogOut } from "lucide-react";
 import MobileCategories from "./MobileCategories";
 import MobileNavLinks from "./MobileNavLinks";
@@ -37,6 +38,22 @@ const MobileNav = ({
     >
       <div className="h-full overflow-y-auto p-4">
         <div className="space-y-6">
+          {/* Logo in mobile menu */}
+          <div className="flex items-center justify-center py-4 border-b border-gray-200">
+            <div className="flex items-center">
+              <div className="relative h-8 w-8 mr-2">
+                <Image
+                  src="/logo.png"
+                  alt="Vina Academy Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
+              <span className="font-bold text-xl">Vina Academy</span>
+            </div>
+          </div>
+
           {/* Explore categories */}
           <MobileCategories 
             categories={categories}

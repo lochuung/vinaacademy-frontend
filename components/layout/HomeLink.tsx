@@ -1,34 +1,29 @@
 "use client";
 
-import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import Link from "next/link";
+import Image from "next/image";
 
 interface HomeLinkProps {
+    children?: React.ReactNode;
     className?: string;
-    children: React.ReactNode;
+    href?: string;
 }
 
-export default function HomeLink({className, children}: HomeLinkProps) {
-    const router = useRouter();
-
-    const handleClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-
-        // Xóa mọi state hoặc query parameters
-        window.sessionStorage.removeItem('searchFilters');
-
-        // Force reload đến trang chủ
-        window.location.href = '/';
-    };
-
-    // Using Link component but with the custom click handler
+const HomeLink = ({ children, className = "", href = "/" }: HomeLinkProps) => {
     return (
-        <Link
-            href="/"
-            className={className}
-            onClick={handleClick}
-        >
-            {children}
+        <Link href={href} className={`flex items-center ${className}`}>
+            <div className="relative h-8 w-8 mr-2">
+                <Image
+                    src="/logo.png"
+                    alt="Vina Academy Logo"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                />
+            </div>
+            {children && <span className="font-bold text-xl">{children}</span>}
         </Link>
     );
-}
+};
+
+export default HomeLink;
