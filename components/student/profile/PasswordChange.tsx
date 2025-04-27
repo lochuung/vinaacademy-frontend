@@ -27,9 +27,6 @@ import { changePassword } from "@/services/profileService";
 import { createSuccessToast } from "@/components/ui/toast-cus";
 import { passwordFormSchema } from "@/lib/profile-schema";
 
-// Define the form schema for password change
-
-
 type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 export function PasswordChange() {
@@ -83,7 +80,16 @@ export function PasswordChange() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button
+          variant="outline"
+          className="w-full"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
           <KeyRound className="mr-2 h-4 w-4" />
           Đổi mật khẩu
         </Button>
@@ -96,7 +102,14 @@ export function PasswordChange() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit(onSubmit)(e);
+            }}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="currentPassword"
@@ -155,7 +168,11 @@ export function PasswordChange() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpen(false);
+                }}
               >
                 Hủy
               </Button>

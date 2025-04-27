@@ -1,6 +1,6 @@
 import apiClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/api-response";
-import { User } from "@/types/auth";
+import { User, ViewUser } from "@/types/auth";
 import { UserDto } from "@/types/course";
 import { ChangePasswordRequest, UpdateUserInfoRequest } from "@/types/profile-type";
 import { AxiosResponse } from "axios";
@@ -23,6 +23,17 @@ export const updateUserInfo = async (updateUserInfoRequest: UpdateUserInfoReques
         return response.data.data;
     } catch (error) {
         console.error("updateUserInfo error:", error);
+        return null;
+    }
+};
+
+export const getViewUserInfo = async (userId: string ): Promise<ViewUser | null> => {
+    try {
+        const response: AxiosResponse = await apiClient.get(`/users/view/${userId}`);
+        
+        return response.data.data;
+    } catch (error) {
+        console.error("get View User Info error:", error);
         return null;
     }
 };

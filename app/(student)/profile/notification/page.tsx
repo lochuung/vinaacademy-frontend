@@ -39,7 +39,7 @@ const NotificationsPage = () => {
     currentPage: 0,
     totalPages: 0,
     totalElements: 0,
-    size: 4,
+    size: 3,
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<NotificationFiltersType>({
