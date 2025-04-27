@@ -10,7 +10,7 @@ export enum QuestionType {
 }
 
 export interface AnswerDto {
-  id: string; // UUID
+  id?: string; // UUID
   answerText: string;
   isCorrect?: boolean; // Optional as it's only included for instructors and result view
 }

@@ -93,7 +93,7 @@ export default function LectureEditor() {
                 // Convert back and update the local state to ensure it's in sync
                 setLecture(lessonToLecture(updatedLesson));
 
-                router.push(`/instructor/courses/${courseId}/content/${lectureId}`);
+                router.push(`/instructor/courses/${courseId}/content`);
             } else {
                 throw new Error("Failed to update lesson");
             }

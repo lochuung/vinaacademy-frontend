@@ -11,7 +11,7 @@ export interface Resource {
 
 // Quiz related types
 export interface QuizOption {
-    id: string;
+    id?: string;
     text: string;
     isCorrect: boolean;
 }

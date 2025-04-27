@@ -1,12 +1,13 @@
 // components/lecture/content/quiz/QuizEditor.tsx
 import {useState, useEffect} from 'react';
-import {Quiz, QuizQuestion, QuizOption, Lecture} from '@/types/lecture';
+import {Quiz, QuizQuestion, QuizOption, Lecture, QuestionType as UIQuestionType} from '@/types/lecture';
 import QuizHeader from './QuizHeader';
 import QuestionList from './QuestionList';
 import QuizSettings from './QuizSettings';
 import QuizPreview from './preview/QuizPreview';
 import QuizTips from './QuizTips';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 // Import our new hooks for quiz instructor APIs
 import { 
@@ -18,9 +19,41 @@ import {
     useUpdateAnswer,
     useDeleteAnswer
 } from '@/hooks/instructor/useQuizInstructor';
-import { QuestionType } from '@/types/quiz'; // Import the QuestionType enum
+import { QuestionType as APIQuestionType } from '@/types/quiz'; // Import the QuestionType enum with alias
 import { quizDtoToQuiz } from '@/adapters/quizAdapter';
 import { v4 as uuidv4 } from 'uuid';
+
+// Helper function to convert API question type to UI question type
+const apiToUIQuestionType = (apiType: APIQuestionType): UIQuestionType => {
+    switch(apiType) {
+        case APIQuestionType.SINGLE_CHOICE:
+            return 'single_choice';
+        case APIQuestionType.MULTIPLE_CHOICE:
+            return 'multiple_choice';
+        case APIQuestionType.TRUE_FALSE:
+            return 'true_false';
+        case APIQuestionType.TEXT:
+            return 'text';
+        default:
+            return 'single_choice';
+    }
+};
+
+// Helper function to convert UI question type to API question type
+const uiToAPIQuestionType = (uiType: UIQuestionType): APIQuestionType => {
+    switch(uiType) {
+        case 'single_choice':
+            return APIQuestionType.SINGLE_CHOICE;
+        case 'multiple_choice':
+            return APIQuestionType.MULTIPLE_CHOICE;
+        case 'true_false':
+            return APIQuestionType.TRUE_FALSE;
+        case 'text':
+            return APIQuestionType.TEXT;
+        default:
+            return APIQuestionType.SINGLE_CHOICE;
+    }
+};
 
 interface QuizEditorProps {
     lecture: Lecture;
@@ -129,8 +162,8 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
             text: '',
             type: 'single_choice',
             options: [
-                { id: `o_${uuidv4()}_1`, text: '', isCorrect: true },
-                { id: `o_${uuidv4()}_2`, text: '', isCorrect: false }
+                { text: '', isCorrect: true },
+                { text: '', isCorrect: false }
             ],
             explanation: '',
             points: 1,
@@ -164,11 +197,8 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                         questionText: newQuestion.text,
                         explanation: newQuestion.explanation || '',
                         point: newQuestion.points,
-                        questionType: (newQuestion.type === 'single_choice' ? 'SINGLE_CHOICE' :
-                            newQuestion.type === 'multiple_choice' ? 'MULTIPLE_CHOICE' :
-                            newQuestion.type === 'true_false' ? 'TRUE_FALSE' : 'TEXT') as QuestionType,
+                        questionType: uiToAPIQuestionType(newQuestion.type),
                         answers: newQuestion.options.map(o => ({
-                            id: o.id,
                             answerText: o.text,
                             isCorrect: o.isCorrect
                         }))
@@ -218,64 +248,6 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
         }
     };
 
-    // Duplicate a question
-    const duplicateQuestion = async (questionId: string) => {
-        const questionToDuplicate = questions.find(q => q.id === questionId);
-        if (!questionToDuplicate) return;
-        
-        const duplicatedQuestion: QuizQuestion = {
-            ...JSON.parse(JSON.stringify(questionToDuplicate)), // Deep clone
-            id: `q_${uuidv4()}`,
-            text: `${questionToDuplicate.text} (bản sao)`,
-            options: questionToDuplicate.options.map(opt => ({
-                ...opt,
-                id: `o_${uuidv4()}`
-            }))
-        };
-        
-        // Update local state first
-        const updatedQuestions = [...questions, duplicatedQuestion];
-        const totalPoints = updatedQuestions.reduce((sum, q) => sum + q.points, 0);
-        
-        const updatedQuiz = {
-            ...quiz,
-            questions: updatedQuestions,
-            totalPoints
-        };
-        
-        setLecture({
-            ...lecture,
-            quiz: updatedQuiz
-        });
-        
-        setExpandedQuestion(duplicatedQuestion.id);
-        
-        // Create in backend if we have a quiz ID
-        if (lecture.id) {
-            try {
-                await createQuestionMutation.mutateAsync({
-                    quizId: lecture.id,
-                    question: {
-                        id: duplicatedQuestion.id,
-                        questionText: duplicatedQuestion.text,
-                        explanation: duplicatedQuestion.explanation || '',
-                        point: duplicatedQuestion.points,
-                        questionType: (duplicatedQuestion.type === 'single_choice' ? QuestionType.SINGLE_CHOICE :
-                            duplicatedQuestion.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
-                            duplicatedQuestion.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT),
-                        answers: duplicatedQuestion.options.map(o => ({
-                            id: o.id,
-                            answerText: o.text,
-                            isCorrect: o.isCorrect
-                        }))
-                    }
-                });
-            } catch (error) {
-                console.error('Error duplicating question:', error);
-            }
-        }
-    };
-
     // Update question text
     const updateQuestionText = async (questionId: string, text: string) => {
         // Update local state first
@@ -307,9 +279,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
-                        questionType: (question.type === 'single_choice' ? QuestionType.SINGLE_CHOICE :
-                            question.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
-                            question.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT),
+                        questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
                             id: o.id,
                             answerText: o.text,
@@ -324,14 +294,14 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
     };
 
     // Update question type
-    const updateQuestionType = async (questionId: string, type: QuizQuestion['type']) => {
+    const updateQuestionType = async (questionId: string, type: APIQuestionType) => {
         // Update local state first
         const updatedQuestions = questions.map(q => {
             if (q.id === questionId) {
                 let options = [...q.options];
                 
                 // Reset options based on question type
-                if ((type === 'single_choice') && (q.type as QuestionType) !== QuestionType.SINGLE_CHOICE) {
+                if (type === APIQuestionType.SINGLE_CHOICE && uiToAPIQuestionType(q.type as UIQuestionType) !== APIQuestionType.SINGLE_CHOICE) {
                     options = options.map((opt, index) => ({
                         ...opt,
                         isCorrect: index === 0 // Only first option is correct
@@ -339,19 +309,19 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                 }
                 
                 // For true/false, create exactly 2 options
-                if (type === 'true_false') {
+                if (type === APIQuestionType.TRUE_FALSE) {
                     options = [
-                        { id: `o_${uuidv4()}_1`, text: 'Đúng', isCorrect: true },
-                        { id: `o_${uuidv4()}_2`, text: 'Sai', isCorrect: false }
+                        { text: 'Đúng', isCorrect: true },
+                        { text: 'Sai', isCorrect: false }
                     ];
                 }
                 
                 // For text type, no options needed
-                if (type === 'text') {
+                if (type === APIQuestionType.TEXT) {
                     options = [];
                 }
                 
-                return {...q, type, options};
+                return {...q, type: apiToUIQuestionType(type), options};
             }
             return q;
         });
@@ -380,9 +350,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
-                        questionType: (question.type === 'single_choice' ? QuestionType.SINGLE_CHOICE :
-                            question.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
-                            question.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT),
+                        questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
                             id: o.id,
                             answerText: o.text,
@@ -402,7 +370,6 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
         const updatedQuestions = questions.map(q => {
             if (q.id === questionId) {
                 const newOption: QuizOption = {
-                    id: `o_${uuidv4()}`,
                     text: '',
                     isCorrect: false
                 };
@@ -624,9 +591,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
-                        questionType: (question.type === 'single_choice' ? QuestionType.SINGLE_CHOICE :
-                            question.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
-                            question.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT),
+                        questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
                             id: o.id,
                             answerText: o.text,
@@ -674,9 +639,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                         questionText: question.text,
                         explanation: question.explanation || '',
                         point: question.points,
-                        questionType: (question.type === 'single_choice' ? QuestionType.SINGLE_CHOICE :
-                            question.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
-                            question.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT),
+                        questionType: uiToAPIQuestionType(question.type as UIQuestionType),
                         answers: question.options.map(o => ({
                             id: o.id,
                             answerText: o.text,
@@ -750,53 +713,62 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
     // Loading state UI
     if (isLoading) {
         return (
-            <div className="py-12 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
-                <span className="ml-3 text-gray-700">Đang tải dữ liệu bài kiểm tra...</span>
+            <div className="py-20 flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-white rounded-lg shadow-sm border border-blue-100">
+                <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+                <span className="text-lg font-medium text-blue-700">Đang tải dữ liệu bài kiểm tra...</span>
+                <p className="text-blue-500 mt-2">Vui lòng đợi trong giây lát</p>
             </div>
         );
     }
 
     return (
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-8">
             {/* 1. Tiêu đề Quiz với nút Xem trước */}
-            <QuizHeader
-                totalPoints={totalPoints}
-                hasValidQuestions={hasValidQuestions}
-                onPreview={() => setShowPreview(true)}
-                lecture={lecture}
-                sectionId={sectionId}
-                onSaved={(updatedLecture) => setLecture(updatedLecture)}
-            />
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100 transition-all hover:shadow-md">
+                <QuizHeader
+                    totalPoints={totalPoints}
+                    hasValidQuestions={hasValidQuestions}
+                    onPreview={() => setShowPreview(true)}
+                    lecture={lecture}
+                    sectionId={sectionId}
+                    onSaved={(updatedLecture) => setLecture(updatedLecture)}
+                />
+            </div>
 
             {/* 2. Danh sách câu hỏi */}
-            <QuestionList
-                questions={questions}
-                expandedQuestion={expandedQuestion}
-                setExpandedQuestion={setExpandedQuestion}
-                onAddQuestion={addQuestion}
-                onRemoveQuestion={removeQuestion}
-                onDuplicateQuestion={duplicateQuestion}
-                onUpdateQuestionText={updateQuestionText}
-                onUpdateQuestionType={updateQuestionType}
-                onAddOption={addOption}
-                onRemoveOption={removeOption}
-                onUpdateOptionText={updateOptionText}
-                onToggleOptionCorrect={toggleOptionCorrect}
-                onUpdateExplanation={updateExplanation}
-                onUpdatePoints={updatePoints}
-                onToggleRequired={toggleRequired}
-                onMoveQuestion={moveQuestion}
-            />
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <QuestionList
+                    questions={questions}
+                    expandedQuestion={expandedQuestion}
+                    setExpandedQuestion={setExpandedQuestion}
+                    onAddQuestion={addQuestion}
+                    onRemoveQuestion={removeQuestion}
+                    onDuplicateQuestion={() => {}}
+                    onUpdateQuestionText={updateQuestionText}
+                    onUpdateQuestionType={updateQuestionType}
+                    onAddOption={addOption}
+                    onRemoveOption={removeOption}
+                    onUpdateOptionText={updateOptionText}
+                    onToggleOptionCorrect={toggleOptionCorrect}
+                    onUpdateExplanation={updateExplanation}
+                    onUpdatePoints={updatePoints}
+                    onToggleRequired={toggleRequired}
+                    onMoveQuestion={moveQuestion}
+                />
+            </div>
 
             {/* 3. Cài đặt Quiz */}
-            <QuizSettings
-                settings={quiz.settings}
-                onUpdateSettings={updateSettings}
-            />
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100 transition-all hover:shadow-md">
+                <QuizSettings
+                    settings={quiz.settings}
+                    onUpdateSettings={updateSettings}
+                />
+            </div>
 
             {/* 4. Mẹo Quiz */}
-            <QuizTips/>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 shadow-sm border border-blue-100">
+                <QuizTips/>
+            </div>
 
             {/* 5. Modal Xem trước Quiz */}
             {showPreview && quiz && (

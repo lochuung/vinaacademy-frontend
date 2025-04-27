@@ -1,5 +1,6 @@
-import {Plus} from 'lucide-react';
-import {QuizOption} from '@/types/lecture';
+import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
+import { QuizOption } from '@/types/lecture';
 import { QuestionType } from '@/types/quiz';  // Import the QuestionType enum
 import OptionItem from './OptionItem';
 
@@ -54,9 +55,9 @@ export default function QuestionOptions({
                         option={option}
                         optionIndex={index}
                         questionType={questionType}
-                        onRemove={() => onRemoveOption(option.id)}
-                        onUpdateText={(text) => onUpdateOptionText(option.id, text)}
-                        onToggleCorrect={() => onToggleOptionCorrect(option.id)}
+                        onRemove={() => onRemoveOption(option.id || '')}
+                        onUpdateText={(text) => onUpdateOptionText(option.id || '', text)}
+                        onToggleCorrect={() => onToggleOptionCorrect(option.id || '')}
                         // For True/False or if there are only 2 options, don't allow removal
                         canRemove={questionType !== QuestionType.TRUE_FALSE && options.length > 2}
                     />

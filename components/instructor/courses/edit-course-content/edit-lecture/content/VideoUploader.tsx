@@ -106,8 +106,9 @@ export default function VideoUploader({
                     getLessonById(lecture.id)
                         .then((lesson) => {
                             if (lesson) {
+                                setProcessingStatus(lesson.status as VideoStatus);
+                                
                                 if (lesson.status === VideoStatus.READY) {
-                                    setProcessingStatus(VideoStatus.READY);
                                     clearTimeout(timeoutId);
                                     // Fix: Use the proper invalidation format for TanStack Query
                                     queryClient.invalidateQueries({ queryKey: ['lesson', lecture.id] });

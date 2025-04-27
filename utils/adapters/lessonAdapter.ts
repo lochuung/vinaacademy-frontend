@@ -59,7 +59,22 @@ export const lectureToLessonRequest = (lecture: Lecture, sectionId: string): Les
     if (lecture.type === 'quiz' && lecture.quiz) {
         lessonRequest.passPoint = lecture.quiz.passPoint || 0;
         lessonRequest.totalPoint = lecture.quiz.totalPoint || 0;
-        lessonRequest.duration = lecture.quiz.timeLimit || 0;
+        lessonRequest.duration = lecture.quiz.settings?.timeLimit || 0;
+        
+        // Include quiz settings
+        if (lecture.quiz.settings) {
+            lessonRequest.settings = {
+                randomizeQuestions: lecture.quiz.settings.randomizeQuestions,
+                showCorrectAnswers: lecture.quiz.settings.showCorrectAnswers,
+                allowRetake: lecture.quiz.settings.allowRetake,
+                requirePassingScore: lecture.quiz.settings.requirePassingScore,
+                passingScore: lecture.quiz.settings.passingScore,
+                timeLimit: lecture.quiz.settings.timeLimit,
+            };
+        }
+        
+        // If we have questions, we would add them here
+        // This is typically handled by the quiz-specific API endpoints
     }
 
     return lessonRequest;

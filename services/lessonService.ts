@@ -58,6 +58,12 @@ export const updateLesson = async (id: string, lessonData: LessonRequest): Promi
       }
     }
 
+    // Handle quiz settings if this is a quiz
+    if (lessonData.type === 'QUIZ' && lessonData.settings) {
+      // Make sure settings is properly formatted for API
+      console.log('Updating quiz with settings:', lessonData.settings);
+    }
+
     const response: AxiosResponse<ApiResponse<LessonDto>> = await apiClient.put(
       `/lessons/${id}`,
       lessonData
