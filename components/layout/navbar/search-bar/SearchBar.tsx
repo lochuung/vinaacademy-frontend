@@ -45,7 +45,7 @@ const SearchBar = () => {
 
     return (
         <form onSubmit={handleSearch} className="relative w-full">
-            <div className={`flex items-center relative transition-all duration-200 ${isFocused ? 'ring-2 ring-black' : ''}`}>
+            <div className={`flex items-center relative transition-all duration-200 ${isFocused ? '' : ''}`}>
                 <input
                     type="text"
                     value={searchTerm}
