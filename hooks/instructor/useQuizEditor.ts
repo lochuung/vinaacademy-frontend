@@ -653,7 +653,7 @@ export function useQuizEditor(lecture: Lecture, sectionId: string) {
               };
               
               await updateAnswerMutation.mutateAsync({
-                answerId: otherOption.id,
+                answerId: otherOption.id || '',
                 answer: otherAnswerDto,
                 questionId,
                 quizId: lecture.id

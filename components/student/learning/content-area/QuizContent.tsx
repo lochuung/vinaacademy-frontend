@@ -76,7 +76,9 @@ const QuizContent: FC<QuizContentProps> = ({ courseId, lectureId, onLessonComple
                         passingScore: quizData.passingScore,
                         timeLimit: quizData.timeLimit
                     },
-                    totalPoints: quizData.totalPoint
+                    totalPoints: quizData.totalPoint,
+                    totalPoint: quizData.totalPoint, // Add this property
+                    passPoint: quizData.passPoint // Add this property
                 };
 
                 // If randomization is enabled, randomize the questions

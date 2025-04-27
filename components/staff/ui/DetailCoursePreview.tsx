@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { CourseDetailsResponse, LessonType } from "@/types/course";
+import { VideoStatus } from "@/types/video";
 
 export const mockCourseDetails: CourseDetailsResponse = {
   level: "BEGINNER",
@@ -68,7 +69,7 @@ export const mockCourseDetails: CourseDetailsResponse = {
           courseId: "course-123",
           courseName: "Giới Thiệu Về Machine Learning",
           thumbnailUrl: "/thumb-lesson-1.jpg",
-          status: "READY",
+          status: VideoStatus.READY,
           videoUrl: "/videos/lesson-1.mp4",
           videoDuration: 850, // 14:10
         },
