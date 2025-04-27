@@ -71,20 +71,20 @@ export default function InstructorsPage() {
             });
 
             // Tạo thông báo trước khi chuyển hướng
-            // if (user?.id) {
-            //     try {
-            //         await createNotification({
-            //             title: "Chào mừng bạn đến với VinaAcademy",
-            //             content: "Bạn đã trở thành giảng viên trên VinaAcademy. Hãy bắt đầu tạo khóa học của bạn ngay hôm nay!",
-            //             targetUrl: "/instructor/dashboard",
-            //             type: NotificationType.INSTRUCTOR_REQUEST,
-            //             userId: user.id
-            //         });
-            //     } catch (notificationError) {
-            //         // Chỉ log lỗi thông báo, không hiển thị lỗi cho người dùng
-            //         console.error("Lỗi khi tạo thông báo:", notificationError);
-            //     }
-            // }
+            if (user?.id) {
+                try {
+                    await createNotification({
+                        title: "Chào mừng bạn đến với VinaAcademy",
+                        content: "Bạn đã trở thành giảng viên trên VinaAcademy. Hãy bắt đầu tạo khóa học của bạn ngay hôm nay!",
+                        targetUrl: "/instructor/dashboard",
+                        type: NotificationType.INSTRUCTOR_REQUEST,
+                        userId: user.id
+                    });
+                } catch (notificationError) {
+                    // Chỉ log lỗi thông báo, không hiển thị lỗi cho người dùng
+                    console.error("Lỗi khi tạo thông báo:", notificationError);
+                }
+            }
 
             // Chuyển hướng đến trang dashboard sau khi đã tạo thông báo
             router.push('/instructor/dashboard');
