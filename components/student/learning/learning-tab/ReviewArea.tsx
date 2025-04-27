@@ -18,6 +18,7 @@ import {
     ReviewStatistics
 } from '@/services/courseReviewService';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 // Lazy load components that aren't needed on initial render
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
@@ -45,6 +46,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
     currentUserId = '1',
     userEnrolled = false // Default to false if not provided
 }) => {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
@@ -518,7 +520,9 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                         <>
                             {displayedReviews.map((review) => (
                                 <article key={review.id} className="border-b pb-6 last:border-b-0">
-                                    <header className="flex items-center gap-4 mb-2">
+                                    <header className="flex items-center gap-4 mb-2" onClick={()=>{
+                                        router.push(`/user/${review.userId}`);
+                                    }}>
                                         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200">
                                             {/* Using first letter of name as avatar placeholder */}
                                             <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-600 text-xl font-bold">
