@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import CourseGridView from "@/components/instructor/courses/CourseGridView";
 import CourseListView from "@/components/instructor/courses/CourseListView";
 import SearchAndFilterBar from "@/components/instructor/courses/SearchAndFilterBar";
-import { Spinner } from "@/components/common/pinner";
+import { Spinner } from "@/components/common/spinner";
 import { useAuth } from "@/context/AuthContext";
 import { CoursesPagination } from "@/components/courses/all-courses/CoursesPagination";
 import { useRouter } from "next/navigation";

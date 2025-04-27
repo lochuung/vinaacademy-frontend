@@ -75,6 +75,8 @@ const CourseCard = ({ course }: CourseCardProps) => {
             <div className="relative">
                 <Image
                     src={course.image}
+                    width={500}
+                    height={300}
                     alt={title}
                     className="w-full h-48 object-cover"
                 />

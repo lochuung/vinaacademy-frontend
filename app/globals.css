@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  height: auto; /* hoặc không để height cứng */
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
 }
 
 @layer base {

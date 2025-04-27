@@ -131,16 +131,16 @@ export default function AllCoursesPage() {
             />
 
             {/* Main content */}
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto px-4 py-8 sm:py-12">
                 {/* Header section with sorting controls */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center mb-6">
                     <h2 className="text-xl font-bold">
                         {searchQueryDebounced
                             ? `Kết quả tìm kiếm cho "${searchQueryDebounced}" (${totalElements})`
                             : `Tất cả khóa học (${totalElements})`}
                     </h2>
 
-                    {/* Tùy chọn sắp xếp - đặt ở bên phải */}
+                    {/* Tùy chọn sắp xếp - đặt ở bên phải trên desktop, ở dưới trên mobile */}
                     <SortCourses
                         sortBy={sortBy}
                         sortDirection={sortDirection}

@@ -24,11 +24,11 @@ export function SortCourses({
     onSortDirectionChange,
 }: SortCoursesProps) {
     return (
-        <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Sắp xếp theo:</span>
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-sm font-medium whitespace-nowrap">Sắp xếp theo:</span>
                 <Select value={sortBy} onValueChange={onSortByChange}>
-                    <SelectTrigger className="w-[150px]">
+                    <SelectTrigger className="w-full sm:w-[150px]">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -45,7 +45,7 @@ export function SortCourses({
                 variant="outline"
                 size="icon"
                 onClick={onSortDirectionChange}
-                className="h-9 w-9"
+                className="h-9 w-9 ml-auto sm:ml-0"
             >
                 {sortDirection === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
             </Button>

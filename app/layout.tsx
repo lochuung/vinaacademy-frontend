@@ -51,22 +51,23 @@ export default function RootLayout({
         </ReactQueryProvider>
 
         {/* Use Next.js Script component for client-side scripts */}
-        <Script id="navigation-fix">
-          {`
-            // Xử lý việc quay về trang chủ từ Logo
-            document.addEventListener('DOMContentLoaded', function() {
-              const logoLinks = document.querySelectorAll('a.flex.items-center');
-              logoLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                  if (window.location.pathname.includes('/search')) {
-                    e.preventDefault();
-                    window.location.href = '/';
-                  }
-                });
-              });
-            });
-          `}
-        </Script>
+        {typeof window !== 'undefined' && (
+          <Script id="navigation-fix">
+            {`
+      document.addEventListener('DOMContentLoaded', function() {
+        const logoLinks = document.querySelectorAll('a.flex.items-center');
+        logoLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            if (window.location.pathname.includes('/search')) {
+              e.preventDefault();
+              window.location.href = '/';
+            }
+          });
+        });
+      });
+    `}
+          </Script>
+        )}
       </body>
     </html>
   );
