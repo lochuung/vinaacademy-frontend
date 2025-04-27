@@ -17,6 +17,7 @@ export interface NotificationCreateDTO {
   title: string;
   type: NotificationType;
   userId: string;
+  // hash: string;   hash value to valid
 }
 
 export interface NotificationDTO {

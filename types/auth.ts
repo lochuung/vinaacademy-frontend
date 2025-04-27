@@ -52,6 +52,12 @@ export type User = BaseDto & {
     isActive: boolean;
 };
 
+export type ViewUser = User & {
+    countCourseCreate: number;
+	countCourseEnroll: number;
+	countCourseEnrollComplete: number;
+}
+
 
 export type Role = BaseDto & {
     id: number;

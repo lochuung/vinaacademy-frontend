@@ -11,6 +11,7 @@ import { profileFormSchema } from "@/lib/profile-schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { vi } from "date-fns/locale";
 import {
   Form,
   FormControl,
@@ -59,7 +60,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  
+
   // Default form values
   const defaultValues: Partial<ProfileFormValues> = {
     avatar: undefined,
@@ -86,7 +87,7 @@ export default function Home() {
     const fetchUserData = async () => {
       // Only fetch if authenticated
       if (!isAuthenticated) return;
-      
+
       try {
         setIsLoading(true);
         const userData = await getCurrentUser();
@@ -112,7 +113,9 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
-        createErrorToast("Không thể tải thông tin người dùng. Vui lòng thử lại.");
+        createErrorToast(
+          "Không thể tải thông tin người dùng. Vui lòng thử lại."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -148,7 +151,7 @@ export default function Home() {
         const uploadedImage = await uploadImage(data.avatar);
         if (uploadedImage) {
           avatarId = uploadedImage.id; // Store the image ID
-          console.log("Ảnh đã được tải lên thành công: ",avatarId);
+          console.log("Ảnh đã được tải lên thành công: ", avatarId);
         } else {
           console.error("Không thể tải ảnh lên:");
         }
@@ -214,6 +217,7 @@ export default function Home() {
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6 w-full h-full"
+                id="profile-form"
               >
                 {/* Layout container - use grid instead of flex with w-1/2 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -291,9 +295,10 @@ export default function Home() {
                                     "w-full pl-3 text-left font-normal",
                                     !field.value && "text-muted-foreground"
                                   )}
+                                  type="button" 
                                 >
                                   {field.value
-                                    ? format(field.value, "PPP")
+                                    ? format(field.value, "dd/MM/yyyy")
                                     : "Chọn ngày sinh"}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
@@ -305,6 +310,7 @@ export default function Home() {
                             >
                               <Calendar
                                 mode="single"
+                                locale={vi}
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) =>
@@ -312,6 +318,11 @@ export default function Home() {
                                   date < new Date("1900-01-01")
                                 }
                                 initialFocus
+                                classNames={{
+                                  caption: "capitalize", 
+                                  head_cell:
+                                    "text-muted-foreground font-normal text-xs", 
+                                }}
                               />
                             </PopoverContent>
                           </Popover>
@@ -320,9 +331,10 @@ export default function Home() {
                       )}
                     />
 
-                    {/* Change Password Button */}
                     <div className="pt-2">
-                      <PasswordChange />
+                      <div className="password-change-container">
+                        <PasswordChange />
+                      </div>
                     </div>
                   </div>
 
