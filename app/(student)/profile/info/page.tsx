@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Upload, KeyRound } from "lucide-react";
+import { Calendar as CalendarIcon, Upload, KeyRound, Eye } from "lucide-react";
 import { profileFormSchema } from "@/lib/profile-schema";
 
 import { cn } from "@/lib/utils";
@@ -55,12 +55,13 @@ import {
   createSuccessToast,
 } from "@/components/ui/toast-cus";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
-
+  const { isAuthenticated} = useAuth();
+  const router = useRouter();
   // Default form values
   const defaultValues: Partial<ProfileFormValues> = {
     avatar: undefined,
@@ -91,7 +92,7 @@ export default function Home() {
       try {
         setIsLoading(true);
         const userData = await getCurrentUser();
-
+      
         if (userData) {
           setCurrentUserData(userData);
 
@@ -203,9 +204,12 @@ export default function Home() {
   return (
     <div className="w-full p-6 bg-gray-100 flex justify-center items-center overflow-hidden">
       <Card className="w-full max-w-4xl">
-        <CardHeader>
-          <CardTitle>Chỉnh sửa hồ sơ cá nhân</CardTitle>
-          <CardDescription>Cập nhật thông tin của bạn</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Chỉnh sửa hồ sơ cá nhân</CardTitle>
+            <CardDescription>Cập nhật thông tin của bạn</CardDescription>
+          </div>
+          
         </CardHeader>
         <CardContent>
           {isLoading && !currentUserData ? (
@@ -295,7 +299,7 @@ export default function Home() {
                                     "w-full pl-3 text-left font-normal",
                                     !field.value && "text-muted-foreground"
                                   )}
-                                  type="button" 
+                                  type="button"
                                 >
                                   {field.value
                                     ? format(field.value, "dd/MM/yyyy")
@@ -319,9 +323,9 @@ export default function Home() {
                                 }
                                 initialFocus
                                 classNames={{
-                                  caption: "capitalize", 
+                                  caption: "capitalize",
                                   head_cell:
-                                    "text-muted-foreground font-normal text-xs", 
+                                    "text-muted-foreground font-normal text-xs",
                                 }}
                               />
                             </PopoverContent>
@@ -404,10 +408,21 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Đang cập nhật..." : "Cập nhật Hồ sơ"}
-                </Button>
+                {/* Buttons row */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button type="submit" className="flex-1" disabled={isLoading}>
+                    {isLoading ? "Đang cập nhật..." : "Cập nhật Hồ sơ"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={() => router.push("/user/"+currentUserData?.id)}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Xem hồ sơ
+                  </Button>
+                </div>
               </form>
             </Form>
           )}
