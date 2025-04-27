@@ -15,8 +15,12 @@ import "react-toastify/dist/ReactToastify.css";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ViNA ACADEMY - Nền tảng học trực tuyến',
-  description: 'Học mọi lúc, mọi nơi với ViNA ACADEMY',
+  title: 'VinaAcademy - Nền tảng học trực tuyến',
+  description: 'Học mọi lúc, mọi nơi với VinaAcademy',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
@@ -26,6 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
+      <head>
+        <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+      </head>
       <body className={inter.className}>
         <ReactQueryProvider>
           <ToastProvider>

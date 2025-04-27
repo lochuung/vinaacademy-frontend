@@ -1,4 +1,3 @@
-// loginForm.tsx
 "use client";
 
 import {useForm} from "react-hook-form";
@@ -12,7 +11,6 @@ import {Label} from "@/components/ui/label";
 import {Form, FormField, FormItem, FormControl, FormMessage} from "@/components/ui/form";
 
 //icon
-
 import {FcGoogle} from "react-icons/fc";
 import {FaUserShield} from "react-icons/fa";
 import {IoMdLock} from "react-icons/io";
@@ -48,29 +46,27 @@ interface LoginFormProps {
     googleText?: string;
     signupText?: string;
     signupUrl?: string;
-    // Optional callbacks for handling login
     onSubmit?: (data: LoginFormValues) => Promise<void>;
     isSubmitting?: boolean;
     error?: string | null;
 }
 
 export default function LoginForm({
-
-                                      heading = "VN Academy",
-                                      subheading = "Đăng nhập ngay để trải nghiệm",
-                                      logo = {
-                                          url: "https://localhost:3000",
-                                          src: "https://www.shadcnblocks.com/images/block/block-1.svg",
-                                          alt: "logo",
-                                      },
-                                      loginText = "Đăng nhập",
-                                      googleText = "Đăng nhập bằng Google",
-                                      signupText = "Chưa có tài khoản?",
-                                      signupUrl = "/register",
-                                      onSubmit,
-                                      isSubmitting = false,
-                                      error = null,
-                                  }: LoginFormProps) {
+    heading = "VN Academy",
+    subheading = "Đăng nhập ngay để trải nghiệm",
+    logo = {
+        url: "/",
+        src: "/logo.svg",
+        alt: "Vina Academy Logo",
+    },
+    loginText = "Đăng nhập",
+    googleText = "Đăng nhập bằng Google",
+    signupText = "Chưa có tài khoản?",
+    signupUrl = "/register",
+    onSubmit,
+    isSubmitting = false,
+    error = null,
+}: LoginFormProps) {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const form = useForm<LoginFormValues>({
@@ -89,127 +85,149 @@ export default function LoginForm({
     }
 
     return (
-        <section className="py-9 ">
-            <div className="container ">
-                <div className="flex flex-col gap-14 ">
-                    <div className="mx-auto w-full rounded-[10px] p-6 shadow-2xl bg-white">
-                        <div className="mb-6 flex flex-col items-center">
-                            <a href={logo.url}>
-
-                                <Image width={10} height={10} src={logo.src} alt={logo.alt} className="mb-7 w-10 h-10"/>
-
+        <section className="w-full py-6 md:py-12">
+            <div className="container px-4 md:px-6">
+                <div className="mx-auto grid w-full max-w-md gap-6">
+                    <div className="flex flex-col rounded-xl border bg-white shadow-sm transition-all p-6 md:p-8">
+                        <div className="flex flex-col items-center space-y-4 mb-6">
+                            <a href={logo.url} className="inline-flex items-center">
+                                <div className="relative h-14 w-14 md:h-16 md:w-16">
+                                    <Image 
+                                        fill 
+                                        src={logo.src} 
+                                        alt={logo.alt} 
+                                        className="object-contain"
+                                    />
+                                </div>
                             </a>
-                            <p className="mb-2 text-2xl font-bold">{heading}</p>
-                            <p className="text-muted-foreground">{subheading}</p>
+                            <div className="text-center">
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{heading}</h1>
+                                <p className="text-sm md:text-base text-gray-500 mt-1">{subheading}</p>
+                            </div>
                         </div>
+
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4">
                                 {error && (
                                     <div
-                                        className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
-                                        role="alert">
+                                        className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative text-sm"
+                                        role="alert"
+                                    >
                                         <span className="block sm:inline">{error}</span>
                                     </div>
                                 )}
+
                                 <FormField
                                     control={form.control}
                                     name="email"
-
                                     render={({field}) => (
                                         <FormItem>
-                                            <Label>Email</Label>
+                                            <Label className="text-sm font-medium">Email</Label>
                                             <FormControl>
-                                                <Input
-                                                    type="email"
-                                                    placeholder="Nhập email của bạn"
-                                                    iconLeft={<FaUserShield/>}
-                                                    {...field}
-                                                />
+                                                <div className="relative">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                                        <FaUserShield className="h-4 w-4" />
+                                                    </span>
+                                                    <Input
+                                                        type="email"
+                                                        placeholder="Nhập email của bạn"
+                                                        className="pl-10 h-10"
+                                                        {...field}
+                                                    />
+                                                </div>
                                             </FormControl>
-                                            <FormMessage/>
-
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
+
                                 <FormField
                                     control={form.control}
                                     name="password"
-
                                     render={({field}) => (
-
                                         <FormItem>
-                                            <Label>Mật khẩu</Label>
+                                            <Label className="text-sm font-medium">Mật khẩu</Label>
                                             <FormControl>
-                                                <Input
-
-                                                    type="password"
-                                                    placeholder="Nhập mật khẩu của bạn"
-                                                    iconLeft={<IoMdLock/>}
-                                                    passwordEye={true}
-                                                    {...field}
-                                                />
+                                                <div className="relative">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                                        <IoMdLock className="h-4 w-4" />
+                                                    </span>
+                                                    <Input
+                                                        type="password"
+                                                        placeholder="Nhập mật khẩu của bạn"
+                                                        className="pl-10 h-10"
+                                                        {...field}
+                                                    />
+                                                </div>
                                             </FormControl>
-                                            <FormMessage/>
-
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
+
                                 <div className="flex justify-end">
-                                    {/* <FormField
-                                        control={form.control}
-                                        name="remember"
-
-                                        render={({field}) => (
-                                            <FormItem className="flex items-center space-x-2">
-                                                <FormControl>
-                                                    <Checkbox
-                                                        id="remember"
-
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange}
-                                                    />
-                                                </FormControl>
-                                                <Label className="-translate-y-[3px]" htmlFor="remember">Ghi nhớ</Label>
-                                            </FormItem>
-                                        )}
-                                    /> */}
-                                    <a className="text-sm text-primary hover:underline hover:cursor-pointer "
-
-                                       onClick={() => setDialogOpen(true)}>
-                                        Quên mật khẩu
-                                    </a>
-                                    <DialogForgotPassword open={dialogOpen} onClose={() => setDialogOpen(false)}/>
-
+                                    <button 
+                                        type="button"
+                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition"
+                                        onClick={() => setDialogOpen(true)}
+                                    >
+                                        Quên mật khẩu?
+                                    </button>
+                                    <DialogForgotPassword open={dialogOpen} onClose={() => setDialogOpen(false)} />
                                 </div>
-                                <Button type="submit" className="mt-2 w-full" disabled={isSubmitting}>
-                                    {isSubmitting ? "Đang đăng nhập..." : loginText}
+
+                                <Button 
+                                    type="submit" 
+                                    className="w-full h-10 mt-2 text-sm font-medium" 
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <div className="flex items-center justify-center">
+                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Đang đăng nhập...
+                                        </div>
+                                    ) : (
+                                        loginText
+                                    )}
                                 </Button>
-                                <div
-                                    className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border after:border-gray-500">
-                                    <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                                        Hoặc sử dụng tài khoản liên kết
-                                    </span>
+
+                                <div className="relative mt-2">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-300"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-xs uppercase">
+                                        <span className="bg-white px-2 text-gray-500">hoặc</span>
+                                    </div>
                                 </div>
-                                <Button type="button" variant="outline" className="w-full border-gray-400"
 
-                                        disabled={isSubmitting}>
-                                    <FcGoogle className="mr-2 size-5"/>
-
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    className="w-full h-10 mt-2 border-gray-300 text-sm font-medium"
+                                    disabled={isSubmitting}
+                                >
+                                    <FcGoogle className="mr-2 h-5 w-5" />
                                     {googleText}
                                 </Button>
                             </form>
                         </Form>
-                        <div className="mx-auto mt-8 flex justify-center gap-1 text-sm text-muted-foreground">
-                            <p>{signupText}</p>
-                            <a href={signupUrl} className="font-medium text-primary hover:underline">
+
+                        <div className="mt-6 text-center text-sm">
+                            <span className="text-gray-500">{signupText}</span>{" "}
+                            <a href={signupUrl} className="font-medium text-blue-600 hover:text-blue-800 hover:underline">
                                 Đăng ký ngay
                             </a>
                         </div>
-                    </div>
-                    <div
-                        className="w-full text-center text-muted-foreground text-xs mt-2 [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-                        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-                        and <a href="#">Privacy Policy</a>.
+                        
+                        <p className="mt-4 text-center text-xs text-gray-500">
+                            Bằng cách đăng nhập, bạn đồng ý với{" "}
+                            <a href="#" className="underline hover:text-blue-600">Điều khoản dịch vụ</a>{" "}
+                            và{" "}
+                            <a href="#" className="underline hover:text-blue-600">Chính sách riêng tư</a> của chúng tôi.
+                        </p>
                     </div>
                 </div>
             </div>

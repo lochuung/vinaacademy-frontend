@@ -132,7 +132,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo and brand */}
           <div className="flex items-center">
-            <HomeLink className="text-2xl font-bold mr-6">ViNA</HomeLink>
+            <HomeLink className="text-2xl font-bold mr-6">Vina</HomeLink>
             {/* Categories dropdown - hidden on mobile */}
             <div className="hidden lg:block">
               <ExploreDropdown categories={isLoading ? [] : categories} />
