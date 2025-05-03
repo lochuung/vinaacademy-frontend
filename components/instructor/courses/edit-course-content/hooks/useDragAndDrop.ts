@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { 
-  DndContext, 
-  closestCenter, 
   KeyboardSensor, 
   PointerSensor, 
   useSensor, 
@@ -12,9 +10,7 @@ import {
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy
+  sortableKeyboardCoordinates
 } from '@dnd-kit/sortable';
 
 import { SectionDisplay, LectureDisplay } from './useCourseContent';
@@ -53,9 +49,9 @@ export function useDragAndDrop(
     let itemId: string = idString;
     let parentId: string | undefined = undefined;
     
-    if (idString.startsWith('lecture-')) {
+    if (idString.startsWith('lecture:')) {
       type = 'lecture';
-      const parts = idString.split('-');
+      const parts = idString.split(':');
       if (parts.length === 3) {
         parentId = parts[1];
         itemId = parts[2];
@@ -93,8 +89,8 @@ export function useDragAndDrop(
       } else if (type === 'lecture' && parentId) {
         // Reordering lectures within a section
         const overIdString = over.id.toString();
-        if (overIdString.startsWith('lecture-')) {
-          const overParts = overIdString.split('-');
+        if (overIdString.startsWith('lecture:')) {
+          const overParts = overIdString.split(':');
           if (overParts.length === 3) {
             const overSectionId = overParts[1];
             

@@ -12,9 +12,11 @@ interface SortableLectureProps {
   onEdit: () => void;
   isFirst?: boolean;
   isLast?: boolean;
+  onDragStart?: () => void; // Thêm prop này
+  onDragEnd?: () => void;   // Thêm prop này
 }
 
-export function SortableLecture({ lecture, sectionId, ...props }: SortableLectureProps) {
+export function SortableLecture({ lecture, sectionId, onDragStart, onDragEnd, ...props }: SortableLectureProps) {
   const {
     attributes,
     listeners,
@@ -24,7 +26,7 @@ export function SortableLecture({ lecture, sectionId, ...props }: SortableLectur
     isDragging,
     isOver
   } = useSortable({
-    id: `lecture-${sectionId}-${lecture.id}`,
+    id: `lecture:${sectionId}:${lecture.id}`,
     data: { 
       type: 'lecture', 
       id: lecture.id,
@@ -65,12 +67,16 @@ export function SortableLecture({ lecture, sectionId, ...props }: SortableLectur
         sectionId={sectionId}
         {...props}
         onDragStart={() => {
-          // Add any additional drag start logic here
           document.body.classList.add('dragging-lecture');
+          if (onDragStart) {
+            onDragStart();
+          }
         }}
         onDragEnd={() => {
-          // Clean up any drag state
           document.body.classList.remove('dragging-lecture');
+          if (onDragEnd) {
+            onDragEnd();
+          }
         }}
         dragHandleProps={{
           ...attributes,

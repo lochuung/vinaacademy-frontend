@@ -24,7 +24,9 @@ export function useLectureReorder() {
     activeId: string,
     overId: string
   ): Promise<LectureDisplay[]> => {
-    if (activeId === overId) return lectures;
+    if (activeId === overId) {
+      return lectures;
+    }
 
     setIsReordering(true);
 

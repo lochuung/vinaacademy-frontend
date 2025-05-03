@@ -80,7 +80,9 @@ export const useCourseContent = (courseId?: string) => {
     } = useQuery({
         queryKey: sectionsQueryKey,
         queryFn: async () => {
-            if (!courseId) return [];
+            if (!courseId) {
+              return [];
+            }
 
             const fetchedSections = await getSectionsByCourse(courseId);
 
@@ -115,7 +117,9 @@ export const useCourseContent = (courseId?: string) => {
     // Add section mutation
     const addSectionMutation = useMutation({
         mutationFn: async () => {
-            if (!courseId) throw new Error('Không có ID khóa học');
+            if (!courseId) {
+              throw new Error('Không có ID khóa học');
+            }
 
             const newSectionData = {
                 title: `Phần học mới`,
@@ -153,10 +157,14 @@ export const useCourseContent = (courseId?: string) => {
     // Edit section mutation
     const editSectionMutation = useMutation({
         mutationFn: async ({ sectionId, newTitle }: { sectionId: string, newTitle: string }) => {
-            if (!courseId) throw new Error('Không có ID khóa học');
+            if (!courseId) {
+              throw new Error('Không có ID khóa học');
+            }
 
             const section = sections.find(s => s.id === sectionId);
-            if (!section) throw new Error('Không tìm thấy phần học');
+            if (!section) {
+              throw new Error('Không tìm thấy phần học');
+            }
 
             const updatedSectionData = {
                 title: newTitle,
@@ -215,7 +223,9 @@ export const useCourseContent = (courseId?: string) => {
             }
         },
         onError: (error) => {
-            if ((error as Error).message === 'User cancelled') return;
+            if ((error as Error).message === 'User cancelled') {
+              return;
+            }
             console.error('Lỗi khi xóa phần học:', error);
         }
     });
@@ -223,7 +233,9 @@ export const useCourseContent = (courseId?: string) => {
     // Add lecture mutation
     const addLectureMutation = useMutation({
         mutationFn: async (sectionId: string) => {
-            if (!courseId) throw new Error('Không có ID khóa học');
+            if (!courseId) {
+              throw new Error('Không có ID khóa học');
+            }
 
             const newLectureData = {
                 title: `Bài giảng mới`,
@@ -357,7 +369,9 @@ export const useCourseContent = (courseId?: string) => {
             updateLectureOrdersMutation.mutate({ sectionId });
         },
         onError: (error) => {
-            if ((error as Error).message === 'User cancelled') return;
+            if ((error as Error).message === 'User cancelled') {
+              return;
+            }
             console.error('Lỗi khi xóa bài giảng:', error);
         }
     });
@@ -365,8 +379,10 @@ export const useCourseContent = (courseId?: string) => {
     // Update section orders mutation
     const updateSectionOrdersMutation = useMutation({
         mutationFn: async (sectionIds?: string[]) => {
-            if (!courseId || sections.length === 0) return false;
-            
+            if (!courseId || sections.length === 0) {
+              return false;
+            }
+
             // Use provided sectionIds or get from current sections
             const ids = sectionIds || sections.map(section => section.id);
             return await reorderSections(courseId, ids);
@@ -376,14 +392,16 @@ export const useCourseContent = (courseId?: string) => {
                 console.error('Error reordering sections');
                 return;
             }
-            
+
             if (sectionIds) {
                 queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
-                    if (!oldData) return [];
-                    
+                    if (!oldData) {
+                      return [];
+                    }
+
                     // Create a map for quick lookup
                     const sectionMap = new Map(oldData.map(section => [section.id, section]));
-                    
+
                     // Create new array with updated order
                     return sectionIds.map((id, index) => {
                         const section = sectionMap.get(id);
@@ -406,7 +424,9 @@ export const useCourseContent = (courseId?: string) => {
         mutationFn: async (params: { sectionId: string, lectureIds?: string[] }) => {
             const { sectionId, lectureIds } = params;
             const section = sections.find(s => s.id === sectionId);
-            if (!section) return;
+            if (!section) {
+              return;
+            }
 
             // Use provided lectureIds or get from current lectures
             const ids = lectureIds || section.lectures.map(lecture => lecture.id);
@@ -428,7 +448,7 @@ export const useCourseContent = (courseId?: string) => {
                     if (s.id === sectionId) {
                         // Create a map for quick lookup
                         const lectureMap = new Map(s.lectures.map(lecture => [lecture.id, lecture]));
-                        
+
                         // Create new array with updated order
                         const updatedLectures = lectureIds.map((id, index) => {
                             const lecture = lectureMap.get(id);
@@ -437,7 +457,7 @@ export const useCourseContent = (courseId?: string) => {
                             }
                             return null;
                         }).filter(Boolean) as LectureDisplay[];
-                        
+
                         return {
                             ...s,
                             lectures: updatedLectures
@@ -490,7 +510,7 @@ export const useCourseContent = (courseId?: string) => {
     // Handle DnD reordering
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
-        
+
         if (!over || active.id === over.id) {
             setIsDragging(false);
             return;
@@ -499,60 +519,64 @@ export const useCourseContent = (courseId?: string) => {
         // Parse IDs to determine if we're dealing with sections or lectures
         const activeId = active.id.toString();
         const overId = over.id.toString();
-        
+
+        console.log('Active ID:', activeId);
+        console.log('Over ID:', overId);
+
         // Handle section reordering
         if (activeId.startsWith('section-') && overId.startsWith('section-')) {
             const activeSectionId = activeId.replace('section-', '');
             const overSectionId = overId.replace('section-', '');
-            
+
             const oldIndex = sections.findIndex(section => section.id === activeSectionId);
             const newIndex = sections.findIndex(section => section.id === overSectionId);
-            
+
             if (oldIndex !== -1 && newIndex !== -1) {
                 const newSections = arrayMove(sections, oldIndex, newIndex);
                 const sectionIds = newSections.map(section => section.id);
-                
+
                 // Update UI optimistically
-                queryClient.setQueryData(sectionsQueryKey, 
+                queryClient.setQueryData(sectionsQueryKey,
                     newSections.map((section, index) => ({
                         ...section,
                         order: index
                     }))
                 );
-                
+
                 // Call API to persist changes
                 await updateSectionOrdersMutation.mutateAsync(sectionIds);
                 toast.success('Thứ tự phần học đã được cập nhật');
             }
         }
+
         // Handle lecture reordering
-        else if (activeId.startsWith('lecture-') && overId.startsWith('lecture-')) {
-            const activeParts = activeId.split('-');
-            const overParts = overId.split('-');
-            
-            // Format: lecture-sectionId-lectureId
+        else if (activeId.startsWith('lecture:') && overId.startsWith('lecture:')) {
+            const activeParts = activeId.split(':');
+            const overParts = overId.split(':');
+
+            // Format: lecture:sectionId:lectureId
             if (activeParts.length === 3 && overParts.length === 3) {
-                const sectionId = activeParts[1];
+                const activeSectionId = activeParts[1];
                 const overSectionId = overParts[1];
-                
-                // Only allow reordering within the same section
-                if (sectionId === overSectionId) {
-                    const section = sections.find(s => s.id === sectionId);
+
+                // For now, only allow reordering within the same section
+                if (activeSectionId === overSectionId) {
+                    const section = sections.find(s => s.id === activeSectionId);
                     if (section) {
                         const activeLectureId = activeParts[2];
                         const overLectureId = overParts[2];
-                        
+
                         const oldIndex = section.lectures.findIndex(lecture => lecture.id === activeLectureId);
                         const newIndex = section.lectures.findIndex(lecture => lecture.id === overLectureId);
-                        
+
                         if (oldIndex !== -1 && newIndex !== -1) {
                             const newLectures = arrayMove(section.lectures, oldIndex, newIndex);
                             const lectureIds = newLectures.map(lecture => lecture.id);
-                            
+
                             // Update UI optimistically
                             queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
                                 return oldData ? oldData.map(s => {
-                                    if (s.id === sectionId) {
+                                    if (s.id === activeSectionId) {
                                         return {
                                             ...s,
                                             lectures: newLectures.map((lecture, index) => ({
@@ -564,19 +588,20 @@ export const useCourseContent = (courseId?: string) => {
                                     return s;
                                 }) : [];
                             });
-                            
+
                             // Call API to persist changes
-                            await updateLectureOrdersMutation.mutateAsync({ 
-                                sectionId, 
-                                lectureIds 
+                            await updateLectureOrdersMutation.mutateAsync({
+                                sectionId: activeSectionId,
+                                lectureIds
                             });
+
                             toast.success('Thứ tự bài giảng đã được cập nhật');
                         }
                     }
                 }
             }
         }
-        
+
         setIsDragging(false);
     };
 

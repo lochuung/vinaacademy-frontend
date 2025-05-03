@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Section } from '@/types/instructor-course-edit';
 import { SortableSection } from './SortableSection';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DragOverlay } from './DragOverlay';
@@ -49,33 +49,37 @@ export const CourseContentBody = ({
     );
 
     const sortedSections = [...sections].sort((a, b) => a.order - b.order);
-    
-    // Convert sections to SectionDisplay for DragOverlay
-    const sectionsDisplay = sortedSections.map(section => ({
-        id: section.id,
-        title: section.title,
-        order: section.order,
-        lectures: section.lectures.map(lecture => ({
-            id: lecture.id,
-            title: lecture.title,
-            type: lecture.type,
-            duration: lecture.duration,
-            content: lecture.content,
-            order: lecture.order,
-            isPublished: lecture.isPublished,
-            free: false
-        }))
-    })) as SectionDisplay[];
 
-    const handleDragStart = (event: any) => {
+    // Create a sorted list of all section ids for SortableContext
+    const sectionItems = sortedSections.map(section => `section-${section.id}`);
+
+    const handleDragStart = (event: DragStartEvent) => {
         const id = event.active.id.toString();
         setActiveId(id);
         onDragStart(id);
     };
 
-    const handleDragEnd = (event: any) => {
-        setActiveId(null);
+    const handleDragEnd = (event: DragEndEvent) => {
+        // Only proceed if there's both an active and over element
+        if (!event.active || !event.over) {
+            setActiveId(null);
+            onDragEnd(event);
+            return;
+        }
+
+        const activeId = event.active.id.toString();
+        const overId = event.over.id.toString();
+        
+        // Skip if dragging over itself
+        if (activeId === overId) {
+            setActiveId(null);
+            onDragEnd(event);
+            return;
+        }
+
+        // If we have a valid drag operation, pass it to the parent
         onDragEnd(event);
+        setActiveId(null);
     };
 
     return (
@@ -95,7 +99,7 @@ export const CourseContentBody = ({
                             modifiers={[restrictToVerticalAxis]}
                         >
                             <SortableContext 
-                                items={sortedSections.map(section => `section-${section.id}`)}
+                                items={sectionItems}
                                 strategy={verticalListSortingStrategy}
                             >
                                 <div className="space-y-4">
@@ -113,6 +117,7 @@ export const CourseContentBody = ({
                                             onLectureUpdated={onLectureUpdated}
                                             isFirst={index === 0}
                                             isLast={index === sections.length - 1}
+                                            onDragEnd={handleDragEnd}
                                         />
                                     ))}
                                 </div>
