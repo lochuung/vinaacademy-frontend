@@ -204,10 +204,10 @@ const LessonDialogPreview = ({
 
           <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div className="bg-gray-50 p-3 rounded-md">
-              <span className="font-medium">Tổng điểm:</span> {quiz.totalPoint}
+              <span className="font-medium">Tổng điểm:</span> {quiz.totalPoints}
             </div>
             <div className="bg-gray-50 p-3 rounded-md">
-              <span className="font-medium">Điểm để đạt:</span> {quiz.passPoint}
+              <span className="font-medium">Điểm để đạt:</span> {quiz.passingScore}
             </div>
             <div className="bg-gray-50 p-3 rounded-md">
               <span className="font-medium">Thời gian:</span> {quiz.duration}

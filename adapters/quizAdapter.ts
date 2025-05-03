@@ -179,9 +179,7 @@ export const quizDtoToQuiz = (quizDto: QuizDto): Quiz => {
     title: quizDto.title,
     questions: questions,
     settings: settings,
-    totalPoints: totalPoints,
-    passPoint: quizDto.passPoint,
-    totalPoint: quizDto.totalPoint,
+    totalPoints: quizDto.totalPoints,
     timeLimit: quizDto.timeLimit
   };
 };

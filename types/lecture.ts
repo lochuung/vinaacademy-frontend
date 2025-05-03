@@ -42,8 +42,6 @@ export interface Quiz {
     questions: QuizQuestion[];
     settings: QuizSettings;
     totalPoints: number;
-    passPoint: number; // Percentage
-    totalPoint: number; // Percentage
     timeLimit?: number; // Minutes
 }
 

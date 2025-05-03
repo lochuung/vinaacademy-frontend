@@ -38,70 +38,65 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
         const quizData = await getQuiz(quizId);
         if (quizData) {
           setQuiz(quizData);
-          
+
           // Map API response to Quiz type for QuizResults component
           const mapped: Quiz = {
             title: quizData.title || 'Kiểm tra kiến thức',
             questions: quizData.questions.map(q => ({
-                id: q.id,
-                text: q.questionText,
-                type: mapQuestionType(q.questionType),
-                options: q.answers.map(a => ({
-                    id: a.id,
-                    text: a.answerText,
-                    isCorrect: a.isCorrect || false
-                })),
-                explanation: q.explanation,
-                points: q.point,
-                isRequired: true
+              id: q.id,
+              text: q.questionText,
+              type: mapQuestionType(q.questionType),
+              options: q.answers.map(a => ({
+                id: a.id,
+                text: a.answerText,
+                isCorrect: a.isCorrect || false
+              })),
+              explanation: q.explanation,
+              points: q.point,
+              isRequired: true
             })),
             settings: {
-                randomizeQuestions: quizData.randomizeQuestions,
-                showCorrectAnswers: quizData.showCorrectAnswers,
-                allowRetake: quizData.allowRetake,
-                requirePassingScore: quizData.requirePassingScore,
-                passingScore: quizData.passingScore,
-                timeLimit: quizData.timeLimit
+              randomizeQuestions: quizData.randomizeQuestions,
+              showCorrectAnswers: quizData.showCorrectAnswers,
+              allowRetake: quizData.allowRetake,
+              requirePassingScore: quizData.requirePassingScore,
+              passingScore: quizData.passingScore,
+              timeLimit: quizData.timeLimit
             },
-            totalPoints: quizData.totalPoint,
-            passPoint: quizData.passingScore, // Add passPoint
-            totalPoint: quizData.totalPoint   // Add totalPoint
+            totalPoints: quizData.totalPoints,
           };
-          
+
           setMappedQuiz(mapped);
         }
-        
-        // Only fetch latest submission if the lesson is completed
-        if (isCompleted) {
-          const latestSub = await getLatestSubmission(quizId);
-          if (latestSub) {
-            setLatestSubmission(latestSub);
-          }
+
+        const latestSub = await getLatestSubmission(quizId);
+        if (latestSub) {
+          setLatestSubmission(latestSub);
         }
-        
+
       } catch (error) {
         console.error("Error fetching quiz data:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     // Helper function to map API question types to UI types
     const mapQuestionType = (type: string): 'single_choice' | 'multiple_choice' | 'text' | 'true_false' => {
-        switch (type) {
-            case 'SINGLE_CHOICE':
-                return 'single_choice';
-            case 'MULTIPLE_CHOICE':
-                return 'multiple_choice';
-            case 'TEXT':
-                return 'text';
-            case 'TRUE_FALSE':
-                return 'true_false';
-            default:
-                return 'single_choice';
-        }
+      switch (type) {
+        case 'SINGLE_CHOICE':
+          return 'single_choice';
+        case 'MULTIPLE_CHOICE':
+          return 'multiple_choice';
+        case 'TEXT':
+          return 'text';
+        case 'TRUE_FALSE':
+          return 'true_false';
+        default:
+          return 'single_choice';
+      }
     };
-    
+
     fetchQuizData();
   }, [quizId, isCompleted]);
 
@@ -109,7 +104,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
     setLoadingHistory(true);
     setShowHistory(true);
     setSelectedSubmission(null);
-    
+
     try {
       const history = await getSubmissionHistory(quizId);
       setSubmissions(history);
@@ -122,14 +117,14 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
 
   const handleSelectSubmission = (submission: QuizSubmissionResultDto) => {
     setSelectedSubmission(submission);
-    
+
     // If the selected submission is passed and we have callbacks
     if (submission.isPassed && onLessonCompleted && courseSlug) {
       // Invalidate the query
       queryClient.invalidateQueries({
         queryKey: ['lecture', courseSlug]
       });
-      
+
       // Call the callback
       onLessonCompleted();
     }
@@ -155,14 +150,14 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
       minute: '2-digit'
     });
   };
-  
+
   const getTimeAgo = (dateString: string) => {
     return formatDistanceToNow(new Date(dateString), {
       addSuffix: true,
       locale: vi
     });
   };
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -170,14 +165,14 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
       </div>
     );
   }
-  
+
   if (!quiz) {
     return (
       <div className="flex flex-col items-center justify-center p-8">
         <AlertTriangle className="h-16 w-16 text-red-500 mb-4" />
         <h2 className="text-xl font-semibold mb-2">Không thể tải bài kiểm tra</h2>
         <p className="text-gray-600 mb-4">Có lỗi xảy ra khi tải thông tin bài kiểm tra. Vui lòng thử lại sau.</p>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
@@ -186,17 +181,17 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
       </div>
     );
   }
-  
+
   // Check if quiz is blocked due to previous attempts
   const isQuizBlocked = latestSubmission && !quiz.allowRetake;
-  
+
   // If a submission is selected, show its detailed results
   if (selectedSubmission && mappedQuiz) {
     // Generate empty placeholder objects for selectedAnswers and textAnswers
     // In a real implementation, we'd fetch the actual user answers from the API
     const dummySelectedAnswers: Record<string, string[]> = {};
     const dummyTextAnswers: Record<string, string> = {};
-    
+
     // Create dummy results to show the selected submission
     const submissionResults = {
       totalScore: selectedSubmission.score,
@@ -207,13 +202,13 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
         questionId: answer.questionId,
         correct: answer.isCorrect,
         score: answer.earnedPoints,
-        userAnswer: answer.textAnswer ? answer.textAnswer : 
+        userAnswer: answer.textAnswer ? answer.textAnswer :
           answer.answers.filter(a => a.isSelected).map(a => a.id),
         explanation: answer.explanation,
         correctAnswers: answer.answers.filter(a => a.isCorrect).map(a => a.id)
       }))
     };
-    
+
     // For each answer, populate the dummy objects with the user's selections
     selectedSubmission.answers.forEach(answer => {
       if (answer.textAnswer) {
@@ -224,7 +219,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
           .map(a => a.id);
       }
     });
-    
+
     return (
       <div className="container mx-auto max-w-4xl p-4">
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-md">
@@ -235,7 +230,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
                 Ngày làm bài: {formatDate(selectedSubmission.startTime)}
               </div>
             </div>
-            <button 
+            <button
               onClick={handleBackToHistory}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
             >
@@ -243,7 +238,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
             </button>
           </div>
         </div>
-        
+
         <QuizResults
           quiz={mappedQuiz}
           quizResults={submissionResults}
@@ -255,7 +250,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto max-w-4xl p-4">
       {showHistory ? (
@@ -283,17 +278,17 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
             <h1 className="text-2xl font-bold mb-2">{quiz.title}</h1>
             <p className="text-gray-600">{quiz.description}</p>
           </div>
-          
+
           {/* Quiz Info Cards */}
           <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg flex items-center">
               <Award className="h-8 w-8 text-blue-600 mr-3" />
               <div>
                 <div className="text-sm text-blue-700 font-semibold">Điểm tối đa</div>
-                <div className="text-xl font-bold">{quiz.totalPoint} điểm</div>
+                <div className="text-xl font-bold">{quiz.totalPoints} điểm</div>
               </div>
             </div>
-            
+
             <div className="bg-amber-50 p-4 rounded-lg flex items-center">
               <Clock className="h-8 w-8 text-amber-600 mr-3" />
               <div>
@@ -303,7 +298,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
                 </div>
               </div>
             </div>
-            
+
             {quiz.requirePassingScore && (
               <div className="bg-green-50 p-4 rounded-lg flex items-center">
                 <CheckCircle className="h-8 w-8 text-green-600 mr-3" />
@@ -314,12 +309,11 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
               </div>
             )}
           </div>
-          
+
           {/* Latest submission info */}
           {latestSubmission && (
-            <div className={`p-6 border-t border-b border-gray-200 ${
-              latestSubmission.isPassed ? 'bg-green-50' : 'bg-red-50'
-            }`}>
+            <div className={`p-6 border-t border-b border-gray-200 ${latestSubmission.isPassed ? 'bg-green-50' : 'bg-red-50'
+              }`}>
               <h3 className="text-lg font-semibold mb-2">Lần làm gần đây nhất</h3>
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div className="mb-4 md:mb-0">
@@ -341,7 +335,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
                     <span className="text-xs ml-2">({getTimeAgo(latestSubmission.startTime)})</span>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={handleViewHistory}
@@ -353,7 +347,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
               </div>
             </div>
           )}
-          
+
           {/* Quiz Rules */}
           <div className="p-6">
             <h3 className="text-lg font-semibold mb-3">Quy định bài kiểm tra</h3>
@@ -364,26 +358,26 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
               </li>
               <li className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.timeLimit > 0 
-                  ? `Thời gian làm bài là ${quiz.timeLimit} phút` 
+                {quiz.timeLimit > 0
+                  ? `Thời gian làm bài là ${quiz.timeLimit} phút`
                   : 'Không giới hạn thời gian làm bài'}
               </li>
               <li className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.requirePassingScore 
-                  ? `Điểm đạt tối thiểu là ${quiz.passingScore}%` 
+                {quiz.requirePassingScore
+                  ? `Điểm đạt tối thiểu là ${quiz.passingScore}%`
                   : 'Không yêu cầu điểm đạt tối thiểu'}
               </li>
               <li className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.allowRetake 
-                  ? 'Bạn được phép làm lại bài kiểm tra nhiều lần' 
+                {quiz.allowRetake
+                  ? 'Bạn được phép làm lại bài kiểm tra nhiều lần'
                   : 'Bài kiểm tra chỉ được làm một lần duy nhất'}
               </li>
               <li className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.showCorrectAnswers 
-                  ? 'Đáp án đúng sẽ được hiển thị sau khi nộp bài' 
+                {quiz.showCorrectAnswers
+                  ? 'Đáp án đúng sẽ được hiển thị sau khi nộp bài'
                   : 'Đáp án đúng sẽ không được hiển thị sau khi nộp bài'}
               </li>
               {quiz.randomizeQuestions && (
@@ -394,7 +388,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
               )}
             </ul>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between">
             <button
@@ -403,7 +397,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
             >
               Quay lại bài học
             </button>
-            
+
             {isQuizBlocked ? (
               <div className="flex items-center text-gray-600">
                 <AlertTriangle className="h-5 w-5 text-amber-500 mr-2" />

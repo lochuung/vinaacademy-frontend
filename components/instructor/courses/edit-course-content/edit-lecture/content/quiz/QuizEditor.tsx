@@ -119,9 +119,7 @@ export default function QuizEditor({lecture, setLecture, sectionId}: QuizEditorP
                 requirePassingScore: false,
                 passingScore: 70
             },
-            totalPoints: 0,
-            passPoint: 0,
-            totalPoint: 0
+            totalPoints: 0
         };
         
         return defaultQuiz;

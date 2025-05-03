@@ -57,9 +57,9 @@ export const lectureToLessonRequest = (lecture: Lecture, sectionId: string): Les
 
     // Add quiz-specific fields if applicable
     if (lecture.type === 'quiz' && lecture.quiz) {
-        lessonRequest.passPoint = lecture.quiz.passPoint || 0;
-        lessonRequest.totalPoint = lecture.quiz.totalPoint || 0;
         lessonRequest.duration = lecture.quiz.settings?.timeLimit || 0;
+        lessonRequest.totalPoint = lecture.quiz.totalPoints || 0;
+        lessonRequest.passPoint = lecture.quiz.totalPoints || 0;
         
         // Include quiz settings
         if (lecture.quiz.settings) {
