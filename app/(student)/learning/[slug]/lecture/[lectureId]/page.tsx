@@ -222,17 +222,19 @@ const LecturePage: FC<LecturePageProps> = ({params}) => {
                                 <AssignmentContent/>
                             </div>
                         ) : (
-                            <div className="w-full bg-black">
-                                {currentLecture.id && (
-                                    <VideoPlayer
-                                        isCompleted={currentLecture.isCompleted}
-                                        lessonId={lectureId}
-                                        title={currentLecture.title}
-                                        onTimeUpdate={handleTimeUpdate}
-                                        onLessonCompleted={refetchLectureData}
-                                        courseSlug={slug}
-                                    />
-                                )}
+                            <div className="w-full bg-black flex justify-center items-center">
+                                <div className="w-full max-w-screen-2xl">
+                                    {currentLecture.id && (
+                                        <VideoPlayer
+                                            isCompleted={currentLecture.isCompleted}
+                                            lessonId={lectureId}
+                                            title={currentLecture.title}
+                                            onTimeUpdate={handleTimeUpdate}
+                                            onLessonCompleted={refetchLectureData}
+                                            courseSlug={slug}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         )}
 

@@ -206,7 +206,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
                 playerRef.current = el;
                 registerContainer(el);
             }}
-            className="relative bg-black w-full aspect-video max-h-[70vh]"
+            className="relative bg-black w-full aspect-video md:max-h-[70vh] h-auto"
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => isPlaying && setShowControls(false)}
         >
