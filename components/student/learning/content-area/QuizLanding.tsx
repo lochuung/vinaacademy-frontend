@@ -3,7 +3,10 @@
 import { FC, useState, useEffect } from 'react';
 import { getQuiz, getSubmissionHistory, getLatestSubmission } from '@/services/quizService';
 import { QuizDto, QuizSubmissionResultDto } from '@/types/quiz';
-import { AlertTriangle, Play, History, Award, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { 
+  AlertTriangle, Play, History, Award, Clock, CheckCircle, 
+  XCircle, ArrowLeft, FileText, LayoutList, BarChart
+} from 'lucide-react';
 import QuizSubmissionHistory from '../quiz/QuizSubmissionHistory';
 import QuizResults from '../quiz/QuizResults';
 import { formatDistanceToNow } from 'date-fns';
@@ -160,21 +163,24 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-[60vh] w-full p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600 mx-auto mb-6"></div>
+          <p className="text-gray-600 text-lg">Đang tải bài kiểm tra...</p>
+        </div>
       </div>
     );
   }
 
   if (!quiz) {
     return (
-      <div className="flex flex-col items-center justify-center p-8">
+      <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <AlertTriangle className="h-16 w-16 text-red-500 mb-4" />
         <h2 className="text-xl font-semibold mb-2">Không thể tải bài kiểm tra</h2>
-        <p className="text-gray-600 mb-4">Có lỗi xảy ra khi tải thông tin bài kiểm tra. Vui lòng thử lại sau.</p>
+        <p className="text-gray-600 mb-4 text-center max-w-md">Có lỗi xảy ra khi tải thông tin bài kiểm tra. Vui lòng thử lại sau.</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Tải lại trang
         </button>
@@ -221,9 +227,9 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
     });
 
     return (
-      <div className="container mx-auto max-w-4xl p-4">
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-md">
-          <div className="flex justify-between items-center">
+      <div className="w-full px-4 max-w-4xl mx-auto py-6 md:py-8 animate-fadeIn">
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-md shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="text-blue-800 font-medium">Xem kết quả bài làm</div>
               <div className="text-sm text-blue-600">
@@ -232,7 +238,7 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
             </div>
             <button
               onClick={handleBackToHistory}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center"
             >
               <ArrowLeft className="h-4 w-4 mr-2" /> Quay lại lịch sử
             </button>
@@ -252,16 +258,19 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
   }
 
   return (
-    <div className="container mx-auto max-w-4xl p-4">
+    <div className="w-full px-4 max-w-4xl mx-auto py-6 md:py-8 animate-fadeIn">
       {showHistory ? (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Lịch sử làm bài</h2>
+        <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+          <div className="p-5 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+              <History className="h-5 w-5 text-blue-600 mr-2" />
+              Lịch sử làm bài
+            </h2>
             <button
               onClick={handleBackToLanding}
-              className="text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-all duration-200 flex items-center"
             >
-              Quay lại
+              <ArrowLeft className="h-4 w-4 mr-1.5" /> Quay lại bài kiểm tra
             </button>
           </div>
           <QuizSubmissionHistory
@@ -272,25 +281,25 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
           />
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          {/* Quiz Header */}
-          <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold mb-2">{quiz.title}</h1>
+        <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+          {/* Quiz Header with gradient background */}
+          <div className="p-5 md:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">{quiz.title}</h1>
             <p className="text-gray-600">{quiz.description}</p>
           </div>
 
-          {/* Quiz Info Cards */}
-          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg flex items-center">
-              <Award className="h-8 w-8 text-blue-600 mr-3" />
+          {/* Quiz Info Cards - Responsive grid layout */}
+          <div className="p-5 md:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg flex items-center transition-transform duration-200 hover:scale-105">
+              <Award className="h-8 w-8 text-blue-600 mr-3 flex-shrink-0" />
               <div>
                 <div className="text-sm text-blue-700 font-semibold">Điểm tối đa</div>
                 <div className="text-xl font-bold">{quiz.totalPoints} điểm</div>
               </div>
             </div>
 
-            <div className="bg-amber-50 p-4 rounded-lg flex items-center">
-              <Clock className="h-8 w-8 text-amber-600 mr-3" />
+            <div className="bg-amber-50 p-4 rounded-lg flex items-center transition-transform duration-200 hover:scale-105">
+              <Clock className="h-8 w-8 text-amber-600 mr-3 flex-shrink-0" />
               <div>
                 <div className="text-sm text-amber-700 font-semibold">Thời gian làm bài</div>
                 <div className="text-xl font-bold">
@@ -299,114 +308,142 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
               </div>
             </div>
 
-            {quiz.requirePassingScore && (
-              <div className="bg-green-50 p-4 rounded-lg flex items-center">
-                <CheckCircle className="h-8 w-8 text-green-600 mr-3" />
-                <div>
-                  <div className="text-sm text-green-700 font-semibold">Điểm đạt</div>
-                  <div className="text-xl font-bold">{quiz.passingScore}%</div>
-                </div>
-              </div>
-            )}
+            <div className={`${quiz.requirePassingScore ? 'bg-green-50' : 'bg-violet-50'} p-4 rounded-lg flex items-center transition-transform duration-200 hover:scale-105`}>
+              {quiz.requirePassingScore ? (
+                <>
+                  <CheckCircle className="h-8 w-8 text-green-600 mr-3 flex-shrink-0" />
+                  <div>
+                    <div className="text-sm text-green-700 font-semibold">Điểm đạt</div>
+                    <div className="text-xl font-bold">{quiz.passingScore}%</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <BarChart className="h-8 w-8 text-violet-600 mr-3 flex-shrink-0" />
+                  <div>
+                    <div className="text-sm text-violet-700 font-semibold">Số câu hỏi</div>
+                    <div className="text-xl font-bold">{quiz.questions?.length || 0}</div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Latest submission info */}
+          {/* Latest submission info with conditional styling */}
           {latestSubmission && (
-            <div className={`p-6 border-t border-b border-gray-200 ${latestSubmission.isPassed ? 'bg-green-50' : 'bg-red-50'
-              }`}>
-              <h3 className="text-lg font-semibold mb-2">Lần làm gần đây nhất</h3>
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="mb-4 md:mb-0">
-                  <div className="flex items-center mb-2">
+            <div className={`p-5 md:p-6 border-t border-b border-gray-200 ${
+              latestSubmission.isPassed ? 'bg-gradient-to-r from-green-50 to-green-100' : 'bg-gradient-to-r from-red-50 to-red-100'
+            }`}>
+              <h3 className="text-lg font-semibold mb-3 flex items-center">
+                <BarChart className="h-5 w-5 mr-2" />
+                Lần làm gần đây nhất
+              </h3>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center">
                     {latestSubmission.isPassed ? (
                       <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
                     ) : (
                       <XCircle className="h-5 w-5 text-red-600 mr-2" />
                     )}
-                    <span className={latestSubmission.isPassed ? 'text-green-700' : 'text-red-700'}>
+                    <span className={`font-semibold ${latestSubmission.isPassed ? 'text-green-700' : 'text-red-700'}`}>
                       {latestSubmission.isPassed ? 'Đạt yêu cầu' : 'Chưa đạt yêu cầu'}
                     </span>
                   </div>
-                  <div className="text-gray-700">
-                    Điểm số: <span className="font-semibold">{latestSubmission.score}/{latestSubmission.totalPoints}</span>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Thời gian: {formatDate(latestSubmission.startTime)}
-                    <span className="text-xs ml-2">({getTimeAgo(latestSubmission.startTime)})</span>
+                  <div className="text-gray-700 flex flex-wrap items-center gap-x-6">
+                    <span className="font-medium flex items-center">
+                      <Award className="h-4 w-4 mr-1.5" />
+                      Điểm số: <span className="font-semibold ml-1">{latestSubmission.score}/{latestSubmission.totalPoints}</span>
+                    </span>
+                    <span className="font-medium flex items-center">
+                      <Clock className="h-4 w-4 mr-1.5" />
+                      Thời gian: <span className="ml-1">{getTimeAgo(latestSubmission.startTime)}</span>
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
                   <button
                     onClick={handleViewHistory}
-                    className="px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md hover:bg-indigo-100 flex items-center justify-center"
+                    className="px-4 py-2.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md hover:bg-indigo-100 transition-colors duration-200 flex items-center justify-center font-medium focus:ring-2 focus:ring-indigo-300"
                   >
-                    <History className="h-4 w-4 mr-2" /> Xem lịch sử làm bài
+                    <History className="h-4 w-4 mr-1.5" /> Xem lịch sử làm bài
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Quiz Rules */}
-          <div className="p-6">
-            <h3 className="text-lg font-semibold mb-3">Quy định bài kiểm tra</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-start">
+          {/* Quiz Rules with better visual grouping */}
+          <div className="p-5 md:p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-blue-600" />
+              Quy định bài kiểm tra
+            </h3>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                Bài kiểm tra gồm {quiz.questions?.length || 0} câu hỏi
-              </li>
-              <li className="flex items-start">
+                <span>Bài kiểm tra gồm <strong>{quiz.questions?.length || 0} câu hỏi</strong></span>
+              </div>
+              <div className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.timeLimit > 0
-                  ? `Thời gian làm bài là ${quiz.timeLimit} phút`
-                  : 'Không giới hạn thời gian làm bài'}
-              </li>
-              <li className="flex items-start">
+                <span>
+                  {quiz.timeLimit > 0
+                    ? <><strong>Thời gian làm bài</strong>: {quiz.timeLimit} phút</>
+                    : 'Không giới hạn thời gian làm bài'}
+                </span>
+              </div>
+              <div className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.requirePassingScore
-                  ? `Điểm đạt tối thiểu là ${quiz.passingScore}%`
-                  : 'Không yêu cầu điểm đạt tối thiểu'}
-              </li>
-              <li className="flex items-start">
+                <span>
+                  {quiz.requirePassingScore
+                    ? <><strong>Điểm đạt tối thiểu</strong>: {quiz.passingScore}%</>
+                    : 'Không yêu cầu điểm đạt tối thiểu'}
+                </span>
+              </div>
+              <div className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.allowRetake
-                  ? 'Bạn được phép làm lại bài kiểm tra nhiều lần'
-                  : 'Bài kiểm tra chỉ được làm một lần duy nhất'}
-              </li>
-              <li className="flex items-start">
+                <span>
+                  {quiz.allowRetake
+                    ? <strong>Được phép làm lại bài nhiều lần</strong>
+                    : <strong>Bài kiểm tra chỉ được làm một lần duy nhất</strong>}
+                </span>
+              </div>
+              <div className="flex items-start">
                 <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                {quiz.showCorrectAnswers
-                  ? 'Đáp án đúng sẽ được hiển thị sau khi nộp bài'
-                  : 'Đáp án đúng sẽ không được hiển thị sau khi nộp bài'}
-              </li>
+                <span>
+                  {quiz.showCorrectAnswers
+                    ? 'Đáp án đúng sẽ được hiển thị sau khi nộp bài'
+                    : 'Đáp án đúng sẽ không được hiển thị sau khi nộp bài'}
+                </span>
+              </div>
               {quiz.randomizeQuestions && (
-                <li className="flex items-start">
+                <div className="flex items-start">
                   <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-1.5 mr-2"></span>
-                  Thứ tự câu hỏi sẽ được xáo trộn ngẫu nhiên
-                </li>
+                  <span>Thứ tự câu hỏi sẽ được xáo trộn ngẫu nhiên</span>
+                </div>
               )}
-            </ul>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between">
+          {/* Action Buttons with improved styling and responsive layout */}
+          <div className="p-5 md:p-6 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-between gap-3">
             <button
               onClick={() => window.history.back()}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100"
+              className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 flex items-center justify-center transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
             >
-              Quay lại bài học
+              <ArrowLeft className="h-4 w-4 mr-1.5" /> Quay lại bài học
             </button>
 
             {isQuizBlocked ? (
-              <div className="flex items-center text-gray-600">
-                <AlertTriangle className="h-5 w-5 text-amber-500 mr-2" />
-                Bạn đã hoàn thành bài kiểm tra này
+              <div className="flex items-center text-gray-600 bg-amber-50 px-4 py-2.5 rounded-md border border-amber-200">
+                <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0" />
+                <span>Bạn đã hoàn thành bài kiểm tra này</span>
               </div>
             ) : (
               <button
                 onClick={onStartQuiz}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <Play className="h-4 w-4 mr-2" /> Bắt đầu làm bài
               </button>
@@ -414,6 +451,17 @@ const QuizLanding: FC<QuizLandingProps> = ({ quizId, onStartQuiz, onLessonComple
           </div>
         </div>
       )}
+
+      {/* Add animation styles */}
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      `}</style>
     </div>
   );
 };
