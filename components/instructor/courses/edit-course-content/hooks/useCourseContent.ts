@@ -390,6 +390,7 @@ export const useCourseContent = (courseId?: string) => {
         onSuccess: (success, sectionIds) => {
             if (!success) {
                 console.error('Error reordering sections');
+                queryClient.invalidateQueries(sectionsQueryKey);
                 return;
             }
 
