@@ -26,7 +26,7 @@ interface SectionItemProps {
     isExpanded: boolean;
     onToggle: (sectionId: string) => void;
     onDragStart: () => void;
-    onDragEnd: (event: any) => void;
+    onDragEnd: (event: DragEndEvent) => void;
     onDelete: (sectionId: string) => void;
     onAddLecture: (sectionId: string) => void;
     onDeleteLecture: (sectionId: string, lectureId: string) => void;

@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { SectionItem } from './SectionItem';
 import { Section } from '@/types/instructor-course-edit';
 import { motion } from 'framer-motion';
+import { DragEndEvent } from '@dnd-kit/core';
 
 interface SortableSectionProps {
   section: Section;
@@ -16,7 +17,7 @@ interface SortableSectionProps {
   onLectureUpdated: () => void;
   isFirst?: boolean;
   isLast?: boolean;
-  onDragEnd: (event: any) => void;
+  onDragEnd: (event: DragEndEvent) => void;
 }
 
 export function SortableSection({ section, ...props }: SortableSectionProps) {
