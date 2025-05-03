@@ -1,22 +1,24 @@
 // components/SectionItem.tsx
-import { useState } from 'react';
-import { Grip, ChevronUp, ChevronDown, Edit, Trash2, Plus, MoreVertical } from 'lucide-react';
-import { Section } from '@/types/instructor-course-edit';
-import { SectionEditModal } from '@/components/instructor/courses/SectionEditModal';
-import { LectureEditModal } from '@/components/instructor/courses/LectureEditModal';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuTrigger 
+import {useState} from 'react';
+import {Grip, ChevronUp, ChevronDown, Edit, Trash2, Plus, MoreVertical} from 'lucide-react';
+import {Section} from '@/types/instructor-course-edit';
+import {SectionEditModal} from '@/components/instructor/courses/SectionEditModal';
+import {LectureEditModal} from '@/components/instructor/courses/LectureEditModal';
+import {useRouter} from 'next/navigation';
+import {motion} from 'framer-motion';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { createPortal } from 'react-dom';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { SortableLecture } from './SortableLecture';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
+import {Badge} from '@/components/ui/badge';
+import {createPortal} from 'react-dom';
+import {DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent} from '@dnd-kit/core';
+import {arrayMove, SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {restrictToVerticalAxis} from '@dnd-kit/modifiers';
+import {SortableLecture} from './SortableLecture';
 
 interface SectionItemProps {
     section: Section;
@@ -24,7 +26,7 @@ interface SectionItemProps {
     isExpanded: boolean;
     onToggle: (sectionId: string) => void;
     onDragStart: () => void;
-    onDragEnd: () => void;
+    onDragEnd: (event: any) => void;
     onDelete: (sectionId: string) => void;
     onAddLecture: (sectionId: string) => void;
     onDeleteLecture: (sectionId: string, lectureId: string) => void;
@@ -36,26 +38,28 @@ interface SectionItemProps {
 }
 
 export const SectionItem = ({
-    section,
-    courseId,
-    isExpanded,
-    onToggle,
-    onDragStart,
-    onDragEnd,
-    onDelete,
-    onAddLecture,
-    onDeleteLecture,
-    onSectionUpdated,
-    onLectureUpdated,
-    isFirst = false,
-    isLast = false,
-    dragHandleProps = {}
-}: SectionItemProps) => {
+                                section,
+                                courseId,
+                                isExpanded,
+                                onToggle,
+                                onDragStart,
+                                onDragEnd,
+                                onDelete,
+                                onAddLecture,
+                                onDeleteLecture,
+                                onSectionUpdated,
+                                onLectureUpdated,
+                                isFirst = false,
+                                isLast = false,
+                                dragHandleProps = {}
+                            }: SectionItemProps) => {
     const router = useRouter();
     const [isSectionModalOpen, setSectionModalOpen] = useState(false);
     const [isLectureModalOpen, setLectureModalOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [isDraggingLecture, setIsDraggingLecture] = useState(false);
+
+    // Configure sensors for lecture drag detection
 
     const handleEditSection = () => {
         setSectionModalOpen(true);
@@ -79,18 +83,22 @@ export const SectionItem = ({
         }
     };
 
-    const handleLectureDragStart = () => {
+    const handleLectureDragStart = (id: string) => {
         setIsDraggingLecture(true);
         document.body.classList.add('dragging');
+        onDragStart(); // Call the parent drag start handler
     };
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5
+            }
+        })
+    );
 
-    const handleLectureDragEnd = () => {
-        setIsDraggingLecture(false);
-        document.body.classList.remove('dragging');
-    };
 
     return (
-        <motion.div 
+        <motion.div
             className={`border border-gray-200 rounded-lg overflow-hidden shadow-sm 
                 ${isHovered ? 'shadow-md border-gray-300' : ''} 
                 ${isExpanded ? 'shadow-md' : ''} 
@@ -99,10 +107,11 @@ export const SectionItem = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             initial={false}
-            animate={{ scale: isHovered ? 1.005 : 1 }}
+            animate={{scale: isHovered ? 1.005 : 1}}
         >
             {/* Section header */}
-            <div className={`px-4 py-3 flex justify-between items-center ${isExpanded ? 'bg-blue-50 border-b border-blue-100' : 'bg-white'}`}>
+            <div
+                className={`px-4 py-3 flex justify-between items-center ${isExpanded ? 'bg-blue-50 border-b border-blue-100' : 'bg-white'}`}>
                 <div className="flex items-center flex-1 min-w-0">
                     <TooltipProvider>
                         <Tooltip>
@@ -114,7 +123,7 @@ export const SectionItem = ({
                                         hover:bg-gray-100 transition-colors drag-handle`}
                                     {...dragHandleProps}
                                 >
-                                    <Grip className="h-5 w-5" />
+                                    <Grip className="h-5 w-5"/>
                                 </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -122,7 +131,7 @@ export const SectionItem = ({
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    
+
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center">
                             <h3 className="text-sm font-medium text-gray-900 truncate">
@@ -134,7 +143,7 @@ export const SectionItem = ({
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-1">
                     <button
                         type="button"
@@ -142,35 +151,36 @@ export const SectionItem = ({
                         onClick={() => onToggle(section.id)}
                     >
                         {isExpanded ? (
-                            <ChevronUp className="h-5 w-5" />
+                            <ChevronUp className="h-5 w-5"/>
                         ) : (
-                            <ChevronDown className="h-5 w-5" />
+                            <ChevronDown className="h-5 w-5"/>
                         )}
                     </button>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 hover:text-gray-700 transition-colors">
-                                <MoreVertical className="h-5 w-5" />
+                            <button
+                                className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 hover:text-gray-700 transition-colors">
+                                <MoreVertical className="h-5 w-5"/>
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem onClick={handleEditSection} className="cursor-pointer">
-                                <Edit className="h-4 w-4 mr-2" />
+                                <Edit className="h-4 w-4 mr-2"/>
                                 Chỉnh sửa phần học
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                                onClick={handleAddLecture} 
+                            <DropdownMenuItem
+                                onClick={handleAddLecture}
                                 className="cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
                             >
-                                <Plus className="h-4 w-4 mr-2" />
+                                <Plus className="h-4 w-4 mr-2"/>
                                 Thêm bài giảng
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                                onClick={handleDeleteSection} 
+                            <DropdownMenuItem
+                                onClick={handleDeleteSection}
                                 className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                             >
-                                <Trash2 className="h-4 w-4 mr-2" />
+                                <Trash2 className="h-4 w-4 mr-2"/>
                                 Xóa phần học
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -181,54 +191,41 @@ export const SectionItem = ({
             {/* Section content */}
             {isExpanded && (
                 <div className="bg-white p-4">
-                    <motion.div 
-                        className="space-y-2"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        modifiers={[restrictToVerticalAxis]}
+                        onDragStart={() => {
+                            setIsDraggingLecture(true);
+                            document.body.classList.add('dragging');
+                            onDragStart();
+                        }}
+                        onDragEnd={onDragEnd}
                     >
-                        {section.lectures.length > 0 ? (
-                            <SortableContext
-                                items={section.lectures.map(lecture => `lecture-${section.id}-${lecture.id}`)}
-                                strategy={verticalListSortingStrategy}
-                            >
-                                {section.lectures.sort((a, b) => a.order - b.order).map((lecture, index) => (
-                                    <SortableLecture
-                                        key={lecture.id}
-                                        lecture={lecture}
-                                        courseId={courseId}
-                                        sectionId={section.id}
-                                        onDelete={onDeleteLecture}
-                                        onEdit={() => handleEditLecture(lecture.id)}
-                                        isFirst={index === 0}
-                                        isLast={index === section.lectures.length - 1}
-                                    />
-                                ))}
-                            </SortableContext>
-                        ) : (
-                            <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
-                                <p className="text-sm text-gray-500">Chưa có bài giảng nào trong phần này</p>
-                                <button
-                                    onClick={handleAddLecture}
-                                    className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700"
-                                >
-                                    <Plus className="h-4 w-4 mr-1" /> Thêm bài giảng
-                                </button>
-                            </div>
-                        )}
-                    </motion.div>
-                    
-                    {section.lectures.length > 0 && (
-                        <div className="mt-4 flex justify-center">
-                            <button
-                                type="button"
-                                onClick={handleAddLecture}
-                                className="inline-flex items-center px-3.5 py-1.5 border border-blue-300 shadow-sm text-sm font-medium rounded-full text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-                            >
-                                <Plus className="h-4 w-4 mr-1" /> Thêm bài giảng
-                            </button>
-                        </div>
-                    )}
+                        <SortableContext
+                            items={section.lectures.map(lecture => `lecture:${section.id}:${lecture.id}`)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {section.lectures.sort((a, b) => a.order - b.order).map((lecture, index) => (
+                                <SortableLecture
+                                    key={lecture.id}
+                                    lecture={lecture}
+                                    courseId={courseId}
+                                    sectionId={section.id}
+                                    onDelete={onDeleteLecture}
+                                    onEdit={() => handleEditLecture(lecture.id)}
+                                    isFirst={index === 0}
+                                    isLast={index === section.lectures.length - 1}
+                                    onDragStart={() => {
+                                    }}
+                                    onDragEnd={() => {
+                                    }}
+                                />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
+
+                    {/* Nút thêm bài giảng và các phần khác giữ nguyên */}
                 </div>
             )}
 

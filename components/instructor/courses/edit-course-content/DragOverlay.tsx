@@ -50,8 +50,8 @@ export function DragOverlay({ activeId, sections }: DragOverlayProps) {
   }
   
   // Check if dragging a lecture
-  if (activeIdString.startsWith('lecture-')) {
-    const parts = activeIdString.split('-');
+  if (activeIdString.startsWith('lecture:')) {
+    const parts = activeIdString.split(':');
     if (parts.length === 3) {
       const sectionId = parts[1];
       const lectureId = parts[2];

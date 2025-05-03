@@ -16,6 +16,7 @@ interface SortableSectionProps {
   onLectureUpdated: () => void;
   isFirst?: boolean;
   isLast?: boolean;
+  onDragEnd: (event: any) => void;
 }
 
 export function SortableSection({ section, ...props }: SortableSectionProps) {
@@ -27,7 +28,7 @@ export function SortableSection({ section, ...props }: SortableSectionProps) {
     transition,
     isDragging,
     isOver,
-    active
+    active,
   } = useSortable({
     id: `section-${section.id}`,
     data: { type: 'section', id: section.id }
@@ -57,7 +58,7 @@ export function SortableSection({ section, ...props }: SortableSectionProps) {
         section={section}
         {...props}
         onDragStart={() => {}}
-        onDragEnd={() => {}}
+        onDragEnd={props.onDragEnd}
         dragHandleProps={{
           ...attributes,
           ...listeners,
