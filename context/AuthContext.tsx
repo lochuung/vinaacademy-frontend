@@ -7,6 +7,7 @@ import * as authService from "@/services/authService";
 import { toast } from "react-toastify";
 import { getAccessToken } from "@/lib/apiClient";
 import createToast, { createErrorToast, createSuccessToast } from "@/components/ui/toast-cus";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
@@ -117,9 +118,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const currentPath = usePathname();
 
     // Logout function
+    const queryClient = useQueryClient();
     const logout = async () => {
         await authService.logout();
         setUser(null);
+        // clear tanstack query
+        queryClient.clear();
         createSuccessToast('Đăng xuất thành công!');
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
     };

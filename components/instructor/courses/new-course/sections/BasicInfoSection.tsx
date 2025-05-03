@@ -7,11 +7,11 @@ import { CategoryDto } from "@/types/category";
 import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
 import InfoAlert from "../InfoAlert";
-import MarkdownEditorSection from "@/components/instructor/courses/new-course/MarkdownEditor";
 import FormField from "@/components/ui/form/FormField";
 import ProgressIndicator from "@/components/ui/form/ProgressIndicator";
 import CategorySelect from "@/components/ui/form/CategorySelect";
 import { useDebounce } from "@/hooks/useDebounce";
+import TipTapEditor from "@/components/common/editors/TipTapEditor";
 
 interface BasicInfoSectionProps {
   courseData: CourseData;
@@ -113,7 +113,7 @@ export default function BasicInfoSection({
       case "description":
         if (!value.trim()) {
           newErrors.description = "Mô tả chi tiết không được trống";
-        }  else {
+        } else {
           delete newErrors.description;
         }
         break;
@@ -138,10 +138,10 @@ export default function BasicInfoSection({
     >
   ) => {
     const { name, value } = e.target;
-    
+
     // Update local state immediately for responsive UI
     setLocalValues(prev => ({ ...prev, [name]: value }));
-    
+
     // For select inputs (category, level), update parent state immediately
     // as they don't typically suffer from typing lag
     if (name === 'category' || name === 'level') {
@@ -151,14 +151,14 @@ export default function BasicInfoSection({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="p-6 space-y-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <InfoAlert 
-        title="Thông tin cơ bản về khóa học" 
+      <InfoAlert
+        title="Thông tin cơ bản về khóa học"
         icon={<FileText className="h-6 w-6 text-blue-500" />}
         variant="blue"
       >
@@ -166,7 +166,7 @@ export default function BasicInfoSection({
           Điền đầy đủ thông tin cơ bản để giúp học viên hiểu khóa học của bạn. Tên khóa học hấp dẫn và mô tả rõ ràng sẽ giúp thu hút nhiều người học hơn.
         </p>
       </InfoAlert>
-      
+
       <div className="space-y-6">
         <FormField
           label="Tên khóa học"
@@ -182,9 +182,8 @@ export default function BasicInfoSection({
             name="title"
             id="title"
             required
-            className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-              errors.title ? "border-red-500" : ""
-            }`}
+            className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${errors.title ? "border-red-500" : ""
+              }`}
             placeholder="Ví dụ: Lập trình Web với React và Node.js"
             value={localValues.title}
             onChange={handleLocalChange}
@@ -199,9 +198,11 @@ export default function BasicInfoSection({
           helperText="Mô tả chi tiết về nội dung khóa học, những gì học viên sẽ học được, và lợi ích khi tham gia khóa học"
         >
           <div className="border border-gray-300 rounded-md overflow-hidden">
-            <MarkdownEditorSection 
-              description={localValues.description || undefined} 
-              setDescription={handleDescriptionChange} 
+            <TipTapEditor
+              content={localValues.description}
+              onChange={handleDescriptionChange}
+              placeholder="Nhập mô tả chi tiết tại đây..."
+              editable={true}
             />
           </div>
         </FormField>
@@ -214,7 +215,7 @@ export default function BasicInfoSection({
             error={errors.category}
             helperText="Lựa chọn danh mục phù hợp nhất với nội dung khóa học của bạn"
           >
-            <CategorySelect 
+            <CategorySelect
               categories={categories}
               value={localValues.category}
               onChange={handleLocalChange}
@@ -233,9 +234,8 @@ export default function BasicInfoSection({
               id="level"
               name="level"
               required
-              className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${
-                errors.level ? "border-red-500" : ""
-              }`}
+              className={`shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3 ${errors.level ? "border-red-500" : ""
+                }`}
               value={localValues.level}
               onChange={handleLocalChange}
             >
@@ -249,7 +249,7 @@ export default function BasicInfoSection({
       </div>
 
       {/* Summary of completed fields */}
-      <ProgressIndicator 
+      <ProgressIndicator
         title="Tiến trình thông tin cơ bản"
         items={[
           { label: "Tên khóa học", isCompleted: !!courseData.title, step: 1 },

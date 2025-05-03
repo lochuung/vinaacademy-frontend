@@ -539,22 +539,25 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId, onLessonComplet
 
     if (loading || !quiz) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="flex items-center justify-center min-h-[50vh] w-full p-4">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600 mx-auto mb-6"></div>
+                    <p className="text-gray-600 text-lg">Đang tải bài kiểm tra...</p>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4"/>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Đã xảy ra lỗi</h3>
-                    <p className="text-gray-600">{error}</p>
+            <div className="flex items-center justify-center min-h-[50vh] w-full p-4">
+                <div className="text-center bg-white shadow-lg rounded-lg p-8 max-w-md mx-auto">
+                    <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-6"/>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Đã xảy ra lỗi</h3>
+                    <p className="text-gray-600 mb-6">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
                     >
                         Thử lại
                     </button>
@@ -565,22 +568,22 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId, onLessonComplet
 
     if (sessionExpired) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <div className="text-center p-8 bg-white shadow-lg rounded-lg max-w-md">
-                    <Clock className="h-12 w-12 text-yellow-500 mx-auto mb-4"/>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Phiên làm bài đã hết hạn</h3>
-                    <p className="text-gray-600 mb-4">Thời gian làm bài đã kết thúc.</p>
+            <div className="flex items-center justify-center min-h-[50vh] w-full p-4">
+                <div className="text-center bg-white shadow-lg rounded-lg p-8 max-w-md mx-auto">
+                    <Clock className="h-16 w-16 text-yellow-500 mx-auto mb-6"/>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Phiên làm bài đã hết hạn</h3>
+                    <p className="text-gray-600 mb-6">Thời gian làm bài đã kết thúc.</p>
                     {quiz.settings.allowRetake ? (
                         <button
                             onClick={handleRetakeQuiz}
-                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
                         >
                             Làm lại bài kiểm tra
                         </button>
                     ) : (
                         <button
                             onClick={() => window.history.back()}
-                            className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                            className="inline-flex items-center justify-center px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
                         >
                             Quay lại bài học
                         </button>
@@ -607,21 +610,25 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId, onLessonComplet
     }
 
     return (
-        <div className="container mx-auto max-w-4xl p-4">
-            <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                {/* Header */}
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex justify-between items-center">
-                        <h1 className="text-2xl font-bold">Bài kiểm tra: {quiz.title || 'Kiểm tra kiến thức'}</h1>
+        <div className="w-full px-4 py-6 md:py-8 lg:px-0 mx-auto max-w-4xl animate-fadeIn">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+                {/* Header with improved styling */}
+                <div className="p-5 md:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+                            {quiz.title || 'Kiểm tra kiến thức'}
+                        </h1>
 
-                        {/* Nếu có thời gian giới hạn, hiển thị đồng hồ đếm ngược */}
+                        {/* Timer with more prominent styling */}
                         {remainingTime !== null && (
-                            <QuizTimer remainingTime={remainingTime}/>
+                            <div className="ml-auto">
+                                <QuizTimer remainingTime={remainingTime}/>
+                            </div>
                         )}
                     </div>
 
-                    {/* Thanh tiến trình */}
-                    <div className="mt-4">
+                    {/* Progress bar with improved visual feedback */}
+                    <div className="mt-6">
                         <QuizProgress
                             currentQuestion={currentQuestionIndex + 1}
                             totalQuestions={quiz.questions.length}
@@ -633,92 +640,117 @@ const QuizContent: FC<QuizContentProps> = ({courseId, lectureId, onLessonComplet
                     </div>
                 </div>
 
-                {/* Body */}
-                <div className="p-6">
+                {/* Question area with improved spacing and readability */}
+                <div className="p-5 md:p-6 bg-white">
                     <div className="mb-6">
-                        <div className="text-gray-500 text-sm mb-2">
-                            Câu hỏi {currentQuestionIndex + 1} / {quiz.questions.length}
-                            {currentQuestion.isRequired && <span className="text-red-500 ml-1">*</span>}
-                            <span className="ml-2 font-medium">{currentQuestion.points} điểm</span>
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="text-gray-500 text-sm flex items-center">
+                                <span className="bg-blue-100 text-blue-800 font-medium px-3 py-1 rounded-full">
+                                    Câu hỏi {currentQuestionIndex + 1} / {quiz.questions.length}
+                                </span>
+                                {currentQuestion.isRequired && 
+                                    <span className="text-red-500 ml-2 font-medium">*Bắt buộc</span>
+                                }
+                            </div>
+                            <span className="text-sm font-medium bg-green-50 text-green-800 px-3 py-1 rounded-full">
+                                {currentQuestion.points} điểm
+                            </span>
                         </div>
 
-                        <QuizQuestion
-                            question={currentQuestion}
-                            selectedAnswers={selectedAnswers[currentQuestion.id || ''] || []}
-                            textAnswer={textAnswers[currentQuestion.id || ''] || ''}
-                            onSelectOption={(optionId) => handleSelectOption(currentQuestion.id || '', optionId)}
-                            onTextChange={(text) => handleTextAnswer(currentQuestion.id || '', text)}
-                            showCorrectAnswers={false}
-                            isSubmitted={isSubmitted}
-                        />
+                        <div className="bg-gray-50 p-4 md:p-6 rounded-lg transition-all duration-200">
+                            <QuizQuestion
+                                question={currentQuestion}
+                                selectedAnswers={selectedAnswers[currentQuestion.id || ''] || []}
+                                textAnswer={textAnswers[currentQuestion.id || ''] || ''}
+                                onSelectOption={(optionId) => handleSelectOption(currentQuestion.id || '', optionId)}
+                                onTextChange={(text) => handleTextAnswer(currentQuestion.id || '', text)}
+                                showCorrectAnswers={false}
+                                isSubmitted={isSubmitted}
+                            />
+                        </div>
                     </div>
 
-                    {/* Điều hướng */}
-                    <div className="flex justify-between mt-8">
+                    {/* Navigation buttons with better accessibility and visual feedback */}
+                    <div className="flex flex-col sm:flex-row justify-between mt-8 gap-4">
                         <button
                             onClick={goToPreviousQuestion}
                             disabled={currentQuestionIndex === 0}
-                            className={`flex items-center px-4 py-2 border rounded-md ${currentQuestionIndex === 0
-                                ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            aria-label="Go to previous question"
+                            className={`flex items-center justify-center px-5 py-2.5 rounded-md transition-all duration-200 ${
+                                currentQuestionIndex === 0
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-2 focus:ring-gray-300'
                             }`}
                         >
-                            <ChevronLeft size={16} className="mr-1"/> Câu hỏi trước
+                            <ChevronLeft size={18} className="mr-2"/> Câu hỏi trước
                         </button>
 
                         {currentQuestionIndex < quiz.questions.length - 1 ? (
                             <button
                                 onClick={goToNextQuestion}
-                                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                aria-label="Go to next question"
+                                className="flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
-                                Câu hỏi tiếp theo <ChevronRight size={16} className="ml-1"/>
+                                Câu hỏi tiếp theo <ChevronRight size={18} className="ml-2"/>
                             </button>
                         ) : (
                             <button
                                 onClick={handleConfirmSubmit}
-                                className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                                aria-label="Submit quiz"
+                                className="flex items-center justify-center px-6 py-2.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-all duration-200 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                             >
-                                <Check size={16} className="mr-1"/> Nộp bài
+                                <Check size={18} className="mr-2"/> Nộp bài
                             </button>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* Xác nhận nộp bài */}
+            {/* Improved confirmation dialog with better accessibility */}
             {requireConfirmation && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                        <div className="flex items-start mb-4">
-                            <div className="flex-shrink-0">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+                    <div className="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full mx-auto">
+                        <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0 bg-yellow-50 rounded-full p-2">
                                 <AlertCircle className="h-6 w-6 text-yellow-500"/>
                             </div>
-                            <div className="ml-3">
-                                <h3 className="text-lg font-medium text-gray-900">Có câu hỏi bắt buộc chưa trả lời</h3>
-                                <div className="mt-2 text-sm text-gray-500">
-                                    <p>Bạn chưa trả lời tất cả các câu hỏi bắt buộc. Bạn có chắc chắn muốn nộp bài?</p>
+                            <div className="flex-1">
+                                <h3 className="text-lg font-semibold text-gray-900">Có câu hỏi bắt buộc chưa trả lời</h3>
+                                <p className="mt-2 text-gray-600">
+                                    Bạn chưa trả lời tất cả các câu hỏi bắt buộc. Bạn có chắc chắn muốn nộp bài?
+                                </p>
+                                <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleContinueQuiz}
+                                        className="inline-flex justify-center px-4 py-2.5 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    >
+                                        Quay lại làm bài
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSubmitQuiz}
+                                        className="inline-flex justify-center px-4 py-2.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                                    >
+                                        Nộp bài ngay
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={handleContinueQuiz}
-                                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                            >
-                                Quay lại làm bài
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleSubmitQuiz}
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                            >
-                                Nộp bài ngay
-                            </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Add some global styles - animate-fadeIn class will need to be added to your global CSS */}
+            <style jsx global>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+            `}</style>
         </div>
     );
 };

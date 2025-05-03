@@ -69,7 +69,7 @@ export const useCourseContent = (courseId?: string) => {
     const [isDragging, setIsDragging] = useState(false);
 
     // Query key definitions
-    const sectionsQueryKey = ['sections', courseId];
+    const sectionsQueryKey: [string, string] | [] = courseId ? ['sections', courseId] : [];
 
     // Fetch sections and their lectures
     const {
@@ -390,7 +390,11 @@ export const useCourseContent = (courseId?: string) => {
         onSuccess: (success, sectionIds) => {
             if (!success) {
                 console.error('Error reordering sections');
-                queryClient.invalidateQueries(sectionsQueryKey);
+                if (courseId) {
+                    if (sectionsQueryKey.length > 0) {
+                        queryClient.invalidateQueries({ queryKey: sectionsQueryKey });
+                    }
+                }
                 return;
             }
 

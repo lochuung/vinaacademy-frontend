@@ -5,6 +5,8 @@ import { getLessonById, markLessonComplete } from '@/services/lessonService';
 import { LessonDto } from '@/types/lesson';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import SafeHtml from '@/components/common/safe-html';
 
 interface ReadingContentProps {
     lectureId: string;
@@ -56,7 +58,6 @@ const ReadingContent: FC<ReadingContentProps> = ({
                             const parsedContent = JSON.parse(data.content);
                             setReadingContent(parsedContent);
                         } catch (parseError) {
-                            // If not JSON, treat as markdown/text content with a single section
                             setReadingContent({
                                 title: data.title,
                                 sections: [
@@ -157,109 +158,71 @@ const ReadingContent: FC<ReadingContentProps> = ({
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
             {/* Điều khiển đọc */}
-            <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-2xl font-bold">{readingContent.title}</h1>
-                <div className="flex items-center space-x-3">
+            <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 pt-4">
+                <h1 className="text-xl sm:text-2xl font-bold">{readingContent.title}</h1>
+                <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
                     {localCompleted && (
-                    <span className="px-4 py-2 rounded-md text-sm bg-green-50 text-green-700 flex items-center">
-                        <CheckCircle size={16} className="mr-1" />
+                    <span className="px-3 py-1 rounded-md text-sm bg-green-50 text-green-700 flex items-center">
+                        <CheckCircle size={14} className="mr-1" />
                         Đã hoàn thành
                     </span>
                     )}
                     {/* Font size controls */}
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 border rounded-lg p-1 bg-gray-50">
                         <button
                             onClick={() => setFontSize('sm')}
-                            className={`p-1 ${fontSize === 'sm' ? 'text-blue-600' : 'text-gray-500'}`}
+                            className={`p-1.5 rounded-md ${fontSize === 'sm' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:bg-white'}`}
                             title="Cỡ chữ nhỏ"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fillRule="evenodd"
-                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd" />
-                            </svg>
+                            <span className="text-xs">A</span>
                         </button>
                         <button
                             onClick={() => setFontSize('md')}
-                            className={`p-1 ${fontSize === 'md' ? 'text-blue-600' : 'text-gray-500'}`}
+                            className={`p-1.5 rounded-md ${fontSize === 'md' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:bg-white'}`}
                             title="Cỡ chữ vừa"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fillRule="evenodd"
-                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd" />
-                            </svg>
+                            <span className="text-sm">A</span>
                         </button>
                         <button
                             onClick={() => setFontSize('lg')}
-                            className={`p-1 ${fontSize === 'lg' ? 'text-blue-600' : 'text-gray-500'}`}
+                            className={`p-1.5 rounded-md ${fontSize === 'lg' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:bg-white'}`}
                             title="Cỡ chữ lớn"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fillRule="evenodd"
-                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd" />
-                            </svg>
+                            <span className="text-base">A</span>
                         </button>
                         <button
                             onClick={() => setFontSize('xl')}
-                            className={`p-1 ${fontSize === 'xl' ? 'text-blue-600' : 'text-gray-500'}`}
+                            className={`p-1.5 rounded-md ${fontSize === 'xl' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:bg-white'}`}
                             title="Cỡ chữ rất lớn"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fillRule="evenodd"
-                                    d="M5 5a1 1 0 011-1h8a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V5zm2 1v8h6V6H7z"
-                                    clipRule="evenodd" />
-                            </svg>
+                            <span className="text-lg">A</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Nội dung đọc */}
-            <div className={`space-y-8 ${getFontSizeClass()}`}>
+            <div className={`space-y-8 ${getFontSizeClass()} bg-white sm:border sm:border-gray-200 sm:rounded-lg sm:p-6 shadow-sm`}>
                 {readingContent.sections.map((section, index) => (
                     <div key={index} className="reading-section">
-                        <h2 className="text-xl font-bold mb-3">{section.heading}</h2>
+                        {section.heading !== readingContent.title && (
+                            <h2 className="text-xl font-bold mb-4 pb-2 border-b border-gray-100">{section.heading}</h2>
+                        )}
                         <div className="prose prose-slate max-w-none">
-                            {section.content.split('```').map((part, i) => {
-                                if (i % 2 === 0) {
-                                    // Nội dung văn bản
-                                    return (
-                                        <div key={i} className="mb-4 whitespace-pre-line">
-                                            {part}
-                                        </div>
-                                    );
-                                } else {
-                                    // Khối mã
-                                    const [language, ...codeLines] = part.split('\n');
-                                    const code = codeLines.join('\n');
-
-                                    return (
-                                        <div key={i} className="mb-4">
-                                            <div className="bg-gray-100 rounded-md p-4 overflow-x-auto">
-                                                <pre className="text-sm">
-                                                    <code>{code}</code>
-                                                </pre>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                            })}
+                            <SafeHtml
+                                html={section.content}
+                                className={`text-gray-700 ${getFontSizeClass()}`}
+                            />
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Điều hướng */}
-            <div className="mt-12 pt-4 border-t border-gray-200 flex justify-between items-center">
-                <button className="flex items-center text-blue-600 hover:text-blue-800">
+            <div className="mt-8 mb-6 pt-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button className="flex items-center text-blue-600 hover:text-blue-800 order-2 sm:order-1">
                     <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"
                             d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -269,12 +232,12 @@ const ReadingContent: FC<ReadingContentProps> = ({
                 </button>
 
                 {/* Mark as complete button - moved to bottom */}
-                <div className="flex-grow flex justify-center">
+                <div className="flex-grow flex justify-center order-1 sm:order-2 w-full sm:w-auto">
                     {!localCompleted && (
                         <button
                             onClick={handleMarkComplete}
                             disabled={isMarkingComplete}
-                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${isMarkingComplete
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center w-full sm:w-auto justify-center ${isMarkingComplete
                                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                     : 'bg-green-100 text-green-700 hover:bg-green-200'
                                 }`}
@@ -294,7 +257,7 @@ const ReadingContent: FC<ReadingContentProps> = ({
                     )}
                 </div>
 
-                <button className="flex items-center text-blue-600 hover:text-blue-800">
+                <button className="flex items-center text-blue-600 hover:text-blue-800 order-3">
                     Bài học tiếp theo
                     <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd"

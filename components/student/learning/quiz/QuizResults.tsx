@@ -112,10 +112,10 @@ const QuizResults: FC<QuizResultsProps> = ({
     const displayedResult = viewingSubmission || apiResult;
 
     return (
-        <div className="container mx-auto max-w-4xl p-4">
+        <div className="container mx-auto max-w-4xl px-4 pb-8">
             {viewingSubmission && (
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-md">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div>
                             <div className="text-blue-800 font-medium">Đang xem lịch sử làm bài</div>
                             <div className="text-sm text-blue-600">
@@ -124,7 +124,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                         </div>
                         <button 
                             onClick={handleResetToCurrentSubmission} 
-                            className="text-blue-700 hover:text-blue-900 px-2 py-1 text-sm"
+                            className="text-blue-700 hover:text-blue-900 px-3 py-1.5 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors"
                         >
                             Quay lại kết quả hiện tại
                         </button>
@@ -134,11 +134,11 @@ const QuizResults: FC<QuizResultsProps> = ({
         
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 {/* Results header */}
-                <div className="p-8 bg-gray-50 border-b border-gray-200">
-                    <h1 className="text-2xl font-bold text-center mb-4">Kết quả bài kiểm tra</h1>
+                <div className="p-6 md:p-8 bg-gray-50 border-b border-gray-200">
+                    <h1 className="text-2xl md:text-3xl font-bold text-center mb-6">Kết quả bài kiểm tra</h1>
 
                     <div className="flex flex-col items-center">
-                        <div className="text-5xl font-bold mb-2 text-blue-700">
+                        <div className="text-4xl md:text-5xl font-bold mb-2 text-blue-700">
                             {displayedResult ? displayedResult.score : quizResults.totalScore}/{displayedResult ? displayedResult.totalPoints : quizResults.maxScore}
                         </div>
                         <div className="text-xl text-gray-600 mb-4">
@@ -155,11 +155,11 @@ const QuizResults: FC<QuizResultsProps> = ({
                             }`}>
                                 {(displayedResult ? displayedResult.isPassed : quizResults.passed)
                                     ? <span className="flex items-center">
-                                        <CheckCircle size={18} className="mr-1"/> 
+                                        <CheckCircle size={18} className="mr-1.5"/> 
                                         Bạn đã đạt điểm tối thiểu {quiz.settings.passingScore}%
                                       </span>
                                     : <span className="flex items-center">
-                                        <XCircle size={18} className="mr-1"/> 
+                                        <XCircle size={18} className="mr-1.5"/> 
                                         Bạn chưa đạt điểm tối thiểu {quiz.settings.passingScore}%
                                       </span>
                                 }
@@ -181,12 +181,12 @@ const QuizResults: FC<QuizResultsProps> = ({
 
                 {/* Results summary */}
                 <div className="p-6 border-b border-gray-200">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg transition-transform hover:scale-105">
                             <div className="text-xs text-blue-700 uppercase font-semibold">Câu hỏi</div>
                             <div className="text-2xl font-bold">{quiz.questions.length}</div>
                         </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="bg-green-50 p-4 rounded-lg transition-transform hover:scale-105">
                             <div className="text-xs text-green-700 uppercase font-semibold">Đúng</div>
                             <div className="text-2xl font-bold">
                                 {displayedResult 
@@ -194,7 +194,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                                     : quizResults.results.filter(r => r.correct === true).length}
                             </div>
                         </div>
-                        <div className="bg-red-50 p-4 rounded-lg">
+                        <div className="bg-red-50 p-4 rounded-lg transition-transform hover:scale-105">
                             <div className="text-xs text-red-700 uppercase font-semibold">Sai</div>
                             <div className="text-2xl font-bold">
                                 {displayedResult 
@@ -202,7 +202,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                                     : quizResults.results.filter(r => r.correct === false).length}
                             </div>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="bg-gray-50 p-4 rounded-lg transition-transform hover:scale-105">
                             <div className="text-xs text-gray-700 uppercase font-semibold">Tự luận</div>
                             <div className="text-2xl font-bold">
                                 {quizResults.results.filter(r => r.correct === null).length}
@@ -212,18 +212,18 @@ const QuizResults: FC<QuizResultsProps> = ({
                 </div>
 
                 {/* Display controls */}
-                <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <div className="p-4 bg-gray-50 border-b border-gray-200 flex flex-wrap justify-between items-center gap-2">
                     <div className="text-sm text-gray-600">Chi tiết câu trả lời của bạn</div>
                     <div className="flex space-x-2">
                         <button
                             onClick={expandAllQuestions}
-                            className="text-blue-600 text-sm flex items-center hover:text-blue-800"
+                            className="text-blue-600 text-sm flex items-center hover:text-blue-800 bg-white px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 transition-colors"
                         >
                             <ChevronDown size={16} className="mr-1"/> Mở tất cả
                         </button>
                         <button
                             onClick={collapseAllQuestions}
-                            className="text-blue-600 text-sm flex items-center hover:text-blue-800"
+                            className="text-blue-600 text-sm flex items-center hover:text-blue-800 bg-white px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 transition-colors"
                         >
                             <ChevronUp size={16} className="mr-1"/> Thu gọn tất cả
                         </button>
@@ -242,14 +242,16 @@ const QuizResults: FC<QuizResultsProps> = ({
                         const earnedPoints = apiAnswer ? apiAnswer.earnedPoints : result?.score;
 
                         return (
-                            <div key={question.id || ''} className="p-4">
+                            <div key={question.id || ''} className={`p-4 transition-colors ${isExpanded ? 'bg-gray-50' : ''}`}>
                                 <button
                                     onClick={() => toggleExpandQuestion(question.id || '')}
-                                    className="w-full flex items-center justify-between text-left"
+                                    className="w-full flex items-center justify-between text-left transition-colors hover:bg-gray-50 p-2 rounded-md"
+                                    aria-expanded={isExpanded}
+                                    aria-controls={`question-${question.id}`}
                                 >
                                     <div className="flex items-start">
                                         <div
-                                            className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-3 ${isCorrect === true
+                                            className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center mr-3 ${isCorrect === true
                                                 ? 'bg-green-100 text-green-700'
                                                 : isCorrect === false
                                                     ? 'bg-red-100 text-red-700'
@@ -258,7 +260,7 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             {index + 1}
                                         </div>
                                         <div>
-                                            <div className="font-medium">{question.text}</div>
+                                            <div className="font-medium line-clamp-2">{question.text}</div>
                                             <div className="text-sm text-gray-500 mt-1">
                                                 {apiAnswer?.points || question.points} điểm / Đạt: {earnedPoints || 0} điểm
                                                 {isCorrect === true && <span
@@ -272,13 +274,13 @@ const QuizResults: FC<QuizResultsProps> = ({
                                             </div>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="flex-shrink-0">
                                         {isExpanded ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
                                     </div>
                                 </button>
 
                                 {isExpanded && (
-                                    <div className="mt-4 pl-9">
+                                    <div className="mt-4 pl-5 md:pl-9" id={`question-${question.id}`}>
                                         <QuizQuestion
                                             question={question}
                                             selectedAnswers={selectedAnswers[question.id || ''] || []}
@@ -305,59 +307,62 @@ const QuizResults: FC<QuizResultsProps> = ({
                 </div>
 
                 {/* Footer buttons */}
-                <div className="p-6 bg-gray-50 border-t border-gray-200 flex flex-wrap justify-between gap-2">
+                <div className="p-6 bg-gray-50 border-t border-gray-200 flex flex-wrap justify-between gap-3">
                     <button
                         onClick={() => window.history.back()}
-                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                     >
                         Quay lại bài học
                     </button>
 
-                    {/* History button - only show if apiResult exists */}
-                    {apiResult && (
-                        <button
-                            onClick={handleOpenHistory}
-                            className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 flex items-center"
-                        >
-                            <History size={16} className="mr-2"/> Xem lịch sử làm bài
-                        </button>
-                    )}
+                    <div className="flex flex-wrap gap-3">
+                        {/* History button - only show if apiResult exists */}
+                        {apiResult && (
+                            <button
+                                onClick={handleOpenHistory}
+                                className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 flex items-center transition-colors"
+                            >
+                                <History size={16} className="mr-2"/> Xem lịch sử
+                            </button>
+                        )}
 
-                    {onRetake && (
-                        <button
-                            onClick={onRetake}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
-                        >
-                            <RefreshCw size={16} className="mr-2"/> Làm lại bài kiểm tra
-                        </button>
-                    )}
+                        {onRetake && (
+                            <button
+                                onClick={onRetake}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center transition-colors"
+                            >
+                                <RefreshCw size={16} className="mr-2"/> Làm lại
+                            </button>
+                        )}
 
-                    <button
-                        onClick={() => {
-                            // Navigate to next lesson in real implementation
-                            window.history.back();
-                        }}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
-                    >
-                        Bài tiếp theo <ArrowRight size={16} className="ml-2"/>
-                    </button>
+                        <button
+                            onClick={() => {
+                                // Navigate to next lesson in real implementation
+                                window.history.back();
+                            }}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center transition-colors"
+                        >
+                            Bài tiếp theo <ArrowRight size={16} className="ml-2"/>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {/* Quiz History Modal */}
             {showHistory && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col">
                         <div className="flex items-center justify-between border-b px-6 py-4">
                             <h3 className="text-lg font-medium">Lịch sử làm bài</h3>
                             <button 
                                 onClick={handleCloseHistory}
-                                className="text-gray-400 hover:text-gray-500"
+                                className="text-gray-400 hover:text-gray-500 p-1 rounded-full hover:bg-gray-100"
+                                aria-label="Đóng"
                             >
                                 <X size={20} />
                             </button>
                         </div>
-                        <div className="p-6">
+                        <div className="p-6 overflow-y-auto flex-grow">
                             <QuizSubmissionHistory
                                 quizId={apiResult?.quizId || ""}
                                 submissions={submissions}
@@ -365,10 +370,10 @@ const QuizResults: FC<QuizResultsProps> = ({
                                 onSelectSubmission={handleSelectSubmission}
                             />
                         </div>
-                        <div className="bg-gray-50 px-6 py-4 flex justify-end">
+                        <div className="bg-gray-50 px-6 py-4 flex justify-end border-t">
                             <button
                                 onClick={handleCloseHistory}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
                             >
                                 Đóng
                             </button>

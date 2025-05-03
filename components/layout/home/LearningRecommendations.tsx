@@ -19,6 +19,10 @@ const LearningRecommendations = () => {
         sortDirection: 'desc',
         size: 8
     });
+
+    if (!loading && courses.length === 0) {
+        return null; // No courses to display
+    }
     
     return (
         <div 

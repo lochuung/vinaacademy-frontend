@@ -378,48 +378,48 @@ const QuestionsArea: FC<QuestionsAreaProps> = ({lectureId: lectureId, courseId})
                                         className="border border-gray-200 rounded-lg hover:shadow-sm transition"
                                     >
                                         <button
-                                            className="w-full text-left p-4"
+                                            className="w-full text-left p-3 sm:p-4"
                                             onClick={() => setSelectedQuestion(question.id)}
                                         >
-                                            <div className="flex items-start">
+                                            <div className="flex flex-col sm:flex-row sm:items-start">
                                                 {/* Nút bình chọn */}
-                                                <div className="flex flex-col items-center mr-4">
+                                                <div className="flex flex-row sm:flex-col items-center justify-between sm:justify-start sm:mr-4 mb-3 sm:mb-0 border-b sm:border-b-0 pb-2 sm:pb-0">
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             toggleQuestionUpvote(question.id);
                                                         }}
-                                                        className={`flex flex-col items-center p-1 ${question.isUpvoted ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                                                        className={`flex items-center sm:flex-col p-1 touch-manipulation ${
+                                                            question.isUpvoted ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
                                                         }`}
+                                                        aria-label={`Upvote question: ${question.upvotes} votes`}
                                                     >
-                                                        <svg className="w-6 h-6" fill="currentColor"
-                                                             viewBox="0 0 20 20">
-                                                            <path fillRule="evenodd"
+                                                        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" 
                                                                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
                                                                   clipRule="evenodd"/>
                                                         </svg>
-                                                        <span className="text-sm font-medium">{question.upvotes}</span>
+                                                        <span className="text-sm font-medium ml-1 sm:ml-0 sm:mt-1">{question.upvotes}</span>
                                                     </button>
-                                                    <div className="text-xs text-gray-500 mt-1">
-                                                        {question.answers.length} {question.answers.length === 1 ? 'câu trả lời' : 'câu trả lời'}
+                                                    <div className="text-xs text-gray-500 ml-2 sm:ml-0 sm:mt-1">
+                                                        <span className="sm:hidden">{question.answers.length} trả lời</span>
+                                                        <span className="hidden sm:inline">{question.answers.length} {question.answers.length === 1 ? 'câu trả lời' : 'câu trả lời'}</span>
                                                     </div>
                                                 </div>
 
                                                 {/* Nội dung câu hỏi */}
                                                 <div className="flex-1">
-                                                    <h3 className="text-lg font-medium text-gray-900 mb-1">{question.title}</h3>
-                                                    <p className="text-gray-700 line-clamp-2 mb-2">{question.content}</p>
+                                                    <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1">{question.title}</h3>
+                                                    <p className="text-gray-700 text-sm line-clamp-2 mb-2">{question.content}</p>
 
-                                                    <div className="flex items-center text-xs text-gray-500">
-                                                        <span
-                                                            className="font-medium text-gray-900">{question.user.name}</span>
+                                                    <div className="flex flex-wrap items-center text-xs text-gray-500">
+                                                        <span className="font-medium text-gray-900">{question.user.name}</span>
                                                         <span className="mx-1">•</span>
                                                         <span>{formatRelativeTime(question.createdAt)}</span>
                                                         {question.user.role === 'instructor' && (
                                                             <>
                                                                 <span className="mx-1">•</span>
-                                                                <span
-                                                                    className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
+                                                                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Giảng viên</span>
                                                             </>
                                                         )}
                                                     </div>

@@ -227,37 +227,38 @@ const NotesArea: FC<NotesAreaProps> = ({courseId, lectureId: lectureId, currentT
 
             {/* Trình sửa ghi chú (sẽ hiển thị khi tạo/chỉnh sửa) */}
             {isEditing && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg w-full max-w-2xl">
-                        <div className="p-4 border-b border-gray-200 flex justify-between">
-                            <h3 className="text-lg font-medium">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+                    <div className="bg-white rounded-lg w-full max-w-2xl mx-auto my-4">
+                        <div className="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 className="text-base sm:text-lg font-medium">
                                 {selectedNoteId ? 'Chỉnh Sửa Ghi Chú' : 'Tạo Ghi Chú Mới'}
                             </h3>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
+                                aria-label="Đóng"
                             >
                                 &times;
                             </button>
                         </div>
-                        <div className="p-4">
+                        <div className="p-3 sm:p-4">
                             <textarea
                                 value={currentNote}
                                 onChange={(e) => setCurrentNote(e.target.value)}
-                                className="w-full h-60 p-3 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                className="w-full h-40 sm:h-60 p-3 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                 placeholder="Nhập ghi chú của bạn tại đây..."
                                 autoFocus
                             />
-                            <div className="mt-4 flex justify-end space-x-2">
+                            <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-0 sm:justify-end sm:space-x-2">
                                 <button
                                     onClick={() => setIsEditing(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 bg-white"
+                                    className="px-4 py-3 sm:py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 bg-white w-full sm:w-auto"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     onClick={handleSaveNote}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    className="px-4 py-3 sm:py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
                                     disabled={!currentNote.trim()}
                                 >
                                     Lưu Ghi Chú
