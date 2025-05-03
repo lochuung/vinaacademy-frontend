@@ -35,8 +35,7 @@ export interface QuizDto extends BaseDto {
   id: string; // UUID
   title: string;
   description: string;
-  totalPoint: number;
-  passPoint: number;
+  totalPoints: number;
   duration: number;
   sectionId: string; // UUID
   sectionTitle: string;

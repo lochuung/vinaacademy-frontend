@@ -79,8 +79,6 @@ export function useQuizEditor(lecture: Lecture, sectionId: string) {
                 passingScore: 70
             },
             totalPoints: 0,
-            passPoint: 0,
-            totalPoint: 0
         };
 
         setQuizState(defaultQuiz);
