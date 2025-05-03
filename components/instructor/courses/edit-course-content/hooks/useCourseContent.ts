@@ -11,7 +11,8 @@ import {
     getLessonsBySectionId,
     createLesson,
     updateLesson,
-    deleteLesson
+    deleteLesson,
+    reorderLessons
 } from '@/services/lessonService';
 import {
     getSectionsByCourse,
@@ -21,6 +22,8 @@ import {
     reorderSections,
 } from '@/services/sectionService';
 import { submitCourseForReview } from '@/services/courseService';
+import { arrayMove } from '@dnd-kit/sortable';
+import { DragEndEvent } from '@dnd-kit/core';
 
 // Định nghĩa lại type phù hợp với backend nhưng vẫn đáp ứng yêu cầu frontend
 export interface SectionDisplay {
@@ -206,7 +209,10 @@ export const useCourseContent = (courseId?: string) => {
             toast.success('Đã xóa phần học thành công');
 
             // Cập nhật lại thứ tự các phần học còn lại
-            updateSectionOrdersMutation.mutate();
+            if (sections.length > 0) {
+                const sectionIds = sections.map(section => section.id);
+                updateSectionOrdersMutation.mutate(sectionIds);
+            }
         },
         onError: (error) => {
             if ((error as Error).message === 'User cancelled') return;
@@ -348,7 +354,7 @@ export const useCourseContent = (courseId?: string) => {
             toast.success('Đã xóa bài giảng thành công');
 
             // Cập nhật lại thứ tự các bài giảng trong phần học đó
-            updateLectureOrdersMutation.mutate(sectionId);
+            updateLectureOrdersMutation.mutate({ sectionId });
         },
         onError: (error) => {
             if ((error as Error).message === 'User cancelled') return;
@@ -358,53 +364,80 @@ export const useCourseContent = (courseId?: string) => {
 
     // Update section orders mutation
     const updateSectionOrdersMutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (sectionIds?: string[]) => {
             if (!courseId || sections.length === 0) return false;
-            const sectionIds = sections.map(section => section.id);
-            return await reorderSections(courseId, sectionIds);
+            
+            // Use provided sectionIds or get from current sections
+            const ids = sectionIds || sections.map(section => section.id);
+            return await reorderSections(courseId, ids);
+        },
+        onSuccess: (success, sectionIds) => {
+            if (!success) {
+                console.error('Error reordering sections');
+                return;
+            }
+            
+            if (sectionIds) {
+                queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                    if (!oldData) return [];
+                    
+                    // Create a map for quick lookup
+                    const sectionMap = new Map(oldData.map(section => [section.id, section]));
+                    
+                    // Create new array with updated order
+                    return sectionIds.map((id, index) => {
+                        const section = sectionMap.get(id);
+                        if (section) {
+                            return { ...section, order: index };
+                        }
+                        return null;
+                    }).filter(Boolean) as SectionDisplay[];
+                });
+            }
         },
         onError: (error) => {
             console.error('Lỗi khi cập nhật thứ tự phần học:', error);
+            toast.error('Không thể cập nhật thứ tự phần học. Vui lòng thử lại sau.');
         }
     });
 
     // Update lecture orders mutation
     const updateLectureOrdersMutation = useMutation({
-        mutationFn: async (sectionId: string) => {
+        mutationFn: async (params: { sectionId: string, lectureIds?: string[] }) => {
+            const { sectionId, lectureIds } = params;
             const section = sections.find(s => s.id === sectionId);
             if (!section) return;
 
-            // Cập nhật từng bài giảng với orderIndex mới
-            const promises = section.lectures.map((lecture, index) => {
-                // Chỉ cập nhật nếu thứ tự đã thay đổi
-                if (lecture.order !== index) {
-                    const updateData = {
-                        title: lecture.title,
-                        type: lecture.type.toUpperCase() as LessonType,
-                        content: lecture.content || '',
-                        sectionId: sectionId,
-                        orderIndex: index,
-                        duration: lecture.type.toLowerCase() === 'video' ? lecture.duration : undefined
-                    };
-
-                    return updateLesson(lecture.id, updateData);
-                }
-                return Promise.resolve(null);
-            });
-
-            await Promise.all(promises);
-            return sectionId;
+            // Use provided lectureIds or get from current lectures
+            const ids = lectureIds || section.lectures.map(lecture => lecture.id);
+            return { success: await reorderLessons(sectionId, ids), sectionId, lectureIds: ids };
         },
-        onSuccess: (sectionId) => {
-            if (!sectionId) return;
+        onSuccess: (data) => {
+            if (!data) {
+                console.error('Error: Missing data in onSuccess callback');
+                return;
+            }
+            const { success, sectionId, lectureIds } = data;
+            if (!success || !lectureIds) {
+                console.error('Error reordering lectures');
+                return;
+            }
 
             queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
                 return oldData ? oldData.map(s => {
                     if (s.id === sectionId) {
-                        const updatedLectures = [...s.lectures].map((lecture, index) => ({
-                            ...lecture,
-                            order: index
-                        }));
+                        // Create a map for quick lookup
+                        const lectureMap = new Map(s.lectures.map(lecture => [lecture.id, lecture]));
+                        
+                        // Create new array with updated order
+                        const updatedLectures = lectureIds.map((id, index) => {
+                            const lecture = lectureMap.get(id);
+                            if (lecture) {
+                                return { ...lecture, order: index };
+                            }
+                            return null;
+                        }).filter(Boolean) as LectureDisplay[];
+                        
                         return {
                             ...s,
                             lectures: updatedLectures
@@ -416,6 +449,7 @@ export const useCourseContent = (courseId?: string) => {
         },
         onError: (error) => {
             console.error('Lỗi khi cập nhật thứ tự bài giảng:', error);
+            toast.error('Không thể cập nhật thứ tự bài giảng. Vui lòng thử lại sau.');
         }
     });
 
@@ -424,12 +458,12 @@ export const useCourseContent = (courseId?: string) => {
         mutationFn: async () => {
             // First update section orders
             if (courseId) {
-                await updateSectionOrdersMutation.mutateAsync();
+                await updateSectionOrdersMutation.mutateAsync(sections.map(section => section.id));
             }
 
             // Then update lecture orders for each section
             for (const section of sections) {
-                await updateLectureOrdersMutation.mutateAsync(section.id);
+                await updateLectureOrdersMutation.mutateAsync({ sectionId: section.id });
             }
 
             return true;
@@ -453,6 +487,99 @@ export const useCourseContent = (courseId?: string) => {
         });
     };
 
+    // Handle DnD reordering
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+        
+        if (!over || active.id === over.id) {
+            setIsDragging(false);
+            return;
+        }
+
+        // Parse IDs to determine if we're dealing with sections or lectures
+        const activeId = active.id.toString();
+        const overId = over.id.toString();
+        
+        // Handle section reordering
+        if (activeId.startsWith('section-') && overId.startsWith('section-')) {
+            const activeSectionId = activeId.replace('section-', '');
+            const overSectionId = overId.replace('section-', '');
+            
+            const oldIndex = sections.findIndex(section => section.id === activeSectionId);
+            const newIndex = sections.findIndex(section => section.id === overSectionId);
+            
+            if (oldIndex !== -1 && newIndex !== -1) {
+                const newSections = arrayMove(sections, oldIndex, newIndex);
+                const sectionIds = newSections.map(section => section.id);
+                
+                // Update UI optimistically
+                queryClient.setQueryData(sectionsQueryKey, 
+                    newSections.map((section, index) => ({
+                        ...section,
+                        order: index
+                    }))
+                );
+                
+                // Call API to persist changes
+                await updateSectionOrdersMutation.mutateAsync(sectionIds);
+                toast.success('Thứ tự phần học đã được cập nhật');
+            }
+        }
+        // Handle lecture reordering
+        else if (activeId.startsWith('lecture-') && overId.startsWith('lecture-')) {
+            const activeParts = activeId.split('-');
+            const overParts = overId.split('-');
+            
+            // Format: lecture-sectionId-lectureId
+            if (activeParts.length === 3 && overParts.length === 3) {
+                const sectionId = activeParts[1];
+                const overSectionId = overParts[1];
+                
+                // Only allow reordering within the same section
+                if (sectionId === overSectionId) {
+                    const section = sections.find(s => s.id === sectionId);
+                    if (section) {
+                        const activeLectureId = activeParts[2];
+                        const overLectureId = overParts[2];
+                        
+                        const oldIndex = section.lectures.findIndex(lecture => lecture.id === activeLectureId);
+                        const newIndex = section.lectures.findIndex(lecture => lecture.id === overLectureId);
+                        
+                        if (oldIndex !== -1 && newIndex !== -1) {
+                            const newLectures = arrayMove(section.lectures, oldIndex, newIndex);
+                            const lectureIds = newLectures.map(lecture => lecture.id);
+                            
+                            // Update UI optimistically
+                            queryClient.setQueryData(sectionsQueryKey, (oldData: SectionDisplay[] | undefined) => {
+                                return oldData ? oldData.map(s => {
+                                    if (s.id === sectionId) {
+                                        return {
+                                            ...s,
+                                            lectures: newLectures.map((lecture, index) => ({
+                                                ...lecture,
+                                                order: index
+                                            }))
+                                        };
+                                    }
+                                    return s;
+                                }) : [];
+                            });
+                            
+                            // Call API to persist changes
+                            await updateLectureOrdersMutation.mutateAsync({ 
+                                sectionId, 
+                                lectureIds 
+                            });
+                            toast.success('Thứ tự bài giảng đã được cập nhật');
+                        }
+                    }
+                }
+            }
+        }
+        
+        setIsDragging(false);
+    };
+
     return {
         sections,
         expandedSections,
@@ -470,6 +597,7 @@ export const useCourseContent = (courseId?: string) => {
         deleteLecture: (sectionId: string, lectureId: string) =>
             deleteLectureMutation.mutate({ sectionId, lectureId }),
         saveAllChanges: () => saveAllChangesMutation.mutateAsync(),
+        handleDragEnd,
         fetchSections
     };
 };
