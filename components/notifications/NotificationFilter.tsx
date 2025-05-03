@@ -67,6 +67,7 @@ const NotificationFilterFunction = ({ filters, onFilterChange }: NotificationFil
             <DropdownMenuRadioItem value={NotificationType.PAYMENT_SUCCESS}>Thanh toán thành công</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.COURSE_REVIEW}>Đánh giá khóa học</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.COURSE_APPROVAL}>Phản hồi phê duyệt khóa học</DropdownMenuRadioItem>
+            {/* Nhớ thêm type INSTRUCTOR_REQUEST vào đây để filter*/ }
             {/*<DropdownMenuRadioItem value={NotificationType.SUPPORT_REPLY}>Phản hồi hỗ trợ</DropdownMenuRadioItem>
              <DropdownMenuRadioItem value={NotificationType.PROMOTION}>Promotion</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value={NotificationType.FINANCIAL_ALERT}>Cảnh báo thanh toán</DropdownMenuRadioItem>

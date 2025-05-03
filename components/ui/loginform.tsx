@@ -156,6 +156,7 @@ export default function LoginForm({
                                                         type="password"
                                                         placeholder="Nhập mật khẩu của bạn"
                                                         className="pl-10 h-10"
+                                                        passwordEye
                                                         {...field}
                                                     />
                                                 </div>
