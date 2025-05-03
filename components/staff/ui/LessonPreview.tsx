@@ -13,7 +13,7 @@ import { QuizDto, QuestionDto, AnswerDto, QuestionType } from "@/types/quiz"; //
 import { getQuizForInstructor } from "@/services/quizInstructorService"; // Adjust import path as needed
 import { AlertTriangle, Loader2, X } from "lucide-react";
 import { useHLS } from "@/hooks/video/useHLS";
-import MarkdownMD from "@/components/ui/markdownMD";
+import SafeHtml from "@/components/common/safe-html";
 
 interface HLSVideoPreviewProps {
   videoRef: React.MutableRefObject<HTMLVideoElement>;
@@ -246,7 +246,12 @@ const LessonDialogPreview = ({
   const renderReadingContent = () => {
     return (
       <div className="flex items-center text-gray-600 mb-4">
-        <MarkdownMD markdown=""/>
+        <div className="flex items-center justify-center w-full h-full bg-gray-50 p-4 rounded-md border border-gray-200">
+          <SafeHtml
+            html={readingContent}
+            className="prose prose-sm sm:prose-base lg:prose-lg max-w-full"
+          />
+        </div>
       </div>
     );
   };
