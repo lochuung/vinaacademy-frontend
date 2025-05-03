@@ -246,7 +246,7 @@ const LessonDialogPreview = ({
   const renderReadingContent = () => {
     return (
       <div className="flex items-center text-gray-600 mb-4">
-        <MarkdownMD markdown=""/>
+        <MarkdownMD markdown={readingContent}/>
       </div>
     );
   };
