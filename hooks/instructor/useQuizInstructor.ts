@@ -15,7 +15,7 @@ import { QuestionDto, QuizDto, AnswerDto, QuizSubmissionResultDto } from '@/type
 import { useToast } from '@/hooks/use-toast';
 
 // Query keys
-const QUIZ_KEYS = {
+export const QUIZ_KEYS = {
     all: ['quizzes'] as const,
     quiz: (id: string) => [...QUIZ_KEYS.all, id] as const,
     questions: (quizId: string) => [...QUIZ_KEYS.quiz(quizId), 'questions'] as const,
