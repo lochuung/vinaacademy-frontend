@@ -1,0 +1,92 @@
+/* Custom styles for drag-and-drop functionality */
+
+/* Styling for dragged items */
+.section-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.lecture-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  background-color: rgba(59, 130, 246, 0.04) !important;
+}
+
+/* When a lecture is being dragged, add a subtle highlight to its parent section */
+.section-with-dragging-lecture {
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Styling for drag handles */
+.drag-handle {
+  cursor: grab;
+  transition: opacity 0.2s ease;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Body class when dragging is active */
+body.dragging,
+body.dragging-lecture {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+/* Drag indicator (highlight when item can be dropped) */
+.drop-indicator {
+  border: 2px dashed #3b82f6;
+  border-radius: 0.5rem;
+  background-color: rgba(59, 130, 246, 0.05);
+  margin: 4px 0;
+  transition: all 0.2s ease;
+}
+
+/* Styling for the area where an item can be dropped */
+.drop-area-over {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 2px dashed #3b82f6;
+}
+
+/* Style for drag overlay */
+.drag-overlay {
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.8;
+  transform-origin: 0 0;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Style for active dragging state */
+[data-draggable="true"] {
+  touch-action: none;
+}
+
+/* Animation for dropping items */
+@keyframes drop-animation {
+  0% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.lecture-dropped {
+  animation: drop-animation 0.3s ease;
+}
+
+/* Add more specific styles for lecture reordering */
+.hover-indicator {
+  height: 2px;
+  background-color: #3b82f6;
+  margin: 0 10px;
+  transition: height 0.2s ease;
+  opacity: 0;
+}
+
+.is-over-position .hover-indicator {
+  height: 4px;
+  opacity: 1;
+}

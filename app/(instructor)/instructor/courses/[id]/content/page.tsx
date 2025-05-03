@@ -15,6 +15,7 @@ import { CourseDto } from '@/types/course';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '@/components/shared/ErrorFallback';
 import { getImageUrl } from '@/utils/imageUtils';
+import '@/components/instructor/courses/edit-course-content/drag-drop.css';
 
 export default function CourseContentPage() {
     const params = useParams();
@@ -50,7 +51,8 @@ export default function CourseContentPage() {
         addLecture,
         deleteLecture,
         saveAllChanges,
-        fetchSections
+        fetchSections,
+        handleDragEnd
     } = useCourseContent(courseId);
 
     // Convert SectionDisplay[] to Section[] using the adapter
@@ -135,7 +137,7 @@ export default function CourseContentPage() {
                     expandedSections={expandedSections}
                     isDragging={isDragging}
                     onDragStart={() => setIsDragging(true)}
-                    onDragEnd={() => setIsDragging(false)}
+                    onDragEnd={handleDragEnd}
                     toggleSection={toggleSection}
                     deleteSection={deleteSection}
                     addLecture={addLecture}

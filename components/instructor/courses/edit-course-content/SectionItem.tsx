@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Grip, ChevronUp, ChevronDown, Edit, Trash2, Plus, MoreVertical } from 'lucide-react';
 import { Section } from '@/types/instructor-course-edit';
-import { LectureItem } from './LectureItem';
 import { SectionEditModal } from '@/components/instructor/courses/SectionEditModal';
 import { LectureEditModal } from '@/components/instructor/courses/LectureEditModal';
 import { useRouter } from 'next/navigation';
@@ -16,6 +15,8 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { createPortal } from 'react-dom';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableLecture } from './SortableLecture';
 
 interface SectionItemProps {
     section: Section;
@@ -31,6 +32,7 @@ interface SectionItemProps {
     onLectureUpdated: () => void;
     isFirst?: boolean;
     isLast?: boolean;
+    dragHandleProps?: any;
 }
 
 export const SectionItem = ({
@@ -46,32 +48,27 @@ export const SectionItem = ({
     onSectionUpdated,
     onLectureUpdated,
     isFirst = false,
-    isLast = false
+    isLast = false,
+    dragHandleProps = {}
 }: SectionItemProps) => {
     const router = useRouter();
-    // State cho modal chỉnh sửa section
     const [isSectionModalOpen, setSectionModalOpen] = useState(false);
-    // State cho modal thêm bài giảng mới
     const [isLectureModalOpen, setLectureModalOpen] = useState(false);
-    // State for hover
     const [isHovered, setIsHovered] = useState(false);
+    const [isDraggingLecture, setIsDraggingLecture] = useState(false);
 
-    // Xử lý mở modal chỉnh sửa section
     const handleEditSection = () => {
         setSectionModalOpen(true);
     };
 
-    // Xử lý mở modal thêm bài giảng mới
     const handleAddLecture = () => {
         setLectureModalOpen(true);
     };
 
-    // Xử lý chuyển đến trang chỉnh sửa bài giảng
     const handleEditLecture = (lectureId: string) => {
         router.push(`/instructor/courses/${courseId}/lectures/${lectureId}`);
     };
 
-    // Handle delete confirmation
     const handleDeleteSection = () => {
         if (section.lectures.length > 0) {
             if (confirm(`Phần học này có ${section.lectures.length} bài giảng. Bạn có chắc chắn muốn xóa không?`)) {
@@ -82,11 +79,22 @@ export const SectionItem = ({
         }
     };
 
+    const handleLectureDragStart = () => {
+        setIsDraggingLecture(true);
+        document.body.classList.add('dragging');
+    };
+
+    const handleLectureDragEnd = () => {
+        setIsDraggingLecture(false);
+        document.body.classList.remove('dragging');
+    };
+
     return (
         <motion.div 
             className={`border border-gray-200 rounded-lg overflow-hidden shadow-sm 
                 ${isHovered ? 'shadow-md border-gray-300' : ''} 
                 ${isExpanded ? 'shadow-md' : ''} 
+                ${isDraggingLecture ? 'section-with-dragging-lecture' : ''}
                 transition-all duration-200`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -103,9 +111,8 @@ export const SectionItem = ({
                                     type="button"
                                     className={`text-gray-400 hover:text-gray-600 p-1.5 rounded-md mr-2
                                         ${isHovered ? 'visible' : 'sm:invisible'} 
-                                        hover:bg-gray-100 transition-colors`}
-                                    onMouseDown={onDragStart}
-                                    onMouseUp={onDragEnd}
+                                        hover:bg-gray-100 transition-colors drag-handle`}
+                                    {...dragHandleProps}
                                 >
                                     <Grip className="h-5 w-5" />
                                 </button>
@@ -181,20 +188,23 @@ export const SectionItem = ({
                         transition={{ duration: 0.2 }}
                     >
                         {section.lectures.length > 0 ? (
-                            section.lectures.sort((a, b) => a.order - b.order).map((lecture, index) => (
-                                <LectureItem
-                                    key={lecture.id}
-                                    lecture={lecture}
-                                    courseId={courseId}
-                                    sectionId={section.id}
-                                    onDragStart={onDragStart}
-                                    onDragEnd={onDragEnd}
-                                    onDelete={onDeleteLecture}
-                                    onEdit={() => handleEditLecture(lecture.id)}
-                                    isFirst={index === 0}
-                                    isLast={index === section.lectures.length - 1}
-                                />
-                            ))
+                            <SortableContext
+                                items={section.lectures.map(lecture => `lecture-${section.id}-${lecture.id}`)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {section.lectures.sort((a, b) => a.order - b.order).map((lecture, index) => (
+                                    <SortableLecture
+                                        key={lecture.id}
+                                        lecture={lecture}
+                                        courseId={courseId}
+                                        sectionId={section.id}
+                                        onDelete={onDeleteLecture}
+                                        onEdit={() => handleEditLecture(lecture.id)}
+                                        isFirst={index === 0}
+                                        isLast={index === section.lectures.length - 1}
+                                    />
+                                ))}
+                            </SortableContext>
                         ) : (
                             <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
                                 <p className="text-sm text-gray-500">Chưa có bài giảng nào trong phần này</p>
@@ -222,7 +232,7 @@ export const SectionItem = ({
                 </div>
             )}
 
-            {/* Use portals to render modals at the root level of the DOM */}
+            {/* Portals for modals */}
             {typeof window !== 'undefined' && isSectionModalOpen && createPortal(
                 <SectionEditModal
                     section={section}
