@@ -77,7 +77,13 @@ export default function BasicInfoSection({
   useEffect(() => {
     if (debouncedDescription !== courseData.description) {
       validateField("description", debouncedDescription);
-      courseData.description = debouncedDescription;
+      // Create an editor change event to pass to the parent
+      const editorEvent = {
+        htmlValue: debouncedDescription,
+        textValue: debouncedDescription,
+        source: 'user'
+      } as EditorTextChangeEvent;
+      onEditorChange(editorEvent);
     }
   }, [debouncedDescription]);
 
