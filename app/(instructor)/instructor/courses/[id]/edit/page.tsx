@@ -124,7 +124,7 @@ export default function EditCoursePage() {
     };
     
     const onEditorChange = (e: EditorTextChangeEvent) => {
-        const htmlValue = e.htmlValue;
+        const {htmlValue} = e;
         setCourseData(prev => ({
             ...prev,
             description: htmlValue || ''
