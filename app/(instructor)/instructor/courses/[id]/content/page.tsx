@@ -147,11 +147,11 @@ export default function CourseContentPage() {
                 />
 
                 {/* Footer Component */}
-                <CourseContentFooter
+                {/* <CourseContentFooter
                     onSaveDraft={handleSaveDraft}
                     isSaving={isSaving}
                     hasChanges={true}
-                />
+                /> */}
 
                 {/* Modal thêm phần học mới */}
                 <SectionEditModal

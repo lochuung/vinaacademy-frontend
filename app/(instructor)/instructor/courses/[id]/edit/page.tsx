@@ -7,7 +7,7 @@ import { CourseData, CourseSection } from '@/types/new-course';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { getCourseBySlug, getCourseIdBySlug, getCourseSlugById, updateCourse } from '@/services/courseService';
+import { getCourseBySlug, getCourseIdBySlug, getCourseSlugById, updateCourse, deleteCourse } from '@/services/courseService';
 import { CourseDetailsResponse, CourseDto, CourseRequest } from '@/types/course';
 import { uploadImage } from '@/services/imageService';
 
@@ -338,6 +338,31 @@ export default function EditCoursePage() {
             setSubmitting(false);
         }
     };
+
+    // Add deleteCourse handler
+    const handleDeleteCourse = async () => {
+        try {
+            const result = await deleteCourse(courseData.slug);
+            if (result) {
+                toast({
+                    title: 'Xóa thành công',
+                    description: 'Khóa học đã được xóa thành công',
+                    variant: 'default',
+                });
+                
+                router.push('/instructor/courses');
+            } else {
+                throw new Error('Failed to delete course');
+            }
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            toast({
+                title: 'Lỗi',
+                description: 'Không thể xóa khóa học. Vui lòng thử lại sau.',
+                variant: 'destructive',
+            });
+        }
+    };
     
     if (loading) {
         return (
@@ -353,7 +378,12 @@ export default function EditCoursePage() {
     return (
         <div className="py-6 bg-gradient-to-b from-gray-50 to-white min-h-screen">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <CourseFormHeader progress={progress} isEditing={true} />
+                <CourseFormHeader 
+                    progress={progress} 
+                    isEditing={true}
+                    courseId={courseId} 
+                    onDeleteCourse={handleDeleteCourse} 
+                />
                 
                 <Card className="overflow-hidden mb-6 border-0 shadow-lg rounded-xl">
                     <CourseFormNavigation

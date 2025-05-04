@@ -26,7 +26,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                 {renderStatus(course.status)}
             </div>
             <div className="px-4 py-4">
-                <Link href={`/instructor/courses/${course.id}/content`}>
+                <Link href={`/instructor/courses/${course.id}/edit`}>
                     <div className="text-lg font-medium text-gray-900 hover:text-gray-600 line-clamp-2 mb-2">
                         {course.title}
                     </div>
@@ -51,7 +51,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                 </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-                <Link href={`/instructor/courses/${course.id}/content`}>
+                <Link href={`/instructor/courses/${course.id}/edit`}>
                     <div className="text-sm font-medium text-black hover:text-gray-700">
                         Chỉnh sửa khóa học
                     </div>
