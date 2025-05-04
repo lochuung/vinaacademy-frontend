@@ -95,13 +95,13 @@ function renderStatus(status: CourseStatus | string | undefined) {
         case 'REJECTED':
             return (
                 <div className="absolute top-2 left-2 bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">
-                    Từ chối
+                    Bị từ chối
                 </div>
             );
         case 'PUBLISHED':
             return (
                 <div className="absolute top-2 left-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
-                    Duyệt
+                    Đã xuất bản
                 </div>
             );
         default:

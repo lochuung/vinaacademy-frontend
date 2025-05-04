@@ -1,11 +1,11 @@
 // components/course-creator/CourseFormHeader.tsx
 import Link from 'next/link';
-import { ArrowLeft, FileEdit, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileEdit, Trash2, Loader2, Send } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState } from 'react';
-import { 
+import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -20,12 +20,25 @@ interface CourseFormHeaderProps {
     progress: number;
     isEditing?: boolean;
     courseId?: string;
+    courseStatus?: string;
     onDeleteCourse?: () => Promise<void>;
+    onSubmitForReview?: () => Promise<void>;
 }
 
-export default function CourseFormHeader({ progress, isEditing = false, courseId, onDeleteCourse }: CourseFormHeaderProps) {
+export default function CourseFormHeader({
+    progress,
+    isEditing = false,
+    courseId,
+    courseStatus,
+    onDeleteCourse,
+    onSubmitForReview
+}: CourseFormHeaderProps) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isConfirmSubmitOpen, setIsConfirmSubmitOpen] = useState(false);
+
+    const isDraft = courseStatus?.toLowerCase() === 'draft';
 
     const handleDeleteConfirm = async () => {
         if (!onDeleteCourse) return;
@@ -38,8 +51,19 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
         }
     };
 
+    const handleSubmitForReview = async () => {
+        if (!onSubmitForReview) return;
+        setIsSubmitting(true);
+        try {
+            await onSubmitForReview();
+            setIsConfirmSubmitOpen(false);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
-        <motion.div 
+        <motion.div
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,45 +77,60 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
                 </Link>
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        {isEditing ? 'Chỉnh sửa khóa học' : 'Tạo khóa học mới'}
+                        {isEditing ? 'Sửa khóa học' : 'Tạo khóa học'}
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        {isEditing 
-                            ? 'Cập nhật thông tin để cải thiện khóa học của bạn' 
+                        {isEditing
+                            ? 'Cập nhật thông tin để cải thiện khóa học của bạn'
                             : 'Hoàn thành các bước để xuất bản khóa học của bạn'}
                     </p>
                 </div>
             </div>
             <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
                 {isEditing && courseId && (
-                    <div className="flex items-center gap-2">
-                        <Link href={`/instructor/courses/${courseId}/content`}>
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                                <button
-                                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md transition px-3 py-1.5 rounded-md flex items-center gap-1.5 text-sm font-medium"
-                                >
-                                    <FileEdit className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Chỉnh sửa nội dung</span>
-                                    <span className="sm:hidden">Nội dung</span>
-                                </button>
-                            </motion.div>
-                        </Link>
-                        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                            <button
-                                onClick={() => setIsDeleteDialogOpen(true)}
-                                className="text-white bg-red-600 hover:bg-red-700 shadow-sm hover:shadow-md transition px-3 py-1.5 rounded-md flex items-center gap-1.5 text-sm font-medium"
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-center items-center">
+                        {isDraft && onSubmitForReview && (
+                            <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={() => setIsConfirmSubmitOpen(true)}
+                                className="w-full sm:w-auto flex justify-center items-center px-3 py-2 h-10 text-xs font-medium rounded-md shadow-sm hover:shadow-md transition gap-1.5 bg-green-600 hover:bg-green-700 text-white"
+                                disabled={isSubmitting}
                             >
-                                <Trash2 className="w-4 h-4" />
-                                <span className="hidden sm:inline">Xóa khóa học</span>
-                                <span className="sm:hidden">Xóa</span>
-                            </button>
-                        </motion.div>
+                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                <span className="hidden sm:inline">Gửi để phê duyệt</span>
+                                <span className="sm:hidden">Phê duyệt</span>
+                            </motion.button>
+                        )}
+
+                        <Link href={`/instructor/courses/${courseId}/content`} className="w-full sm:w-auto">
+                            <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="w-full flex justify-center items-center px-3 py-2 h-10 text-xs font-medium rounded-md shadow-sm hover:shadow-md transition gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                                <FileEdit className="w-4 h-4" />
+                                <span className="hidden sm:inline">Chỉnh sửa khóa học</span>
+                                <span className="sm:hidden">Chỉnh sửa</span>
+                            </motion.button>
+                        </Link>
+
+                        <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => setIsDeleteDialogOpen(true)}
+                            className="w-full sm:w-auto flex justify-center items-center px-3 py-2 h-10 text-xs font-medium rounded-md shadow-sm hover:shadow-md transition gap-1.5 bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Xóa</span>
+                            <span className="sm:hidden">Xóa</span>
+                        </motion.button>
                     </div>
                 )}
                 <div className="flex items-center text-sm font-medium bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                     <span className="mr-3 text-gray-600">Tiến trình:</span>
                     <div className="relative w-48 h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                             className="h-full bg-blue-600 rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
@@ -113,7 +152,7 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
                             ))}
                         </div>
                     </div>
-                    <motion.span 
+                    <motion.span
                         className="ml-3 font-medium"
                         key={progress}
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -124,6 +163,8 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
                     </motion.span>
                 </div>
             </div>
+
+            {/* Delete Course Dialog */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent className="bg-white rounded-xl shadow-xl border-0 max-w-md">
                     <AlertDialogHeader>
@@ -133,8 +174,8 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel 
-                            disabled={isDeleting} 
+                        <AlertDialogCancel
+                            disabled={isDeleting}
                             className="font-medium border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition-colors"
                         >
                             Hủy bỏ
@@ -154,6 +195,43 @@ export default function CourseFormHeader({ progress, isEditing = false, courseId
                                 </>
                             ) : (
                                 'Xóa khóa học'
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Submit for Review Dialog */}
+            <AlertDialog open={isConfirmSubmitOpen} onOpenChange={setIsConfirmSubmitOpen}>
+                <AlertDialogContent className="bg-white rounded-xl shadow-xl border-0 max-w-md">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-bold text-gray-900">Gửi khóa học để phê duyệt</AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-600">
+                            Bạn chuẩn bị gửi khóa học này để phê duyệt. Khóa học sẽ được quản trị viên xem xét trước khi được xuất bản. Bạn có muốn tiếp tục?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            disabled={isSubmitting}
+                            className="font-medium border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+                        >
+                            Hủy bỏ
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleSubmitForReview();
+                            }}
+                            disabled={isSubmitting}
+                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium shadow-md hover:shadow-lg transition-all"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    <span>Đang gửi...</span>
+                                </>
+                            ) : (
+                                'Xác nhận gửi'
                             )}
                         </AlertDialogAction>
                     </AlertDialogFooter>

@@ -7,7 +7,7 @@ import { CourseData, CourseSection } from '@/types/new-course';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { getCourseBySlug, getCourseIdBySlug, getCourseSlugById, updateCourse, deleteCourse } from '@/services/courseService';
+import { getCourseBySlug, getCourseIdBySlug, getCourseSlugById, updateCourse, deleteCourse, submitCourseForReview } from '@/services/courseService';
 import { CourseDetailsResponse, CourseDto, CourseRequest } from '@/types/course';
 import { uploadImage } from '@/services/imageService';
 
@@ -363,6 +363,46 @@ export default function EditCoursePage() {
             });
         }
     };
+
+    // Add submit for review handler
+    const handleSubmitForReview = async () => {
+        try {
+            if (!courseId) {
+                throw new Error('Course ID is missing');
+            }
+            
+            const result = await submitCourseForReview(courseId);
+            
+            if (result) {
+                toast({
+                    title: 'Thành công',
+                    description: 'Khóa học đã được gửi đi phê duyệt',
+                    variant: 'default',
+                });
+                
+                // Refresh course data to update status
+                const slug = await getCourseSlugById(courseId);
+                if (slug) {
+                    const updatedCourse = await getCourseBySlug(slug);
+                    if (updatedCourse) {
+                        setCourse(updatedCourse);
+                    }
+                }
+                
+                // Navigate back to courses page
+                router.push('/instructor/courses');
+            } else {
+                throw new Error('Failed to submit course for review');
+            }
+        } catch (error) {
+            console.error('Error submitting course for review:', error);
+            toast({
+                title: 'Lỗi',
+                description: 'Không thể gửi khóa học đi phê duyệt. Vui lòng thử lại sau.',
+                variant: 'destructive',
+            });
+        }
+    };
     
     if (loading) {
         return (
@@ -381,8 +421,10 @@ export default function EditCoursePage() {
                 <CourseFormHeader 
                     progress={progress} 
                     isEditing={true}
-                    courseId={courseId} 
-                    onDeleteCourse={handleDeleteCourse} 
+                    courseId={courseId}
+                    courseStatus={course?.status}
+                    onDeleteCourse={handleDeleteCourse}
+                    onSubmitForReview={handleSubmitForReview}
                 />
                 
                 <Card className="overflow-hidden mb-6 border-0 shadow-lg rounded-xl">
