@@ -286,7 +286,7 @@ export const uploadImageAndCreateCourse = async (courseData: CourseData): Promis
         price: courseData.price,
         level: courseData.level as CourseLevel,
         language: courseData.language,
-        categoryId: Number(courseData.category), // Convert string to number if needed
+        categorySlug: courseData.category, // Convert string to number if needed
         image: uploadedImage.id, // Use the image ID from the upload response
         status: CourseStatus.DRAFT, // Set initial status as DRAFT
     };

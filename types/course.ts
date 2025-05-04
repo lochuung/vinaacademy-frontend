@@ -146,7 +146,7 @@ export interface CourseRequest {
     level?: CourseLevel;
     status?: CourseStatus;
     language?: string;
-    categoryId?: number;
+    categorySlug?: string;
     rating?: number;
     totalRating?: number;
     totalStudent?: number;

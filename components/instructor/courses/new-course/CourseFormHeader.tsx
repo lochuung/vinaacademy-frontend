@@ -7,9 +7,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface CourseFormHeaderProps {
     progress: number;
+    isEditing?: boolean;
 }
 
-export default function CourseFormHeader({progress}: CourseFormHeaderProps) {
+export default function CourseFormHeader({ progress, isEditing = false }: CourseFormHeaderProps) {
     return (
         <motion.div 
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4"
@@ -24,8 +25,14 @@ export default function CourseFormHeader({progress}: CourseFormHeaderProps) {
                     </div>
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Tạo khóa học mới</h1>
-                    <p className="text-sm text-gray-500 mt-1">Hoàn thành các bước để xuất bản khóa học của bạn</p>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        {isEditing ? 'Chỉnh sửa khóa học' : 'Tạo khóa học mới'}
+                    </h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        {isEditing 
+                            ? 'Cập nhật thông tin để cải thiện khóa học của bạn' 
+                            : 'Hoàn thành các bước để xuất bản khóa học của bạn'}
+                    </p>
                 </div>
             </div>
             
