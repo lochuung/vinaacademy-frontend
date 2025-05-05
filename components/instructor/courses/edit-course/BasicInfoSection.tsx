@@ -6,7 +6,7 @@ import { getCategories } from "@/services/categoryService";
 import { CategoryDto } from "@/types/category";
 import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
-import InfoAlert from "../InfoAlert";
+import InfoAlert from "../new-course/InfoAlert";
 import FormField from "@/components/ui/form/FormField";
 import ProgressIndicator from "@/components/ui/form/ProgressIndicator";
 import CategorySelect from "@/components/ui/form/CategorySelect";
@@ -42,10 +42,22 @@ export default function BasicInfoSection({
     title: courseData.title || "",
     description: courseData.description || "",
     category: courseData.category || "",
-    level: courseData.level || ""
+    level: courseData.level || "",
+    language: courseData.language || "Tiếng việt"
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [categories, setCategories] = useState<CategoryDto[]>([]);
+
+  // Update local values when courseData changes (important for edit mode)
+  useEffect(() => {
+    setLocalValues({
+      title: courseData.title || "",
+      description: courseData.description || "",
+      category: courseData.category || "",
+      level: courseData.level || "",
+      language: courseData.language || "Tiếng việt"
+    });
+  }, [courseData]);
 
   // Debounce the values to avoid excessive validation/state updates
   const debouncedTitle = useDebounce(localValues.title, 300);
@@ -65,7 +77,13 @@ export default function BasicInfoSection({
   useEffect(() => {
     if (debouncedDescription !== courseData.description) {
       validateField("description", debouncedDescription);
-      courseData.description = debouncedDescription;
+      // Create an editor change event to pass to the parent
+      const editorEvent = {
+        htmlValue: debouncedDescription,
+        textValue: debouncedDescription,
+        source: 'user'
+      } as EditorTextChangeEvent;
+      onEditorChange(editorEvent);
     }
   }, [debouncedDescription]);
 
@@ -158,12 +176,12 @@ export default function BasicInfoSection({
       transition={{ duration: 0.3 }}
     >
       <InfoAlert
-        title="Thông tin cơ bản về khóa học"
+        title="Chỉnh sửa thông tin khóa học"
         icon={<FileText className="h-6 w-6 text-blue-500" />}
         variant="blue"
       >
         <p>
-          Điền đầy đủ thông tin cơ bản để giúp học viên hiểu khóa học của bạn. Tên khóa học hấp dẫn và mô tả rõ ràng sẽ giúp thu hút nhiều người học hơn.
+          Cập nhật thông tin khóa học để giúp học viên tìm kiếm và hiểu rõ hơn về khóa học của bạn. Tên khóa học hấp dẫn và mô tả chi tiết sẽ giúp thu hút học viên.
         </p>
       </InfoAlert>
 
@@ -246,6 +264,27 @@ export default function BasicInfoSection({
             </select>
           </FormField>
         </div>
+
+        <FormField
+          label="Ngôn ngữ giảng dạy"
+          name="language"
+          required
+          helperText="Chọn ngôn ngữ sử dụng trong khóa học"
+        >
+          <select
+            id="language"
+            name="language"
+            required
+            className="shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-base border-gray-300 rounded-md bg-white text-gray-900 p-3"
+            value={localValues.language || "Tiếng việt"}
+            onChange={handleLocalChange}
+          >
+            <option value="Tiếng việt">Tiếng Việt</option>
+            <option value="English">Tiếng Anh</option>
+            <option value="Japanese">Tiếng Nhật</option>
+            <option value="Korean">Tiếng Hàn</option>
+          </select>
+        </FormField>
       </div>
 
       {/* Summary of completed fields */}
@@ -256,6 +295,7 @@ export default function BasicInfoSection({
           { label: "Mô tả chi tiết", isCompleted: !!courseData.description, step: 2 },
           { label: "Danh mục", isCompleted: !!courseData.category, step: 3 },
           { label: "Trình độ", isCompleted: !!courseData.level, step: 4 },
+          { label: "Ngôn ngữ", isCompleted: !!courseData.language, step: 5 },
         ]}
       />
     </motion.div>

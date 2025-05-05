@@ -15,7 +15,7 @@ import { QuestionDto, QuizDto, AnswerDto, QuizSubmissionResultDto } from '@/type
 import { useToast } from '@/hooks/use-toast';
 
 // Query keys
-const QUIZ_KEYS = {
+export const QUIZ_KEYS = {
     all: ['quizzes'] as const,
     quiz: (id: string) => [...QUIZ_KEYS.all, id] as const,
     questions: (quizId: string) => [...QUIZ_KEYS.quiz(quizId), 'questions'] as const,
@@ -72,7 +72,9 @@ export function useCreateQuestion() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -116,7 +118,9 @@ export function useUpdateQuestion() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -162,7 +166,9 @@ export function useDeleteQuestion() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -206,7 +212,9 @@ export function useCreateAnswer() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -268,7 +276,9 @@ export function useUpdateAnswer() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -330,7 +340,9 @@ export function useDeleteAnswer() {
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
-                    if (!oldData) return undefined;
+                    if (!oldData) {
+                      return undefined;
+                    }
 
                     return {
                         ...oldData,
@@ -371,8 +383,7 @@ export function useQuizSubmissions(quizId: string, enabled: boolean = true) {
     return useQuery<QuizSubmissionResultDto[], Error>({ // Specify the type of data and error
         queryKey: QUIZ_KEYS.submissions(quizId),
         queryFn: async (): Promise<QuizSubmissionResultDto[]> => { // Explicitly type the return value of the query function
-            const submissions = await getQuizSubmissions(quizId);
-            return submissions;
+            return await getQuizSubmissions(quizId);
         },
         enabled: enabled && !!quizId,
         staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes

@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import {useState, useEffect} from 'react';
+import {useParams, useRouter} from 'next/navigation';
 import Header from './LectureHeader';
 import TabNavigation from './TabNavigation';
 import ContentTab from './tabs/ContentTab';
 import ResourcesTab from './tabs/ResourcesTab';
 import SettingsTab from './tabs/SettingsTab';
 import Footer from './LectureFooter';
-import { Lecture, LectureType } from '@/types/lecture';
-import { toast } from 'react-toastify';
-import { Loader2 } from 'lucide-react';
-import { getLessonById, updateLesson } from '@/services/lessonService';
-import { lessonToLecture, lectureToLessonRequest } from '@/utils/adapters/lessonAdapter';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {Lecture, LectureType} from '@/types/lecture';
+import {toast} from 'react-toastify';
+import {Loader2} from 'lucide-react';
+import {getLessonById, updateLesson} from '@/services/lessonService';
+import {lessonToLecture, lectureToLessonRequest} from '@/utils/adapters/lessonAdapter';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {QUIZ_KEYS} from "@/hooks/instructor/useQuizInstructor";
 
 // Create a default lecture object to initialize the state
 const createDefaultLecture = (): Lecture => ({
@@ -35,7 +36,7 @@ export default function LectureEditor() {
     const queryClient = useQueryClient();
 
     // Use React Query to fetch and cache the lesson data
-    const { data: lessonData, isLoading, error } = useQuery({
+    const {data: lessonData, isLoading, error} = useQuery({
         queryKey: ['lesson', lectureId],
         queryFn: () => getLessonById(lectureId),
         enabled: !!lectureId,
@@ -81,11 +82,13 @@ export default function LectureEditor() {
                 setTimeout(() => setSaveSuccess(false), 3000);
 
                 // Invalidate and refetch the lesson query to ensure fresh data
-                queryClient.invalidateQueries({ queryKey: ['lesson', lectureId] });
+                await queryClient.invalidateQueries({queryKey: ['lesson', lectureId]});
+
+                await queryClient.invalidateQueries({queryKey: QUIZ_KEYS.quiz(lectureId)});
 
                 // Also invalidate the section lessons list query to update the UI when returning to the list
                 if (sectionId) {
-                    queryClient.invalidateQueries({ queryKey: ['lessons', 'section', sectionId] });
+                    await queryClient.invalidateQueries({queryKey: ['lessons', 'section', sectionId]});
                 }
 
                 toast.success("Đã lưu thay đổi thành công");
@@ -107,7 +110,7 @@ export default function LectureEditor() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <Loader2 className="h-8 w-8 animate-spin text-black" />
+                <Loader2 className="h-8 w-8 animate-spin text-black"/>
                 <span className="ml-2 text-lg">Đang tải bài giảng...</span>
             </div>
         );
@@ -126,7 +129,7 @@ export default function LectureEditor() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <div className="bg-white shadow rounded-lg overflow-hidden">
-                    <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab}/>
 
                     <div className="p-6">
                         {activeTab === 'content' && (

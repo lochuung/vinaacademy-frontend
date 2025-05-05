@@ -1,6 +1,6 @@
 import { FileText, Info } from 'lucide-react';
-import MarkdownEditorSection from '../../../new-course/MarkdownEditor';
 import { useState } from 'react';
+import TipTapEditor from '@/components/common/editors/TipTapEditor';
 
 interface TextEditorProps {
     textContent: string;
@@ -9,6 +9,10 @@ interface TextEditorProps {
 
 export default function TextEditor({textContent, handleTextContentChange}: TextEditorProps) {
     const [showTips, setShowTips] = useState(false);
+    
+    const handleEditorChange = (value: string) => {
+        handleTextContentChange({ target: { value } } as React.ChangeEvent<HTMLTextAreaElement>);
+    };
     
     return (
         <div className="space-y-5">
@@ -48,15 +52,16 @@ export default function TextEditor({textContent, handleTextContentChange}: TextE
                     Bài đọc
                 </span>
                 <span className="ml-2 text-sm text-gray-500">
-                    Định dạng Markdown được hỗ trợ
+                    Sử dụng trình soạn thảo trực quan
                 </span>
             </div>
             
             {/* Editor */}
             <div className="w-full rounded-lg overflow-hidden">
-                <MarkdownEditorSection
-                    setDescription={(value: string) => handleTextContentChange({ target: { value } } as React.ChangeEvent<HTMLTextAreaElement>)}
-                    description={textContent}
+                <TipTapEditor 
+                    content={textContent} 
+                    onChange={handleEditorChange} 
+                    placeholder="Nhập nội dung bài giảng tại đây..."
                 />
             </div>
         </div>

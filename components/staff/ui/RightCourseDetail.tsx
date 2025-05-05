@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { CourseDetailsResponse } from "@/types/course";
-import MarkdownMD from "@/components/ui/markdownMD";
 import Image from "next/image";
 import { getImageUrl } from "@/utils/imageUtils";
+import SafeHtml from "@/components/common/safe-html";
 
 interface CourseDetailProps {
   selectedCourseId: string | null;
@@ -86,22 +86,22 @@ const RightCourseDetail = ({
           <h3 className="font-medium text-xl">Chi tiết khóa học</h3>
           {courseDto.status === "PENDING" && (
             <div className="flex items-center gap-2">
-            <Button
-              className="bg-green-600 hover:bg-green-700 text-white w-fit"
-              onClick={() => onApprove(courseDto.slug)}
-            >
-              Phê duyệt
-            </Button>
-            <Button
-              variant="outline"
-              className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 w-fit"
-              onClick={() => onReject(courseDto.slug, courseDto.name, courseDto.id, courseDto.ownerInstructor?.id || "")}
-            >
-              Từ chối
-            </Button>
-          </div>
+              <Button
+                className="bg-green-600 hover:bg-green-700 text-white w-fit"
+                onClick={() => onApprove(courseDto.slug)}
+              >
+                Phê duyệt
+              </Button>
+              <Button
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 w-fit"
+                onClick={() => onReject(courseDto.slug, courseDto.name, courseDto.id, courseDto.ownerInstructor?.id || "")}
+              >
+                Từ chối
+              </Button>
+            </div>
           )}
-          
+
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -126,9 +126,8 @@ const RightCourseDetail = ({
               />
               <div className="absolute top-3 right-3">
                 <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                    statusColor[courseDto.status] || "bg-gray-100 text-gray-800"
-                  }`}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColor[courseDto.status] || "bg-gray-100 text-gray-800"
+                    }`}
                 >
                   {statusText[courseDto.status] || courseDto.status}
                 </span>
@@ -225,7 +224,10 @@ const RightCourseDetail = ({
 
           <div className="p-4 bg-white rounded-md border shadow-sm">
             <h4 className="font-medium text-base mb-3">Mô tả khóa học</h4>
-            <MarkdownMD markdown={courseDto.description} />
+            <SafeHtml
+              html={courseDto.description}
+              className="text-sm text-muted-foreground"
+            />
           </div>
         </div>
       </div>

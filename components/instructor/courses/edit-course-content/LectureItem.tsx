@@ -23,6 +23,7 @@ interface LectureItemProps {
     onEdit: () => void;
     isFirst?: boolean;
     isLast?: boolean;
+    dragHandleProps?: any; // Add drag handle props
 }
 
 export const LectureItem = ({
@@ -34,7 +35,8 @@ export const LectureItem = ({
     onDelete,
     onEdit,
     isFirst = false,
-    isLast = false
+    isLast = false,
+    dragHandleProps = {} // Add drag handle props with default empty object
 }: LectureItemProps) => {
     const [isHovered, setIsHovered] = useState(false);
     
@@ -77,8 +79,7 @@ export const LectureItem = ({
                                 className={`text-gray-400 hover:text-gray-600 p-1.5 rounded-md mr-1.5
                                     ${isHovered ? 'visible' : 'sm:invisible'}
                                     hover:bg-gray-100 transition-colors`}
-                                onMouseDown={onDragStart}
-                                onMouseUp={onDragEnd}
+                                {...dragHandleProps} // Apply drag handle props here
                             >
                                 <Grip className="h-4 w-4" />
                             </button>

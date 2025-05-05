@@ -56,7 +56,7 @@ export const CourseContentHeader = ({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
                     <div className="flex items-start space-x-4">
-                        <Link href={`/instructor/courses/${courseId}`}>
+                        <Link href={`/instructor/courses/${courseId}/edit`} className="hidden sm:flex items-center justify-center p-1.5 rounded-md hover:bg-gray-100 transition-colors">
                             <div className="p-1.5 rounded-md hover:bg-gray-100 transition-colors">
                                 <ChevronLeft className="h-6 w-6 text-gray-600" />
                             </div>

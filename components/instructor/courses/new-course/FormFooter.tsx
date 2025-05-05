@@ -11,6 +11,7 @@ interface FormFooterProps {
     onContinue: () => void;
     onSubmit: (e: React.FormEvent) => void;
     isSubmitting: boolean;
+    isEditing?: boolean;
 }
 
 export default function FormFooter({ 
@@ -18,7 +19,8 @@ export default function FormFooter({
     onBack, 
     onContinue, 
     onSubmit,
-    isSubmitting
+    isSubmitting,
+    isEditing = false
 }: FormFooterProps) {
     return (
         <div className="bg-gray-50 border-t border-gray-200 py-4 px-6">
@@ -75,12 +77,12 @@ export default function FormFooter({
                                 {isSubmitting ? (
                                     <>
                                         <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Đang tạo khóa học...
+                                        {isEditing ? 'Đang cập nhật...' : 'Đang tạo khóa học...'}
                                     </>
                                 ) : (
                                     <>
                                         <Save className="h-4 w-4" />
-                                        Tạo khóa học
+                                        {isEditing ? 'Cập nhật khóa học' : 'Tạo khóa học'}
                                     </>
                                 )}
                             </Button>

@@ -31,8 +31,8 @@ export default function CategorySelect({
       // Remove the disabled attribute to allow selecting parent categories
       const options: JSX.Element[] = [
         <option 
-          key={category.id.toString()} 
-          value={category.id.toString()}
+          key={category.slug.toString()} 
+          value={category.slug.toString()}
           className={hasChildren ? "font-semibold" : ""}
         >
           {label}

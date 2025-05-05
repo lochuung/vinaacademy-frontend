@@ -69,9 +69,9 @@ export function PasswordChange() {
       }
     } catch (error) {
       console.error("Error changing password:", error);
-      createSuccessToast(
-        "Có lỗi xảy ra khi thay đổi mật khẩu. Vui lòng thử lại."
-      );
+      // createSuccessToast(
+      //   "Có lỗi xảy ra khi thay đổi mật khẩu. Vui lòng thử lại."
+      // );
     } finally {
       setIsLoading(false);
     }

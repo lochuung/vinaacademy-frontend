@@ -19,7 +19,7 @@ const RecentCoursesSection = () => {
         enabled: isAuthenticated
     });
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || (!isLoading && courses.length === 0)) {
         return null;
     }
 
