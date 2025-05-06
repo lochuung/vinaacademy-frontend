@@ -195,16 +195,16 @@ export default function LoginForm({
                                     )}
                                 </Button>
 
-                                <div className="relative mt-2">
+                                {/* <div className="relative mt-2">
                                     <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-gray-300"></div>
                                     </div>
                                     <div className="relative flex justify-center text-xs uppercase">
                                         <span className="bg-white px-2 text-gray-500">hoặc</span>
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <Button 
+                                {/* <Button 
                                     type="button" 
                                     variant="outline" 
                                     className="w-full h-10 mt-2 border-gray-300 text-sm font-medium"
@@ -212,7 +212,7 @@ export default function LoginForm({
                                 >
                                     <FcGoogle className="mr-2 h-5 w-5" />
                                     {googleText}
-                                </Button>
+                                </Button> */}
                             </form>
                         </Form>
 

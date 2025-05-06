@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 
 // Define protected paths that require authentication
 const protectedPaths = ['/admin', '/instructor', '/cart',
@@ -8,7 +8,7 @@ const protectedPaths = ['/admin', '/instructor', '/cart',
 const publicPaths = ['/auth'];
 
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    const {pathname} = request.nextUrl;
 
     // Get token from cookies - no change needed as we're already using cookies here
     const token = request.cookies.get('access_token')?.value;
@@ -22,6 +22,32 @@ export function middleware(request: NextRequest) {
     const isPublicPath = publicPaths.some((path) =>
         pathname.startsWith(path)
     );
+
+    let roles: string[] = [];
+    if (token) {
+        try {
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
+            roles = payload.scope || [];
+        } catch (error) {
+            console.error('Invalid JWT:', error);
+        }
+    }
+
+    // Example: Restrict /admin only to ROLE_admin
+    if (pathname.startsWith('/admin') && !roles.includes('ROLE_admin')) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    if (pathname.startsWith('/instructor') && !roles.includes('ROLE_instructor')) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    if (pathname.startsWith('/requests') && !roles.includes('ROLE_admin')
+        && !roles.includes('ROLE_staff')) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
 
     // Redirect unauthenticated users to login
     if (isProtectedPath && !token) {
