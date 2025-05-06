@@ -338,7 +338,7 @@ export default function PublicInstructorPage() {
                                 >
                                     <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
                                         <Image
-                                            src={course.image || "/images/course-default.jpg"}
+                                            src={getImageUrl(course.image) || "/images/course-default.jpg"}
                                             alt={course.name}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-300"
