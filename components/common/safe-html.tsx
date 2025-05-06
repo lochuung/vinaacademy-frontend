@@ -1,5 +1,4 @@
-import DOMPurify from 'dompurify';
-
+import DOMPurify from "isomorphic-dompurify";
 const SafeHtml = ({ html, className }: { html: string; className?: string }) => {
   const cleanHtml = DOMPurify.sanitize(html);
 
