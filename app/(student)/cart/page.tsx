@@ -43,9 +43,9 @@ export default function Cart() {
         }
 
         // Cleanup function
-        return () => {
-            hasRefreshedRef.current = false;
-        };
+        // return () => {
+        //     hasRefreshedRef.current = false;
+        // };
     }, [isAuthenticated, authLoading, router, refreshCart]);
 
     const handleRemoveItem = async (id: number) => {

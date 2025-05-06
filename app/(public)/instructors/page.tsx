@@ -378,7 +378,7 @@ export default function InstructorsPage() {
                             <div className="flex items-center">
                                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                                     <Image
-                                        src="/images/avatars/instructor-1.jpg"
+                                        src="/images/instructor/OIP.jpg"
                                         alt="Instructor Avatar"
                                         width={48}
                                         height={48}
@@ -407,7 +407,7 @@ export default function InstructorsPage() {
                             <div className="flex items-center">
                                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                                     <Image
-                                        src="/images/avatars/instructor-2.jpg"
+                                        src="/images/instructor/b52.jpg"
                                         alt="Instructor Avatar"
                                         width={48}
                                         height={48}
@@ -436,7 +436,7 @@ export default function InstructorsPage() {
                             <div className="flex items-center">
                                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                                     <Image
-                                        src="/images/avatars/instructor-3.jpg"
+                                        src="/images/instructor/ba.jpeg"
                                         alt="Instructor Avatar"
                                         width={48}
                                         height={48}
