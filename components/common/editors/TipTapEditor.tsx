@@ -29,8 +29,12 @@ import {
   Youtube,
   FileCode,
   Minus,
-  ChevronDown
+  ChevronDown,
+  Upload,
+  Loader2
 } from 'lucide-react';
+import { uploadImage } from '@/services/imageService';
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface TipTapEditorProps {
   content: string;
@@ -47,9 +51,11 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [isYoutubeMenuOpen, setIsYoutubeMenuOpen] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const linkInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const youtubeInputRef = useRef<HTMLInputElement>(null);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isLinkMenuOpen && linkInputRef.current) linkInputRef.current.focus();
@@ -72,6 +78,33 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
     editor.chain().focus().setImage({ src: imageUrl, alt: 'Image' }).run();
     setImageUrl('');
     setIsImageMenuOpen(false);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!file) return;
+    
+    try {
+      setUploadingImage(true);
+      const uploadedImage = await uploadImage(file);
+      
+      if (uploadedImage && uploadedImage.id) {
+        const imageUrl = getImageUrl(uploadedImage.id);
+        editor.chain().focus().setImage({ src: imageUrl, alt: 'Uploaded image' }).run();
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+    // Reset the input value so the same file can be selected again
+    e.target.value = '';
   };
 
   const addYoutubeVideo = () => {
@@ -135,9 +168,56 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         <button onClick={() => setIsLinkMenuOpen(!isLinkMenuOpen)} className="p-1.5 rounded-md hover:bg-gray-100" title="Chèn liên kết">
           <LinkIcon className="w-4 h-4" />
         </button>
-        <button onClick={() => setIsImageMenuOpen(!isImageMenuOpen)} className="p-1.5 rounded-md hover:bg-gray-100" title="Chèn ảnh">
-          <ImageIcon className="w-4 h-4" />
-        </button>
+        
+        {/* Image dropdown button */}
+        <div className="relative">
+          <button 
+            onClick={() => setIsImageMenuOpen(!isImageMenuOpen)} 
+            className={`p-1.5 rounded-md ${isImageMenuOpen ? 'bg-gray-200' : 'hover:bg-gray-100'}`} 
+            title="Chèn ảnh"
+            disabled={uploadingImage}
+          >
+            {uploadingImage ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <ImageIcon className="w-4 h-4" />
+            )}
+          </button>
+          
+          {isImageMenuOpen && (
+            <div className="absolute z-10 mt-2 bg-white border rounded shadow-md min-w-[220px]">
+              <div className="p-2">
+                <button
+                  onClick={() => {
+                    imageFileInputRef.current?.click();
+                    setIsImageMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-50 rounded-md"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Tải ảnh lên
+                </button>
+                <button
+                  onClick={() => {
+                    // Show image URL input
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-50 rounded-md"
+                >
+                  <LinkIcon className="w-4 h-4 mr-2" />
+                  Sử dụng URL ảnh
+                </button>
+              </div>
+              <input
+                ref={imageFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+            </div>
+          )}
+        </div>
+        
         <button onClick={() => setIsYoutubeMenuOpen(!isYoutubeMenuOpen)} className="p-1.5 rounded-md hover:bg-gray-100" title="Chèn YouTube">
           <Youtube className="w-4 h-4" />
         </button>
@@ -150,7 +230,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         </div>
       )}
 
-      {isImageMenuOpen && (
+      {isImageMenuOpen && imageInputRef.current && (
         <div className="p-2 flex border-t">
           <input ref={imageInputRef} value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://...jpg" className="flex-1 border p-1 rounded-l" />
           <button onClick={addImage} className="bg-blue-600 text-white px-3 rounded-r">Chèn</button>
