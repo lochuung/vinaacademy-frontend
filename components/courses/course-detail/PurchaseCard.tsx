@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { enrollInCourse, checkEnrollment, EnrollmentRequest } from "@/services/enrollmentService";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/CartContext";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface PurchaseCardProps {
     course: CourseDetailsResponse;
@@ -162,7 +163,7 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             <div className="relative">
                 <div className="aspect-video w-full relative">
                     <Image
-                        src={course.image || "/images/course-placeholder.jpg"}
+                        src={getImageUrl(course.image) || "/images/course-placeholder.jpg"}
                         alt={course.name}
                         fill
                         className="object-cover"

@@ -7,6 +7,7 @@ import { ChevronDown, Play, FileText, Clock } from "lucide-react";
 import { CourseDetailsResponse, LessonType } from "@/types/course";
 import Image from "next/image";
 import SafeHtml from "@/components/common/safe-html";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface CourseDetailsProps {
   course: CourseDetailsResponse;
@@ -165,7 +166,7 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
               <div className="flex items-start gap-4 mb-4">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden">
                   <Image
-                    src={instructor.avatarUrl || "/images/default-avatar.png"}
+                    src={getImageUrl(instructor.avatarUrl || "") || "/images/default-avatar.png"}
                     alt={instructor.fullName}
                     fill
                     className="object-cover"
