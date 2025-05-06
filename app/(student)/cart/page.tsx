@@ -48,9 +48,11 @@ export default function Cart() {
 
             loadCart();
         }
-        
+
+      
         // No cleanup that resets cartLoadedRef to prevent multiple refreshes
     }, [isAuthenticated, authLoading, router]); // Remove refreshCart from dependencies
+
 
     const handleRemoveItem = async (id: number) => {
         console.log("handleRemoveItem called with id:", id);
