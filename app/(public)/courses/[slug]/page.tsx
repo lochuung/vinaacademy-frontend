@@ -63,6 +63,7 @@ export default async function CoursePage({
     try {
         const { slug } = await params;
         if (!slug) {
+            console.log("no slug")
             return notFound();
         }
         // Fetch course data from API using server action

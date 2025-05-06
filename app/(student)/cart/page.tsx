@@ -15,44 +15,50 @@ export default function Cart() {
     const router = useRouter();
     const { toast } = useToast();
     const [localLoading, setLocalLoading] = useState(false);
-
-    // Thêm state để theo dõi các mục đang được xóa
-    const [removingItems, setRemovingItems] = useState<Set<number>>(new Set());
-
-    // Theo dõi nếu đã gọi refreshCart() để tránh gọi nhiều lần
-    const hasRefreshedRef = useRef(false);
+    const [removingItems, setRemovingItems] = useState<Set<string | number>>(new Set());
+    
+    // Use this to track if we've already loaded the cart in this session
+    const cartLoadedRef = useRef(false);
 
     useEffect(() => {
-        // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+        // If not authenticated and finished checking auth, redirect to login
         if (!isAuthenticated && !authLoading) {
             router.push('/login?redirect=/cart');
             return;
         }
 
-        // Chỉ tải lại giỏ hàng một lần khi component được mount
-        // và nếu người dùng đã đăng nhập và chưa refresh trước đó
-        if (isAuthenticated && !hasRefreshedRef.current) {
+        // Only load cart once when authenticated and not already loaded
+        if (isAuthenticated && !cartLoadedRef.current && !isLoading) {
             const loadCart = async () => {
-                setLocalLoading(true);
-                await refreshCart();
-                setLocalLoading(false);
-                hasRefreshedRef.current = true;
+                try {
+                    setLocalLoading(true);
+                    await refreshCart();
+                    cartLoadedRef.current = true;
+                } catch (error) {
+                    console.error('Error loading cart:', error);
+                    toast({
+                        title: 'Không thể tải giỏ hàng',
+                        description: 'Đã xảy ra lỗi khi tải giỏ hàng của bạn.',
+                        variant: 'destructive'
+                    });
+                } finally {
+                    setLocalLoading(false);
+                }
             };
 
             loadCart();
         }
 
-        // Cleanup function
-        // return () => {
-        //     hasRefreshedRef.current = false;
-        // };
-    }, [isAuthenticated, authLoading, router, refreshCart]);
+      
+        // No cleanup that resets cartLoadedRef to prevent multiple refreshes
+    }, [isAuthenticated, authLoading, router]); // Remove refreshCart from dependencies
+
 
     const handleRemoveItem = async (id: number) => {
         console.log("handleRemoveItem called with id:", id);
-
-        // Thêm item vào danh sách đang xóa
-        setRemovingItems(prev => new Set(prev).add(id));
+        
+        // Add item to removing list
+        setRemovingItems(prev => new Set([...prev, id]));
 
         try {
             console.log("Calling removeFromCart with id:", id);
@@ -74,7 +80,7 @@ export default function Cart() {
                 variant: 'destructive'
             });
         } finally {
-            // Xóa item khỏi danh sách đang xóa
+            // Remove item from removing list
             setRemovingItems(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(id);
@@ -83,21 +89,21 @@ export default function Cart() {
         }
     };
 
-    const handleSaveForLater = (id: number) => {
+    const handleSaveForLater = (id: string | number) => {
         toast({
             title: 'Tính năng đang phát triển',
             description: 'Tính năng lưu khóa học sẽ sớm được ra mắt.',
         });
     };
 
-    const handleAddToFavorites = (id: number) => {
+    const handleAddToFavorites = (id: string | number) => {
         toast({
             title: 'Tính năng đang phát triển',
             description: 'Tính năng thêm vào danh sách yêu thích sẽ sớm được ra mắt.',
         });
     };
 
-    // Hiển thị trạng thái đang tải
+    // Show loading state
     if (isLoading || localLoading || authLoading) {
         return (
             <div className="container mx-auto py-6 px-4 flex justify-center items-center min-h-[60vh]">
@@ -113,9 +119,7 @@ export default function Cart() {
         <div className="container mx-auto py-6 px-4">
             <h1 className="text-2xl font-bold mb-6">Giỏ hàng</h1>
 
-            {cartItems.length === 0 ? (
-                <EmptyCartMessage />
-            ) : (
+            {cartItems.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Cart Content */}
                     <div className="lg:col-span-2">
@@ -127,7 +131,7 @@ export default function Cart() {
                                     onRemove={handleRemoveItem}
                                     onSaveForLater={handleSaveForLater}
                                     onAddToFavorites={handleAddToFavorites}
-                                    isRemoving={removingItems.has(item.id)} // Thêm prop này
+                                    isRemoving={removingItems.has(item.id)}
                                 />
                             ))}
                         </div>
@@ -138,7 +142,7 @@ export default function Cart() {
                         <CheckoutSummary cartItems={cartItems} />
                     </div>
                 </div>
-            )}
+            ): (<EmptyCartMessage />)}
         </div>
     );
 }
