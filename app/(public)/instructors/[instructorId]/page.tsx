@@ -369,7 +369,7 @@ export default function PublicInstructorPage() {
                                                 {course.level}
                                             </span>
                                             <span className="font-bold text-gray-900 text-base">
-                                                {course.price === 0 ? "Miễn phí" : `${course.price.toLocaleString()} VND`}
+                                                {course.price === 0 ? "Miễn phí" : `${Math.round(Number(course.price)).toLocaleString("vi-VN")} VNĐ`}
                                             </span>
                                         </div>
                                     </div>
