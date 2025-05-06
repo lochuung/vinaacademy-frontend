@@ -22,7 +22,7 @@ export default function CourseStats({
 
             {/* Course Details */}
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                <span>{totalHours} giờ học</span>
+                <span>{totalHours.toFixed(2)} giờ học</span>
                 <span>•</span>
                 <span>{lectures} bài giảng</span>
                 <span>•</span>

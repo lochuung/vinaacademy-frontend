@@ -1,6 +1,5 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from "isomorphic-dompurify";
 import { useEffect } from 'react';
-
 const SafeHtml = ({ html, className }: { html: string; className?: string }) => {
   // Configure DOMPurify to allow YouTube embeds
   useEffect(() => {
