@@ -31,20 +31,6 @@ export const CartItemList = ({ items, onRemove }: CartItemListProps) => {
     );
 };
 
-function parsePrice(price: string): number {
-    // Loại bỏ ký tự không phải số và xử lý "K"
-    if (price.toLowerCase().endsWith("k")) {
-        const num = parseFloat(price);
-        return Math.round(num * 1000);
-    }
-    // Loại bỏ dấu chấm, phẩy nếu có
-    return Number(price.replace(/[^\d]/g, ""));
-}
-
-const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
-};
-
 interface CartItemRowProps {
     item: CartItem;
     onRemove?: (id: number) => void;
@@ -56,6 +42,8 @@ const CartItemRow = ({ item, onRemove }: CartItemRowProps) => {
             onRemove(item.id);
         }
     };
+
+    console.log("CartItemRow", item);
 
     return (
         <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
@@ -74,7 +62,7 @@ const CartItemRow = ({ item, onRemove }: CartItemRowProps) => {
                     {item.name}
                 </h4>
                 <p className="text-sm text-gray-500 mt-1">
-                    {formatCurrency(parsePrice(item.price))}
+                    {Number(item.price).toLocaleString("vi-VN", { maximumFractionDigits: 0 })}đ
                 </p>
             </div>
             {onRemove && (
