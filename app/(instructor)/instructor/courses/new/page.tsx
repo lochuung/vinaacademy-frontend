@@ -213,7 +213,7 @@ export default function CreateCoursePage() {
         const notificationData = {
             title: `Khóa học "${courseData.title}" đã được tạo thành công`,
             content: `Bấm vào đây để chuyển đến trang chỉnh sửa khóa học. \n  Tại đây bạn sẽ điều chỉnh bài học của mình và xuất bản để chờ duyệt`,
-            targetUrl: `/instructor/courses/${data.id}/content`,
+            targetUrl: `/instructor/courses/${data.id}/edit`,
             userId: userId,
             type: NotificationType.SYSTEM
         }

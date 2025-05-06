@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {Star} from "lucide-react";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface CourseCardProps {
     course: {
@@ -27,7 +28,7 @@ export default function CourseCard({course}: CourseCardProps) {
                 <div className="flex flex-col md:flex-row">
                     <div className="relative h-48 md:h-auto md:w-2/5">
                         <Image
-                            src={course.image}
+                            src={getImageUrl(course.image)}
                             alt={course.title}
                             fill
                             className="object-cover"

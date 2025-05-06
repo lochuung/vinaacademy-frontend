@@ -16,7 +16,7 @@ const CourseHeader = ({ course }: CourseHeaderProps) => {
                 {/* Course Information - Left Side */}
                 <div className="md:w-2/3 space-y-4">
                     <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">{course.name}</h1>
-                    <p className="text-lg text-gray-200">{course.description}</p>
+                    {/* <p className="text-lg text-gray-200">{course.description}</p> */}
 
                     {/* Ratings and Info */}
                     <div className="flex flex-wrap items-center gap-4 text-sm">

@@ -187,7 +187,7 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
                                                         className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                                     >
                                                         <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
-                                                            <Link href="/instructor/profile">
+                                                            <Link href={`/instructors/${user?.id}`}>
                                                                 <div className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
                                                                     <UserIcon className="mr-3 h-4 w-4" />
                                                                     Hồ sơ của tôi

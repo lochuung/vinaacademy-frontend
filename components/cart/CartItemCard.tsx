@@ -4,6 +4,7 @@ import { Tag } from 'lucide-react';
 import CourseRating from '@/components/cart/ui/CourseRating';
 import CourseStats from '@/components/cart/ui/CourseStats';
 import { CartItemDisplay } from '@/context/CartContext';
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface CartItemCardProps {
     item: CartItemDisplay;
@@ -25,7 +26,7 @@ export default function CartItemCard({
             {/* Course Image */}
             <div className="flex-shrink-0 w-32 h-32 relative">
                 <Image
-                    src={item.image}
+                    src={getImageUrl(item.image)}
                     alt={item.name}
                     fill
                     className="rounded object-cover"
