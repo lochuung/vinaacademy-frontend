@@ -55,7 +55,7 @@ export default function CheckoutSummary({ cartItems }: CheckoutSummaryProps) {
             });
 
             // Chuyển hướng đến trang thanh toán
-            router.push('/checkout');
+            router.push('/payment/checkout');
         }, 1000);
     };
 
@@ -86,11 +86,11 @@ export default function CheckoutSummary({ cartItems }: CheckoutSummaryProps) {
                     Đảm bảo hoàn tiền trong 30 ngày
                 </div>
 
-                {/* Promotions Section */}
+                {/* Promotions Section
                 <PromoCodeInput
                     onApply={handleApplyPromoCode}
                     isDisabled={isProcessing}
-                />
+                /> */}
             </div>
         </div>
     );

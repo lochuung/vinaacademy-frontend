@@ -85,11 +85,11 @@ const PaymentSelection = ({
                             VNPay
                         </div>
                     </TabsTrigger>
-                    <TabsTrigger value="credit-card">
+                    {/* <TabsTrigger value="credit-card">
                         <div className="flex items-center gap-2">
                             💳 Thẻ tín dụng
                         </div>
-                    </TabsTrigger>
+                    </TabsTrigger> */}
                 </TabsList>
 
                 <div className="mt-6">
