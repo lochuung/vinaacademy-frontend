@@ -91,7 +91,7 @@ function LoginContent() {
                 
                 <div>
                     <p className="text-sm opacity-75">
-                        © 2023 Vina Academy. Tất cả các quyền được bảo lưu.
+                        © 2025 Vina Academy. Tất cả các quyền được bảo lưu.
                     </p>
                 </div>
             </div>
