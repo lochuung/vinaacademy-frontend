@@ -16,12 +16,13 @@ import {
     X,
     ChevronDown,
     LogOut,
-    User
+    User as UserIcon
 } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import { motion, AnimatePresence } from 'framer-motion';
-import { logout } from "@/services/authService";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { getCurrentUser } from "@/services/authService";
+import { User } from "@/types/auth";
 
 
 interface InstructorLayoutProps {
@@ -33,6 +34,15 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const { logout } = useAuth();
+    const [user, setUser] = useState<User | null>(null);
+    const handleUser = async () => {
+        const user = await getCurrentUser();
+        setUser(user);
+    }
+    useEffect(() => {
+        handleUser();
+    }, []);
 
     // Fix hydration issues
     useEffect(() => {
@@ -49,12 +59,7 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
         }
         return pathname.includes(path);
     };
-    const router = useRouter();
 
-    const handleLogout = async () => {
-        await logout();
-        router.push("/");
-    };
     const navItems = [
         { path: '/instructor/dashboard', icon: <BarChart2 className="w-5 h-5 mr-3" />, label: 'Tổng quan' },
         { path: '/instructor/courses', icon: <Layers className="w-5 h-5 mr-3" />, label: 'Khóa học của tôi' },
@@ -184,7 +189,7 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
                                                         <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
                                                             <Link href="/instructor/profile">
                                                                 <div className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                                                    <User className="mr-3 h-4 w-4" />
+                                                                    <UserIcon className="mr-3 h-4 w-4" />
                                                                     Hồ sơ của tôi
                                                                 </div>
                                                             </Link>
@@ -195,14 +200,13 @@ export default function InstructorLayout({ children }: InstructorLayoutProps) {
                                                                 </div>
                                                             </Link>
                                                             <div className="border-t border-gray-100 my-1"></div>
-                                                            <button
-                                                                onClick={handleLogout}
-                                                                className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                                                role="menuitem"
+                                                            <Link
+                                                                href="#"
+                                                                onClick={logout}
+                                                                className="block px-4 py-2 text-red-600 hover:bg-gray-100"
                                                             >
-                                                                <LogOut className="mr-3 h-4 w-4" />
                                                                 Đăng xuất
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                     </motion.div>
                                                 )}
