@@ -115,11 +115,14 @@ export function useUpdateQuestion() {
         },
         onSuccess: ({ quizId, question }) => {
             // Update the quiz cache with the updated question
+            queryClient.invalidateQueries({ queryKey: QUIZ_KEYS.quiz(quizId) });
+
+            // Update the quiz cache immediately for a responsive UX
             queryClient.setQueryData<QuizDto | undefined>(
                 QUIZ_KEYS.quiz(quizId),
                 (oldData) => {
                     if (!oldData) {
-                      return undefined;
+                        return undefined;
                     }
 
                     return {
