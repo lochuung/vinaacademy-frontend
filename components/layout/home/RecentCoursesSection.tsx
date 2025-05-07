@@ -96,7 +96,7 @@ const RecentCoursesSection = () => {
                                             </div>
                                             <div className="flex justify-between mt-1">
                                                 <span className="text-xs text-gray-500">{course.completedLessons} / {course.totalLessons} bài học</span>
-                                                <span className="text-xs text-blue-600">{Number(course.progress)}%</span>
+                                                <span className="text-xs text-blue-600">{Number(course.progress).toFixed(0)}%</span>
                                             </div>
                                         </div>
                                     </div>

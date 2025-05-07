@@ -61,7 +61,7 @@ export const CourseList = ({ courses }: CourseListProps) => {
                                 </div>
                                 <div className="flex justify-between items-center mt-1">
                                     <p className="text-xs text-gray-500">
-                                        {course.progress}% hoàn thành
+                                        {course.progress.toFixed(0)}% hoàn thành
                                     </p>
                                 </div>
                             </div>

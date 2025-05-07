@@ -1,6 +1,7 @@
-import { FileText, Info } from 'lucide-react';
+import { FileText, Info, Eye, Edit2 } from 'lucide-react';
 import { useState } from 'react';
 import TipTapEditor from '@/components/common/editors/TipTapEditor';
+import SafeHtml from '@/components/common/safe-html';
 
 interface TextEditorProps {
     textContent: string;
@@ -9,6 +10,7 @@ interface TextEditorProps {
 
 export default function TextEditor({textContent, handleTextContentChange}: TextEditorProps) {
     const [showTips, setShowTips] = useState(false);
+    const [isPreview, setIsPreview] = useState(false);
     
     const handleEditorChange = (value: string) => {
         handleTextContentChange({ target: { value } } as React.ChangeEvent<HTMLTextAreaElement>);
@@ -23,13 +25,31 @@ export default function TextEditor({textContent, handleTextContentChange}: TextE
                         <FileText className="h-5 w-5 mr-2 text-emerald-600" />
                         Soạn thảo nội dung
                     </h3>
-                    <button 
-                        onClick={() => setShowTips(!showTips)}
-                        className="text-sm text-emerald-600 hover:text-emerald-800 flex items-center"
-                    >
-                        <Info className="h-4 w-4 mr-1" />
-                        {showTips ? "Ẩn mẹo" : "Mẹo soạn thảo"}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setIsPreview(!isPreview)}
+                            className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                        >
+                            {isPreview ? (
+                                <>
+                                    <Edit2 className="h-4 w-4 mr-1" />
+                                    Chỉnh sửa
+                                </>
+                            ) : (
+                                <>
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Xem trước
+                                </>
+                            )}
+                        </button>
+                        <button 
+                            onClick={() => setShowTips(!showTips)}
+                            className="text-sm text-emerald-600 hover:text-emerald-800 flex items-center"
+                        >
+                            <Info className="h-4 w-4 mr-1" />
+                            {showTips ? "Ẩn mẹo" : "Mẹo soạn thảo"}
+                        </button>
+                    </div>
                 </div>
                 
                 {showTips && (
@@ -52,18 +72,36 @@ export default function TextEditor({textContent, handleTextContentChange}: TextE
                     Bài đọc
                 </span>
                 <span className="ml-2 text-sm text-gray-500">
-                    Sử dụng trình soạn thảo trực quan
+                    {isPreview ? 'Xem trước nội dung như học viên sẽ thấy' : 'Sử dụng trình soạn thảo trực quan'}
                 </span>
             </div>
             
-            {/* Editor */}
-            <div className="w-full rounded-lg overflow-hidden">
-                <TipTapEditor 
-                    content={textContent} 
-                    onChange={handleEditorChange} 
-                    placeholder="Nhập nội dung bài giảng tại đây..."
-                />
-            </div>
+            {/* Editor or Preview */}
+            {isPreview ? (
+                <div className="w-full rounded-lg border border-gray-200 overflow-hidden bg-white">
+                    <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
+                        <h4 className="font-medium text-gray-700 flex items-center">
+                            <Eye className="h-4 w-4 mr-2 text-blue-600" />
+                            Xem trước nội dung
+                        </h4>
+                    </div>
+                    <div className="p-6">
+                        {textContent ? (
+                            <SafeHtml html={textContent} className="prose max-w-none" />
+                        ) : (
+                            <div className="text-gray-400 italic">Chưa có nội dung để hiển thị</div>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <div className="w-full rounded-lg overflow-hidden">
+                    <TipTapEditor 
+                        content={textContent} 
+                        onChange={handleEditorChange} 
+                        placeholder="Nhập nội dung bài giảng tại đây..."
+                    />
+                </div>
+            )}
         </div>
     );
 }

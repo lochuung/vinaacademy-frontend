@@ -1,0 +1,85 @@
+/* Custom styles for resizable images */
+.resizable-image-wrapper {
+  display: inline-block;
+  position: relative;
+  margin: 0.5rem 0;
+}
+
+.resizable-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  cursor: default;
+}
+
+/* Default width for images */
+.ProseMirror img:not([width]) {
+  width: 500px;
+  max-width: 100%;
+}
+
+.ProseMirror-selectednode .resizable-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid #3b82f6;
+  pointer-events: none;
+}
+
+/* Bottom-right resize handle */
+.ProseMirror-selectednode .resizable-image-wrapper::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  z-index: 10;
+}
+
+/* Bottom-left resize handle */
+.ProseMirror-selectednode .resizable-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid #3b82f6;
+  pointer-events: none;
+}
+
+/* Styling for the bubble menu */
+.tippy-box[data-animation=fade][data-state=hidden] {
+  opacity: 0;
+}
+
+/* Editor content formatting */
+.ProseMirror img.resizable-image {
+  transition: all 0.1s ease-in-out;
+}
+
+.ProseMirror img.resizable-image:hover {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: none !important;
+}
+
+/* For width/height resize inputs */
+.image-size-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.image-size-input-group {
+  display: flex;
+  align-items: center;
+}

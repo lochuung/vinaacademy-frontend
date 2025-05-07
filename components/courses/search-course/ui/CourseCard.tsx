@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import {FaStar, FaStarHalfAlt, FaRegStar, FaClock, FaSignal} from "react-icons/fa";
 import {CourseDto} from "@/types/course";
+import { getImageUrl } from "@/utils/imageUtils";
+import SafeHtml from "@/components/common/safe-html";
 
 interface CourseCardProps {
     course: CourseDto;
@@ -49,7 +51,7 @@ const CourseCard = ({course}: CourseCardProps) => {
             <Link href={`/courses/${course.slug}`} className="block">
                 <div className="relative h-40 w-full">
                     <Image
-                        src={course.image || "/images/course-placeholder.jpg"}
+                        src={getImageUrl(course.image) || "/images/course-placeholder.jpg"}
                         alt={course.name}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
@@ -77,9 +79,9 @@ const CourseCard = ({course}: CourseCardProps) => {
                         </span>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                        {course.description || "Không có mô tả"}
-                    </p>
+                    {/* <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        <SafeHtml html= {course.description || "Không có mô tả"}/>
+                    </p> */}
 
                     <div className="flex justify-between items-center">
                         <div className="font-bold text-lg">

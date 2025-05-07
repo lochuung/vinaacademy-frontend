@@ -1,6 +1,7 @@
 import { CartItem } from "@/types/navbar";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface CartItemListProps {
     items: CartItem[];
@@ -60,7 +61,7 @@ const CartItemRow = ({ item, onRemove }: CartItemRowProps) => {
         <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
             <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                 <Image
-                    src={item.image}
+                    src={getImageUrl(item.image)}
                     alt={item.name}
                     fill
                     sizes="64px"

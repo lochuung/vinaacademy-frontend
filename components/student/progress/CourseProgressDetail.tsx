@@ -167,7 +167,7 @@ const CourseProgressDetail = ({
                                         <div
                                             className="h-2 rounded-full bg-black"
                                             style={{
-                                                width: `${(module.completedLessons / module.totalLessons) * 100}%`,
+                                                width: `${((module.completedLessons / module.totalLessons) * 100).toFixed(2)}%`,
                                             }}
                                         ></div>
                                     </div>

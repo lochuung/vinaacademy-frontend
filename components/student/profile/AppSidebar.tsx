@@ -38,7 +38,7 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   useEffect(() => {
     setIsClient(true);
     // Simulate loading time (remove this in production and use your actual loading state)
@@ -95,11 +95,11 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
               <div className="flex items-center">
                 <Avatar className="h-10 w-10 border-2 border-white">
                   <AvatarImage src={undefined} alt="Profile" />
-                  <AvatarFallback>HN</AvatarFallback>
+                  <AvatarFallback>AV</AvatarFallback>
                 </Avatar>
                 <div className="ml-3">
-                  <div className="text-xs text-gray-500">Welcome back,</div>
-                  <div className="font-semibold text-gray-700">Hùng</div>
+                  <div className="text-xs text-gray-500">Chào mừng trở lại,</div>
+                  <div className="font-semibold text-gray-700">{user?.fullName}</div>
                 </div>
               </div>
               <Button
