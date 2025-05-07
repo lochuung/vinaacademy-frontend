@@ -1,4 +1,5 @@
 import apiClient from "@/lib/apiClient";
+import { CourseInstructorDto, CourseInstructorDtoRequest } from "@/types/instructor-course";
 import { AxiosResponse } from "axios";
 
 export async function createInstructorCourse(course: CourseInstructorDtoRequest): Promise<CourseInstructorDto | null> {
