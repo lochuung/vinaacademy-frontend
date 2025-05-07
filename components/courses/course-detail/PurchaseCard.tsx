@@ -180,11 +180,18 @@ export default function PurchaseCard({ course, instructors, sections }: Purchase
             <div className="p-6">
                 <div className="mb-6">
                     {/* Hiển thị giá dựa trên điều kiện */}
-                    <p className="text-2xl font-bold mb-2">
-                        {course.price === 0
-                            ? "Miễn phí"
-                            : `${course.price.toLocaleString('vi-VN')}₫`}
-                    </p>
+                    <div className="flex items-center mb-2">
+                        <p className="text-2xl font-bold">
+                            {course.price === 0
+                                ? "Miễn phí"
+                                : `${Math.round(Number(course.price)).toLocaleString("vi-VN")} VNĐ`}
+                        </p>
+                        {course.price > 0 && (
+                            <span className="ml-3 text-base text-gray-500 line-through">
+                                {(Math.round(Number(course.price) * 1.5)).toLocaleString("vi-VN")} VNĐ
+                            </span>
+                        )}
+                    </div>
                     <div className="space-y-3 mt-4">
                         {isEnrolled ? (
                             <Button

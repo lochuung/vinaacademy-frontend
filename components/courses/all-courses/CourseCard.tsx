@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { useState, useEffect } from "react";
-
+import { getImageUrl } from "@/utils/imageUtils";
 interface CourseCardProps {
     course: {
         id: number | string;
@@ -33,7 +33,7 @@ export function CourseCard({ course }: CourseCardProps) {
             <div className="group bg-white border border-gray-200 rounded-lg overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:translate-y-[-4px]">
                 <div className="relative aspect-video overflow-hidden">
                     <Image
-                        src={course.image}
+                        src={getImageUrl(course.image)}
                         alt={course.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

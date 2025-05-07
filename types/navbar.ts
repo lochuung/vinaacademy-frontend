@@ -33,7 +33,7 @@ export interface CartItem {
     id: number;              // ID duy nhất của khoá học
     slug?: string;           // Slug của khóa học để sử dụng trong URL
     name: string;            // Tên khoá học
-    price: string;           // Giá bán hiện tại (ví dụ: "599K")
+    price: number;
     image: string;           // Đường dẫn hình ảnh của khoá học
     instructor?: string;     // Tên giảng viên (tùy chọn)
     originalPrice?: string;  // Giá gốc trước giảm giá (tùy chọn)
