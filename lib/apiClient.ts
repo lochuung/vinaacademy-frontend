@@ -102,7 +102,7 @@ apiClient.interceptors.response.use(
 
         // Don't show toast for authentication errors (will be handled by auth flow)
         if (error.response?.status !== 401) {
-            createErrorToast(errorMessage || 'Có lỗi xảy ra, vui lòng thử lại sau');
+            //createErrorToast(errorMessage || 'Có lỗi xảy ra, vui lòng thử lại sau');
         }
 
         const originalRequest = error.config;

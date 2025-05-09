@@ -19,35 +19,23 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import { PaymentMethod } from '@/types/payment-type';
 
-type PaymentMethod = 'vnpay' | 'credit-card';
-type SavedCard = {
-    id: string;
-    last4: string;
-    brand: string;
-    expMonth: number;
-    expYear: number;
-};
 
 type PaymentSelectionProps = {
-    savedCards: SavedCard[];
+    isProccessing: boolean;
     onPaymentMethodChange: (method: PaymentMethod) => void;
     onPaymentInitiate: (method: PaymentMethod, cardId?: string) => void;
 };
 
 const PaymentSelection = ({
-                              savedCards,
+                        isProccessing,
                               onPaymentMethodChange,
                               onPaymentInitiate
                           }: PaymentSelectionProps) => {
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('vnpay');
     const [selectedCard, setSelectedCard] = useState<string | null>(null);
     const [isAddingNewCard, setIsAddingNewCard] = useState(false);
-
-    // Helper function to mask card number
-    const maskCardNumber = (card: SavedCard) => {
-        return `${card.brand} •••• ${card.last4} (${card.expMonth}/${card.expYear})`;
-    };
 
     const handlePaymentMethodChange = (value: string) => {
         const method = value as PaymentMethod;
@@ -59,7 +47,7 @@ const PaymentSelection = ({
         if (paymentMethod === 'vnpay') {
             onPaymentInitiate('vnpay');
         } else {
-            onPaymentInitiate('credit-card', selectedCard || undefined);
+            onPaymentInitiate('vnpay');
         }
     };
 
@@ -73,7 +61,7 @@ const PaymentSelection = ({
                 onValueChange={handlePaymentMethodChange}
                 className="w-full"
             >
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-1">
                     <TabsTrigger value="vnpay">
                         <div className="flex items-center gap-2">
                             <Image
@@ -117,9 +105,8 @@ const PaymentSelection = ({
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="credit-card">
+                    {/* <TabsContent value="credit-card">
                         <div className="space-y-4">
-                            {/* Saved Cards Selection */}
                             <div>
                                 <Label className="mb-2 block">Chọn thẻ đã lưu</Label>
                                 <RadioGroup
@@ -138,7 +125,6 @@ const PaymentSelection = ({
                                 </RadioGroup>
                             </div>
 
-                            {/* Add New Card Dialog */}
                             <Dialog open={isAddingNewCard} onOpenChange={setIsAddingNewCard}>
                                 <DialogTrigger asChild>
                                     <Button variant="outline" className="w-full">
@@ -173,7 +159,6 @@ const PaymentSelection = ({
                                 </DialogContent>
                             </Dialog>
 
-                            {/* Info for credit card */}
                             <div className="mt-6">
                                 <h3 className="font-medium mb-2">Hướng dẫn thanh toán:</h3>
                                 <ul className="list-disc list-inside text-sm text-gray-600 space-y-2">
@@ -185,14 +170,14 @@ const PaymentSelection = ({
                                 </ul>
                             </div>
                         </div>
-                    </TabsContent>
+                    </TabsContent> */}
                 </div>
             </Tabs>
 
             <Button
                 className="w-full bg-black text-white py-6 rounded-lg mt-6 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 text-base font-medium h-16"
                 onClick={handleInitiatePayment}
-                disabled={paymentMethod === 'credit-card' && !selectedCard && !isAddingNewCard}
+                disabled={paymentMethod === 'vnpay' && isProccessing}
             >
                 {paymentMethod === 'vnpay' ? (
                     <Image
@@ -204,7 +189,7 @@ const PaymentSelection = ({
                 ) : (
                     '💳'
                 )}
-                Tiến hành thanh toán
+                {isProccessing?"Đang xử lý":" Tiến hành thanh toán"}
             </Button>
 
             <p className="text-xs text-gray-500 text-center mt-4">
@@ -215,4 +200,3 @@ const PaymentSelection = ({
 };
 
 export default PaymentSelection;
-export type {PaymentMethod, SavedCard};

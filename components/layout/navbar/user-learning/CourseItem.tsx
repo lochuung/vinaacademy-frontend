@@ -1,6 +1,7 @@
 import Image from "next/image"; // Import component Image từ next/image
 import {ProgressBar} from "./ProgressBar"; // Import component ProgressBar
 import {LearningCourse} from "@/types/navbar";
+import { getImageUrl } from "@/utils/imageUtils";
 
 // Định nghĩa interface cho các props của component CourseItem
 interface CourseItemProps {
@@ -13,7 +14,7 @@ const CourseItem = ({course}: CourseItemProps) => {
         <li className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"> {/* Một mục trong danh sách khóa học */}
             <div className="relative w-16 h-16 flex-shrink-0"> {/* Hình ảnh của khóa học */}
                 <Image
-                    src={course.image}
+                    src={getImageUrl(course.image)}
                     alt={course.name}
                     fill
                     className="rounded-md object-cover"
