@@ -287,7 +287,7 @@ export default function OrderTable() {
           >
             {loading && !pageTransition ? (
               <tr>
-                <td colSpan={6} className="h-[440px] w-[1125px]">
+                <td colSpan={6} className="h-[425px] w-[1125px]">
                   <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-80 z-10">
                     <LucideLoader2 className="h-6 w-6 animate-spin text-indigo-500 mr-2" />
                     <span className="text-gray-500">Đang tải đơn hàng...</span>
@@ -296,7 +296,7 @@ export default function OrderTable() {
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12">
+                <td colSpan={6} className="h-[425px] w-[1125px]">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <ShoppingBag className="h-10 w-10 text-gray-300" />
                     <span className="text-gray-500">
