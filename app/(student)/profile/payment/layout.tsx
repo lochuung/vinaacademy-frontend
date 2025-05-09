@@ -10,7 +10,7 @@ export default function ProfileLayout({
     children: React.ReactNode;
 }>) {
     return (
-            <main className="mt-8 ml-[-100px]">
+            <main className="mt-6 ml-[-100px]">
                 {children}
                 <Toaster/>
             </main>
