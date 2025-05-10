@@ -1,8 +1,8 @@
 export interface Note {
     id: string;
-    content: string;
-    timestamp: number; // Video timestamp in seconds
-    createdAt: Date;
-    updatedAt: Date;
-    lectureId: string;
+    noteText: string;
+    timeStampSeconds: number; // Video timestamp in seconds
+    createdDate: Date;
+    updatedDate: Date;
+    videoId: string;
 }

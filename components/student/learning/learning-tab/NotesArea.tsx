@@ -8,6 +8,7 @@ interface NotesAreaProps {
     currentTimestamp?: number; // Current video timestamp
 }
 
+
 const NotesArea: FC<NotesAreaProps> = ({ lectureId, currentTimestamp = 0 }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [currentNote, setCurrentNote] = useState<string>('');
@@ -23,6 +24,7 @@ const NotesArea: FC<NotesAreaProps> = ({ lectureId, currentTimestamp = 0 }) => {
             setError(null);
             try {
                 const notes = await getNotesByVideoId(lectureId);
+                console.log('Fetched notes:', notes); // Kiểm tra dữ liệu nhận từ API
                 setNotes(notes);
             } catch (error) {
                 console.error('Error fetching notes:', error);
@@ -112,17 +114,17 @@ const NotesArea: FC<NotesAreaProps> = ({ lectureId, currentTimestamp = 0 }) => {
                         {notes.map(note => (
                             <div key={note.id} className="p-4 border border-gray-200 rounded-md hover:shadow-sm">
                                 <div className="mb-2 text-sm text-gray-500">
-                                    {formatTimestamp(note.timestamp)}
+                                    {formatTimestamp(note.timeStampSeconds)}
                                 </div>
                                 <div className="text-gray-800">
-                                    {note.content}
+                                    {note.noteText}
                                 </div>
                                 <div className="mt-2 text-xs text-gray-400 flex justify-between">
-                                    <span>Cập nhật gần nhất: {new Date(note.updatedAt).toLocaleString()}</span>
+                                    <span>Cập nhật gần nhất: {new Date(note.updatedDate).toLocaleString()}</span>
                                     <div className="space-x-2">
                                         <button
                                             onClick={() => {
-                                                setCurrentNote(note.content);
+                                                setCurrentNote(note.noteText);
                                                 setSelectedNoteId(note.id);
                                                 setIsEditing(true);
                                             }}
