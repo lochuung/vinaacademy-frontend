@@ -64,15 +64,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-// export const config = {
-//     // Matcher for paths to apply the middleware to
-//     matcher: [
-//         /*
-//          * Match all request paths except:
-//          * - api routes
-//          * - static files (e.g. images, js, css, etc.)
-//          * - favicon.ico
-//          */
-//         '/((?!api|_next/static|_next/image|favicon.ico).*)',
-//     ],
-// };
+export const config = {
+  matcher: [
+    '/((?!api|_next/static|_next/image|manifest.webmanifest|favicon.ico|sitemap.xml|robots.txt|.*\\.png|.*\\.jpg|.*\\.jpeg$).*)',
+  ],
+};
