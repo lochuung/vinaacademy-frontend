@@ -235,7 +235,7 @@ const LearningTabs: FC<LearningTabsProps> = ({ lecture: lecture, courseSlug, cur
 
                 {activeTab === 'notes' && (
                     <NotesArea
-                        courseId={courseSlug}
+                        // courseId={courseSlug}
                         lectureId={lecture.id}
                         currentTimestamp={currentTimestamp}
                     />
