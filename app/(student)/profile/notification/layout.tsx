@@ -10,7 +10,7 @@ export default function ProfileLayout({
     children: React.ReactNode;
 }>) {
     return (
-            <main className="ml-[-190px] w-[calc(100%+500px)] mt-[-20px]">
+            <main className="ml-[-50px] max-w-screen mt-[-20px]">
                 {children}
                 <Toaster/>
             </main>
