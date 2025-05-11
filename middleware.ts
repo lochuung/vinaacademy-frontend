@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Define protected paths that require authentication
 const protectedPaths = ['/admin', '/instructor', '/cart',
@@ -8,7 +8,7 @@ const protectedPaths = ['/admin', '/instructor', '/cart',
 const publicPaths = ['/auth'];
 
 export function middleware(request: NextRequest) {
-    const {pathname} = request.nextUrl;
+    const { pathname } = request.nextUrl;
 
     // Get token from cookies - no change needed as we're already using cookies here
     const token = request.cookies.get('access_token')?.value;
@@ -40,7 +40,7 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 
-    if (pathname.startsWith('/instructor') && !roles.includes('ROLE_instructor')) {
+    if (pathname === '/instructor' || pathname.startsWith(`/instructor/`) && !roles.includes('ROLE_instructor')) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 

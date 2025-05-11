@@ -58,7 +58,7 @@ export function AppSidebar({ className = "" }: AppSidebarProps) {
       url: "/profile/info",
     },
     // { title: "Giỏ hàng", icon: ShoppingCart, badge: 5 },
-    { title: "Lịch sử thanh toán", icon: LineChart, badge: null, url: "" },
+    { title: "Lịch sử thanh toán", icon: LineChart, badge: null, url: "/profile/payment" },
     {
       title: "Thông báo",
       icon: Bell,

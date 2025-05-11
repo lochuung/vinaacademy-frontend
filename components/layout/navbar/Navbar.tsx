@@ -34,7 +34,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
   const [formattedCartItems, setFormattedCartItems] = useState<CartItem[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  
+
   const roleStaffAdmin =
     user?.roles.findLast(
       (role) => role.name === "admin" || role.name === "staff"
@@ -56,7 +56,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
       const formatted = cartItems.map((item) => ({
         id: item.id,
         name: item.name,
-        price: `${item.price.toLocaleString("vi-VN")}đ`,
+        price: item.price,
         image: item.image || "/images/course-placeholder.jpg",
       }));
       setFormattedCartItems(formatted);
@@ -142,7 +142,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
           </div>
 
           {/* Desktop navigation */}
-          <DesktopNav 
+          <DesktopNav
             categories={categories}
             isLoading={isLoading}
             isAuthenticated={isAuthenticated}
@@ -157,14 +157,14 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
 
           {/* Mobile menu buttons */}
           <div className="flex items-center lg:hidden">
-            <button 
+            <button
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
               className="p-2 mr-2 text-gray-600 hover:text-black"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-gray-600 hover:text-black"
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -187,7 +187,7 @@ const Navbar = ({ onNavigateHome }: NavbarProps) => {
         isOpen={mobileMenuOpen}
         categories={categories}
         isLoading={isLoading}
-        isAuthenticated={isAuthenticated} 
+        isAuthenticated={isAuthenticated}
         roleStaffAdmin={roleStaffAdmin}
         cartItems={formattedCartItems}
         totalUnread={totalUnread}

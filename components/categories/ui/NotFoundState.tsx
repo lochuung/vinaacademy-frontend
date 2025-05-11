@@ -1,6 +1,6 @@
 // components/NotFoundState.tsx
-import {Button} from "@/components/ui/button";
-import {useRouter} from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export function NotFoundState() {
     const router = useRouter();

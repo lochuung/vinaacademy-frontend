@@ -1,40 +1,41 @@
-import {FC, useState, useEffect} from 'react';
-import {Plus, ChevronDown} from 'lucide-react';
-
-interface Note {
-    id: string;
-    content: string;
-    timestamp: number; // Video timestamp in seconds
-    createdAt: Date;
-    updatedAt: Date;
-    lectureId: string;
-}
+import { FC, useState, useEffect } from 'react';
+import { Plus, ChevronDown } from 'lucide-react';
+import { getNotesByVideoId, createNote, updateNote, deleteNote } from '@/services/noteService';
+import { Note } from '@/types/note';
 
 interface NotesAreaProps {
-    courseId: string;
     lectureId: string;
     currentTimestamp?: number; // Current video timestamp
 }
 
-const NotesArea: FC<NotesAreaProps> = ({courseId, lectureId: lectureId, currentTimestamp = 0}) => {
+
+const NotesArea: FC<NotesAreaProps> = ({ lectureId, currentTimestamp = 0 }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [currentNote, setCurrentNote] = useState<string>('');
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [filterOption, setFilterOption] = useState<string>('Tất cả bài giảng');
-    const [sortOption, setFilterSort] = useState<string>('gần đây nhất');
-    const [showFilterDropdown, setShowFilterDropdown] = useState<boolean>(false);
-    const [showSortDropdown, setShowSortDropdown] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Trong ứng dụng thực tế, bạn sẽ lấy ghi chú từ API
+    // Fetch notes on component mount or whenever lectureId changes
     useEffect(() => {
-        // Dữ liệu mẫu - trong ứng dụng thực, đây sẽ là API call
-        const mockNotes: Note[] = [
-            // Sẽ được lấy từ API trong ứng dụng thực tế
-        ];
+        const fetchNotes = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const notes = await getNotesByVideoId(lectureId);
+                console.log('Fetched notes:', notes); // Kiểm tra dữ liệu nhận từ API
+                setNotes(notes);
+            } catch (error) {
+                console.error('Error fetching notes:', error);
+                setError('Không thể tải danh sách ghi chú');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        setNotes(mockNotes);
-    }, [courseId, lectureId]);
+        fetchNotes();
+    }, [lectureId]);
 
     const formatTimestamp = (seconds: number): string => {
         const minutes = Math.floor(seconds / 60);
@@ -43,180 +44,100 @@ const NotesArea: FC<NotesAreaProps> = ({courseId, lectureId: lectureId, currentT
     };
 
     const handleCreateNote = () => {
-        // Hiển thị form tạo ghi chú
         setCurrentNote(`Tạo ghi chú mới tại ${formatTimestamp(currentTimestamp)}`);
         setSelectedNoteId(null);
         setIsEditing(true);
     };
 
-    const handleSaveNote = () => {
+    const handleSaveNote = async () => {
         if (!currentNote.trim()) return;
 
-        const now = new Date();
-
-        if (selectedNoteId) {
-            // Cập nhật ghi chú hiện có
-            setNotes(notes.map(note =>
-                note.id === selectedNoteId
-                    ? {...note, content: currentNote, updatedAt: now}
-                    : note
-            ));
-        } else {
-            // Tạo ghi chú mới
-            const newNote: Note = {
-                id: Date.now().toString(),
-                content: currentNote,
-                timestamp: currentTimestamp,
-                createdAt: now,
-                updatedAt: now,
-                lectureId: lectureId
-            };
-            setNotes([newNote, ...notes]);
+        try {
+            if (selectedNoteId) {
+                // Update existing note
+                const updatedNote = await updateNote(selectedNoteId, lectureId, currentTimestamp, currentNote);
+                if (updatedNote) {
+                    setNotes(notes.map(note => (note.id === selectedNoteId ? updatedNote : note)));
+                }
+            } else {
+                // Create new note
+                const newNote = await createNote(lectureId, currentTimestamp, currentNote);
+                if (newNote) {
+                    setNotes([newNote, ...notes]);
+                }
+            }
+        } catch (error) {
+            console.error('Error saving note:', error);
         }
 
-        // Đặt lại trạng thái
+        // Reset note state
         setCurrentNote('');
         setSelectedNoteId(null);
         setIsEditing(false);
     };
 
-    const handleFilterChange = (option: string) => {
-        setFilterOption(option);
-        setShowFilterDropdown(false);
-    };
-
-    const handleSortChange = (option: string) => {
-        setFilterSort(option);
-        setShowSortDropdown(false);
-    };
-
-    // Sắp xếp và lọc ghi chú dựa trên tùy chọn đã chọn
-    const processedNotes = [...notes]
-        .filter(note => {
-            if (filterOption === 'Tất cả bài giảng') return true;
-            if (filterOption === 'Bài giảng hiện tại') return note.lectureId === lectureId;
-            return true;
-        })
-        .sort((a, b) => {
-            if (sortOption === 'gần đây nhất') {
-                return b.updatedAt.getTime() - a.updatedAt.getTime();
+    const handleDeleteNote = async (noteId: string) => {
+        try {
+            const success = await deleteNote(noteId);
+            if (success) {
+                setNotes(notes.filter(note => note.id !== noteId));
             }
-            if (sortOption === 'cũ nhất') {
-                return a.updatedAt.getTime() - b.updatedAt.getTime();
-            }
-            // Sắp xếp theo thời gian trong video
-            return a.timestamp - b.timestamp;
-        });
+        } catch (error) {
+            console.error('Error deleting note:', error);
+        }
+    };
 
     return (
         <div className="flex flex-col h-full">
-            {/* Thanh tạo ghi chú */}
+            {/* Create Note Button */}
             <div className="p-4 border-b border-gray-200">
                 <button
                     onClick={handleCreateNote}
                     className="w-full text-left p-3 rounded border border-gray-300 hover:border-gray-400 flex justify-between items-center bg-white"
                 >
                     <span className="text-gray-500">Tạo ghi chú mới tại {formatTimestamp(currentTimestamp)}</span>
-                    <Plus className="text-gray-700" size={20}/>
+                    <Plus className="text-gray-700" size={20} />
                 </button>
             </div>
 
-            {/* Tùy chọn lọc và sắp xếp */}
-            <div className="px-4 py-3 flex space-x-2">
-                {/* Dropdown lọc bài giảng */}
-                <div className="relative">
-                    <button
-                        onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                        className="px-4 py-2 border border-gray-300 rounded flex items-center space-x-2 bg-white"
-                    >
-                        <span
-                            className={filterOption === 'Tất cả bài giảng' ? 'text-indigo-600 font-medium' : 'text-gray-800'}>
-                            {filterOption}
-                        </span>
-                        <ChevronDown size={16}
-                                     className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`}/>
-                    </button>
-
-                    {showFilterDropdown && (
-                        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
-                            <ul>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-indigo-600 font-medium"
-                                    onClick={() => handleFilterChange('Tất cả bài giảng')}
-                                >
-                                    Tất cả bài giảng
-                                </li>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleFilterChange('Bài giảng hiện tại')}
-                                >
-                                    Bài giảng hiện tại
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
-
-                {/* Dropdown sắp xếp */}
-                <div className="relative">
-                    <button
-                        onClick={() => setShowSortDropdown(!showSortDropdown)}
-                        className="px-4 py-2 border border-gray-300 rounded flex items-center space-x-2 bg-white"
-                    >
-                        <span className="text-gray-800">Sắp xếp theo {sortOption}</span>
-                        <ChevronDown size={16}
-                                     className={`transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}/>
-                    </button>
-
-                    {showSortDropdown && (
-                        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
-                            <ul>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleSortChange('gần đây nhất')}
-                                >
-                                    gần đây nhất
-                                </li>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleSortChange('cũ nhất')}
-                                >
-                                    cũ nhất
-                                </li>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleSortChange('thời gian video')}
-                                >
-                                    thời gian trong video
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Khu vực hiển thị ghi chú */}
+            {/* Notes List */}
             <div className="flex-1 overflow-y-auto p-4">
-                {processedNotes.length === 0 ? (
+                {loading && <div className="text-center py-12">Đang tải ghi chú...</div>}
+                {error && <div className="text-center py-12 text-red-500">{error}</div>}
+                {notes.length === 0 && !loading && !error && (
                     <div className="text-center py-12">
-                        <p className="text-lg text-gray-600 mb-2">Nhấp vào ô "Tạo ghi chú mới", nút "+", hoặc nhấn "B"
-                            để tạo ghi chú đầu tiên của bạn.</p>
+                        <p className="text-lg text-gray-600 mb-2">Nhấp vào ô "Tạo ghi chú mới" hoặc nút "+" để tạo ghi chú đầu tiên của bạn.</p>
                     </div>
-                ) : (
+                )}
+                {notes.length > 0 && (
                     <div className="space-y-4">
-                        {processedNotes.map(note => (
+                        {notes.map(note => (
                             <div key={note.id} className="p-4 border border-gray-200 rounded-md hover:shadow-sm">
                                 <div className="mb-2 text-sm text-gray-500">
-                                    {formatTimestamp(note.timestamp)}
+                                    {formatTimestamp(note.timeStampSeconds)}
                                 </div>
                                 <div className="text-gray-800">
-                                    {note.content}
+                                    {note.noteText}
                                 </div>
                                 <div className="mt-2 text-xs text-gray-400 flex justify-between">
-                                    <span>Cập nhật gần nhất: {note.updatedAt.toLocaleString()}</span>
+                                    <span>Cập nhật gần nhất: {new Date(note.updatedDate).toLocaleString()}</span>
                                     <div className="space-x-2">
-                                        <button className="text-gray-500 hover:text-gray-700">Chỉnh sửa</button>
-                                        <button className="text-gray-500 hover:text-red-500">Xóa</button>
+                                        <button
+                                            onClick={() => {
+                                                setCurrentNote(note.noteText);
+                                                setSelectedNoteId(note.id);
+                                                setIsEditing(true);
+                                            }}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            Chỉnh sửa
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteNote(note.id)}
+                                            className="text-gray-500 hover:text-red-500"
+                                        >
+                                            Xóa
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +146,7 @@ const NotesArea: FC<NotesAreaProps> = ({courseId, lectureId: lectureId, currentT
                 )}
             </div>
 
-            {/* Trình sửa ghi chú (sẽ hiển thị khi tạo/chỉnh sửa) */}
+            {/* Note Editor Modal */}
             {isEditing && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
                     <div className="bg-white rounded-lg w-full max-w-2xl mx-auto my-4">

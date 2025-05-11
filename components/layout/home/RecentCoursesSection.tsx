@@ -7,6 +7,8 @@ import { Clock } from "lucide-react";
 import { useInView } from "framer-motion";
 import { useContinueLearning } from "@/hooks/course/useContinueLearning";
 import { LearningCourse } from "@/types/navbar";
+import Image from "next/image";
+import { getImageUrl } from "@/utils/imageUtils";
 
 const RecentCoursesSection = () => {
     const { isAuthenticated } = useAuth();
@@ -73,10 +75,12 @@ const RecentCoursesSection = () => {
                             >
                                 <div className="flex gap-3">
                                     <div className="w-24 h-24 rounded-md shrink-0 overflow-hidden">
-                                        <img
-                                            src={course.image}
+                                        <Image
+                                            src={getImageUrl(course.image)}
                                             alt={course.name}
-                                            className="w-full h-full object-cover"
+                                            width={150}
+                                            height={150}
+                                            className="object-cover"
                                         />
                                     </div>
                                     <div className="flex-1">

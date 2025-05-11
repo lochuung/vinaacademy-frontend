@@ -1,6 +1,7 @@
 import { LearningCourse } from "@/types/navbar";
 import Link from "next/link";
 import Image from "next/image";
+import { getImageUrl } from "@/utils/imageUtils";
 
 interface CourseListProps {
     courses: LearningCourse[];
@@ -37,9 +38,10 @@ export const CourseList = ({ courses }: CourseListProps) => {
                         <div className="flex items-start space-x-3 p-2 hover:bg-gray-100 rounded-md transition">
                             <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
                                 {course.image ? (
+                                    
                                     <Image
-                                        src={course.image}
-                                        alt={course.name}
+                                        src={getImageUrl(course.image)}
+                                        alt={course.image}
                                         fill
                                         className="object-cover"
                                     />
