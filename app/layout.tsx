@@ -43,7 +43,6 @@ export default function RootLayout({
                     {children}
                   </LayoutWrapper>
                   <Toaster />
-                  <ToastContainer />
                 </CartProvider>
               </CategoryProvider>
             </AuthProvider>
