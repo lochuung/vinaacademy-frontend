@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 // You can adjust this based on your environment config
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_SITE_URL}/api` || 'http://localhost:8080/api/v1';
 const DEFAULT_PLACEHOLDER = '/placeholder-course.jpg';
 
 interface CourseImageProps {

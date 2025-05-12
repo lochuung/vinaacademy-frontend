@@ -41,7 +41,7 @@ const CourseCardAPI: React.FC<CourseCardAPIProps> = ({ course }) => {
       <div className="relative h-40">
         {course.image ? (
           <Image
-            src={`${process.env.NEXT_PUBLIC_API_URL || ""}/images/${course.image}`}
+            src={`${process.env.NEXT_PUBLIC_SITE_URL}/api/images/${course.image}`}
             alt={course.name}
             fill
             className="object-cover transition-transform group-hover:scale-105 duration-300"
