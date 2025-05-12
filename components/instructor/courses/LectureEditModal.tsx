@@ -89,6 +89,13 @@ export const LectureEditModal = ({
                     content: content
                 });
             }
+            if (type === 'QUIZ') {
+                Object.assign(lectureData, {
+                    passPoint: 60,
+                    totalPoint: 100,
+                    duration: 60 * 30 // 30 phút
+                });
+            }
 
             let result;
             if (lecture) {
