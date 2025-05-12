@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import dynamic from 'next/dynamic';
 import { Star, Edit2, Trash2, Plus } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
@@ -17,6 +17,7 @@ import {
     canUserReviewCourse,
     ReviewStatistics
 } from '@/services/courseReviewService';
+import { checkEnrollment } from '@/services/enrollmentService';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -61,6 +62,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
         review: '',
     });
     const [canReview, setCanReview] = useState(false);
+    const [userEnrolledState, setUserEnrolledState] = useState(userEnrolled); // Local state for user enrollment
     const [ratingDistribution, setRatingDistribution] = useState({
         counts: [0, 0, 0, 0, 0], // 5, 4, 3, 2, 1 stars
         percentages: [0, 0, 0, 0, 0]
@@ -85,6 +87,22 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                 return;
             }
 
+            // check enrollment status
+            try {
+                const enrolled: boolean = await checkEnrollment(courseId);
+                setUserEnrolledState(enrolled);
+                console.log("User enrolled:", enrolled);
+
+                // Kiểm tra khả năng đánh giá
+                const canReview = await canUserReviewCourse(courseId);
+                console.log("Can user review course:", canReview);
+
+                setCanReview(canReview && enrolled);
+            } catch (error) {
+                console.error('Error checking enrollment:', error);
+                setCanReview(false);
+            }
+
             try {
                 // Kiểm tra người dùng đã đánh giá chưa
                 const hasReviewed = await hasUserReviewedCourse(courseId);
@@ -97,6 +115,7 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                 setCanReview(false);
             }
         };
+
 
         if (isAuthenticated) {
             checkReviewEligibility();
@@ -459,13 +478,16 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
             </DialogContent>
         </Dialog>
     );
-
+    console.log("Can review:", canReview, "User enrolled:", userEnrolled);
     return (
         <div className={`${mainPage ? 'p-0' : 'p-6'}`}>
 
             <div className="flex justify-between items-center mb-6">
+                {canReview} {userEnrolled}
+
                 <h2 className="text-xl font-bold">Đánh giá từ học viên</h2>
-                {canReview && userEnrolled && (
+
+                {canReview && (
                     <Button
                         onClick={() => {
                             setEditingReview(null);
@@ -520,17 +542,21 @@ const ReviewsArea: React.FC<ReviewsAreaProps> = ({
                         <>
                             {displayedReviews.map((review) => (
                                 <article key={review.id} className="border-b pb-6 last:border-b-0">
-                                    <header className="flex items-center gap-4 mb-2" onClick={()=>{
-                                        router.push(`/user/${review.userId}`);
-                                    }}>
-                                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                                    <header className="flex items-center gap-4 mb-2">
+                                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200"
+                                            onClick={() => {
+                                                router.push(`/user/${review.userId}`);
+                                            }}>
                                             {/* Using first letter of name as avatar placeholder */}
                                             <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-600 text-xl font-bold">
-                                                {review.userFullName.charAt(0)}
+                                                {review.userFullName?.charAt(0) || '?'}
                                             </div>
                                         </div>
                                         <div className="flex-1">
-                                            <div className="font-medium">
+                                            <div className="font-medium"
+                                                onClick={() => {
+                                                    router.push(`/user/${review.userId}`);
+                                                }}>
                                                 {review.userFullName || 'Người dùng ẩn danh'} {review.userId === currentUserId ? "(Bạn)" : ""}
                                             </div>
                                             <div className="flex items-center gap-2">
