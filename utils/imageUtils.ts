@@ -2,7 +2,7 @@
  * Utility functions for handling images
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_SITE_URL}/api` || 'http://localhost:8080/api/v1';
 
 /**
  * Checks if a string is a valid UUID v4
