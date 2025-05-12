@@ -122,7 +122,7 @@ export default function QuestionContent({
                         question.type === 'multiple_choice' ? QuestionType.MULTIPLE_CHOICE :
                         question.type === 'true_false' ? QuestionType.TRUE_FALSE : QuestionType.TEXT
                     }
-                    options={question.options}
+                    options={question.options || []}
                     onAddOption={onAddOption}
                     onRemoveOption={onRemoveOption}
                     onUpdateOptionText={onUpdateOptionText}
