@@ -90,15 +90,6 @@ export const LectureEditModal = ({
                 });
             }
 
-            // Nếu là QUIZ, thêm các trường liên quan đến quiz
-            if (type === 'QUIZ') {
-                Object.assign(lectureData, {
-                    passPoint: 0, // Giá trị mặc định, sẽ được cập nhật sau trong trang chỉnh sửa quiz
-                    totalPoint: 0, // Giá trị mặc định, sẽ được cập nhật sau trong trang chỉnh sửa quiz
-                    duration: 0 // Thời gian làm bài mặc định
-                });
-            }
-
             let result;
             if (lecture) {
                 // Cập nhật bài giảng hiện có

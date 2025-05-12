@@ -110,7 +110,7 @@ export default function CourseFormHeader({
                                 className="w-full flex justify-center items-center px-3 py-2 h-10 text-xs font-medium rounded-md shadow-sm hover:shadow-md transition gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
                             >
                                 <FileEdit className="w-4 h-4" />
-                                <span className="hidden sm:inline">Chỉnh sửa khóa học</span>
+                                <span className="hidden sm:inline">Chỉnh sửa nội dung</span>
                                 <span className="sm:hidden">Chỉnh sửa</span>
                             </motion.button>
                         </Link>
