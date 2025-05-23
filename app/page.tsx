@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { createNotification } from "@/services/notificationService";
 import { NotificationType } from "@/types/notification-type";
 
 const userAvatar = "";
