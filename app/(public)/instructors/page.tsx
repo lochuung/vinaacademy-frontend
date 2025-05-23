@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { registerAsInstructor } from '@/services/instructorService';
-import { createNotification } from '@/services/notificationService';
 import { NotificationType } from '@/types/notification-type';
 
 export default function InstructorsPage() {
@@ -69,22 +68,6 @@ export default function InstructorsPage() {
                 title: "Đăng ký thành công",
                 description: "Bạn đã trở thành giảng viên trên VinaAcademy",
             });
-
-            // Tạo thông báo trước khi chuyển hướng
-            if (user?.id) {
-                try {
-                    await createNotification({
-                        title: "Chào mừng bạn đến với VinaAcademy",
-                        content: "Bạn đã trở thành giảng viên trên VinaAcademy. Hãy bắt đầu tạo khóa học của bạn ngay hôm nay!",
-                        targetUrl: "/instructor/dashboard",
-                        type: NotificationType.INSTRUCTOR_REQUEST,
-                        userId: user.id
-                    });
-                } catch (notificationError) {
-                    // Chỉ log lỗi thông báo, không hiển thị lỗi cho người dùng
-                    console.error("Lỗi khi tạo thông báo:", notificationError);
-                }
-            }
 
             // Chuyển hướng đến trang dashboard sau khi đã tạo thông báo
             router.push('/instructor/dashboard');

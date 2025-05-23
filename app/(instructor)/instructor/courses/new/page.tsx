@@ -15,7 +15,6 @@ import { InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { EditorTextChangeEvent } from 'primereact/editor';
 import { toast } from '@/hooks/use-toast';
 import { createInstructorCourse, uploadImageAndCreateCourse } from '@/services/courseService';
-import { createNotification } from '@/services/notificationService';
 import { getCurrentUser } from '@/services/authService';
 import { NotificationType } from '@/types/notification-type';
 import { useRouter } from 'next/navigation';
@@ -209,16 +208,6 @@ export default function CreateCoursePage() {
         const user = await getCurrentUser();
         const userId = user?.id || "";
         await createCourseInstructorFunc(data.id, user?.id || '');
-        
-        const notificationData = {
-            title: `Khóa học "${courseData.title}" đã được tạo thành công`,
-            content: `Bấm vào đây để chuyển đến trang chỉnh sửa khóa học. \n  Tại đây bạn sẽ điều chỉnh bài học của mình và xuất bản để chờ duyệt`,
-            targetUrl: `/instructor/courses/${data.id}/edit`,
-            userId: userId,
-            type: NotificationType.SYSTEM
-        }
-        
-        await createNotification(notificationData);
         
         toast({
             title: 'Thành công!',

@@ -26,7 +26,6 @@ import { PaginatedResponse } from "@/types/api-response";
 import { CourseDetailsResponse } from "@/types/course";
 import RejectCourseDialog from "@/components/staff/ui/RejectCourse";
 import { NotificationType } from "@/types/notification-type";
-import { createNotification } from "@/services/notificationService";
 import LessonDialogPreview from "@/components/staff/ui/LessonPreview";
 
 const CourseApprovalPage = () => {
@@ -228,32 +227,6 @@ const CourseApprovalPage = () => {
         slug: slug,
         status: "REJECTED",
       });
-
-      if (check) {
-        toast({
-          title: "Khóa học đã bị từ chối",
-          description: `Khóa học #${slug} đã bị từ chối.`,
-          className: "bg-green-500 text-white",
-        });
-
-        const notificationData = {
-          title: `Khóa học "${name}" của bạn đã bị từ chối`,
-          content: `Lí do: ${comment}`,
-          targetUrl: `/instructor/courses/${id}/content`,
-          userId: recipid,
-          type: NotificationType.COURSE_APPROVAL,
-        };
-
-        await createNotification(notificationData);
-      } else {
-        toast({
-          title: "Lỗi",
-          description: `Có lỗi xảy ra khi Từ chôi khóa học #${slug}. Vui lòng thử lại.`,
-          variant: "destructive",
-          className: "bg-red-500 text-white",
-        });
-      }
-
       // Refresh counts and course data
       const data = await getStatusCourse();
       setCoursesCount(data);

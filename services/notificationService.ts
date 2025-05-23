@@ -11,25 +11,6 @@ import apiClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/api-response";
 import { createSignature } from "@/lib/notificationC";
 
-export const createNotification = async (notificationData: {
-  title: string;
-  content: string;
-  targetUrl: string;
-  type: NotificationType;
-  userId: string;
-}): Promise<NotificationCreateDTO> => {
-  try {
-    const response: AxiosResponse = await apiClient.post<NotificationCreateDTO>(
-      "/notifications",
-      notificationData
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    return {} as NotificationCreateDTO; // Return an empty object with error
-  }
-};
-
 export const fetchUserNotifications = async ({
   type = null,
   isRead = null,
