@@ -36,12 +36,14 @@ export interface ChunkUploadResult {
 
 // Service functions
 export const initiateChunkUpload = async (
-  request: InitiateUploadRequest
+  request: InitiateUploadRequest,
+  signal?: AbortSignal
 ): Promise<ChunkUploadResult> => {
   try {
     const response = await apiClient.post<ApiResponse<UploadSessionDto>>(
       '/storage/chunk-upload/initiate',
-      request
+      request,
+      { signal }
     );
     return { success: true, data: response.data.data };
   } catch (error) {

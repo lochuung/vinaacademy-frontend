@@ -74,7 +74,7 @@ export const useChunkUpload = (options: UseChunkUploadOptions = {}) => {
                 fileType: getFileType(file)
             };
 
-            const initateResult: ChunkUploadResult = await initiateChunkUpload(initiateRequest);
+            const initateResult: ChunkUploadResult = await initiateChunkUpload(initiateRequest, abortControllerRef.current?.signal);
             if (!initateResult.success || !initateResult.data) {
                 throw new Error(initateResult.error || 'Có lỗi xảy ra khi tạo phiên upload');
             }
