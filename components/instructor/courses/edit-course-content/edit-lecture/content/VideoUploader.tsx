@@ -1,14 +1,16 @@
 import { useState, useRef } from 'react';
 import { Video, AlertTriangle } from 'lucide-react';
 import { Lecture } from '@/types/lecture';
-import { uploadVideo } from '@/services/videoService';
 import { VideoStatus } from '@/types/video';
 import { useQueryClient } from '@tanstack/react-query';
 import { getLessonById } from '@/services/lessonService';
 import { createErrorToast, createSuccessToast } from '@/components/ui/toast-cus';
-import DropZone from './video/DropZone';
 import VideoPreviewModal from './video/VideoPreviewModal';
 import UploadedVideoCard from './video/UploadedVideoCard';
+import { UploadSessionDto } from '@/services/chunkUploadService';
+import ChunkUploadDropZone from './video/ChunkDropZone';
+import { processVideo } from '@/services/videoService';
+
 interface VideoUploaderProps {
     lecture: Lecture;
     setLecture: React.Dispatch<React.SetStateAction<Lecture>>;
@@ -19,118 +21,93 @@ export default function VideoUploader({
     setLecture
 }: VideoUploaderProps) {
     const [showVideoPreview, setShowVideoPreview] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
     const [processingStatus, setProcessingStatus] = useState<VideoStatus | null>(lecture.status || null);
-    const [fileError, setFileError] = useState<string | null>(null);
-    
+
     const videoRef = useRef<HTMLVideoElement>(null);
     const hlsVideoRef = useRef<HTMLVideoElement>(null) as React.MutableRefObject<HTMLVideoElement>;
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    
-    // Get TanStack Query client to invalidate the cache
+
     const queryClient = useQueryClient();
 
-    // Validate file before upload
-    const validateFile = (file: File): boolean => {
-        const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
-        const acceptedTypes = ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-msvideo'];
-        
-        if (file.size > maxSize) {
-            setFileError('Kích thước file quá lớn (tối đa 2GB)');
-            return false;
-        }
-        
-        if (!acceptedTypes.includes(file.type)) {
-            setFileError('Định dạng file không được hỗ trợ. Vui lòng sử dụng MP4, MOV, WEBM hoặc AVI.');
-            return false;
-        }
-        
-        setFileError(null);
-        return true;
-    };
-
-    // Handle video upload with API integration and progress tracking
-    const handleUploadVideo = async (file: File) => {
-        if (!file || !lecture.id || !validateFile(file)) {
-            return;
-        }
-        
-        setUploading(true);
-        setProgress(0);
-        setProcessingStatus(VideoStatus.PROCESSING);
-
+    const handleUploadComplete = async (session: UploadSessionDto) => {
         try {
-            // Upload the video with progress tracking
-            const videoData = await uploadVideo(file, lecture.id, (progressPercent) => {
-                setProgress(progressPercent);
+            createSuccessToast("Video uploaded successfully and processing started");
+
+            // Process Video
+            const process = await processVideo({
+                mediaFileId: session.sessionId,
+                videoId: lecture?.id
             });
-
-            if (videoData) {
-                // Update video ID and status
-                setProcessingStatus(videoData.status as VideoStatus);
-
-                // Update lecture with new video information
-                setLecture({
-                    ...lecture,
-                    duration: videoData.duration ? String(videoData.duration) : lecture.duration,
-                    status: videoData.status as VideoStatus
-                });
-
-                let interval = 2000; // start with 2s
-                const maxInterval = 30000; // 30s max
-                let timeoutId: NodeJS.Timeout;
-
-                const videoProcessTracking = () => {
-                    getLessonById(lecture.id)
-                        .then((lesson) => {
-                            if (lesson) {
-                                setProcessingStatus(lesson.status as VideoStatus);
-                                
-                                if (lesson.status === VideoStatus.READY) {
-                                    clearTimeout(timeoutId);
-                                    queryClient.invalidateQueries({ queryKey: ['lesson', lecture.id] });
-                                    createSuccessToast("Video đã xử lý thành công và sẵn sàng phát");
-                                    return;
-                                } else if (lesson.status === VideoStatus.ERROR) {
-                                    clearTimeout(timeoutId);
-                                    createErrorToast(
-                                        lesson.status === VideoStatus.ERROR 
-                                            ? 'Có lỗi xảy ra khi xử lý video. Vui lòng kiểm tra định dạng video và thử lại.'
-                                            : 'Xử lý video thất bại. Vui lòng thử lại với file khác.'
-                                    );
-                                    return;
-                                }
-                                
-                                interval = Math.min(interval * 2, maxInterval); // exponential increase
-                                timeoutId = setTimeout(videoProcessTracking, interval);
-                            }
-                        });
-                };
-
-                timeoutId = setTimeout(videoProcessTracking, interval);
-                createSuccessToast("Video đã được tải lên thành công và đang xử lý");
-            } else {
-                throw new Error('Không thể tải lên video');
+            if (!process.success) {
+                createErrorToast(`Failed to start video processing: ${process.error}`);
+                setProcessingStatus(VideoStatus.ERROR);
+                return;
             }
+            setProcessingStatus(VideoStatus.PROCESSING);
+            setLecture(prev => ({
+                ...prev,
+                status: VideoStatus.PROCESSING
+            }));
+
+            // Start polling for processing status
+            let interval = 2000;
+            const maxInterval = 30000;
+            let timeoutId: NodeJS.Timeout;
+
+            const pollProcessingStatus = async () => {
+                try {
+                    const lesson = await getLessonById(lecture.id);
+                    if (lesson) {
+                        setProcessingStatus(lesson.status as VideoStatus);
+
+                        if (lesson.status === VideoStatus.READY) {
+                            clearTimeout(timeoutId);
+                            queryClient.invalidateQueries({ queryKey: ['lesson', lecture.id] });
+                            createSuccessToast("Video processed successfully and ready to play");
+
+                            setLecture(prev => ({
+                                ...prev,
+                                duration: lesson.duration ? String(lesson.duration) : prev.duration,
+                                status: lesson.status as VideoStatus
+                            }));
+                            return;
+                        }
+
+                        if (lesson.status === VideoStatus.ERROR) {
+                            clearTimeout(timeoutId);
+                            createErrorToast('Video processing failed. Please check the format and try again.');
+                            setLecture(prev => ({
+                                ...prev,
+                                status: VideoStatus.ERROR
+                            }));
+                            return;
+                        }
+
+                        // Continue polling with exponential backoff
+                        interval = Math.min(interval * 1.5, maxInterval);
+                        timeoutId = setTimeout(pollProcessingStatus, interval);
+                    }
+                } catch (error) {
+                    console.error('Error checking processing status:', error);
+                    clearTimeout(timeoutId);
+                    createErrorToast('Failed to check processing status');
+                }
+            };
+
+            // Start polling
+            timeoutId = setTimeout(pollProcessingStatus, interval);
+
         } catch (error) {
-            console.error('Error uploading video:', error);
-            setProcessingStatus(VideoStatus.ERROR);
-            createErrorToast('Lỗi khi tải lên video. Vui lòng thử lại.');
-        } finally {
-            setUploading(false);
+            console.error('Error handling upload completion:', error);
+            createErrorToast('Upload completed but failed to start processing');
         }
     };
 
-    // Handler for file input change
-    const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            handleUploadVideo(file);
-        }
+    const handleUploadError = (error: string) => {
+        console.error('Upload error:', error);
+        setProcessingStatus(VideoStatus.ERROR);
+        createErrorToast(`Upload failed: ${error}`);
     };
 
-    // Determine if video can be played
     const canPlayVideo = Number(lecture.duration) > 0 && lecture.status === VideoStatus.READY;
 
     return (
@@ -141,25 +118,19 @@ export default function VideoUploader({
 
             {lecture.status !== VideoStatus.NO_VIDEO ? (
                 <div className="mb-4">
-                    <UploadedVideoCard 
+                    <UploadedVideoCard
                         lecture={lecture}
                         processingStatus={processingStatus}
                         canPlayVideo={canPlayVideo}
                         onPreviewClick={() => setShowVideoPreview(true)}
-                        onReplaceClick={() => fileInputRef.current?.click()}
-                        uploading={uploading}
+                        onReplaceClick={() => {
+                            // Reset to allow new upload
+                            setLecture(prev => ({ ...prev, status: VideoStatus.NO_VIDEO }));
+                            setProcessingStatus(VideoStatus.NO_VIDEO);
+                        }}
+                        uploading={false}
                     />
 
-                    {/* Hidden file input for uploading */}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="video/mp4,video/quicktime,video/webm,video/x-msvideo"
-                        className="hidden"
-                        onChange={onFileSelected}
-                    />
-
-                    {/* Video preview modal */}
                     {showVideoPreview && (
                         <VideoPreviewModal
                             videoRef={videoRef}
@@ -172,12 +143,13 @@ export default function VideoUploader({
                     )}
                 </div>
             ) : (
-                <DropZone
-                    uploading={uploading}
-                    progress={progress}
-                    fileError={fileError}
-                    onFileSelected={onFileSelected}
-                    handleUploadVideo={handleUploadVideo}
+                <ChunkUploadDropZone
+                    accept="video/mp4,video/quicktime,video/webm,video/x-msvideo"
+                    maxSize={2 * 1024 * 1024 * 1024} // 2GB
+                    lessonId={lecture.id}
+                    onUploadComplete={handleUploadComplete}
+                    onUploadError={handleUploadError}
+                    className="mb-4"
                 />
             )}
 
