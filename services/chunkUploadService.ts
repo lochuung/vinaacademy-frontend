@@ -5,7 +5,7 @@ import { ApiResponse } from "@/types/api-response";
 export interface InitiateUploadRequest {
   filename: string;
   fileSize: number;
-  fileType: 'VIDEO' | 'IMAGE' | 'DOCUMENT' | 'OTHER';
+  mimeType: string;
   fileHash?: string;
   chunkSize: number;
 }

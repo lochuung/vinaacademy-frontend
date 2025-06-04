@@ -24,24 +24,6 @@ export const useChunkUpload = (options: UseChunkUploadOptions = {}) => {
         return hashArray.map(bin => bin.toString(16).padStart(2, '0')).join('');
     };
 
-
-    const getFileType = (file: File): "VIDEO" | "IMAGE" | "DOCUMENT" | "OTHER" => {
-        const mimeType = file.type;
-
-        if (mimeType.startsWith("video/")) {
-            return "VIDEO";
-        } else if (mimeType.startsWith("image/")) {
-            return "IMAGE";
-        } else if (
-            mimeType.startsWith("application/") &&
-            (mimeType.includes("pdf") || mimeType.includes("msword") || mimeType.includes("officedocument"))
-        ) {
-            return "DOCUMENT";
-        } else {
-            return "OTHER";
-        }
-    };
-
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentSession, setCurrentSession] = useState<UploadSessionDto | null>(null);
@@ -71,7 +53,7 @@ export const useChunkUpload = (options: UseChunkUploadOptions = {}) => {
                 fileSize: file.size,
                 fileHash,
                 chunkSize,
-                fileType: getFileType(file)
+                mimeType: file.type
             };
 
             const initateResult: ChunkUploadResult = await initiateChunkUpload(initiateRequest, abortControllerRef.current?.signal);
